@@ -9,8 +9,7 @@ class Field
     use DescriptionTrait;
     use TypeTrait;
     use ArgumentsTrait;
-    use IsDeprecatedTrait;
-    use DeprecationReasonTrait;
+    use DeprecationTrait;
     use ResolveTrait;
     use ConfigTrait;
 }

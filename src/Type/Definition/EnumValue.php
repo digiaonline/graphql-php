@@ -14,25 +14,10 @@ use Digia\GraphQL\Language\AST\Node\EnumValueDefinitionNode;
 class EnumValue
 {
 
-    use TypeTrait;
     use NameTrait;
     use DescriptionTrait;
-    use IsDeprecatedTrait;
-    use DeprecationReasonTrait;
+    use DeprecationTrait;
     use ValueTrait;
     use ASTNodeTrait;
     use ConfigTrait;
-
-    /**
-     * @param bool $isDeprecated
-     * @throws \TypeError
-     */
-    public function setIsDeprecated(bool $isDeprecated): void
-    {
-        throw new \TypeError(sprintf(
-            '%s.%s should provide "deprecationReason" instead of "isDeprecated".',
-            $this->getType(),
-            $this->getName()
-        ));
-    }
 }

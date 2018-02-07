@@ -47,9 +47,8 @@ use Digia\GraphQL\Util\Util;
  *
  * @property ObjectTypeDefinitionNode $astNode
  */
-class ObjectType implements CompositeTypeInterface, NamedTypeInterface, OutputTypeInterface
+class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInterface, OutputTypeInterface
 {
-
     use NameTrait;
     use DescriptionTrait;
     use ResolveTrait;

@@ -154,9 +154,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     protected function setValues(array $values): void
     {
         array_map(function ($properties) {
-            $this->addValue(new EnumValue(array_merge($properties, [
-                'type' => $this,
-            ])));
+            $this->addValue(new EnumValue($properties));
         }, $values);
     }
 }

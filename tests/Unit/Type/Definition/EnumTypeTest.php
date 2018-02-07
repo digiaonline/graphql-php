@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
-use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
 
@@ -12,18 +11,8 @@ use Digia\GraphQL\Type\Definition\EnumValue;
  * @package Digia\GraphQL\Test\Unit\Type\Definition
  * @property EnumType $type
  */
-class EnumTypeTest extends TestCase
+class EnumTypeTest extends TypeTestCase
 {
-
-    /**
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * @var EnumType
-     */
-    protected $type;
 
     protected function setUp()
     {
