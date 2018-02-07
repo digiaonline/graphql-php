@@ -5,6 +5,9 @@ namespace Digia\GraphQL\Type\Definition;
 trait DefaultValueTrait
 {
 
+    /**
+     * @var mixed
+     */
     private $defaultValue;
 
     /**

@@ -27,7 +27,7 @@ trait FieldsTrait
     }
 
     /**
-     * @param array $fields
+     * @param Field[] $fields
      */
     protected function setFields(array $fields): void
     {
