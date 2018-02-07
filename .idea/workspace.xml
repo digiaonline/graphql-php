@@ -2,51 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0d30cb28-d2a6-4257-86f2-ab0c4a112501" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Language/AST/Node/FieldDefinitionNode.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/ConfigTraitTest.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/EnumValueTest.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/FieldTest.php" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/EnumTypeDefinitionNode.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/EnumTypeDefinitionNode.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/EnumValueDefinitionNode.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/EnumValueDefinitionNode.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/InputObjectTypeDefinitionNode.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/InputObjectTypeDefinitionNode.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/InputValueDefinitionNode.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/InputValueDefinitionNode.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/InterfaceTypeDefinitionNode.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/InterfaceTypeDefinitionNode.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/KindTrait.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/KindTrait.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/NodeInterface.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/NodeInterface.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/ObjectTypeDefinitionNode.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/ObjectTypeDefinitionNode.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/ScalarTypeDefinitionNode.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/ScalarTypeDefinitionNode.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/Node/UnionTypeDefinitionNode.php" afterPath="$PROJECT_DIR$/src/Language/AST/Node/UnionTypeDefinitionNode.php" />
-      <change beforePath="$PROJECT_DIR$/src/Language/AST/NodeTrait.php" afterPath="$PROJECT_DIR$/src/Language/AST/NodeTrait.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/AbstractScalarType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/AbstractScalarType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/Argument.php" afterPath="$PROJECT_DIR$/src/Type/Definition/Argument.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/ArgumentsTrait.php" afterPath="$PROJECT_DIR$/src/Type/Definition/ArgumentsTrait.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/BooleanType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/BooleanType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/ConfigTrait.php" afterPath="$PROJECT_DIR$/src/Type/Definition/ConfigTrait.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/DeprecationTrait.php" afterPath="$PROJECT_DIR$/src/Type/Definition/DeprecationTrait.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/DescriptionTrait.php" afterPath="$PROJECT_DIR$/src/Type/Definition/DescriptionTrait.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/EnumType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/EnumType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/EnumValue.php" afterPath="$PROJECT_DIR$/src/Type/Definition/EnumValue.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/ExtensionASTNodesTrait.php" afterPath="$PROJECT_DIR$/src/Type/Definition/ExtensionASTNodesTrait.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/Field.php" afterPath="$PROJECT_DIR$/src/Type/Definition/Field.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/FloatType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/FloatType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/IDType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/IDType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/InputField.php" afterPath="$PROJECT_DIR$/src/Type/Definition/InputField.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/InputObjectType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/InputObjectType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/IntType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/IntType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/InterfaceType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/InterfaceType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/NameTrait.php" afterPath="$PROJECT_DIR$/src/Type/Definition/NameTrait.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/ObjectType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/ObjectType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/StringType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/StringType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/TransformInterface.php" afterPath="$PROJECT_DIR$/src/Type/Definition/TransformInterface.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/UnionType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/UnionType.php" />
-      <change beforePath="$PROJECT_DIR$/tests/Unit/Type/Definition/AbstractTypeTestCase.php" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/AbstractTypeTestCase.php" />
-      <change beforePath="$PROJECT_DIR$/tests/Unit/Type/Definition/ArgumentTest.php" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/ArgumentTest.php" />
-      <change beforePath="$PROJECT_DIR$/tests/Unit/Type/Definition/EnumTypeTest.php" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/EnumTypeTest.php" />
-      <change beforePath="$PROJECT_DIR$/tests/Unit/Type/Definition/InputObjectTypeTest.php" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/InputObjectTypeTest.php" />
-      <change beforePath="$PROJECT_DIR$/tests/Unit/Type/Definition/InterfaceTypeTest.php" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/InterfaceTypeTest.php" />
-      <change beforePath="$PROJECT_DIR$/tests/Unit/Type/Definition/ObjectTypeTest.php" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/ObjectTypeTest.php" />
-      <change beforePath="$PROJECT_DIR$/tests/Unit/Type/Definition/UnionTypeTest.php" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/UnionTypeTest.php" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -110,14 +67,34 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="FieldTest.php" pinned="false" current-in-tab="true">
+          <file leaf-file-name="FieldTest.php" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/FieldTest.php">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="453">
+                <state relative-caret-position="173">
                   <caret line="29" column="48" lean-forward="false" selection-start-line="29" selection-start-column="48" selection-end-line="29" selection-end-column="48" />
                   <folding>
                     <element signature="e#59#115#0#PHP" expanded="true" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="NodeTrait.php" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/Language/AST/NodeTrait.php">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="56">
+                  <caret line="2" column="37" lean-forward="true" selection-start-line="2" selection-start-column="37" selection-end-line="2" selection-end-column="37" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/.gitignore">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="0">
+                  <caret line="0" column="19" lean-forward="false" selection-start-line="0" selection-start-column="19" selection-end-line="0" selection-end-column="19" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -241,7 +218,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/Type/Definition/InterfaceType.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/InputField.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/DefaultValueTrait.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/FieldsTrait.php" />
@@ -292,6 +268,7 @@
         <option value="$PROJECT_DIR$/src/Type/Definition/ArgumentsTrait.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/DeprecationTrait.php" />
         <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/FieldTest.php" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -365,84 +342,6 @@
               <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
               <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="src" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="src" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Language" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="src" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Language" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="AST" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="src" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Language" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="AST" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Node" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="src" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Type" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="src" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Type" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Definition" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="src" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Type" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Directive" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="src" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Util" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="tests" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="tests" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Unit" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="tests" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Unit" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Type" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="graphql-php" type="b2602c69:ProjectViewProjectNode" />
-              <item name="graphql-php" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="tests" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Unit" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Type" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Definition" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -498,12 +397,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1517941770170</updated>
-      <workItem from="1517941771497" duration="50186000" />
+      <workItem from="1517941771497" duration="50963000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="50186000" />
+    <option name="totallyTimeSpent" value="50963000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1680" y="-390" width="2560" height="1440" extended-state="6" />
@@ -549,14 +448,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/BooleanTypeTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-423">
-          <caret line="16" column="26" lean-forward="false" selection-start-line="16" selection-start-column="26" selection-end-line="16" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Type/Definition/SerializeInterface.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="196">
@@ -915,14 +806,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Language/AST/NodeTrait.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="56">
-          <caret line="2" column="37" lean-forward="true" selection-start-line="2" selection-start-column="37" selection-end-line="2" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/ArgumentTest.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="812">
@@ -975,11 +858,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/FieldTest.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="453">
+        <state relative-caret-position="173">
           <caret line="29" column="48" lean-forward="false" selection-start-line="29" selection-start-column="48" selection-end-line="29" selection-end-column="48" />
           <folding>
             <element signature="e#59#115#0#PHP" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Language/AST/NodeTrait.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="56">
+          <caret line="2" column="37" lean-forward="true" selection-start-line="2" selection-start-column="37" selection-end-line="2" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="19" lean-forward="false" selection-start-line="0" selection-start-column="19" selection-end-line="0" selection-end-column="19" />
+          <folding />
         </state>
       </provider>
     </entry>
