@@ -22,10 +22,13 @@ trait NameTrait
 
     /**
      * @param string $name
+     * @return $this
      */
-    protected function setName(string $name): void
+    protected function setName(string $name)
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**

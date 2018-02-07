@@ -84,9 +84,26 @@ class EnumTypeTest extends AbstractTypeTestCase
     /**
      * @throws \Exception
      */
+    public function testSerializeWithInvalidValue()
+    {
+        $this->assertNull($this->type->serialize(42));
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function testParseValue()
     {
         $this->assertEquals(1, $this->type->parseValue('GREEN'));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testParseWithNonString()
+    {
+        $this->assertNull($this->type->parseValue(42));
+        $this->assertNull($this->type->parseValue('PURPLE'));
     }
 
     // TODO: Test parseLiteral when it's implemented

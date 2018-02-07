@@ -6,17 +6,26 @@ use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\IntType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
 
-class IntTypeTest extends TestCase
+/**
+ * Class IntTypeTest
+ *
+ * @package Digia\GraphQL\Test\Unit\Type\Definition
+ * @property IntType $type
+ */
+class IntTypeTest extends AbstractTypeTestCase
 {
+
+    public function setUp()
+    {
+        $this->type = new IntType();
+    }
 
     /**
      * @throws \Exception
      */
     public function testGetName()
     {
-        $type = new IntType();
-
-        $this->assertEquals(TypeEnum::INT, $type->getName());
+        $this->assertEquals(TypeEnum::INT, $this->type->getName());
     }
 
     /**
@@ -25,9 +34,7 @@ class IntTypeTest extends TestCase
      */
     public function testSerializeValidValues($value, $expected)
     {
-        $type = new IntType();
-
-        $this->assertEquals($expected, $type->serialize($value));
+        $this->assertEquals($expected, $this->type->serialize($value));
     }
 
     /**
@@ -37,11 +44,31 @@ class IntTypeTest extends TestCase
      */
     public function testSerializeInvalidValues($value)
     {
-        $type = new IntType();
-
-        $type->serialize($value);
+        $this->type->serialize($value);
     }
 
+    /**
+     * @throws \Exception
+     * @dataProvider validValuesProvider
+     */
+    public function testParseValidValues($value, $expected)
+    {
+        $this->assertEquals($expected, $this->type->parseValue($value));
+    }
+
+    /**
+     * @throws \Exception
+     * @dataProvider invalidValuesProvider
+     * @expectedException \TypeError
+     */
+    public function testParseInvalidValues($value)
+    {
+        $this->type->parseValue($value);
+    }
+
+    /**
+     * @return array
+     */
     public function validValuesProvider(): array
     {
         return [
@@ -50,11 +77,17 @@ class IntTypeTest extends TestCase
         ];
     }
 
+    /**
+     * @return array
+     */
     public function invalidValuesProvider(): array
     {
         return [
-            'float value'   => [42.5],
-            'null value'    => [null],
+            'too small value'    => [-2147483649],
+            'too large value'    => [2147483649],
+            'float value'        => [42.5],
+            'null value'         => [null],
+            'empty string value' => [''],
         ];
     }
 }

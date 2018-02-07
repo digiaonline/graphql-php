@@ -9,13 +9,13 @@ class ConfigTraitTest extends TestCase
 {
 
     /**
-     * @var Dummy
+     * @var ConfigClass
      */
-    protected $dummy;
+    protected $instance;
 
     public function setUp()
     {
-        $this->dummy = new Dummy([
+        $this->instance = new ConfigClass([
             'foo' => 'hello',
             'bar' => 42,
         ]);
@@ -26,21 +26,21 @@ class ConfigTraitTest extends TestCase
      */
     public function testConstructor()
     {
-        $config = $this->dummy->getConfig();
+        $config = $this->instance->getConfig();
 
         $this->assertEquals('hello', $config['foo']);
         $this->assertEquals(42, $config['bar']);
     }
 }
 
-class Dummy
+class ConfigClass
 {
+
+    use ConfigTrait;
 
     public $foo;
 
     public $bar;
-
-    use ConfigTrait;
 
     protected function configure(): array
     {

@@ -76,6 +76,14 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     }
 
     /**
+     * @return null|callable
+     */
+    public function getIsTypeOf(): ?callable
+    {
+        return $this->isTypeOf;
+    }
+
+    /**
      * @param InterfaceType $interface
      * @return $this
      */
@@ -90,20 +98,33 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
      * @param array $interfaces
      * @return $this
      */
-    protected function setInterfaces(array $interfaces)
+    protected function addInterfaces(array $interfaces)
     {
-        foreach ($interfaces as $config) {
-            $this->addInterface(new InterfaceType($config));
+        foreach ($interfaces as $interface) {
+            $this->addInterface($interface);
         }
 
         return $this;
     }
 
     /**
-     * @param callable $isTypeOf
+     * @param array $interfaces
      * @return $this
      */
-    protected function setIsTypeOf(callable $isTypeOf)
+    protected function setInterfaces(array $interfaces)
+    {
+        $this->addInterfaces(array_map(function ($config) {
+            return new InterfaceType($config);
+        }, $interfaces));
+
+        return $this;
+    }
+
+    /**
+     * @param null|callable $isTypeOf
+     * @return $this
+     */
+    protected function setIsTypeOf(?callable $isTypeOf)
     {
         $this->isTypeOf = $isTypeOf;
 

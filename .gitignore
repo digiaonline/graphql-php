@@ -1,3 +1,4 @@
 /.idea/dictionaries
 /vendor/
+/coverage/
 composer.lock

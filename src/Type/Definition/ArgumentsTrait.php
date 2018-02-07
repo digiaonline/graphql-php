@@ -30,14 +30,27 @@ trait ArgumentsTrait
     }
 
     /**
+     * @param array $arguments
+     * @return $this
+     */
+    protected function addArguments(array $arguments)
+    {
+        foreach ($arguments as $argument) {
+            $this->addArgument($argument);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param Argument[] $arguments
      * @return $this
      */
     protected function setArguments(array $arguments)
     {
-        foreach ($arguments as $config) {
-            $this->addArgument(new Argument($config));
-        }
+        $this->addArguments(array_map(function ($config) {
+            return new Argument($config);
+        }, $arguments));
 
         return $this;
     }

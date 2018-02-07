@@ -30,14 +30,27 @@ trait FieldsTrait
     }
 
     /**
+     * @param array $fields
+     * @return $this
+     */
+    protected function addFields(array $fields)
+    {
+        foreach ($fields as $field) {
+            $this->addField($field);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param Field[] $fields
      * @return $this
      */
     protected function setFields(array $fields)
     {
-        foreach ($fields as $config) {
-            $this->addField(new Field($config));
-        }
+        $this->addFields(array_map(function ($config) {
+            return new Field($config);
+        }, $fields));
 
         return $this;
     }

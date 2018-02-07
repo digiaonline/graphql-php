@@ -11,6 +11,7 @@ use Digia\GraphQL\Language\AST\Node\ScalarTypeDefinitionNode;
  *
  * @package Digia\GraphQL\Type\Definition
  * @property ScalarTypeDefinitionNode $astNode
+ * @codeCoverageIgnore
  */
 abstract class AbstractScalarType implements TypeInterface, LeafTypeInterface, NamedTypeInterface, InputTypeInterface, OutputTypeInterface, TransformInterface
 {

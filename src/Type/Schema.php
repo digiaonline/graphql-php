@@ -2,13 +2,14 @@
 
 namespace Digia\GraphQL;
 
-use Digia\GraphQL\TypeSystem\AbstractDirective;
-use Digia\GraphQL\TypeSystem\Definition\ObjectType;
+use Digia\GraphQL\Language\AST\Node\NodeTrait;
+use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Directive\DirectiveInterface;
 
 class Schema
 {
 
-    use ASTNodeTrait;
+    use NodeTrait;
 
     /**
      * @var ObjectType
@@ -21,7 +22,7 @@ class Schema
     private $mutationType;
 
     /**
-     * @var AbstractDirective[]
+     * @var DirectiveInterface[]
      */
     private $directives = [];
 
@@ -30,9 +31,4 @@ class Schema
     private $implementations = [];
 
     private $possibleTypeMap = [];
-
-    protected function validate()
-    {
-
-    }
 }

@@ -6,17 +6,26 @@ use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\BooleanType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
 
-class BooleanTypeTest extends TestCase
+/**
+ * Class BooleanTypeTest
+ *
+ * @package Digia\GraphQL\Test\Unit\Type\Definition
+ * @property BooleanType $type
+ */
+class BooleanTypeTest extends AbstractTypeTestCase
 {
+
+    public function setUp()
+    {
+        $this->type = new BooleanType();
+    }
 
     /**
      * @throws \Exception
      */
     public function testGetName()
     {
-        $type = new BooleanType();
-
-        $this->assertEquals(TypeEnum::BOOLEAN, $type->getName());
+        $this->assertEquals(TypeEnum::BOOLEAN, $this->type->getName());
     }
 
     /**
@@ -25,9 +34,7 @@ class BooleanTypeTest extends TestCase
      */
     public function testSerializeWithValidValues($value, $expected)
     {
-        $type = new BooleanType();
-
-        $this->assertEquals($expected, $type->serialize($value));
+        $this->assertEquals($expected, $this->type->serialize($value));
     }
 
     /**
@@ -37,9 +44,7 @@ class BooleanTypeTest extends TestCase
      */
     public function testSerializeWithInvalidValues($value)
     {
-        $type = new BooleanType();
-
-        $type->serialize($value);
+        $this->type->serialize($value);
     }
 
     /**
@@ -48,9 +53,7 @@ class BooleanTypeTest extends TestCase
      */
     public function testParseValueWithValidValues($value, $expected)
     {
-        $type = new BooleanType();
-
-        $this->assertEquals($expected, $type->parseValue($value));
+        $this->assertEquals($expected, $this->type->parseValue($value));
     }
 
     /**
@@ -60,11 +63,12 @@ class BooleanTypeTest extends TestCase
      */
     public function testParseValueWithInvalidValues($value)
     {
-        $type = new BooleanType();
-
-        $type->parseValue($value);
+        $this->type->parseValue($value);
     }
 
+    /**
+     * @return array
+     */
     public function validValuesProvider(): array
     {
         return [
@@ -76,10 +80,14 @@ class BooleanTypeTest extends TestCase
         ];
     }
 
+    /**
+     * @return array
+     */
     public function invalidValuesProvider(): array
     {
         return [
-            'null value'   => [null],
+            'null value'         => [null],
+            'empty string value' => [''],
         ];
     }
 }

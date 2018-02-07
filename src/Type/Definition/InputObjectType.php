@@ -60,14 +60,27 @@ class InputObjectType implements TypeInterface, InputTypeInterface
     }
 
     /**
+     * @param array $fields
+     * @return $this
+     */
+    protected function addFields(array $fields)
+    {
+        foreach ($fields as $field) {
+            $this->addField($field);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param InputField[] $fields
      * @return $this
      */
     protected function setFields(array $fields)
     {
-        foreach ($fields as $config) {
-            $this->addField(new InputField($config));
-        }
+        $this->addFields(array_map(function ($config) {
+            return new InputField($config);
+        }, $fields));
 
         return $this;
     }

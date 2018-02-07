@@ -6,17 +6,26 @@ use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\StringType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
 
-class StringTypeTest extends TestCase
+/**
+ * Class StringTypeTest
+ *
+ * @package Digia\GraphQL\Test\Unit\Type\Definition
+ * @property StringType $type
+ */
+class StringTypeTest extends AbstractTypeTestCase
 {
+
+    public function setUp()
+    {
+        $this->type = new StringType();
+    }
 
     /**
      * @throws \Exception
      */
     public function testGetName()
     {
-        $type = new StringType();
-
-        $this->assertEquals(TypeEnum::STRING, $type->getName());
+        $this->assertEquals(TypeEnum::STRING, $this->type->getName());
     }
 
     /**
@@ -25,9 +34,7 @@ class StringTypeTest extends TestCase
      */
     public function testSerializeValidValues($value, $expected)
     {
-        $type = new StringType();
-
-        $this->assertEquals($expected, $type->serialize($value));
+        $this->assertEquals($expected, $this->type->serialize($value));
     }
 
     /**
@@ -37,11 +44,31 @@ class StringTypeTest extends TestCase
      */
     public function testSerializeInvalidValues($value)
     {
-        $type = new StringType();
-
-        $type->serialize($value);
+        $this->type->serialize($value);
     }
 
+    /**
+     * @throws \Exception
+     * @dataProvider validValuesProvider
+     */
+    public function testParseValidValues($value, $expected)
+    {
+        $this->assertEquals($expected, $this->type->parseValue($value));
+    }
+
+    /**
+     * @throws \Exception
+     * @dataProvider invalidValuesProvider
+     * @expectedException \TypeError
+     */
+    public function testParseInvalidValues($value)
+    {
+        $this->type->parseValue($value);
+    }
+
+    /**
+     * @return array
+     */
     public function validValuesProvider(): array
     {
         return [
@@ -54,6 +81,9 @@ class StringTypeTest extends TestCase
         ];
     }
 
+    /**
+     * @return array
+     */
     public function invalidValuesProvider(): array
     {
         return [

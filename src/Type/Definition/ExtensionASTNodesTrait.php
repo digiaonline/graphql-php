@@ -3,25 +3,37 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\ObjectTypeExtensionNode;
 
 trait ExtensionASTNodesTrait
 {
 
     /**
-     * @var NodeInterface[]
+     * @var ObjectTypeExtensionNode[]
      */
     private $extensionAstNodes = [];
 
     /**
-     * @param NodeInterface $astNode
+     * @return ObjectTypeExtensionNode[]
      */
-    protected function addExtensionASTNode(NodeInterface $astNode): void
+    public function getExtensionAstNodes(): array
     {
-        $this->extensionAstNodes[] = $astNode;
+        return $this->extensionAstNodes;
     }
 
     /**
-     * @param NodeInterface[] $extensionAstNodes
+     * @param ObjectTypeExtensionNode $astNode
+     * @return $this
+     */
+    protected function addExtensionASTNode(ObjectTypeExtensionNode $astNode)
+    {
+        $this->extensionAstNodes[] = $astNode;
+
+        return $this;
+    }
+
+    /**
+     * @param ObjectTypeExtensionNode[] $extensionAstNodes
      * @return $this
      */
     protected function setExtensionAstNodes(array $extensionAstNodes)
