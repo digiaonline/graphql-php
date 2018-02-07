@@ -2,12 +2,8 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
-use function Digia\GraphQL\Util\instantiateIfNecessary;
-use Digia\GraphQL\Util\Util;
 
 /**
  * Object Type Definition
