@@ -2,18 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0d30cb28-d2a6-4257-86f2-ab0c4a112501" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Language/AST/Node/UnionTypeDefinitionNode.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Type/Definition/ResolveTypeTrait.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/UnionTypeTest.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/DeprecationReasonTrait.php" afterPath="$PROJECT_DIR$/src/Type/Definition/DeprecationTrait.php" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/Language/AST/Node/InterfaceTypeDefinitionNode.php" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/Type/Definition/ExtensionASTNodesTrait.php" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/Type/Definition/FieldsTrait.php" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/InterfaceTypeTest.php" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/src/Type/Definition/EnumType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/EnumType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/EnumValue.php" afterPath="$PROJECT_DIR$/src/Type/Definition/EnumValue.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/Field.php" afterPath="$PROJECT_DIR$/src/Type/Definition/Field.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/IsDeprecatedTrait.php" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/NameTrait.php" afterPath="$PROJECT_DIR$/src/Type/Definition/NameTrait.php" />
+      <change beforePath="$PROJECT_DIR$/src/Type/Definition/InterfaceType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/InterfaceType.php" />
       <change beforePath="$PROJECT_DIR$/src/Type/Definition/ObjectType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/ObjectType.php" />
-      <change beforePath="$PROJECT_DIR$/src/Type/Definition/UnionType.php" afterPath="$PROJECT_DIR$/src/Type/Definition/UnionType.php" />
-      <change beforePath="$PROJECT_DIR$/tests/Unit/Type/Definition/EnumTypeTest.php" afterPath="$PROJECT_DIR$/tests/Unit/Type/Definition/EnumTypeTest.php" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -27,23 +23,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="EnumType.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Type/Definition/EnumType.php">
+      <file leaf-file-name="InterfaceType.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Type/Definition/InterfaceType.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2759">
-              <caret line="142" column="8" lean-forward="false" selection-start-line="142" selection-start-column="8" selection-end-line="142" selection-end-column="8" />
-              <folding>
-                <element signature="e#49#97#0#PHP" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EnumValue.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Type/Definition/EnumValue.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="468">
-              <caret line="20" column="21" lean-forward="true" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
+            <state relative-caret-position="401">
+              <caret line="22" column="10" lean-forward="true" selection-start-line="17" selection-start-column="7" selection-end-line="22" selection-end-column="10" />
               <folding>
                 <element signature="e#49#93#0#PHP" expanded="true" />
               </folding>
@@ -51,26 +35,34 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UnionType.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Type/Definition/UnionType.php">
+      <file leaf-file-name="InterfaceTypeTest.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/InterfaceTypeTest.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
-              <caret line="53" column="30" lean-forward="true" selection-start-line="53" selection-start-column="30" selection-end-line="53" selection-end-column="30" />
+            <state relative-caret-position="485">
+              <caret line="42" column="30" lean-forward="false" selection-start-line="42" selection-start-column="30" selection-end-line="42" selection-end-column="30" />
               <folding>
-                <element signature="e#49#93#0#PHP" expanded="true" />
+                <element signature="e#59#99#0#PHP" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UnionTypeTest.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/UnionTypeTest.php">
+      <file leaf-file-name="ObjectType.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Type/Definition/ObjectType.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-242">
-              <caret line="36" column="0" lean-forward="true" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-              <folding>
-                <element signature="e#59#104#0#PHP" expanded="true" />
-              </folding>
+            <state relative-caret-position="159">
+              <caret line="53" column="20" lean-forward="false" selection-start-line="53" selection-start-column="20" selection-end-line="53" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FieldsTrait.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Type/Definition/FieldsTrait.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="770">
+              <caret line="33" column="38" lean-forward="true" selection-start-line="33" selection-start-column="38" selection-end-line="33" selection-end-column="38" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -131,10 +123,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/Type/Definition/IntType.php" />
-        <option value="$PROJECT_DIR$/src/Type/Definition/FloatType.php" />
-        <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/FloatTypeTest.php" />
-        <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/IntTypeTest.php" />
         <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/ListTypeTest.php" />
         <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/NonNullTypeTest.php" />
         <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/StringTypeTest.php" />
@@ -169,19 +157,23 @@
         <option value="$PROJECT_DIR$/src/Type/Definition/ConfigTrait.php" />
         <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/ObjectTypeTest.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/ValueTrait.php" />
-        <option value="$PROJECT_DIR$/src/Type/Definition/InterfaceType.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/DeprecationReasonTrait.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/DeprecationTrait.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/EnumValue.php" />
-        <option value="$PROJECT_DIR$/src/Type/Definition/EnumType.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/Field.php" />
         <option value="$PROJECT_DIR$/src/Language/AST/Node/UnionTypeDefinitionNode.php" />
         <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/EnumTypeTest.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/ResolveTypeTrait.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/UnionType.php" />
-        <option value="$PROJECT_DIR$/src/Type/Definition/ObjectType.php" />
         <option value="$PROJECT_DIR$/src/Type/Definition/NameTrait.php" />
         <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/UnionTypeTest.php" />
+        <option value="$PROJECT_DIR$/src/Type/Definition/ExtensionASTNodesTrait.php" />
+        <option value="$PROJECT_DIR$/src/Type/Definition/FieldsTrait.php" />
+        <option value="$PROJECT_DIR$/src/Type/Definition/EnumType.php" />
+        <option value="$PROJECT_DIR$/src/Type/Definition/ObjectType.php" />
+        <option value="$PROJECT_DIR$/src/Language/AST/Node/InterfaceTypeDefinitionNode.php" />
+        <option value="$PROJECT_DIR$/src/Type/Definition/InterfaceType.php" />
+        <option value="$PROJECT_DIR$/tests/Unit/Type/Definition/InterfaceTypeTest.php" />
       </list>
     </option>
   </component>
@@ -386,12 +378,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1517941770170</updated>
-      <workItem from="1517941771497" duration="43752000" />
+      <workItem from="1517941771497" duration="44409000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="43752000" />
+    <option name="totallyTimeSpent" value="44409000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="6" />
@@ -437,38 +429,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/IntTypeTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="792">
-          <caret line="35" column="36" lean-forward="false" selection-start-line="35" selection-start-column="36" selection-end-line="35" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/composer.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="30" column="10" lean-forward="false" selection-start-line="30" selection-start-column="10" selection-end-line="30" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/BooleanTypeTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1488">
-          <caret line="64" column="34" lean-forward="true" selection-start-line="64" selection-start-column="34" selection-end-line="64" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/StringTypeTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="792">
-          <caret line="35" column="36" lean-forward="false" selection-start-line="35" selection-start-column="36" selection-end-line="35" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Type/Definition/ScalarTypeInterface.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
@@ -703,14 +663,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Type/Definition/InterfaceType.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="9" column="20" lean-forward="true" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Type/Definition/ValueTrait.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="312">
@@ -743,14 +695,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Type/Definition/InputTypeInterface.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="4" column="12" lean-forward="false" selection-start-line="4" selection-start-column="12" selection-end-line="4" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Type/Definition/IsDeprecatedTrait.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
@@ -772,26 +716,6 @@
         <state relative-caret-position="312">
           <caret line="13" column="20" lean-forward="true" selection-start-line="13" selection-start-column="20" selection-end-line="13" selection-end-column="20" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Type/Definition/EnumType.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2759">
-          <caret line="142" column="8" lean-forward="false" selection-start-line="142" selection-start-column="8" selection-end-line="142" selection-end-column="8" />
-          <folding>
-            <element signature="e#49#97#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Type/Definition/EnumValue.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="20" column="21" lean-forward="true" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
-          <folding>
-            <element signature="e#49#93#0#PHP" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -827,6 +751,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Type/Definition/NameTrait.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="5" column="1" lean-forward="false" selection-start-line="5" selection-start-column="1" selection-end-line="5" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Type/Definition/InputTypeInterface.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="4" column="12" lean-forward="false" selection-start-line="4" selection-start-column="12" selection-end-line="4" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Type/Definition/UnionType.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="197">
@@ -837,28 +777,84 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Type/Definition/NameTrait.php">
+    <entry file="file://$PROJECT_DIR$/src/Type/Definition/EnumValue.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="5" column="1" lean-forward="false" selection-start-line="5" selection-start-column="1" selection-end-line="5" selection-end-column="1" />
+        <state relative-caret-position="468">
+          <caret line="20" column="21" lean-forward="true" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
+          <folding>
+            <element signature="e#49#93#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Type/Definition/ExtensionASTNodesTrait.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="27" column="31" lean-forward="false" selection-start-line="27" selection-start-column="31" selection-end-line="27" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Type/Definition/EnumType.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="155" column="35" lean-forward="false" selection-start-line="155" selection-start-column="35" selection-end-line="155" selection-end-column="35" />
+          <folding>
+            <element signature="e#49#97#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Type/Definition/FieldsTrait.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="770">
+          <caret line="33" column="38" lean-forward="true" selection-start-line="33" selection-start-column="38" selection-end-line="33" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Type/Definition/ObjectType.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="145">
-          <caret line="51" column="11" lean-forward="false" selection-start-line="51" selection-start-column="11" selection-end-line="51" selection-end-column="11" />
+        <state relative-caret-position="159">
+          <caret line="53" column="20" lean-forward="false" selection-start-line="53" selection-start-column="20" selection-end-line="53" selection-end-column="20" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Language/AST/Node/InterfaceTypeDefinitionNode.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="4" column="33" lean-forward="false" selection-start-line="4" selection-start-column="33" selection-end-line="4" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Type/Definition/InterfaceType.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="401">
+          <caret line="22" column="10" lean-forward="true" selection-start-line="17" selection-start-column="7" selection-end-line="22" selection-end-column="10" />
+          <folding>
+            <element signature="e#49#93#0#PHP" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/UnionTypeTest.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-242">
-          <caret line="36" column="0" lean-forward="true" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+        <state relative-caret-position="552">
+          <caret line="58" column="73" lean-forward="false" selection-start-line="56" selection-start-column="8" selection-end-line="58" selection-end-column="73" />
           <folding>
             <element signature="e#59#104#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Unit/Type/Definition/InterfaceTypeTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="485">
+          <caret line="42" column="30" lean-forward="false" selection-start-line="42" selection-start-column="30" selection-end-line="42" selection-end-column="30" />
+          <folding>
+            <element signature="e#59#99#0#PHP" expanded="true" />
           </folding>
         </state>
       </provider>

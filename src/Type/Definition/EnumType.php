@@ -153,8 +153,8 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
      */
     protected function setValues(array $values): void
     {
-        array_map(function ($properties) {
-            $this->addValue(new EnumValue($properties));
+        array_map(function ($config) {
+            $this->addValue(new EnumValue($config));
         }, $values);
     }
 }

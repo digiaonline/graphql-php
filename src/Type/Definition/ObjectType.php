@@ -44,21 +44,18 @@ use Digia\GraphQL\Util\Util;
  * Class ObjectType
  *
  * @package Digia\GraphQL\Type\Definition
- *
  * @property ObjectTypeDefinitionNode $astNode
  */
 class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInterface, OutputTypeInterface
 {
+
     use NameTrait;
     use DescriptionTrait;
+    use FieldsTrait;
     use ResolveTrait;
     use ASTNodeTrait;
+    use ExtensionASTNodesTrait;
     use ConfigTrait;
-
-    /**
-     * @var Field[]
-     */
-    private $fields = [];
 
     /**
      * @var InterfaceType[]
@@ -66,22 +63,9 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     private $interfaces = [];
 
     /**
-     * @var ASTNodeInterface[]
-     */
-    private $extensionAstNodes = [];
-
-    /**
      * @var callable
      */
     private $isTypeOf;
-
-    /**
-     * @return Field[]
-     */
-    public function getFields(): array
-    {
-        return $this->fields;
-    }
 
     /**
      * @return InterfaceType[]
@@ -92,37 +76,11 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     }
 
     /**
-     * @param Field $field
-     */
-    protected function addField(Field $field): void
-    {
-        $this->fields[] = $field;
-    }
-
-    /**
      * @param InterfaceType $interface
      */
     protected function addInterface(InterfaceType $interface): void
     {
         $this->interfaces[] = $interface;
-    }
-
-    /**
-     * @param ASTNodeInterface $astNode
-     */
-    protected function addExtensionASTNode(ASTNodeInterface $astNode): void
-    {
-        $this->extensionAstNodes[] = $astNode;
-    }
-
-    /**
-     * @param array $fields
-     */
-    protected function setFields(array $fields): void
-    {
-        array_map(function ($field) {
-            $this->addField(instantiateIfNecessary(Field::class, $field));
-        }, $fields);
     }
 
     /**
@@ -136,19 +94,9 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     }
 
     /**
-     * @param ASTNodeInterface[] $extensionAstNodes
-     */
-    public function setExtensionAstNodes(array $extensionAstNodes): void
-    {
-        array_map(function ($astNode) {
-            $this->addExtensionASTNode($astNode);
-        }, $extensionAstNodes);
-    }
-
-    /**
      * @param callable $isTypeOf
      */
-    public function setIsTypeOf(callable $isTypeOf): void
+    protected function setIsTypeOf(callable $isTypeOf): void
     {
         $this->isTypeOf = $isTypeOf;
     }
