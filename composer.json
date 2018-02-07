@@ -1,0 +1,36 @@
+{
+    "name": "digiaonline/graphql",
+    "description": "",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christoffer Niska",
+            "email": "christofferniska@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "files": [
+            "./src/Type/functions.php",
+            "./src/Util/functions.php"
+        ],
+        "psr-4": {
+            "Digia\\GraphQL\\": "./src"
+        }
+    },
+    "autoload-dev": {
+        "files": [
+            "./src/Type/functions.php",
+            "./src/Util/functions.php"
+        ],
+        "psr-4": {
+            "Digia\\GraphQL\\Test\\": "./tests"
+        }
+    }
+}
