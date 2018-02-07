@@ -13,7 +13,7 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
  * @package Digia\GraphQL\Test\Unit\Type\Definition
  * @property InterfaceType $type
  */
-class InterfaceTypeTest extends TypeTestCase
+class InterfaceAbstractTypeTest extends AbstractTypeTestCase
 {
 
     protected function setUp()

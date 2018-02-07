@@ -13,7 +13,7 @@ use Digia\GraphQL\Type\Definition\NonNullType;
  * @package Digia\GraphQL\Test\Unit\Type\Definition
  * @property InputObjectType $type
  */
-class InputObjectTypeTest extends TypeTestCase
+class InputObjectAbstractTypeTest extends AbstractTypeTestCase
 {
 
     /**

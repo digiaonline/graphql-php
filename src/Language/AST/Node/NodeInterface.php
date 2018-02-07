@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Language\AST;
+namespace Digia\GraphQL\Language\AST\Node;
 
 interface ASTNodeInterface
 {

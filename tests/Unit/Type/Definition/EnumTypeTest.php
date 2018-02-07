@@ -11,7 +11,7 @@ use Digia\GraphQL\Type\Definition\EnumValue;
  * @package Digia\GraphQL\Test\Unit\Type\Definition
  * @property EnumType $type
  */
-class EnumTypeTest extends TypeTestCase
+class EnumAbstractTypeTest extends AbstractTypeTestCase
 {
 
     protected function setUp()

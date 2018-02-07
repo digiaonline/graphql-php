@@ -16,7 +16,7 @@ use Digia\GraphQL\Type\Definition\StringType;
  * @package Digia\GraphQL\Test\Unit\Type\Definition
  * @property ObjectType $type
  */
-class ObjectTypeTest extends TypeTestCase
+class ObjectAbstractTypeTest extends AbstractTypeTestCase
 {
 
     protected function setUp()
