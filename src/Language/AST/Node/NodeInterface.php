@@ -2,13 +2,13 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-interface ASTNodeInterface
+interface NodeInterface
 {
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getKind(): string;
+    public function getKind(): ?string;
 
     /**
      * @return mixed

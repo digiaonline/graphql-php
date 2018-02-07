@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\Language\AST\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
 
 /**
@@ -18,6 +18,6 @@ class InputField
     use DescriptionTrait;
     use TypeTrait;
     use DefaultValueTrait;
-    use ASTNodeTrait;
+    use NodeTrait;
     use ConfigTrait;
 }

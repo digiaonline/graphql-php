@@ -1,17 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: chris
- * Date: 07/02/2018
- * Time: 10.36
- */
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 
-interface ParseInterface
+interface TransformInterface
 {
+
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    public function serialize($value);
 
     /**
      * @param $value
@@ -20,9 +20,9 @@ interface ParseInterface
     public function parseValue($value);
 
     /**
-     * @param ASTNodeInterface $astNode
-     * @param array            ...$args
+     * @param NodeInterface $astNode
+     * @param array         ...$args
      * @return mixed
      */
-    public function parseLiteral(ASTNodeInterface $astNode, ...$args);
+    public function parseLiteral(NodeInterface $astNode, ...$args);
 }

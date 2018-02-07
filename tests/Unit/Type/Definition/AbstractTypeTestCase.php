@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Test\Unit\Type\Definition;
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
-class TypeTestCase extends TestCase
+abstract class AbstractTypeTestCase extends TestCase
 {
 
     /**

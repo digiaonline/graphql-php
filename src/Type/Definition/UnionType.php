@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\Language\AST\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
 
 
@@ -42,7 +42,7 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     use NameTrait;
     use DescriptionTrait;
     use ResolveTypeTrait;
-    use ASTNodeTrait;
+    use NodeTrait;
     use ConfigTrait;
 
     /**

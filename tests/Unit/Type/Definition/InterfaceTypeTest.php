@@ -2,10 +2,10 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
+use Digia\GraphQL\Language\AST\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\StringType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 
 /**
  * Class UnionTypeTest
@@ -13,7 +13,7 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
  * @package Digia\GraphQL\Test\Unit\Type\Definition
  * @property InterfaceType $type
  */
-class InterfaceAbstractTypeTest extends AbstractTypeTestCase
+class InterfaceTypeTest extends AbstractTypeTestCase
 {
 
     protected function setUp()
@@ -27,7 +27,7 @@ class InterfaceAbstractTypeTest extends AbstractTypeTestCase
                     'type' => new StringType(),
                 ],
             ],
-            'astNode'     => null,
+            'astNode'     => new InterfaceTypeDefinitionNode(),
         ];
 
         $this->type = new InterfaceType($this->config);
@@ -36,12 +36,12 @@ class InterfaceAbstractTypeTest extends AbstractTypeTestCase
     /**
      * @throws \Exception
      */
-    public function testConstructor()
+    public function testConfig()
     {
         $this->assertEquals($this->config['name'], $this->type->getName());
         $this->assertEquals($this->config['description'], $this->type->getDescription());
-        $this->assertEquals($this->config['astNode'], $this->type->getAstNode());
         $this->assertEquals($this->config, $this->type->getConfig());
+        $this->assertInstanceOf(InterfaceTypeDefinitionNode::class, $this->type->getAstNode());
     }
 
     /**

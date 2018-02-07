@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
+use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
@@ -12,7 +13,7 @@ use Digia\GraphQL\Type\Definition\UnionType;
  * @package Digia\GraphQL\Test\Unit\Type\Definition
  * @property UnionType $type
  */
-class UnionTypeTest extends TypeTestCase
+class UnionTypeTest extends AbstractTypeTestCase
 {
 
     protected function setUp()
@@ -29,7 +30,7 @@ class UnionTypeTest extends TypeTestCase
                     return new CatType();
                 }
             },
-            'astNode'     => null,
+            'astNode'     => new UnionTypeDefinitionNode(),
         ];
 
         $this->type = new UnionType($this->config);
@@ -38,13 +39,13 @@ class UnionTypeTest extends TypeTestCase
     /**
      * @throws \Exception
      */
-    public function testConstructor()
+    public function testConfig()
     {
         $this->assertEquals($this->config['name'], $this->type->getName());
         $this->assertEquals($this->config['description'], $this->type->getDescription());
-        $this->assertEquals($this->config['astNode'], $this->type->getAstNode());
         $this->assertEquals($this->config['resolveType'], $this->type->getResolveType());
         $this->assertEquals($this->config, $this->type->getConfig());
+        $this->assertInstanceOf(UnionTypeDefinitionNode::class, $this->type->getAstNode());
     }
 
     /**

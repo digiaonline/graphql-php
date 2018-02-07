@@ -17,19 +17,11 @@ trait ConfigTrait
      */
     public function __construct(array $config = [])
     {
-        $config = array_merge_recursive($this->configure(), $config);
+        $config = array_merge($this->configure(), $config);
 
         $this->applyConfig($config);
 
         $this->setConfig($config);
-    }
-
-    /**
-     * @return array
-     */
-    public function configure(): array
-    {
-        return [];
     }
 
     /**
@@ -41,12 +33,20 @@ trait ConfigTrait
     }
 
     /**
+     * @return array
+     */
+    protected function configure(): array
+    {
+        return [];
+    }
+
+    /**
      * @param string $key
      * @return mixed
      */
     protected function getConfigValue(string $key)
     {
-        return $this->hasConfigValue($key) ? $this->config[$key] : null;
+        return $this->config[$key] ?? null;
     }
 
     /**

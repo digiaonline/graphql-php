@@ -2,26 +2,28 @@
 
 namespace Digia\GraphQL\Language\AST;
 
-trait ASTNodeTrait
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+
+trait NodeTrait
 {
 
     /**
-     * @var ?ASTNodeInterface
+     * @var ?NodeInterface
      */
     protected $astNode;
 
     /**
-     * @return ASTNodeInterface|null
+     * @return NodeInterface|null
      */
-    public function getAstNode(): ?ASTNodeInterface
+    public function getAstNode(): ?NodeInterface
     {
         return $this->astNode;
     }
 
     /**
-     * @param ASTNodeInterface|null $astNode
+     * @param NodeInterface|null $astNode
      */
-    protected function setAstNode(?ASTNodeInterface $astNode): void
+    protected function setAstNode(?NodeInterface $astNode): void
     {
         $this->astNode = $astNode;
     }

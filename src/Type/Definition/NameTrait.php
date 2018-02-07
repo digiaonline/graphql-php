@@ -10,7 +10,7 @@ trait NameTrait
     /**
      * @var ?string
      */
-    protected $name;
+    private $name;
 
     /**
      * @return string|null

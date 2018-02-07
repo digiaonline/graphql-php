@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use function Digia\GraphQL\Util\instantiateIfNecessary;
-
 trait ArgumentsTrait
 {
 
@@ -11,6 +9,14 @@ trait ArgumentsTrait
      * @var Argument[]
      */
     private $arguments = [];
+
+    /**
+     * @return Argument[]
+     */
+    public function getArguments(): array
+    {
+        return $this->arguments;
+    }
 
     /**
      * @param Argument $argument
@@ -25,8 +31,8 @@ trait ArgumentsTrait
      */
     protected function setArguments(array $arguments): void
     {
-        $this->arguments = array_map(function ($argument) {
-            $this->addArgument(instantiateIfNecessary(Argument::class, $argument));
+        $this->arguments = array_map(function ($config) {
+            $this->addArgument(new Argument($config));
         }, $arguments);
     }
 }

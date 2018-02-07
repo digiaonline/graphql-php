@@ -36,7 +36,7 @@ trait DeprecationTrait
      */
     protected function setDeprecationReason(?string $deprecationReason): void
     {
-        if (!$deprecationReason) {
+        if ($deprecationReason) {
             $this->isDeprecated = true;
         }
 

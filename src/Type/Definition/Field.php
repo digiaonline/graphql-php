@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use Digia\GraphQL\Language\AST\NodeTrait;
+
 class Field
 {
 
@@ -11,5 +13,6 @@ class Field
     use ArgumentsTrait;
     use DeprecationTrait;
     use ResolveTrait;
+    use NodeTrait;
     use ConfigTrait;
 }

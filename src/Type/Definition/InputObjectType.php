@@ -18,7 +18,7 @@ namespace Digia\GraphQL\Type\Definition;
  *     });
  */
 
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\Language\AST\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
 
 /**
@@ -32,7 +32,7 @@ class InputObjectType implements TypeInterface, InputTypeInterface
 
     use NameTrait;
     use DescriptionTrait;
-    use ASTNodeTrait;
+    use NodeTrait;
     use ConfigTrait;
 
     /**

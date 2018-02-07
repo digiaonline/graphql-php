@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\Language\AST\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\InterfaceTypeDefinitionNode;
 
 /**
@@ -36,7 +36,7 @@ class InterfaceType implements AbstractTypeInterface, CompositeTypeInterface, Na
     use NameTrait;
     use DescriptionTrait;
     use FieldsTrait;
-    use ASTNodeTrait;
+    use NodeTrait;
     use ExtensionASTNodesTrait;
     use ResolveTypeTrait;
     use ConfigTrait;

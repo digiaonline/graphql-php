@@ -8,7 +8,7 @@ trait DescriptionTrait
     /**
      * @var ?string
      */
-    protected $description;
+    private $description;
 
     /**
      * @return null|string

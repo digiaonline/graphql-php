@@ -2,21 +2,22 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\KindEnum;
 
 class BooleanType extends AbstractScalarType
 {
 
     /**
-     * @var string
+     * @inheritdoc
      */
-    protected $name = TypeEnum::BOOLEAN;
-
-    /**
-     * @var string
-     */
-    protected $description = 'The `Boolean` scalar type represents `true` or `false`.';
+    protected function configure(): array
+    {
+        return [
+            'name'        => TypeEnum::BOOLEAN,
+            'description' => 'The `Boolean` scalar type represents `true` or `false`.',
+        ];
+    }
 
     /**
      * @inheritdoc
@@ -37,7 +38,7 @@ class BooleanType extends AbstractScalarType
     /**
      * @inheritdoc
      */
-    public function parseLiteral(ASTNodeInterface $astNode, ...$args)
+    public function parseLiteral(NodeInterface $astNode, ...$args)
     {
         return $astNode->getKind() === KindEnum::BOOLEAN ? $astNode->getValue() : null;
     }

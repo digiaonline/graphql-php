@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\Language\AST\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use function Digia\GraphQL\Util\instantiateIfNecessary;
 use Digia\GraphQL\Util\Util;
@@ -53,7 +53,7 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     use DescriptionTrait;
     use FieldsTrait;
     use ResolveTrait;
-    use ASTNodeTrait;
+    use NodeTrait;
     use ExtensionASTNodesTrait;
     use ConfigTrait;
 

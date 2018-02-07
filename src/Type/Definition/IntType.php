@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\KindEnum;
 
 class IntType extends AbstractScalarType
@@ -12,16 +12,17 @@ class IntType extends AbstractScalarType
     const MIN_INT = -2147483648;
 
     /**
-     * @var string
+     * @inheritdoc
      */
-    protected $name = TypeEnum::INT;
-
-    /**
-     * @var string
-     */
-    protected $description =
-        'The `Int` scalar type represents non-fractional signed whole numeric ' .
-        'values. Int can represent values between -(2^31) and 2^31 - 1.';
+    protected function configure(): array
+    {
+        return [
+            'name'        => TypeEnum::INT,
+            'description' =>
+                'The `Int` scalar type represents non-fractional signed whole numeric ' .
+                'values. Int can represent values between -(2^31) and 2^31 - 1.',
+        ];
+    }
 
     /**
      * @inheritdoc
@@ -42,7 +43,7 @@ class IntType extends AbstractScalarType
     /**
      * @inheritdoc
      */
-    public function parseLiteral(ASTNodeInterface $astNode, ...$args)
+    public function parseLiteral(NodeInterface $astNode, ...$args)
     {
         return $astNode->getKind() === KindEnum::INT ? $astNode->getValue() : null;
     }

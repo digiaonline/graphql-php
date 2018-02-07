@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
+use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
@@ -16,7 +17,7 @@ use Digia\GraphQL\Type\Definition\StringType;
  * @package Digia\GraphQL\Test\Unit\Type\Definition
  * @property ObjectType $type
  */
-class ObjectAbstractTypeTest extends AbstractTypeTestCase
+class ObjectTypeTest extends AbstractTypeTestCase
 {
 
     protected function setUp()
@@ -41,7 +42,7 @@ class ObjectAbstractTypeTest extends AbstractTypeTestCase
                     }
                 ]
             ],
-            'astNode'     => null,
+            'astNode'     => new ObjectTypeDefinitionNode(),
         ];
 
         $this->type = new ObjectType($this->config);
@@ -50,12 +51,12 @@ class ObjectAbstractTypeTest extends AbstractTypeTestCase
     /**
      * @throws \Exception
      */
-    public function testConstructor()
+    public function testConfig()
     {
         $this->assertEquals($this->config['name'], $this->type->getName());
         $this->assertEquals($this->config['description'], $this->type->getDescription());
-        $this->assertEquals($this->config['astNode'], $this->type->getAstNode());
         $this->assertEquals($this->config, $this->type->getConfig());
+        $this->assertInstanceOf(ObjectTypeDefinitionNode::class, $this->type->getAstNode());
     }
 
     /***

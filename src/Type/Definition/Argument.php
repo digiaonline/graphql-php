@@ -2,6 +2,15 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use Digia\GraphQL\Language\AST\NodeTrait;
+use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
+
+/**
+ * Class Argument
+ *
+ * @package Digia\GraphQL\Type\Definition
+ * @property InputValueDefinitionNode $astNode
+ */
 class Argument
 {
 
@@ -9,5 +18,6 @@ class Argument
     use DescriptionTrait;
     use TypeTrait;
     use DefaultValueTrait;
+    use NodeTrait;
     use ConfigTrait;
 }

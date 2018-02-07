@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\Language\AST\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\EnumValueDefinitionNode;
 
 /**
@@ -18,6 +18,6 @@ class EnumValue
     use DescriptionTrait;
     use DeprecationTrait;
     use ValueTrait;
-    use ASTNodeTrait;
+    use NodeTrait;
     use ConfigTrait;
 }

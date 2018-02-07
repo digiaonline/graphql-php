@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeInterface;
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\NodeTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
 
@@ -31,12 +31,12 @@ use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
  * @package Digia\GraphQL\Type\Definition\Enum
  * @property EnumTypeDefinitionNode $astNode
  */
-class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface, ParseInterface, SerializeInterface
+class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface, TransformInterface
 {
 
     use NameTrait;
     use DescriptionTrait;
-    use ASTNodeTrait;
+    use NodeTrait;
     use ConfigTrait;
 
     /**
@@ -79,7 +79,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     /**
      * @inheritdoc
      */
-    public function parseLiteral(ASTNodeInterface $astNode, ...$args)
+    public function parseLiteral(NodeInterface $astNode, ...$args)
     {
         if ($astNode->getKind() === KindEnum::ENUM) {
             /** @var EnumValue $enumValue */

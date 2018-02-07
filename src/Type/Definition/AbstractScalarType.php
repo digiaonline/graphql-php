@@ -2,22 +2,23 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeInterface;
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ScalarTypeDefinitionNode;
 
-abstract class AbstractScalarType implements LeafTypeInterface, NamedTypeInterface, InputTypeInterface, OutputTypeInterface, ParseInterface, SerializeInterface, TypeInterface
+/**
+ * Class AbstractScalarType
+ *
+ * @package Digia\GraphQL\Type\Definition
+ * @property ScalarTypeDefinitionNode $astNode
+ */
+abstract class AbstractScalarType implements TypeInterface, LeafTypeInterface, NamedTypeInterface, InputTypeInterface, OutputTypeInterface, TransformInterface
 {
 
     use NameTrait;
     use DescriptionTrait;
-    use ASTNodeTrait;
+    use NodeTrait;
     use ConfigTrait;
-
-    /**
-     * @var ScalarTypeDefinitionNode
-     */
-    protected $astNode;
 
     /**
      * @param mixed $value
@@ -29,7 +30,7 @@ abstract class AbstractScalarType implements LeafTypeInterface, NamedTypeInterfa
     }
 
     /**
-     * @param ASTNodeInterface $ast
+     * @param NodeInterface $ast
      * @return bool
      */
     public function isValidLiteral($ast): bool

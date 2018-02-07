@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\KindEnum;
 
-class InputValueDefinitionNode implements NodeInterface
+class FieldDefinitionNode implements NodeInterface
 {
 
     use KindTrait;
@@ -15,7 +15,7 @@ class InputValueDefinitionNode implements NodeInterface
     protected function configure(): array
     {
         return [
-            'kind' => KindEnum::INPUT_VALUE_DEFINITION,
+            'kind' => KindEnum::FIELD_DEFINITION,
         ];
     }
 
