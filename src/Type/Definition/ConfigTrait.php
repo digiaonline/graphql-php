@@ -19,9 +19,10 @@ trait ConfigTrait
     {
         $config = array_merge($this->configure(), $config);
 
-        $this->applyConfig($config);
-
-        $this->setConfig($config);
+        $this
+            ->applyConfig($config)
+            ->setConfig($config)
+            ->build();
     }
 
     /**
@@ -38,6 +39,13 @@ trait ConfigTrait
     protected function configure(): array
     {
         return [];
+    }
+
+    /**
+     *
+     */
+    protected function build(): void
+    {
     }
 
     /**
@@ -60,8 +68,9 @@ trait ConfigTrait
 
     /**
      * @param array $config
+     * @return $this
      */
-    protected function applyConfig(array $config): void
+    protected function applyConfig(array $config)
     {
         foreach ($config as $key => $value) {
             $setter = 'set' . ucfirst($key);
@@ -73,13 +82,18 @@ trait ConfigTrait
             }
             // TODO: Should we throw an exception here?
         }
+
+        return $this;
     }
 
     /**
      * @param array $config
+     * @return $this
      */
-    protected function setConfig(array $config): void
+    protected function setConfig(array $config)
     {
         $this->config = $config;
+
+        return $this;
     }
 }

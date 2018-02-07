@@ -22,11 +22,14 @@ trait ExtensionASTNodesTrait
 
     /**
      * @param NodeInterface[] $extensionAstNodes
+     * @return $this
      */
-    protected function setExtensionAstNodes(array $extensionAstNodes): void
+    protected function setExtensionAstNodes(array $extensionAstNodes)
     {
-        array_map(function ($astNode) {
+        foreach ($extensionAstNodes as $astNode) {
             $this->addExtensionASTNode($astNode);
-        }, $extensionAstNodes);
+        }
+
+        return $this;
     }
 }

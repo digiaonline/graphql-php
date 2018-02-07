@@ -25,17 +25,6 @@ function invariant(bool $condition, string $message)
 }
 
 /**
- * @param      $array
- * @param      $key
- * @param null $defaultValue
- * @return null
- */
-function arrayGet($array, $key, $defaultValue = null)
-{
-    return $array[$key] ?? $defaultValue;
-}
-
-/**
  * @param $value
  * @return string
  */

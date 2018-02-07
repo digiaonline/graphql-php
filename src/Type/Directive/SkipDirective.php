@@ -11,24 +11,16 @@ class SkipDirective extends AbstractDirective
 {
 
     /**
-     * @var string
-     */
-    protected $name = 'skip';
-
-    /**
-     * @var string
-     */
-    protected $description =
-        'Directs the executor to skip this field or fragment when the `if` ' .
-        'argument is true.';
-
-    /**
      * @inheritdoc
      * @throws \TypeError
      */
     public function configure(): array
     {
         return [
+            'name' => 'skip',
+            'description' =>
+                'Directs the executor to skip this field or fragment when the `if` ' .
+                'argument is true.',
             'locations' => [
                 DirectiveLocationEnum::FIELD,
                 DirectiveLocationEnum::FRAGMENT_SPREAD,
@@ -43,5 +35,4 @@ class SkipDirective extends AbstractDirective
             ],
         ];
     }
-
 }

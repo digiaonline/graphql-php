@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\NodeTrait;
+use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
 
@@ -94,14 +94,6 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @param EnumValue $value
-     */
-    public function addValue(EnumValue $value): void
-    {
-        $this->values[] = $value;
-    }
-
-    /**
      * @param string $name
      * @return EnumValue
      */
@@ -149,12 +141,26 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @param array $values
+     * @param EnumValue $value
+     * @return $this
      */
-    protected function setValues(array $values): void
+    protected function addValue(EnumValue $value)
     {
-        array_map(function ($config) {
+        $this->values[] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param array $values
+     * @return $this
+     */
+    protected function setValues(array $values)
+    {
+        foreach ($values as $config) {
             $this->addValue(new EnumValue($config));
-        }, $values);
+        }
+
+        return $this;
     }
 }

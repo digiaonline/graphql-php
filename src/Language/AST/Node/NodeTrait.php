@@ -1,8 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Language\AST;
-
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+namespace Digia\GraphQL\Language\AST\Node;
 
 trait NodeTrait
 {
@@ -22,9 +20,12 @@ trait NodeTrait
 
     /**
      * @param NodeInterface|null $astNode
+     * @return $this
      */
-    protected function setAstNode(?NodeInterface $astNode): void
+    protected function setAstNode(?NodeInterface $astNode)
     {
         $this->astNode = $astNode;
+
+        return $this;
     }
 }

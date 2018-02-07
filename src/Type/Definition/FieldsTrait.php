@@ -20,19 +20,25 @@ trait FieldsTrait
 
     /**
      * @param Field $field
+     * @return $this
      */
-    protected function addField(Field $field): void
+    protected function addField(Field $field)
     {
         $this->fields[] = $field;
+
+        return $this;
     }
 
     /**
      * @param Field[] $fields
+     * @return $this
      */
-    protected function setFields(array $fields): void
+    protected function setFields(array $fields)
     {
-        array_map(function ($config) {
+        foreach ($fields as $config) {
             $this->addField(new Field($config));
-        }, $fields);
+        }
+
+        return $this;
     }
 }

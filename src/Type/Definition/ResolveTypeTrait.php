@@ -20,9 +20,12 @@ trait ResolveTypeTrait
 
     /**
      * @param callable|null $resolveType
+     * @return $this
      */
-    protected function setResolveType(?callable $resolveType): void
+    protected function setResolveType(?callable $resolveType)
     {
         $this->resolveType = $resolveType;
+
+        return $this;
     }
 }

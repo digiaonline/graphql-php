@@ -12,21 +12,13 @@ class DeprecatedDirective extends AbstractDirective
     const DEFAULT_DEPRECATION_VALUE = 'No longer supported';
 
     /**
-     * @var string
-     */
-    protected $name = 'deprecated';
-
-    /**
-     * @var string
-     */
-    protected $description = 'Marks an element of a GraphQL schema as no longer supported.';
-
-    /**
      * @inheritdoc
      */
     public function configure(): array
     {
         return [
+            'name' => 'deprecated',
+            'description' => 'Marks an element of a GraphQL schema as no longer supported.',
             'locations' => [
                 DirectiveLocationEnum::FIELD_DEFINITION,
                 DirectiveLocationEnum::ENUM_VALUE,

@@ -20,9 +20,12 @@ trait DefaultValueTrait
 
     /**
      * @param mixed $defaultValue
+     * @return $this
      */
-    protected function setDefaultValue($defaultValue): void
+    protected function setDefaultValue($defaultValue)
     {
         $this->defaultValue = $defaultValue;
+
+        return $this;
     }
 }

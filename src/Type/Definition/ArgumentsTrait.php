@@ -20,19 +20,25 @@ trait ArgumentsTrait
 
     /**
      * @param Argument $argument
+     * @return $this
      */
-    protected function addArgument(Argument $argument): void
+    protected function addArgument(Argument $argument)
     {
         $this->arguments[] = $argument;
+
+        return $this;
     }
 
     /**
      * @param Argument[] $arguments
+     * @return $this
      */
-    protected function setArguments(array $arguments): void
+    protected function setArguments(array $arguments)
     {
-        $this->arguments = array_map(function ($config) {
+        foreach ($arguments as $config) {
             $this->addArgument(new Argument($config));
-        }, $arguments);
+        }
+
+        return $this;
     }
 }

@@ -12,9 +12,12 @@ trait ResolveTrait
 
     /**
      * @param callable $resolve
+     * @return $this
      */
-    protected function setResolve(callable $resolve): void
+    protected function setResolve(callable $resolve)
     {
         $this->resolve = $resolve;
+
+        return $this;
     }
 }

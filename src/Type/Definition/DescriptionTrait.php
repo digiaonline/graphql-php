@@ -20,9 +20,12 @@ trait DescriptionTrait
 
     /**
      * @param null|string $description
+     * @return $this
      */
-    protected function setDescription(?string $description): void
+    protected function setDescription(?string $description)
     {
         $this->description = $description;
+
+        return $this;
     }
 }

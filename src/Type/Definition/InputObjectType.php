@@ -18,7 +18,7 @@ namespace Digia\GraphQL\Type\Definition;
  *     });
  */
 
-use Digia\GraphQL\Language\AST\NodeTrait;
+use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
 
 /**
@@ -50,19 +50,25 @@ class InputObjectType implements TypeInterface, InputTypeInterface
 
     /**
      * @param InputField $field
+     * @return $this
      */
-    protected function addField(InputField $field): void
+    protected function addField(InputField $field)
     {
         $this->fields[] = $field;
+
+        return $this;
     }
 
     /**
      * @param InputField[] $fields
+     * @return $this
      */
-    protected function setFields(array $fields): void
+    protected function setFields(array $fields)
     {
-        array_map(function ($config) {
+        foreach ($fields as $config) {
             $this->addField(new InputField($config));
-        }, $fields);
+        }
+
+        return $this;
     }
 }

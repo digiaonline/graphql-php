@@ -4,6 +4,7 @@ namespace Digia\GraphQL\TypeSystem;
 
 use Digia\GraphQL\Type\Definition\ArgumentsTrait;
 use Digia\GraphQL\Type\Definition\ConfigTrait;
+use Digia\GraphQL\Type\Definition\DescriptionTrait;
 use Digia\GraphQL\Type\Definition\NameTrait;
 use Digia\GraphQL\Type\Directive\DirectiveInterface;
 use Digia\GraphQL\TypeSystem\Directive\DirectiveLocationEnum;
@@ -12,6 +13,7 @@ abstract class AbstractDirective implements DirectiveInterface
 {
 
     use NameTrait;
+    use DescriptionTrait;
     use ArgumentsTrait;
     use ConfigTrait;
 
@@ -30,19 +32,25 @@ abstract class AbstractDirective implements DirectiveInterface
 
     /**
      * @param DirectiveLocationEnum $location
+     * @return $this
      */
-    public function addLocation(DirectiveLocationEnum $location): void
+    public function addLocation(DirectiveLocationEnum $location)
     {
         $this->locations[] = $location;
+
+        return $this;
     }
 
     /**
      * @param DirectiveLocationEnum[] $locations
+     * @return $this
      */
-    protected function setLocations(array $locations): void
+    protected function setLocations(array $locations)
     {
-        $this->locations = array_map(function ($location) {
+        foreach ($locations as $location) {
             $this->addLocation($location);
-        }, $locations);
+        }
+
+        return $this;
     }
 }

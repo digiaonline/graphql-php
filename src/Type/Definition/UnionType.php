@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\NodeTrait;
+use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
 
 
@@ -60,19 +60,25 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
 
     /**
      * @param TypeInterface $type
+     * @return $this
      */
-    public function addType(TypeInterface $type): void
+    public function addType(TypeInterface $type)
     {
         $this->types[] = $type;
+
+        return $this;
     }
 
     /**
-     * @param array $types
+     * @param TypeInterface[] $types
+     * @return $this
      */
-    protected function setTypes(array $types): void
+    protected function setTypes(array $types)
     {
-        array_map(function ($type) {
+        foreach ($types as $type) {
             $this->addType($type);
-        }, $types);
+        }
+
+        return $this;
     }
 }

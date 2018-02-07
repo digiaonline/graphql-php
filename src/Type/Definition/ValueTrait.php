@@ -28,11 +28,14 @@ trait ValueTrait
 
     /**
      * @param mixed $value
+     * @return $this
      */
-    protected function setValue($value): void
+    protected function setValue($value)
     {
         // TODO: Ensure that value is not null
 
         $this->value = $value;
+
+        return $this;
     }
 }

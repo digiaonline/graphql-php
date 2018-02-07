@@ -20,9 +20,12 @@ trait TypeTrait
 
     /**
      * @param TypeInterface $type
+     * @return $this
      */
-    protected function setType(TypeInterface $type): void
+    protected function setType(TypeInterface $type)
     {
         $this->type = $type;
+
+        return $this;
     }
 }

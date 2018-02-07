@@ -20,9 +20,12 @@ trait KindTrait
 
     /**
      * @param null|string $kind
+     * @return $this
      */
-    protected function setKind(?string $kind): void
+    protected function setKind(?string $kind)
     {
         $this->kind = $kind;
+
+        return $this;
     }
 }

@@ -11,30 +11,22 @@ class IncludeDirective extends AbstractDirective
 {
 
     /**
-     * @var string
-     */
-    protected $name = 'include';
-
-    /**
-     * @var string
-     */
-    protected $description =
-        'Directs the executor to include this field or fragment only when ' .
-        'the `if` argument is true.';
-
-    /**
      * @inheritdoc
      * @throws \TypeError
      */
     public function configure(): array
     {
         return [
-            'locations' => [
+            'name'        => 'include',
+            'description' =>
+                'Directs the executor to include this field or fragment only when ' .
+                'the `if` argument is true.',
+            'locations'   => [
                 DirectiveLocationEnum::FIELD,
                 DirectiveLocationEnum::FRAGMENT_SPREAD,
                 DirectiveLocationEnum::INLINE_FRAGMENT,
             ],
-            'arguments' => [
+            'arguments'   => [
                 [
                     'name'        => 'if',
                     'type'        => new NonNullType(new BooleanType()),

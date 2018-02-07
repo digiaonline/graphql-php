@@ -33,14 +33,17 @@ trait DeprecationTrait
 
     /**
      * @param null|string $deprecationReason
+     * @return $this
      */
-    protected function setDeprecationReason(?string $deprecationReason): void
+    protected function setDeprecationReason(?string $deprecationReason)
     {
         if ($deprecationReason) {
             $this->isDeprecated = true;
         }
 
         $this->deprecationReason = $deprecationReason;
+
+        return $this;
     }
 
     /**
