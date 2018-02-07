@@ -1,4 +1,6 @@
 /.idea/dictionaries
 /vendor/
 /coverage/
+clover.xml
 composer.lock
+
