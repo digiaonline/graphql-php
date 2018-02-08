@@ -6,7 +6,7 @@ use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 
-class FloatDefinitionNode implements NodeInterface
+class FloatValueNode implements NodeInterface
 {
 
     use KindTrait;
@@ -16,10 +16,8 @@ class FloatDefinitionNode implements NodeInterface
     /**
      * @inheritdoc
      */
-    protected function configure(): array
+    protected function beforeConfig(): void
     {
-        return [
-            'kind' => KindEnum::FLOAT,
-        ];
+        $this->setKind(KindEnum::FLOAT);
     }
 }

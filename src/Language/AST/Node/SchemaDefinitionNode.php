@@ -6,7 +6,7 @@ use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 
-class ObjectTypeDefinitionNode implements NodeInterface
+class SchemaDefinitionNode implements NodeInterface
 {
 
     use KindTrait;
@@ -18,6 +18,6 @@ class ObjectTypeDefinitionNode implements NodeInterface
      */
     protected function beforeConfig(): void
     {
-        $this->setKind(KindEnum::OBJECT_TYPE_DEFINITION);
+        $this->setKind(KindEnum::SCHEMA_DEFINITION);
     }
 }

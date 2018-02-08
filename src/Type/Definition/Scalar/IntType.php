@@ -15,14 +15,13 @@ class IntType extends AbstractScalarType
     /**
      * @inheritdoc
      */
-    protected function configure(): array
+    protected function beforeConfig(): void
     {
-        return [
-            'name'        => TypeEnum::INT,
-            'description' =>
-                'The `Int` scalar type represents non-fractional signed whole numeric ' .
-                'values. Int can represent values between -(2^31) and 2^31 - 1.',
-        ];
+        $this->setName(TypeEnum::INT);
+        $this->setDescription(
+            'The `Int` scalar type represents non-fractional signed whole numeric ' .
+            'values. Int can represent values between -(2^31) and 2^31 - 1.'
+        );
     }
 
     /**

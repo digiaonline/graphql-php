@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Unit\Type\Definition\Scalar;
 
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\StringDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Test\Unit\Type\Definition\AbstractTypeTestCase;
 use Digia\GraphQL\Type\Definition\Scalar\StringType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
@@ -73,7 +73,7 @@ class StringTypeTest extends AbstractTypeTestCase
      */
     public function testParseLiteralWithValidValues()
     {
-        $this->assertEquals('foo', $this->type->parseLiteral(new StringDefinitionNode([
+        $this->assertEquals('foo', $this->type->parseLiteral(new StringValueNode([
             'value' => 'foo',
         ])));
     }

@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
+use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Behavior\ConfigTrait;
 
@@ -9,23 +10,14 @@ class InputObjectTypeDefinitionNode implements NodeInterface
 {
 
     use KindTrait;
+    use ValueTrait;
     use ConfigTrait;
 
     /**
      * @inheritdoc
      */
-    protected function configure(): array
+    protected function beforeConfig(): void
     {
-        return [
-            'kind' => KindEnum::INPUT_OBJECT_TYPE_DEFINITION,
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getValue()
-    {
-        // TODO: Implement getValue() method.
+        $this->setKind(KindEnum::INPUT_OBJECT_TYPE_DEFINITION);
     }
 }

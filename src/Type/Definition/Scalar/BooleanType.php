@@ -12,12 +12,10 @@ class BooleanType extends AbstractScalarType
     /**
      * @inheritdoc
      */
-    protected function configure(): array
+    protected function beforeConfig(): void
     {
-        return [
-            'name'        => TypeEnum::BOOLEAN,
-            'description' => 'The `Boolean` scalar type represents `true` or `false`.',
-        ];
+        $this->setName(TypeEnum::BOOLEAN);
+        $this->setDescription('The `Boolean` scalar type represents `true` or `false`.');
     }
 
     /**

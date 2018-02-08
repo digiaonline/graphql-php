@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition\Scalar;
 
-use Digia\GraphQL\Language\AST\Node\FloatDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\IntDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\FloatValueNode;
+use Digia\GraphQL\Language\AST\Node\IntValueNode;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Test\Unit\Type\Definition\AbstractTypeTestCase;
 use Digia\GraphQL\Type\Definition\Scalar\FloatType;
@@ -74,10 +74,10 @@ class FloatTypeTest extends AbstractTypeTestCase
      */
     public function testParseLiteralWithValidValues()
     {
-        $this->assertEquals(4.2, $this->type->parseLiteral(new FloatDefinitionNode([
+        $this->assertEquals(4.2, $this->type->parseLiteral(new FloatValueNode([
             'value' => 4.2,
         ])));
-        $this->assertEquals(42, $this->type->parseLiteral(new IntDefinitionNode([
+        $this->assertEquals(42, $this->type->parseLiteral(new IntValueNode([
             'value' => 42,
         ])));
     }

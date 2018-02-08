@@ -12,15 +12,14 @@ class FloatType extends AbstractScalarType
     /**
      * @inheritdoc
      */
-    protected function configure(): array
+    protected function beforeConfig(): void
     {
-        return [
-            'name'        => TypeEnum::FLOAT,
-            'description' =>
-                'The `Float` scalar type represents signed double-precision fractional ' .
-                'values as specified by ' .
-                '[IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).',
-        ];
+        $this->setName(TypeEnum::FLOAT);
+        $this->setDescription(
+            'The `Float` scalar type represents signed double-precision fractional ' .
+            'values as specified by ' .
+            '[IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).'
+        );
     }
 
     /**

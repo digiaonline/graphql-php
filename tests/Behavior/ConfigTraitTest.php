@@ -42,11 +42,9 @@ class ConfigClass
 
     public $bar;
 
-    protected function configure(): array
+    protected function afterConfig(): void
     {
-        return [
-            'foo' => 'hi',
-            'bar' => 24,
-        ];
+        $this->foo = 'hi';
+        $this->bar = 24;
     }
 }

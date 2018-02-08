@@ -6,7 +6,7 @@ use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 
-class IntDefinitionNode implements NodeInterface
+class EnumValueNode implements NodeInterface
 {
 
     use KindTrait;
@@ -16,10 +16,8 @@ class IntDefinitionNode implements NodeInterface
     /**
      * @inheritdoc
      */
-    protected function configure(): array
+    protected function beforeConfig(): void
     {
-        return [
-            'kind' => KindEnum::INT,
-        ];
+        $this->setKind(KindEnum::ENUM);
     }
 }

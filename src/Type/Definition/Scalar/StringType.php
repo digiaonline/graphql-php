@@ -13,15 +13,14 @@ class StringType extends AbstractScalarType
     /**
      * @inheritdoc
      */
-    protected function configure(): array
+    protected function beforeConfig(): void
     {
-        return [
-            'name'        => TypeEnum::STRING,
-            'description' =>
-                'The `String` scalar type represents textual data, represented as UTF-8 ' .
-                'character sequences. The String type is most often used by GraphQL to ' .
-                'represent free-form human-readable text.',
-        ];
+        $this->setName(TypeEnum::STRING);
+        $this->setDescription(
+            'The `String` scalar type represents textual data, represented as UTF-8 ' .
+            'character sequences. The String type is most often used by GraphQL to ' .
+            'represent free-form human-readable text.'
+        );
     }
 
     /**

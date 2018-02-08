@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition\Scalar;
 
-use Digia\GraphQL\Language\AST\Node\BooleanDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\BooleanValueNode;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Test\Unit\Type\Definition\AbstractTypeTestCase;
 use Digia\GraphQL\Type\Definition\Scalar\BooleanType;
@@ -73,7 +73,7 @@ class BooleanTypeTest extends AbstractTypeTestCase
      */
     public function testParseLiteralWithValidValues()
     {
-        $this->assertEquals(true, $this->type->parseLiteral(new BooleanDefinitionNode([
+        $this->assertEquals(true, $this->type->parseLiteral(new BooleanValueNode([
             'value' => true,
         ])));
     }

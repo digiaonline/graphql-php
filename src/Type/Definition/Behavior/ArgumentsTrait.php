@@ -13,6 +13,14 @@ trait ArgumentsTrait
     private $arguments = [];
 
     /**
+     * @return bool
+     */
+    public function hasArguments(): bool
+    {
+        return !empty($this->arguments);
+    }
+
+    /**
      * @return Argument[]
      */
     public function getArguments(): array

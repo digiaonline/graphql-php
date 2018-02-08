@@ -17,12 +17,9 @@ trait ConfigTrait
      */
     public function __construct(array $config = [])
     {
-        $config = array_merge($this->configure(), $config);
-
-        $this
-            ->applyConfig($config)
-            ->setConfig($config)
-            ->build();
+        $this->beforeConfig();
+        $this->setConfig($config);
+        $this->afterConfig();
     }
 
     /**
@@ -34,17 +31,20 @@ trait ConfigTrait
     }
 
     /**
-     * @return array
+     * Override this method to perform logic BEFORE configuration is applied.
+     * This method is useful for setting default values for properties
+     * that need to use new -keyword.
      */
-    protected function configure(): array
+    protected function beforeConfig(): void
     {
-        return [];
     }
 
     /**
-     *
+     * Override this method to perform logic AFTER configuration is applied.
+     * This method is useful for configuring classes after instantiation,
+     * e.g. adding a query type to a schema or adding fields to object types.
      */
-    protected function build(): void
+    protected function afterConfig(): void
     {
     }
 
@@ -70,7 +70,7 @@ trait ConfigTrait
      * @param array $config
      * @return $this
      */
-    protected function applyConfig(array $config)
+    protected function setConfig(array $config)
     {
         foreach ($config as $key => $value) {
             $setter = 'set' . ucfirst($key);
@@ -83,15 +83,6 @@ trait ConfigTrait
             // TODO: Should we throw an exception here?
         }
 
-        return $this;
-    }
-
-    /**
-     * @param array $config
-     * @return $this
-     */
-    protected function setConfig(array $config)
-    {
         $this->config = $config;
 
         return $this;

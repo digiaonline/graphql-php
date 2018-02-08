@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
-use Digia\GraphQL\Language\AST\Node\EnumDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\EnumValueNode;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\EnumType;
@@ -113,7 +113,7 @@ class EnumTypeTest extends AbstractTypeTestCase
      */
     public function testParseLiteralWithValidValue()
     {
-        $this->assertEquals(1, $this->type->parseLiteral(new EnumDefinitionNode([
+        $this->assertEquals(1, $this->type->parseLiteral(new EnumValueNode([
             'value' => 'GREEN',
         ])));
     }
