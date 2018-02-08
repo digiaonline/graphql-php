@@ -13,7 +13,6 @@
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/Type/Behavior</directory>
             <directory suffix=".php">src/Type/Definition</directory>
         </whitelist>
     </filter>

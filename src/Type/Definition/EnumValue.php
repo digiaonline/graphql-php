@@ -7,8 +7,8 @@ use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\EnumValueDefinitionNode;
-use Digia\GraphQL\Type\Behavior\DeprecationTrait;
-use Digia\GraphQL\Type\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Behavior\DeprecationTrait;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 
 /**
  * Class EnumValue

@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Behavior\DescriptionTrait;
-use Digia\GraphQL\Type\Behavior\NameTrait;
-use Digia\GraphQL\Type\Behavior\OfTypeTrait;
-use Digia\GraphQL\Type\Contract\TypeInterface;
-use Digia\GraphQL\Type\Contract\WrappingTypeInterface;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Behavior\OfTypeTrait;
+use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\WrappingTypeInterface;
 
 class NonNullType implements TypeInterface, WrappingTypeInterface
 {

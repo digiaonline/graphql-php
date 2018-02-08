@@ -6,12 +6,12 @@ use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
-use Digia\GraphQL\Type\Behavior\NameTrait;
-use Digia\GraphQL\Type\Behavior\ResolveTypeTrait;
-use Digia\GraphQL\Type\Contract\AbstractTypeInterface;
-use Digia\GraphQL\Type\Contract\CompositeTypeInterface;
-use Digia\GraphQL\Type\Contract\OutputTypeInterface;
-use Digia\GraphQL\Type\Contract\TypeInterface;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Behavior\ResolveTypeTrait;
+use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\CompositeTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 
 /**
  * Union Type Definition

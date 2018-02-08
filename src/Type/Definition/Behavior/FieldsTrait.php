@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Type\Behavior;
+namespace Digia\GraphQL\Type\Definition\Behavior;
 
 use Digia\GraphQL\Type\Definition\Field;
 

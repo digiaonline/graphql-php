@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Type\Directive;
 
-use Digia\GraphQL\Type\Behavior\ArgumentsTrait;
-use Digia\GraphQL\Type\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Behavior\ArgumentsTrait;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Behavior\DescriptionTrait;
 

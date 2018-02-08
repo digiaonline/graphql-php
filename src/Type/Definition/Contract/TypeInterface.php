@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Type\Contract;
+namespace Digia\GraphQL\Type\Definition\Contract;
 
 interface TypeInterface
 {

@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Unit\Type\Behavior;
 
 use Digia\GraphQL\Test\Unit\TestCase;
-use Digia\GraphQL\Type\Behavior\DeprecationTrait;
+use Digia\GraphQL\Type\Definition\Behavior\DeprecationTrait;
 
 class DeprecationTraitTest extends TestCase
 {

@@ -22,9 +22,9 @@ use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
-use Digia\GraphQL\Type\Behavior\NameTrait;
-use Digia\GraphQL\Type\Contract\InputTypeInterface;
-use Digia\GraphQL\Type\Contract\TypeInterface;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 
 /**
  * Class InputObjectType

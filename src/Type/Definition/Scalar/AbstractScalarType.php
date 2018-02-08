@@ -7,13 +7,13 @@ use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ScalarTypeDefinitionNode;
-use Digia\GraphQL\Type\Behavior\NameTrait;
-use Digia\GraphQL\Type\Contract\InputTypeInterface;
-use Digia\GraphQL\Type\Contract\LeafTypeInterface;
-use Digia\GraphQL\Type\Contract\NamedTypeInterface;
-use Digia\GraphQL\Type\Contract\OutputTypeInterface;
-use Digia\GraphQL\Type\Contract\TransformInterface;
-use Digia\GraphQL\Type\Contract\TypeInterface;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\LeafTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\TransformInterface;
+use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 
 /**
  * Class AbstractScalarType

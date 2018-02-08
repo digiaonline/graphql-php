@@ -6,9 +6,9 @@ use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
-use Digia\GraphQL\Type\Behavior\DefaultValueTrait;
-use Digia\GraphQL\Type\Behavior\NameTrait;
-use Digia\GraphQL\Type\Behavior\TypeTrait;
+use Digia\GraphQL\Type\Definition\Behavior\DefaultValueTrait;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Behavior\TypeTrait;
 
 /**
  * Class Argument

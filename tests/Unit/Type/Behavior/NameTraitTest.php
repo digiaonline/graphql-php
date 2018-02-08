@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Test\Unit\Type\Behavior;
 
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Behavior\ConfigTrait;
-use Digia\GraphQL\Type\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 
 class NameTraitTest extends TestCase
 {

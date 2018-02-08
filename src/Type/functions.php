@@ -2,14 +2,14 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\Type\Contract\AbstractTypeInterface;
-use Digia\GraphQL\Type\Contract\CompositeTypeInterface;
-use Digia\GraphQL\Type\Contract\InputTypeInterface;
-use Digia\GraphQL\Type\Contract\LeafTypeInterface;
-use Digia\GraphQL\Type\Contract\NamedTypeInterface;
-use Digia\GraphQL\Type\Contract\OutputTypeInterface;
-use Digia\GraphQL\Type\Contract\TypeInterface;
-use Digia\GraphQL\Type\Contract\WrappingTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\CompositeTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\LeafTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\WrappingTypeInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\ListType;

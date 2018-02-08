@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
 use Digia\GraphQL\Test\Unit\TestCase;
-use Digia\GraphQL\Type\Contract\TypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 
 abstract class AbstractTypeTestCase extends TestCase
 {

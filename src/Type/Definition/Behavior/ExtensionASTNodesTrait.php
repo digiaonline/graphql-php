@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Type\Behavior;
+namespace Digia\GraphQL\Type\Definition\Behavior;
 
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeExtensionNode;

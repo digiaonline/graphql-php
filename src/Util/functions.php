@@ -23,12 +23,3 @@ function invariant(bool $condition, string $message)
         throw new \Exception($message);
     }
 }
-
-/**
- * @param $value
- * @return string
- */
-function toString($value): string
-{
-    return is_array($value) ? json_encode($value) : $value;
-}
