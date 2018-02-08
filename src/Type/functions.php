@@ -12,6 +12,7 @@ use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\WrappingTypeInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
+use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
@@ -28,6 +29,7 @@ use Digia\GraphQL\Type\Directive\DirectiveInterface;
 use Digia\GraphQL\Type\Directive\IncludeDirective;
 use Digia\GraphQL\Type\Directive\SkipDirective;
 use function Digia\GraphQL\Util\invariant;
+use function Digia\GraphQL\Util\toString;
 
 /**
  * @param $object
@@ -64,7 +66,7 @@ function assertType($type)
 {
     invariant(
         isType($type),
-        "Expected {$type} to be a GraphQL Scalar type."
+        sprintf(sprintf('Expected %s to be a GraphQL type.', toString($type)), toString($type))
     );
 }
 
@@ -85,7 +87,7 @@ function assertScalarType(TypeInterface $type)
 {
     invariant(
         isScalarType($type),
-        "Expected {$type} to be a GraphQL Scalar type."
+        sprintf('Expected %s to be a GraphQL Scalar type.', toString($type))
     );
 }
 
@@ -106,7 +108,7 @@ function assertObjectType(TypeInterface $type)
 {
     invariant(
         isObjectType($type),
-        "Expected {$type} to be a GraphQL Object type."
+        sprintf('Expected %s to be a GraphQL Object type.', toString($type))
     );
 }
 
@@ -116,7 +118,7 @@ function assertObjectType(TypeInterface $type)
  */
 function isInterfaceType(TypeInterface $type): bool
 {
-    return $type instanceof InputTypeInterface;
+    return $type instanceof InterfaceType;
 }
 
 /**
@@ -127,7 +129,7 @@ function assertInterfaceType(TypeInterface $type)
 {
     invariant(
         isInterfaceType($type),
-        "Expected {$type} to be a GraphQL Interface type."
+        sprintf('Expected %s to be a GraphQL Interface type.', toString($type))
     );
 }
 
@@ -148,7 +150,7 @@ function assertUnionType(TypeInterface $type)
 {
     invariant(
         isUnionType($type),
-        "Expected {$type} to be a GraphQL Union type."
+        sprintf('Expected %s to be a GraphQL Union type.', toString($type))
     );
 }
 
@@ -169,7 +171,7 @@ function assertEnumType(TypeInterface $type)
 {
     invariant(
         isEnumType($type),
-        "Expected {$type} to be a GraphQL Enum type."
+        sprintf('Expected %s to be a GraphQL Enum type.', toString($type))
     );
 }
 
@@ -190,7 +192,7 @@ function assertInputObjectType(TypeInterface $type)
 {
     invariant(
         isInputObjectType($type),
-        "Expected {$type} to be a GraphQL InputObject type."
+        sprintf('Expected %s to be a GraphQL InputObject type.', toString($type))
     );
 }
 
@@ -211,7 +213,7 @@ function assertListType(TypeInterface $type)
 {
     invariant(
         isListType($type),
-        "Expected {$type} to be a GraphQL List type."
+        sprintf('Expected %s to be a GraphQL List type.', toString($type))
     );
 }
 
@@ -232,7 +234,7 @@ function assertNonNullType(TypeInterface $type)
 {
     invariant(
         isNonNullType($type),
-        "Expected {$type} to be a GraphQL NonNull type."
+        sprintf('Expected %s to be a GraphQL NonNull type.', toString($type))
     );
 }
 
@@ -254,7 +256,7 @@ function assertInputType(TypeInterface $type)
 {
     invariant(
         isInputType($type),
-        "Expected {$type} to be a GraphQL input type."
+        sprintf('Expected %s to be a GraphQL input type.', toString($type))
     );
 }
 
@@ -276,7 +278,7 @@ function assertOutputType(TypeInterface $type)
 {
     invariant(
         isOutputType($type),
-        "Expected {$type} to be a GraphQL output type."
+        sprintf('Expected %s to be a GraphQL output type.', toString($type))
     );
 }
 
@@ -297,7 +299,7 @@ function assertLeafType(TypeInterface $type)
 {
     invariant(
         isLeafType($type),
-        "Expected {$type} to be a GraphQL leaf type."
+        sprintf('Expected %s to be a GraphQL leaf type.', toString($type))
     );
 }
 
@@ -318,7 +320,7 @@ function assertCompositeType(TypeInterface $type)
 {
     invariant(
         isCompositeType($type),
-        "Expected {$type} to be a GraphQL composite type."
+        sprintf('Expected %s to be a GraphQL composite type.', toString($type))
     );
 }
 
@@ -339,7 +341,7 @@ function assertAbstractType(TypeInterface $type)
 {
     invariant(
         isAbstractType($type),
-        "Expected {$type} to be a GraphQL abstract type."
+        sprintf('Expected %s to be a GraphQL abstract type.', toString($type))
     );
 }
 
@@ -360,7 +362,7 @@ function assertWrappingType(TypeInterface $type)
 {
     invariant(
         isWrappingType($type),
-        "Expected {$type} to be a GraphQL wrapping type."
+        sprintf('Expected %s to be a GraphQL wrapping type.', toString($type))
     );
 }
 
@@ -370,7 +372,7 @@ function assertWrappingType(TypeInterface $type)
  */
 function isNullableType(TypeInterface $type): bool
 {
-    return !$type instanceof NonNullType;
+    return !isNonNullType($type);
 }
 
 /**
@@ -381,7 +383,7 @@ function assertNullableType(TypeInterface $type)
 {
     invariant(
         isNullableType($type),
-        "Expected {$type} to be a GraphQL nullable type."
+        sprintf('Expected %s to be a GraphQL nullable type.', toString($type))
     );
 }
 
@@ -402,7 +404,7 @@ function assertNamedType(TypeInterface $type)
 {
     invariant(
         isNamedType($type),
-        "Expected {$type} to be a GraphQL named type."
+        sprintf('Expected %s to be a GraphQL named type.', toString($type))
     );
 }
 
