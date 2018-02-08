@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Test\Unit\Type\Behavior;
+namespace Digia\GraphQL\Test\Unit\Type\Definition\Behavior;
 
 use Digia\GraphQL\Language\AST\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Test\Unit\TestCase;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Test\Unit\Type\Behavior;
+namespace Digia\GraphQL\Test\Unit\Type\Definition\Behavior;
 
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Behavior\ConfigTrait;
