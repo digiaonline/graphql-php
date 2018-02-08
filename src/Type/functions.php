@@ -2,24 +2,26 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\Type\Definition\AbstractScalarType;
-use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
-use Digia\GraphQL\Type\Definition\BooleanType;
-use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
-use Digia\GraphQL\Type\Definition\FloatType;
-use Digia\GraphQL\Type\Definition\IDType;
+use Digia\GraphQL\Type\Contract\AbstractTypeInterface;
+use Digia\GraphQL\Type\Contract\CompositeTypeInterface;
+use Digia\GraphQL\Type\Contract\InputTypeInterface;
+use Digia\GraphQL\Type\Contract\LeafTypeInterface;
+use Digia\GraphQL\Type\Contract\NamedTypeInterface;
+use Digia\GraphQL\Type\Contract\OutputTypeInterface;
+use Digia\GraphQL\Type\Contract\TypeInterface;
+use Digia\GraphQL\Type\Contract\WrappingTypeInterface;
+use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
-use Digia\GraphQL\Type\Definition\IntType;
-use Digia\GraphQL\Type\Definition\LeafTypeInterface;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\ScalarTypeInterface;
-use Digia\GraphQL\Type\Definition\StringType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use Digia\GraphQL\Type\Definition\Scalar\AbstractScalarType;
+use Digia\GraphQL\Type\Definition\Scalar\BooleanType;
+use Digia\GraphQL\Type\Definition\Scalar\FloatType;
+use Digia\GraphQL\Type\Definition\Scalar\IDType;
+use Digia\GraphQL\Type\Definition\Scalar\IntType;
+use Digia\GraphQL\Type\Definition\Scalar\StringType;
+use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Directive\DeprecatedDirective;
 use Digia\GraphQL\Type\Directive\DirectiveInterface;
 use Digia\GraphQL\Type\Directive\IncludeDirective;
@@ -62,7 +64,7 @@ function assertType($type)
 {
     invariant(
         isType($type),
-        `Expected {$type} to be a GraphQL Scalar type.`
+        "Expected {$type} to be a GraphQL Scalar type."
     );
 }
 
@@ -83,7 +85,7 @@ function assertScalarType(TypeInterface $type)
 {
     invariant(
         isScalarType($type),
-        `Expected {$type} to be a GraphQL Scalar type.`
+        "Expected {$type} to be a GraphQL Scalar type."
     );
 }
 
@@ -104,7 +106,7 @@ function assertObjectType(TypeInterface $type)
 {
     invariant(
         isObjectType($type),
-        `Expected {$type} to be a GraphQL Object type.`
+        "Expected {$type} to be a GraphQL Object type."
     );
 }
 
@@ -125,7 +127,7 @@ function assertInterfaceType(TypeInterface $type)
 {
     invariant(
         isInterfaceType($type),
-        `Expected {$type} to be a GraphQL Interface type.`
+        "Expected {$type} to be a GraphQL Interface type."
     );
 }
 
@@ -146,7 +148,7 @@ function assertUnionType(TypeInterface $type)
 {
     invariant(
         isUnionType($type),
-        `Expected {$type} to be a GraphQL Union type.`
+        "Expected {$type} to be a GraphQL Union type."
     );
 }
 
@@ -167,7 +169,7 @@ function assertEnumType(TypeInterface $type)
 {
     invariant(
         isEnumType($type),
-        `Expected {$type} to be a GraphQL Enum type.`
+        "Expected {$type} to be a GraphQL Enum type."
     );
 }
 
@@ -188,7 +190,7 @@ function assertInputObjectType(TypeInterface $type)
 {
     invariant(
         isInputObjectType($type),
-        `Expected {$type} to be a GraphQL InputObject type.`
+        "Expected {$type} to be a GraphQL InputObject type."
     );
 }
 
@@ -209,7 +211,7 @@ function assertListType(TypeInterface $type)
 {
     invariant(
         isListType($type),
-        `Expected {$type} to be a GraphQL List type.`
+        "Expected {$type} to be a GraphQL List type."
     );
 }
 
@@ -230,7 +232,7 @@ function assertNonNullType(TypeInterface $type)
 {
     invariant(
         isNonNullType($type),
-        `Expected {$type} to be a GraphQL NonNull type.`
+        "Expected {$type} to be a GraphQL NonNull type."
     );
 }
 
@@ -252,7 +254,7 @@ function assertInputType(TypeInterface $type)
 {
     invariant(
         isInputType($type),
-        `Expected {$type} to be a GraphQL input type.`
+        "Expected {$type} to be a GraphQL input type."
     );
 }
 
@@ -274,7 +276,7 @@ function assertOutputType(TypeInterface $type)
 {
     invariant(
         isOutputType($type),
-        `Expected {$type} to be a GraphQL output type.`
+        "Expected {$type} to be a GraphQL output type."
     );
 }
 
@@ -295,7 +297,7 @@ function assertLeafType(TypeInterface $type)
 {
     invariant(
         isLeafType($type),
-        `Expected {$type} to be a GraphQL leaf type.`
+        "Expected {$type} to be a GraphQL leaf type."
     );
 }
 
@@ -316,7 +318,7 @@ function assertCompositeType(TypeInterface $type)
 {
     invariant(
         isCompositeType($type),
-        `Expected {$type} to be a GraphQL composite type.`
+        "Expected {$type} to be a GraphQL composite type."
     );
 }
 
@@ -337,7 +339,7 @@ function assertAbstractType(TypeInterface $type)
 {
     invariant(
         isAbstractType($type),
-        `Expected {$type} to be a GraphQL abstract type.`
+        "Expected {$type} to be a GraphQL abstract type."
     );
 }
 
@@ -358,7 +360,7 @@ function assertWrappingType(TypeInterface $type)
 {
     invariant(
         isWrappingType($type),
-        `Expected {$type} to be a GraphQL wrapping type.`
+        "Expected {$type} to be a GraphQL wrapping type."
     );
 }
 
@@ -379,7 +381,7 @@ function assertNullableType(TypeInterface $type)
 {
     invariant(
         isNullableType($type),
-        `Expected {$type} to be a GraphQL nullable type.`
+        "Expected {$type} to be a GraphQL nullable type."
     );
 }
 
@@ -400,7 +402,7 @@ function assertNamedType(TypeInterface $type)
 {
     invariant(
         isNamedType($type),
-        `Expected {$type} to be a GraphQL named type.`
+        "Expected {$type} to be a GraphQL named type."
     );
 }
 
