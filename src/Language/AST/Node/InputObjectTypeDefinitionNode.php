@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\KindEnum;
-use Digia\GraphQL\Type\Definition\ConfigTrait;
+use Digia\GraphQL\Behavior\ConfigTrait;
 
 class InputObjectTypeDefinitionNode implements NodeInterface
 {

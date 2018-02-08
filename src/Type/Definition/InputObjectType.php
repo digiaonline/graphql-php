@@ -18,6 +18,7 @@ namespace Digia\GraphQL\Type\Definition;
  *     });
  */
 
+use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
 

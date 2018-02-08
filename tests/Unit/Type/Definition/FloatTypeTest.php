@@ -2,6 +2,9 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
+use Digia\GraphQL\Language\AST\Node\FloatDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\IntDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\FloatType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
@@ -64,6 +67,27 @@ class FloatTypeTest extends AbstractTypeTestCase
     public function testParseInvalidValues($value)
     {
         $this->type->parseValue($value);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testParseLiteralWithValidValues()
+    {
+        $this->assertEquals(4.2, $this->type->parseLiteral(new FloatDefinitionNode([
+            'value' => 4.2,
+        ])));
+        $this->assertEquals(42, $this->type->parseLiteral(new IntDefinitionNode([
+            'value' => 42,
+        ])));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testParseLiteralWithInvalidValues()
+    {
+        $this->assertNull($this->type->parseLiteral(new ObjectTypeDefinitionNode()));
     }
 
     /**

@@ -6,7 +6,7 @@ use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 
-class ObjectTypeDefinitionNode implements NodeInterface
+class IntDefinitionNode implements NodeInterface
 {
 
     use KindTrait;
@@ -19,15 +19,7 @@ class ObjectTypeDefinitionNode implements NodeInterface
     protected function configure(): array
     {
         return [
-            'kind' => KindEnum::OBJECT_TYPE_DEFINITION,
+            'kind' => KindEnum::INT,
         ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getValue()
-    {
-        // TODO: Implement getValue() method.
     }
 }

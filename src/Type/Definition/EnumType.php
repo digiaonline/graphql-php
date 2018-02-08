@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
@@ -68,7 +69,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
             /** @var EnumValue $enumValue */
             $enumValue = $this->getValueByName($value);
 
-            if ($enumValue) {
+            if ($enumValue !== null) {
                 return $enumValue->getValue();
             }
         }
@@ -85,7 +86,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
             /** @var EnumValue $enumValue */
             $enumValue = $this->getValueByName($astNode->getValue());
 
-            if ($enumValue) {
+            if ($enumValue !== null) {
                 return $enumValue->getValue();
             }
         }

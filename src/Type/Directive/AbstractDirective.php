@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\TypeSystem;
 
 use Digia\GraphQL\Type\Definition\ArgumentsTrait;
-use Digia\GraphQL\Type\Definition\ConfigTrait;
+use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Type\Definition\DescriptionTrait;
 use Digia\GraphQL\Type\Definition\NameTrait;
 use Digia\GraphQL\Type\Directive\DirectiveInterface;

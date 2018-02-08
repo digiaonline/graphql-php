@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
 use Digia\GraphQL\Language\AST\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Test\Unit\TestCase;
-use Digia\GraphQL\Type\Definition\ConfigTrait;
+use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Type\Definition\ExtensionASTNodesTrait;
 
 class ExtensionASTNodesTraitTest extends TestCase

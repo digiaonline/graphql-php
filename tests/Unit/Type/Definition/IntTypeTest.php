@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
+use Digia\GraphQL\Language\AST\Node\IntDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\IntType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
@@ -64,6 +66,24 @@ class IntTypeTest extends AbstractTypeTestCase
     public function testParseInvalidValues($value)
     {
         $this->type->parseValue($value);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testParseLiteralWithValidValues()
+    {
+        $this->assertEquals(42, $this->type->parseLiteral(new IntDefinitionNode([
+            'value' => 42,
+        ])));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testParseLiteralWithInvalidValues()
+    {
+        $this->assertNull($this->type->parseLiteral(new ObjectTypeDefinitionNode()));
     }
 
     /**

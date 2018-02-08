@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
+use Digia\GraphQL\Language\AST\Node\BooleanDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\BooleanType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
@@ -64,6 +66,24 @@ class BooleanTypeTest extends AbstractTypeTestCase
     public function testParseValueWithInvalidValues($value)
     {
         $this->type->parseValue($value);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testParseLiteralWithValidValues()
+    {
+        $this->assertEquals(true, $this->type->parseLiteral(new BooleanDefinitionNode([
+            'value' => true,
+        ])));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testParseLiteralWithInvalidValues()
+    {
+        $this->assertNull($this->type->parseLiteral(new ObjectTypeDefinitionNode()));
     }
 
     /**

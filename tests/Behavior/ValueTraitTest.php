@@ -1,10 +1,10 @@
 <?php
 
-namespace Digia\GraphQL\Test\Unit\Type\Definition;
+namespace Digia\GraphQL\Test\Unit\Behavior;
 
 use Digia\GraphQL\Test\Unit\TestCase;
-use Digia\GraphQL\Type\Definition\ConfigTrait;
-use Digia\GraphQL\Type\Definition\ValueTrait;
+use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\Behavior\ValueTrait;
 
 class ValueTraitTest extends TestCase
 {

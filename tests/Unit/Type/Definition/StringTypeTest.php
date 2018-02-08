@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
+use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\StringDefinitionNode;
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\StringType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
@@ -64,6 +66,24 @@ class StringTypeTest extends AbstractTypeTestCase
     public function testParseInvalidValues($value)
     {
         $this->type->parseValue($value);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testParseLiteralWithValidValues()
+    {
+        $this->assertEquals('foo', $this->type->parseLiteral(new StringDefinitionNode([
+            'value' => 'foo',
+        ])));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testParseLiteralWithInvalidValues()
+    {
+        $this->assertNull($this->type->parseLiteral(new ObjectTypeDefinitionNode()));
     }
 
     /**
