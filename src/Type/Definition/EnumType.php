@@ -3,10 +3,17 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
+use Digia\GraphQL\Type\Behavior\NameTrait;
+use Digia\GraphQL\Type\Contract\InputTypeInterface;
+use Digia\GraphQL\Type\Contract\LeafTypeInterface;
+use Digia\GraphQL\Type\Contract\OutputTypeInterface;
+use Digia\GraphQL\Type\Contract\TransformInterface;
+use Digia\GraphQL\Type\Contract\TypeInterface;
 
 /**
  * Enum Type Definition

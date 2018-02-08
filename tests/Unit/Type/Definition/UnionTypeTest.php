@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
 use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
+use Digia\GraphQL\Type\Contract\TypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 
 /**
@@ -63,10 +63,8 @@ class UnionTypeTest extends AbstractTypeTestCase
 
 class DogType extends ObjectType
 {
-
 }
 
 class CatType extends ObjectType
 {
-
 }

@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
 use Digia\GraphQL\Test\Unit\TestCase;
-use Digia\GraphQL\Type\Definition\BooleanType;
 use Digia\GraphQL\Type\Definition\NonNullType;
+use Digia\GraphQL\Type\Definition\Scalar\BooleanType;
 
 class NonNullTypeTest extends TestCase
 {

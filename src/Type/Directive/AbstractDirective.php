@@ -4,7 +4,7 @@ namespace Digia\GraphQL\TypeSystem;
 
 use Digia\GraphQL\Type\Definition\ArgumentsTrait;
 use Digia\GraphQL\Behavior\ConfigTrait;
-use Digia\GraphQL\Type\Definition\DescriptionTrait;
+use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Type\Definition\NameTrait;
 use Digia\GraphQL\Type\Directive\DirectiveInterface;
 use Digia\GraphQL\TypeSystem\Directive\DirectiveLocationEnum;

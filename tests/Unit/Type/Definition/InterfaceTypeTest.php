@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Test\Unit\Type\Definition;
 use Digia\GraphQL\Language\AST\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InterfaceType;
-use Digia\GraphQL\Type\Definition\StringType;
+use Digia\GraphQL\Type\Definition\Scalar\StringType;
 
 /**
  * Class UnionTypeTest

@@ -3,14 +3,11 @@
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
-use Digia\GraphQL\Test\Unit\TestCase;
-use Digia\GraphQL\Type\Definition\EnumType;
-use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InterfaceType;
-use Digia\GraphQL\Type\Definition\IntType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\StringType;
+use Digia\GraphQL\Type\Definition\Scalar\IntType;
+use Digia\GraphQL\Type\Definition\Scalar\StringType;
 
 /**
  * Class ObjectTypeTest

@@ -5,8 +5,8 @@ namespace Digia\GraphQL\Test\Unit\Type\Definition;
 use Digia\GraphQL\Language\AST\Node\FieldDefinitionNode;
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\Field;
-use Digia\GraphQL\Type\Definition\IDType;
-use Digia\GraphQL\Type\Definition\StringType;
+use Digia\GraphQL\Type\Definition\Scalar\IDType;
+use Digia\GraphQL\Type\Definition\Scalar\StringType;
 
 class FieldTest extends TestCase
 {

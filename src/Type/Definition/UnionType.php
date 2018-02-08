@@ -3,9 +3,15 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
-
+use Digia\GraphQL\Type\Behavior\NameTrait;
+use Digia\GraphQL\Type\Behavior\ResolveTypeTrait;
+use Digia\GraphQL\Type\Contract\AbstractTypeInterface;
+use Digia\GraphQL\Type\Contract\CompositeTypeInterface;
+use Digia\GraphQL\Type\Contract\OutputTypeInterface;
+use Digia\GraphQL\Type\Contract\TypeInterface;
 
 /**
  * Union Type Definition
@@ -37,7 +43,7 @@ use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
  * @package Digia\GraphQL\Type\Definition
  * @property UnionTypeDefinitionNode $astNode
  */
-class UnionType implements AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface
+class UnionType implements TypeInterface, AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;

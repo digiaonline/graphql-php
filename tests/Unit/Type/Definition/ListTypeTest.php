@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\ListType;
-use Digia\GraphQL\Type\Definition\StringType;
+use Digia\GraphQL\Type\Definition\Scalar\StringType;
 
 class ListTypeTest extends TestCase
 {

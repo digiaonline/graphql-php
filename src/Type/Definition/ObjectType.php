@@ -3,8 +3,17 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
+use Digia\GraphQL\Type\Behavior\ExtensionASTNodesTrait;
+use Digia\GraphQL\Type\Behavior\FieldsTrait;
+use Digia\GraphQL\Type\Behavior\NameTrait;
+use Digia\GraphQL\Type\Behavior\ResolveTrait;
+use Digia\GraphQL\Type\Contract\CompositeTypeInterface;
+use Digia\GraphQL\Type\Contract\NamedTypeInterface;
+use Digia\GraphQL\Type\Contract\OutputTypeInterface;
+use Digia\GraphQL\Type\Contract\TypeInterface;
 
 /**
  * Object Type Definition

@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Test\Unit\Type\Definition;
 
 use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
-use Digia\GraphQL\Type\Definition\FloatType;
 use Digia\GraphQL\Type\Definition\InputField;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\NonNullType;
+use Digia\GraphQL\Type\Definition\Scalar\FloatType;
 
 /**
  * Class InputObjectTypeTest

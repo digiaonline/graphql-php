@@ -3,9 +3,12 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\Behavior\DescriptionTrait;
 use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\EnumValueDefinitionNode;
+use Digia\GraphQL\Type\Behavior\DeprecationTrait;
+use Digia\GraphQL\Type\Behavior\NameTrait;
 
 /**
  * Class EnumValue

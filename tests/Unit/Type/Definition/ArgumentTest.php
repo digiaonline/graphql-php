@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Test\Unit\Type\Definition;
 use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
 use Digia\GraphQL\Test\Unit\TestCase;
 use Digia\GraphQL\Type\Definition\Argument;
-use Digia\GraphQL\Type\Definition\IntType;
+use Digia\GraphQL\Type\Definition\Scalar\IntType;
 
 class ArgumentTest extends TestCase
 {
