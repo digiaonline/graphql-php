@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Behavior;
+namespace Digia\GraphQL\Type\Definition\Behavior;
 
 trait DescriptionTrait
 {

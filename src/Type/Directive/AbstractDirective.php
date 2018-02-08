@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Type\Directive;
 use Digia\GraphQL\Type\Definition\Behavior\ArgumentsTrait;
 use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Behavior\ConfigTrait;
-use Digia\GraphQL\Behavior\DescriptionTrait;
+use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 
 abstract class AbstractDirective implements DirectiveInterface
 {

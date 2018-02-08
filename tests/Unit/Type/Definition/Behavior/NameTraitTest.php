@@ -24,7 +24,7 @@ class NameTraitTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testSetName()
+    public function testGetName()
     {
         $this->assertEquals('Dummy', $this->instance->getName());
     }
