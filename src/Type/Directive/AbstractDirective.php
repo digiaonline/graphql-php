@@ -1,13 +1,11 @@
 <?php
 
-namespace Digia\GraphQL\TypeSystem;
+namespace Digia\GraphQL\Type\Directive;
 
-use Digia\GraphQL\Type\Definition\ArgumentsTrait;
+use Digia\GraphQL\Type\Behavior\ArgumentsTrait;
+use Digia\GraphQL\Type\Behavior\NameTrait;
 use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Behavior\DescriptionTrait;
-use Digia\GraphQL\Type\Definition\NameTrait;
-use Digia\GraphQL\Type\Directive\DirectiveInterface;
-use Digia\GraphQL\TypeSystem\Directive\DirectiveLocationEnum;
 
 abstract class AbstractDirective implements DirectiveInterface
 {
@@ -18,12 +16,12 @@ abstract class AbstractDirective implements DirectiveInterface
     use ConfigTrait;
 
     /**
-     * @var DirectiveLocationEnum[]
+     * @var string[]
      */
     private $locations;
 
     /**
-     * @return DirectiveLocationEnum[]
+     * @return string[]
      */
     public function getLocations(): array
     {
@@ -31,10 +29,10 @@ abstract class AbstractDirective implements DirectiveInterface
     }
 
     /**
-     * @param DirectiveLocationEnum $location
+     * @param string $location
      * @return $this
      */
-    public function addLocation(DirectiveLocationEnum $location)
+    public function addLocation(string $location)
     {
         $this->locations[] = $location;
 
@@ -42,7 +40,7 @@ abstract class AbstractDirective implements DirectiveInterface
     }
 
     /**
-     * @param DirectiveLocationEnum[] $locations
+     * @param string[] $locations
      * @return $this
      */
     protected function setLocations(array $locations)

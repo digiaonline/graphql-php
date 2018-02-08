@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\TypeSystem\Directive;
+namespace Digia\GraphQL\Language\AST;
 
 class DirectiveLocationEnum
 {

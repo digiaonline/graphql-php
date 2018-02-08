@@ -22,11 +22,11 @@ use Digia\GraphQL\Type\Definition\Scalar\IDType;
 use Digia\GraphQL\Type\Definition\Scalar\IntType;
 use Digia\GraphQL\Type\Definition\Scalar\StringType;
 use Digia\GraphQL\Type\Definition\UnionType;
+use Digia\GraphQL\Type\Directive\AbstractDirective;
 use Digia\GraphQL\Type\Directive\DeprecatedDirective;
 use Digia\GraphQL\Type\Directive\DirectiveInterface;
 use Digia\GraphQL\Type\Directive\IncludeDirective;
 use Digia\GraphQL\Type\Directive\SkipDirective;
-use Digia\GraphQL\TypeSystem\AbstractDirective;
 use function Digia\GraphQL\Util\invariant;
 
 /**

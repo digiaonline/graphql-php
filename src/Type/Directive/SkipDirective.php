@@ -2,10 +2,9 @@
 
 namespace Digia\GraphQL\Type\Directive;
 
-use Digia\GraphQL\Type\Definition\BooleanType;
+use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
 use Digia\GraphQL\Type\Definition\NonNullType;
-use Digia\GraphQL\TypeSystem\AbstractDirective;
-use Digia\GraphQL\TypeSystem\Directive\DirectiveLocationEnum;
+use Digia\GraphQL\Type\Definition\Scalar\BooleanType;
 
 class SkipDirective extends AbstractDirective
 {
