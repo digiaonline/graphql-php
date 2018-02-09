@@ -20,30 +20,15 @@ class FloatType extends ScalarType
             'values as specified by ' .
             '[IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).'
         );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function serialize($value)
-    {
-        return $this->coerceValue($value);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseValue($value)
-    {
-        return $this->coerceValue($value);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseLiteral(NodeInterface $astNode, ...$args)
-    {
-        return in_array($astNode->getKind(), [KindEnum::FLOAT, KindEnum::INT]) ? $astNode->getValue() : null;
+        $this->setSerialize(function ($value) {
+            return $this->coerceValue($value);
+        });
+        $this->setParseValue(function ($value) {
+            return $this->coerceValue($value);
+        });
+        $this->setParseLiteral(function (NodeInterface $astNode) {
+            return in_array($astNode->getKind(), [KindEnum::FLOAT, KindEnum::INT]) ? $astNode->getValue() : null;
+        });
     }
 
     /**

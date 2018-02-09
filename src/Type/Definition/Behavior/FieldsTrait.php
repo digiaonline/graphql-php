@@ -77,7 +77,7 @@ trait FieldsTrait
     {
         // Fields are lazy-loaded to avoid concurrency issues.
         if ($this->_fieldMap === null) {
-            $this->_fieldMap = defineFieldMap($this, $this->_fieldsThunk);
+            $this->_fieldMap = $this->defineFieldMap($this->_fieldsThunk);
         }
     }
 
@@ -91,41 +91,45 @@ trait FieldsTrait
 
         return $this;
     }
-}
 
-/**
- * @param mixed $type
- * @param mixed $fields
- * @return array
- * @throws \Exception
- */
-function defineFieldMap($type, $fieldsThunk): array
-{
-    $fields = resolveThunk($fieldsThunk) ?: [];
-
-    invariant(
-        isAssocArray($fields),
-        sprintf(
-            '%s fields must be an associative array with field names as key or a callable which returns such an array.',
-            $type->getName()
-        )
-    );
-
-    $fieldMap = [];
-
-    foreach ($fields as $fieldName => $fieldConfig) {
-        invariant(
-            is_array($fieldConfig),
-            sprintf('%s.%s field config must be an object', $type->getName(), $fieldName)
-        );
+    /**
+     * @param mixed $fieldsThunk
+     * @return array
+     * @throws \Exception
+     */
+    protected function defineFieldMap($fieldsThunk): array
+    {
+        $fields = resolveThunk($fieldsThunk) ?: [];
 
         invariant(
-            !isset($fieldConfig['isDeprecated']),
-            sprintf('%s.%s should provide "deprecationReason" instead of "isDeprecated".', $type->getName(), $fieldName)
+            isAssocArray($fields),
+            sprintf(
+                '%s fields must be an associative array with field names as key or a callable which returns such an array.',
+                $this->getName()
+            )
         );
 
-        $fieldMap[$fieldName] = new Field(array_merge($fieldConfig, ['name' => $fieldName]));
+        $fieldMap = [];
+
+        foreach ($fields as $fieldName => $fieldConfig) {
+            invariant(
+                is_array($fieldConfig),
+                sprintf('%s.%s field config must be an object', $this->getName(), $fieldName)
+            );
+
+            invariant(
+                !isset($fieldConfig['isDeprecated']),
+                sprintf(
+                    '%s.%s should provide "deprecationReason" instead of "isDeprecated".',
+                    $this->getName(),
+                    $fieldName
+                )
+            );
+
+            $fieldMap[$fieldName] = new Field(array_merge($fieldConfig, ['name' => $fieldName]));
+        }
+
+        return $fieldMap;
     }
 
-    return $fieldMap;
 }

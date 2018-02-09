@@ -14,7 +14,9 @@ use Digia\GraphQL\Type\Definition\Contract\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\instantiateFromArray;
+use function Digia\GraphQL\Util\invariant;
 
 /**
  * Object Type Definition
@@ -65,37 +67,43 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     use ConfigTrait;
 
     /**
-     * @var InterfaceType[]
-     */
-    private $interfaces = [];
-
-    /**
      * @var callable
      */
     private $isTypeOf;
 
     /**
+     * @var array|callable
+     */
+    private $_interfacesThunk;
+
+    /**
+     * @var InterfaceType[]
+     */
+    private $_interfaces;
+
+    /**
+     * @inheritdoc
      * @throws \Exception
      */
     protected function afterConfig(): void
     {
-        // TODO: Uncomment when it is time.
+        invariant(
+            $this->getName() !== null,
+            'Must provide name.'
+        );
 
-//        invariant(
-//            $this->getName() !== null,
-//            'Must provide name.'
-//        );
-//
-//        invariant(
-//            $this->getIsTypeOf() !== null,
-//            sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
-//        );
+        if ($this->getIsTypeOf() !== null) {
+            invariant(
+                is_callable($this->getIsTypeOf()),
+                sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
+            );
+        }
     }
 
     /**
      * @param mixed $value
      * @param mixed context
-     * @param $info
+     * @param       $info
      * @return bool
      */
     public function isTypeOf($value, $context, $info): bool
@@ -105,10 +113,13 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
 
     /**
      * @return InterfaceType[]
+     * @throws \Exception
      */
     public function getInterfaces(): array
     {
-        return $this->interfaces;
+        $this->buildInterfaces();
+
+        return $this->_interfaces;
     }
 
     /**
@@ -122,10 +133,13 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     /**
      * @param InterfaceType $interface
      * @return $this
+     * @throws \Exception
      */
     protected function addInterface(InterfaceType $interface)
     {
-        $this->interfaces[] = $interface;
+        $this->buildInterfaces();
+
+        $this->_interfaces[] = $interface;
 
         return $this;
     }
@@ -133,6 +147,7 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     /**
      * @param array $interfaces
      * @return $this
+     * @throws \Exception
      */
     protected function addInterfaces(array $interfaces)
     {
@@ -144,12 +159,12 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     }
 
     /**
-     * @param array $interfaces
+     * @param array $interfacesThunk
      * @return $this
      */
-    protected function setInterfaces(array $interfaces)
+    protected function setInterfaces(array $interfacesThunk)
     {
-        $this->addInterfaces(instantiateFromArray(InterfaceType::class, $interfaces));
+        $this->_interfacesThunk = $interfacesThunk;
 
         return $this;
     }
@@ -163,5 +178,33 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
         $this->isTypeOf = $isTypeOf;
 
         return $this;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function buildInterfaces()
+    {
+        if ($this->_interfaces === null) {
+            $this->_interfaces = $this->defineInterfaces($this->_interfacesThunk);
+        }
+    }
+
+    /**
+     * @param ObjectType     $type
+     * @param array|callable $interfacesThunk
+     * @return array
+     * @throws \Exception
+     */
+    protected function defineInterfaces($interfacesThunk): array
+    {
+        $interfaces = resolveThunk($interfacesThunk) ?: [];
+
+        invariant(
+            is_array($interfaces),
+            sprintf('%s interfaces must be an array or a function which returns an array.', $this->getName())
+        );
+
+        return $interfaces;
     }
 }

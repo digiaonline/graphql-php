@@ -157,7 +157,7 @@ class DefinitionTest extends TestCase
         $this->objectType      = GraphQLObjectType(['name' => 'Object']);
         $this->interfaceType   = GraphQLInterfaceType(['name' => 'Interface']);
         $this->unionType       = GraphQLUnionType(['name' => 'Union', 'types' => [$this->objectType]]);
-        $this->enumType        = GraphQLUnionType(['name' => 'Enum', 'values' => ['foo' => []]]);
+        $this->enumType        = GraphQLEnumType(['name' => 'Enum', 'values' => ['foo' => []]]);
         $this->inputObjectType = GraphQLInputObjectType(['name' => 'InputObject']);
         $this->scalarType      = GraphQLScalarType([
             'name'         => 'Scalar',
@@ -173,6 +173,7 @@ class DefinitionTest extends TestCase
     /**
      * @param TypeInterface $type
      * @return Schema
+     * @throws \Exception
      */
     protected function schemaWithField(TypeInterface $type): Schema
     {
@@ -184,8 +185,37 @@ class DefinitionTest extends TestCase
                 ],
             ]),
             'types' => [$type],
-        ]);
+        ])->build();
     }
+
+    /**
+     * @param $resolveValue
+     * @return Schema
+     * @throws \Exception
+     */
+    protected function schemaWithObjectWithFieldResolver($resolveValue): Schema
+    {
+        $badResolverType = GraphQLObjectType([
+            'name'   => 'BadResolver',
+            'fields' => [
+                'badField' => [
+                    'type'    => GraphQLString(),
+                    'resolve' => $resolveValue
+                ],
+            ],
+        ]);
+
+        return GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Query',
+                'fields' => [
+                    'f' => ['type' => $badResolverType],
+                ],
+            ])
+        ])->build();
+    }
+
+    // Type System: Example
 
     /**
      * @throws \Exception
@@ -424,7 +454,7 @@ class DefinitionTest extends TestCase
         // We cannot use the class fields here because they do not get instantiated for data providers.
         return [
             [GraphQLInt(), true],
-            [GraphQLObjectType(), true],
+            [GraphQLObjectType(['name' => 'Object']), true],
             [GraphQLInterfaceType(), true],
             [GraphQLUnionType(), true],
             [GraphQLEnumType(), true],
@@ -438,6 +468,8 @@ class DefinitionTest extends TestCase
     public function testProhibitsNestingNonNullInsideNonNull()
     {
         GraphQLNonNull(GraphQLNonNull(GraphQLInt()));
+
+        $this->addToAssertionCount(1);
     }
 
     /**
@@ -502,7 +534,7 @@ class DefinitionTest extends TestCase
         $this->assertInstanceOf(StringType::class, $fields['field2']['args']['id']['type']);
     }
 
-    // TODO: Assess if we want to test 'accepts an Object type with a field function'.
+    // TODO: Assess if we want to test "accepts an Object type with a field function".
 
     /**
      * @expectedException \Exception
@@ -515,6 +547,8 @@ class DefinitionTest extends TestCase
         ]);
 
         $objType->getFields();
+
+        $this->addToAssertionCount(1);
     }
 
     /**
@@ -528,6 +562,8 @@ class DefinitionTest extends TestCase
         ]);
 
         $objType->getFields();
+
+        $this->addToAssertionCount(1);
     }
 
     /**
@@ -543,7 +579,11 @@ class DefinitionTest extends TestCase
         ]);
 
         $objType->getFields();
+
+        $this->addToAssertionCount(1);
     }
+
+    // Field arg config must be object
 
     /**
      * @throws \Exception
@@ -584,7 +624,285 @@ class DefinitionTest extends TestCase
         ]);
 
         $objType->getFields();
+
+        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testDoesNotAllowIsDeprecatedWithoutDeprecationReasonOnField()
+    {
+        $oldObject = GraphQLObjectType([
+            'name'   => 'OldObject',
+            'fields' => [
+                'field' => [
+                    'type'         => GraphQLString(),
+                    'isDeprecated' => true,
+                ],
+            ],
+        ]);
 
+        $this->schemaWithField($oldObject);
+
+        $this->addToAssertionCount(1);
+    }
+
+    // Object interfaces must be array
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnObjectTypeWithArrayInterfaces()
+    {
+        $objType = GraphQLObjectType([
+            'name'       => 'SomeObject',
+            'interfaces' => [$this->interfaceType],
+            'fields'     => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $this->assertEquals($this->interfaceType, $objType->getInterfaces()[0]);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnObjectTypeWithInterfacesAsAFunctionReturningAnArray()
+    {
+        $objType = GraphQLObjectType([
+            'name'       => 'SomeObject',
+            'interfaces' => [$this->interfaceType],
+            'fields'     => [
+                'f' => function () {
+                    return ['type' => GraphQLString()];
+                },
+            ],
+        ]);
+
+        $this->assertEquals($this->interfaceType, $objType->getInterfaces()[0]);
+    }
+
+    // TODO: Assess if we want to test "rejects an Object type with incorrectly typed interfaces".
+
+    // TODO: Assess if we want to test "rejects an Object type with interfaces as a function returning an incorrect type".
+
+    // Type System: Object fields must have valid resolve values
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsALambdaAsAnObjectFieldResolver()
+    {
+        $this->schemaWithObjectWithFieldResolver(function () {
+            return [];
+        });
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @expectedException \TypeError
+     * @throws \Exception
+     */
+    public function testRejectsAnEmptyArrayFieldResolver()
+    {
+        $this->schemaWithObjectWithFieldResolver([]);
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @expectedException \TypeError
+     * @throws \Exception
+     */
+    public function testRejectsAnScalarFieldResolver()
+    {
+        $this->schemaWithObjectWithFieldResolver(0);
+
+        $this->addToAssertionCount(1);
+    }
+
+    // Type System: Interface types must be resolvable
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnInterfaceTypeDefiningResolveType()
+    {
+        $anotherInterfaceType = GraphQLInterfaceType([
+            'name'        => 'AnotherInterface',
+            'fields'      => ['f' => ['type' => GraphQLString()]],
+            'resolveType' => function () {
+                return '';
+            }
+        ]);
+
+        $this->schemaWithField(
+            GraphQLObjectType([
+                'name'       => 'SomeObject',
+                'interfaces' => [$anotherInterfaceType],
+                'fields'     => ['f' => ['type' => GraphQLString()]],
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnInterfaceTypeWithImplementingTypeDefiningIsTypeOf()
+    {
+        $anotherInterfaceType = GraphQLInterfaceType([
+            'name'   => 'AnotherInterface',
+            'fields' => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $this->schemaWithField(
+            GraphQLObjectType([
+                'name'       => 'SomeObject',
+                'interfaces' => [$anotherInterfaceType],
+                'fields'     => ['f' => ['type' => GraphQLString()]],
+                'isTypeOf'   => function () {
+                    return true;
+                },
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnInterfaceTypeDefiningResolveTypeWithImplementingTypeDefiningIsTypeOf()
+    {
+        $anotherInterfaceType = GraphQLInterfaceType([
+            'name'        => 'AnotherInterface',
+            'fields'      => ['f' => ['type' => GraphQLString()]],
+            'resolveType' => function () {
+                return '';
+            }
+        ]);
+
+        $this->schemaWithField(
+            GraphQLObjectType([
+                'name'       => 'SomeObject',
+                'interfaces' => [$anotherInterfaceType],
+                'fields'     => ['f' => ['type' => GraphQLString()]],
+                'isTypeOf'   => function () {
+                    return true;
+                },
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @expectedException \TypeError
+     */
+    public function testRejectsAnInterfaceTypeWithAnIncorrectTypeForResolveType1()
+    {
+        GraphQLInterfaceType([
+            'name'        => 'AnotherInterface',
+            'resolveType' => [],
+            'fields'      => ['f' => ['type' => GraphQLString()]],
+        ]);
+    }
+
+    // Type System: Union types must be resolvable
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsUnionTypeDefiningResolveType()
+    {
+        $this->schemaWithField(
+            GraphQLUnionType([
+                'name'  => 'SomeUnion',
+                'types' => [$this->objectType],
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAUnionOfObjectTypesDefiningIsTypeOf()
+    {
+        $objectWithIsTypeOf = GraphQLObjectType([
+            'name'   => 'ObjectWithIsTypeOf',
+            'fields' => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $this->schemaWithField(
+            GraphQLUnionType([
+                'name'  => 'SomeUnion',
+                'types' => [$objectWithIsTypeOf],
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    // TODO: Assess if we want to test "accepts a Union type defining resolveType of Object types defining isTypeOf".
+
+    /**
+     * @throws \Exception
+     * @expectedException \TypeError
+     */
+    public function testRejectsAnInterfaceTypeWithAnIncorrectTypeForResolveType2()
+    {
+        $objectWithIsTypeOf = GraphQLObjectType([
+            'name'   => 'ObjectWithIsTypeOf',
+            'fields' => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $this->schemaWithField(
+            GraphQLUnionType([
+                'name'        => 'SomeUnion',
+                'resolveType' => [],
+                'types'       => [$objectWithIsTypeOf],
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    // Type System: Scalar types must be serializable
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAScalarTypeDefiningSerialize()
+    {
+        $this->schemaWithField(
+            GraphQLScalarType([
+                'name'      => 'SomeScalar',
+                'serialize' => function () {
+                    return null;
+                },
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \Exception
+     */
+    public function testRejectsAScalarTypeNotDefiningSerialize()
+    {
+        $this->schemaWithField(
+            GraphQLScalarType([
+                'name' => 'SomeScalar',
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
 }

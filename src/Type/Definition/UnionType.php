@@ -76,18 +76,7 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     {
         $this->buildTypeMap();
 
-        return $this->_typeMap ?? [];
-    }
-
-    /**
-     * @throws \Exception
-     */
-    protected function buildTypeMap()
-    {
-        // Types are lazy-loaded to avoid concurrency issues.
-        if ($this->_typeMap === null) {
-            $this->_typeMap = defineTypes($this, $this->_typesThunk);
-        }
+        return $this->_typeMap;
     }
 
     /**
@@ -100,22 +89,35 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
 
         return $this;
     }
-}
 
-/**
- * @param UnionType $type
- * @param mixed     $typesThunk
- * @return array
- * @throws \Exception
- */
-function defineTypes(UnionType $type, $typesThunk): array
-{
-    $types = resolveThunk($typesThunk) ?: [];
+    /**
+     * @throws \Exception
+     */
+    protected function buildTypeMap()
+    {
+        // Types are lazy-loaded to avoid concurrency issues.
+        if ($this->_typeMap === null) {
+            $this->_typeMap = $this->defineTypes($this->_typesThunk);
+        }
+    }
 
-    invariant(
-        is_array($types),
-        sprintf('Must provide Array of types or a function which returns such an array for Union %s.', $type->getName())
-    );
+    /**
+     * @param array|callable $typesThunk
+     * @return array
+     * @throws \Exception
+     */
+    protected function defineTypes($typesThunk): array
+    {
+        $types = resolveThunk($typesThunk) ?: [];
 
-    return $types;
+        invariant(
+            is_array($types),
+            sprintf(
+                'Must provide Array of types or a function which returns such an array for Union %s.',
+                $this->getName()
+            )
+        );
+
+        return $types;
+    }
 }

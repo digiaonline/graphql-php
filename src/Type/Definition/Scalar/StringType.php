@@ -21,34 +21,20 @@ class StringType extends ScalarType
             'character sequences. The String type is most often used by GraphQL to ' .
             'represent free-form human-readable text.'
         );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function serialize($value)
-    {
-        return $this->coerceValue($value);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseValue($value)
-    {
-        return $this->coerceValue($value);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseLiteral(NodeInterface $astNode, ...$args)
-    {
-        return $astNode->getKind() === KindEnum::STRING ? $astNode->getValue() : null;
+        $this->setSerialize(function ($value) {
+            return $this->coerceValue($value);
+        });
+        $this->setParseValue(function ($value) {
+            return $this->coerceValue($value);
+        });
+        $this->setParseLiteral(function (NodeInterface $astNode) {
+            return $astNode->getKind() === KindEnum::STRING ? $astNode->getValue() : null;
+        });
     }
 
     /**
      * @param $value
+     * @return string
      * @throws \TypeError
      */
     private function coerceValue($value): string

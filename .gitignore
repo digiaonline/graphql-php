@@ -1,7 +1,7 @@
 /.idea/dictionaries
 /.idea/workspace.xml
-/vendor/
 /coverage/
+/vendor/
+/tests/Unit/
 clover.xml
 composer.lock
-

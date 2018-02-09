@@ -153,6 +153,7 @@ class Schema
 
     /**
      * @return Schema
+     * @throws \Exception
      */
     public function build(): Schema
     {
@@ -236,6 +237,7 @@ class Schema
     /**
      * @param AbstractTypeInterface $abstractType
      * @return null|TypeInterface[]
+     * @throws \Exception
      */
     protected function getPossibleTypes(AbstractTypeInterface $abstractType): ?array
     {

@@ -22,30 +22,15 @@ class IntType extends ScalarType
             'The `Int` scalar type represents non-fractional signed whole numeric ' .
             'values. Int can represent values between -(2^31) and 2^31 - 1.'
         );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function serialize($value)
-    {
-        return $this->coerceValue($value);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseValue($value)
-    {
-        return $this->coerceValue($value);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseLiteral(NodeInterface $astNode)
-    {
-        return $astNode->getKind() === KindEnum::INT ? $astNode->getValue() : null;
+        $this->setSerialize(function ($value) {
+            return $this->coerceValue($value);
+        });
+        $this->setParseValue(function ($value) {
+            return $this->coerceValue($value);
+        });
+        $this->setParseLiteral(function (NodeInterface $astNode) {
+            return $astNode->getKind() === KindEnum::INT ? $astNode->getValue() : null;
+        });
     }
 
     /**

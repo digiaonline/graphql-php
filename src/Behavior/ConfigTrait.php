@@ -73,7 +73,6 @@ trait ConfigTrait
     /**
      * @param array $config
      * @return $this
-     * @throws \InvalidArgumentException
      */
     protected function setConfig(array $config)
     {
@@ -84,8 +83,6 @@ trait ConfigTrait
                 $this->$setter($value);
             } elseif (property_exists($this, $key)) {
                 $this->$key = $value;
-            } else {
-//                throw new \InvalidArgumentException(sprintf('Trying to set non-existing property %s', $key));
             }
         }
 

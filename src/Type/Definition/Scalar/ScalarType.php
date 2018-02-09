@@ -13,6 +13,7 @@ use Digia\GraphQL\Type\Definition\Contract\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use function Digia\GraphQL\Util\invariant;
 
 /**
  * Class ScalarType
@@ -35,14 +36,38 @@ class ScalarType implements TypeInterface, LeafTypeInterface, NamedTypeInterface
     private $serialize;
 
     /**
-     * @var callable
+     * @var ?callable
      */
     private $parseValue;
 
     /**
-     * @var callable
+     * @var ?callable
      */
     private $parseLiteral;
+
+    /**
+     * @inheritdoc
+     * @throws \Exception
+     */
+    protected function afterConfig(): void
+    {
+        invariant(
+            is_callable($this->serialize),
+            sprintf(
+                '%s must provide "serialize" function. If this custom Scalar ' .
+                'is also used as an input type, ensure "parseValue" and "parseLiteral" ' .
+                'functions are also provided.',
+                $this->getName()
+            )
+        );
+
+        if ($this->parseValue !== null || $this->parseLiteral !== null) {
+            invariant(
+                is_callable($this->parseValue) && is_callable($this->parseLiteral),
+                sprintf('%s must provide both "parseValue" and "parseLiteral" functions.', $this->getName())
+            );
+        }
+    }
 
     /**
      * @param mixed $value
@@ -50,7 +75,7 @@ class ScalarType implements TypeInterface, LeafTypeInterface, NamedTypeInterface
      */
     public function serialize($value)
     {
-        return $this->serialize !== null ? $this->{$this->serialize}($value) : null;
+        return $this->{$this->serialize}($value);
     }
 
     /**

@@ -47,6 +47,9 @@ function resolveThunk($thunk): ?array
  */
 function isAssocArray(array $array): bool
 {
+    if (empty($array)) {
+        return true;
+    }
     $keys = array_keys($array);
     return $keys !== array_keys($keys);
 }

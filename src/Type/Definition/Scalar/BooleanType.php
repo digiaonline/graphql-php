@@ -16,30 +16,15 @@ class BooleanType extends ScalarType
     {
         $this->setName(TypeEnum::BOOLEAN);
         $this->setDescription('The `Boolean` scalar type represents `true` or `false`.');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function serialize($value)
-    {
-        return $this->coerceValue($value);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseValue($value)
-    {
-        return $this->coerceValue($value);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function parseLiteral(NodeInterface $astNode, ...$args)
-    {
-        return $astNode->getKind() === KindEnum::BOOLEAN ? $astNode->getValue() : null;
+        $this->setSerialize(function ($value) {
+            return $this->coerceValue($value);
+        });
+        $this->setParseValue(function ($value) {
+            return $this->coerceValue($value);
+        });
+        $this->setParseLiteral(function (NodeInterface $astNode) {
+            return $astNode->getKind() === KindEnum::BOOLEAN ? $astNode->getValue() : null;
+        });
     }
 
     /**
