@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Test\Unit;
+namespace Digia\GraphQL\Test;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
