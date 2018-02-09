@@ -25,4 +25,12 @@ class ListType implements TypeInterface, WrappingTypeInterface
     {
         $this->setOfType($ofType);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString(): string
+    {
+        return '[' . $this->getOfType() . ']';
+    }
 }

@@ -28,10 +28,6 @@ trait OfTypeTrait
      */
     protected function setOfType(TypeInterface $ofType)
     {
-        if ($ofType instanceof NonNullType) {
-            throw new \TypeError('NonNull cannot be of type NonNull');
-        }
-
         $this->ofType = $ofType;
 
         return $this;

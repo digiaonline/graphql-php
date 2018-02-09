@@ -34,6 +34,8 @@ trait ConfigTrait
      * Override this method to perform logic BEFORE configuration is applied.
      * This method is useful for setting default values for properties
      * that need to use new -keyword.
+     *
+     * If you do, just remember to call the parent implementation.
      */
     protected function beforeConfig(): void
     {
@@ -43,6 +45,8 @@ trait ConfigTrait
      * Override this method to perform logic AFTER configuration is applied.
      * This method is useful for configuring classes after instantiation,
      * e.g. adding a query type to a schema or adding fields to object types.
+     *
+     * If you do, just remember to call the parent implementation.
      */
     protected function afterConfig(): void
     {
@@ -69,6 +73,7 @@ trait ConfigTrait
     /**
      * @param array $config
      * @return $this
+     * @throws \InvalidArgumentException
      */
     protected function setConfig(array $config)
     {
@@ -79,8 +84,9 @@ trait ConfigTrait
                 $this->$setter($value);
             } elseif (property_exists($this, $key)) {
                 $this->$key = $value;
+            } else {
+//                throw new \InvalidArgumentException(sprintf('Trying to set non-existing property %s', $key));
             }
-            // TODO: Should we throw an exception here?
         }
 
         $this->config = $config;

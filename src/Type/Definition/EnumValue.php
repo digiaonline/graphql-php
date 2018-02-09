@@ -25,4 +25,15 @@ class EnumValue
     use ValueTrait;
     use NodeTrait;
     use ConfigTrait;
+
+    /**
+     *
+     */
+    protected function afterConfig(): void
+    {
+        if ($this->value === null) {
+            $this->value = $this->getName();
+        }
+    }
+
 }

@@ -8,14 +8,14 @@ trait NameTrait
     // TODO: Add support for automatically resolving the name from the class name
 
     /**
-     * @var ?string
+     * @var string
      */
     private $name;
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -36,6 +36,6 @@ trait NameTrait
      */
     public function __toString(): string
     {
-        return $this->name ?? '';
+        return $this->name;
     }
 }

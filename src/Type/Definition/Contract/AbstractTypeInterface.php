@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition\Contract;
 
-interface AbstractTypeInterface
+interface AbstractTypeInterface extends TypeInterface
 {
 
 }

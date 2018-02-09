@@ -43,7 +43,7 @@ use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
  * @package Digia\GraphQL\Type\Definition
  * @property UnionTypeDefinitionNode $astNode
  */
-class UnionType implements TypeInterface, AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface
+class UnionType implements AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
@@ -56,6 +56,14 @@ class UnionType implements TypeInterface, AbstractTypeInterface, CompositeTypeIn
      * @var TypeInterface[]
      */
     private $types;
+
+    /**
+     * @inheritdoc
+     */
+    protected function beforeConfig(): void
+    {
+        $this->setName(TypeEnum::UNION);
+    }
 
     /**
      * @return TypeInterface[]

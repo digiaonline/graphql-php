@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Type\Definition\TypeEnum;
 use Digia\GraphQL\Type\Exception\TypeErrorException;
 
-class StringType extends AbstractScalarType
+class StringType extends ScalarType
 {
 
     /**

@@ -7,7 +7,7 @@ use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 
-abstract class AbstractDirective implements DirectiveInterface
+class Directive implements DirectiveInterface
 {
 
     use NameTrait;

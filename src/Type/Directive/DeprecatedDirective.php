@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Type\Directive;
 use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
 use Digia\GraphQL\Type\Definition\Scalar\StringType;
 
-class DeprecatedDirective extends AbstractDirective
+class DeprecatedDirective extends Directive
 {
 
     const DEFAULT_DEPRECATION_VALUE = 'No longer supported';

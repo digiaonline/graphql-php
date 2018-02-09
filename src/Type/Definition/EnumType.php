@@ -12,8 +12,8 @@ use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\TransformInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use function Digia\GraphQL\Util\instantiateAssocFromArray;
 
 /**
  * Enum Type Definition
@@ -39,7 +39,7 @@ use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
  * @package Digia\GraphQL\Type\Definition\Enum
  * @property EnumTypeDefinitionNode $astNode
  */
-class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface, TransformInterface
+class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
@@ -55,6 +55,15 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     /**
      * @inheritdoc
      */
+    protected function beforeConfig(): void
+    {
+        $this->setName(TypeEnum::ENUM);
+    }
+
+    /**
+     * @param $value
+     * @return null|string
+     */
     public function serialize($value)
     {
         /** @var EnumValue $enumValue */
@@ -68,7 +77,8 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @inheritdoc
+     * @param $value
+     * @return mixed|null
      */
     public function parseValue($value)
     {
@@ -85,9 +95,10 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @inheritdoc
+     * @param NodeInterface $astNode
+     * @return mixed|null
      */
-    public function parseLiteral(NodeInterface $astNode, ...$args)
+    public function parseLiteral(NodeInterface $astNode)
     {
         if ($astNode->getKind() === KindEnum::ENUM) {
             /** @var EnumValue $enumValue */
@@ -163,11 +174,22 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
      * @param array $values
      * @return $this
      */
+    protected function addValues(array $values)
+    {
+        foreach ($values as $value) {
+            $this->addValue($value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $values
+     * @return $this
+     */
     protected function setValues(array $values)
     {
-        foreach ($values as $config) {
-            $this->addValue(new EnumValue($config));
-        }
+        $this->addValues(instantiateAssocFromArray(EnumValue::class, $values));
 
         return $this;
     }

@@ -14,7 +14,6 @@ use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 
 /**
  * Interface Type Definition
@@ -41,7 +40,7 @@ use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
  * @package Digia\GraphQL\Type\Definition
  * @property InterfaceTypeDefinitionNode $astNode
  */
-class InterfaceType implements TypeInterface, AbstractTypeInterface, CompositeTypeInterface, NamedTypeInterface, OutputTypeInterface
+class InterfaceType implements AbstractTypeInterface, CompositeTypeInterface, NamedTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
@@ -51,4 +50,12 @@ class InterfaceType implements TypeInterface, AbstractTypeInterface, CompositeTy
     use ExtensionASTNodesTrait;
     use ResolveTypeTrait;
     use ConfigTrait;
+
+    /**
+     * @inheritdoc
+     */
+    protected function beforeConfig(): void
+    {
+        $this->setName(TypeEnum::INTERFACE);
+    }
 }

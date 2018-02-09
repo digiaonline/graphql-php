@@ -25,4 +25,28 @@ class NonNullType implements TypeInterface, WrappingTypeInterface
     {
         $this->setOfType($ofType);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString(): string
+    {
+        return $this->getOfType() . '!';
+    }
+
+    /**
+     * @param TypeInterface $ofType
+     * @return $this
+     * @throws \TypeError
+     */
+    protected function setOfType(TypeInterface $ofType)
+    {
+        if ($ofType instanceof NonNullType) {
+            throw new \TypeError(sprintf('Expected %s to be a GraphQL nullable type.', $ofType));
+        }
+
+        $this->ofType = $ofType;
+
+        return $this;
+    }
 }

@@ -8,7 +8,7 @@ trait NodeTrait
     /**
      * @var ?NodeInterface
      */
-    protected $astNode;
+    private $astNode;
 
     /**
      * @return NodeInterface|null

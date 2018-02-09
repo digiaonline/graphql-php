@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type\Definition\Behavior;
 
 use Digia\GraphQL\Type\Definition\Argument;
+use function Digia\GraphQL\Util\instantiateAssocFromArray;
 
 trait ArgumentsTrait
 {
@@ -10,42 +11,42 @@ trait ArgumentsTrait
     /**
      * @var Argument[]
      */
-    private $arguments = [];
+    private $args = [];
 
     /**
      * @return bool
      */
-    public function hasArguments(): bool
+    public function hasArgs(): bool
     {
-        return !empty($this->arguments);
+        return !empty($this->args);
     }
 
     /**
      * @return Argument[]
      */
-    public function getArguments(): array
+    public function getArgs(): array
     {
-        return $this->arguments;
+        return $this->args;
     }
 
     /**
-     * @param Argument $argument
+     * @param Argument $arg
      * @return $this
      */
-    protected function addArgument(Argument $argument)
+    protected function addArgument(Argument $arg)
     {
-        $this->arguments[] = $argument;
+        $this->args[] = $arg;
 
         return $this;
     }
 
     /**
-     * @param array $arguments
+     * @param array $args
      * @return $this
      */
-    protected function addArguments(array $arguments)
+    protected function addArguments(array $args)
     {
-        foreach ($arguments as $argument) {
+        foreach ($args as $argument) {
             $this->addArgument($argument);
         }
 
@@ -53,14 +54,12 @@ trait ArgumentsTrait
     }
 
     /**
-     * @param Argument[] $arguments
+     * @param Argument[] $args
      * @return $this
      */
-    protected function setArguments(array $arguments)
+    protected function setArgs(array $args)
     {
-        $this->addArguments(array_map(function ($config) {
-            return new Argument($config);
-        }, $arguments));
+        $this->addArguments(instantiateAssocFromArray(Argument::class, $args));
 
         return $this;
     }

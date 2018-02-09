@@ -6,9 +6,9 @@ interface TypeInterface
 {
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getName(): ?string;
+    public function getName(): string;
 
     /**
      * @return string|null

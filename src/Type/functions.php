@@ -16,47 +16,23 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\Scalar\AbstractScalarType;
+use Digia\GraphQL\Type\Definition\Scalar\ScalarType;
 use Digia\GraphQL\Type\Definition\Scalar\BooleanType;
 use Digia\GraphQL\Type\Definition\Scalar\FloatType;
 use Digia\GraphQL\Type\Definition\Scalar\IDType;
 use Digia\GraphQL\Type\Definition\Scalar\IntType;
 use Digia\GraphQL\Type\Definition\Scalar\StringType;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Directive\AbstractDirective;
+use Digia\GraphQL\Type\Directive\Directive;
 use Digia\GraphQL\Type\Directive\DeprecatedDirective;
 use Digia\GraphQL\Type\Directive\DirectiveInterface;
 use Digia\GraphQL\Type\Directive\IncludeDirective;
 use Digia\GraphQL\Type\Directive\SkipDirective;
+use Digia\GraphQL\Type\Schema\Schema;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
-/**
- * @param $object
- * @return bool
- */
-function isPlainObj($object): bool
-{
-    return is_object($object);
-}
 
-/**
- * @param mixed $object
- * @return bool
- */
-function isDirective($object): bool
-{
-    return $object instanceof AbstractDirective;
-}
-
-/**
- * @param $type
- * @return bool
- */
-function isType($type): bool
-{
-    return $type instanceof TypeInterface;
-}
 
 /**
  * @param $type
@@ -65,18 +41,9 @@ function isType($type): bool
 function assertType($type)
 {
     invariant(
-        isType($type),
+        $type instanceof TypeInterface,
         sprintf(sprintf('Expected %s to be a GraphQL type.', toString($type)), toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isScalarType(TypeInterface $type): bool
-{
-    return $type instanceof AbstractScalarType;
 }
 
 /**
@@ -86,18 +53,9 @@ function isScalarType(TypeInterface $type): bool
 function assertScalarType(TypeInterface $type)
 {
     invariant(
-        isScalarType($type),
+        $type instanceof ScalarType,
         sprintf('Expected %s to be a GraphQL Scalar type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isObjectType(TypeInterface $type): bool
-{
-    return $type instanceof ObjectType;
 }
 
 /**
@@ -107,18 +65,9 @@ function isObjectType(TypeInterface $type): bool
 function assertObjectType(TypeInterface $type)
 {
     invariant(
-        isObjectType($type),
+        $type instanceof ObjectType,
         sprintf('Expected %s to be a GraphQL Object type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isInterfaceType(TypeInterface $type): bool
-{
-    return $type instanceof InterfaceType;
 }
 
 /**
@@ -128,18 +77,9 @@ function isInterfaceType(TypeInterface $type): bool
 function assertInterfaceType(TypeInterface $type)
 {
     invariant(
-        isInterfaceType($type),
+        $type instanceof InterfaceType,
         sprintf('Expected %s to be a GraphQL Interface type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isUnionType(TypeInterface $type): bool
-{
-    return $type instanceof UnionType;
 }
 
 /**
@@ -149,18 +89,9 @@ function isUnionType(TypeInterface $type): bool
 function assertUnionType(TypeInterface $type)
 {
     invariant(
-        isUnionType($type),
+        $type instanceof UnionType,
         sprintf('Expected %s to be a GraphQL Union type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isEnumType(TypeInterface $type): bool
-{
-    return $type instanceof EnumType;
 }
 
 /**
@@ -170,18 +101,9 @@ function isEnumType(TypeInterface $type): bool
 function assertEnumType(TypeInterface $type)
 {
     invariant(
-        isEnumType($type),
+        $type instanceof EnumType,
         sprintf('Expected %s to be a GraphQL Enum type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isInputObjectType(TypeInterface $type): bool
-{
-    return $type instanceof InputObjectType;
 }
 
 /**
@@ -191,18 +113,9 @@ function isInputObjectType(TypeInterface $type): bool
 function assertInputObjectType(TypeInterface $type)
 {
     invariant(
-        isInputObjectType($type),
+        $type instanceof InputObjectType,
         sprintf('Expected %s to be a GraphQL InputObject type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isListType(TypeInterface $type): bool
-{
-    return $type instanceof ListType;
 }
 
 /**
@@ -212,18 +125,9 @@ function isListType(TypeInterface $type): bool
 function assertListType(TypeInterface $type)
 {
     invariant(
-        isListType($type),
+        $type instanceof ListType,
         sprintf('Expected %s to be a GraphQL List type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isNonNullType(TypeInterface $type): bool
-{
-    return $type instanceof NonNullType;
 }
 
 /**
@@ -233,7 +137,7 @@ function isNonNullType(TypeInterface $type): bool
 function assertNonNullType(TypeInterface $type)
 {
     invariant(
-        isNonNullType($type),
+        $type instanceof NonNullType,
         sprintf('Expected %s to be a GraphQL NonNull type.', toString($type))
     );
 }
@@ -284,32 +188,14 @@ function assertOutputType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @return bool
- */
-function isLeafType(TypeInterface $type): bool
-{
-    return $type instanceof LeafTypeInterface;
-}
-
-/**
- * @param TypeInterface $type
  * @throws \Exception
  */
 function assertLeafType(TypeInterface $type)
 {
     invariant(
-        isLeafType($type),
+        $type instanceof LeafTypeInterface,
         sprintf('Expected %s to be a GraphQL leaf type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isCompositeType(TypeInterface $type): bool
-{
-    return $type instanceof CompositeTypeInterface;
 }
 
 /**
@@ -319,18 +205,9 @@ function isCompositeType(TypeInterface $type): bool
 function assertCompositeType(TypeInterface $type)
 {
     invariant(
-        isCompositeType($type),
+        $type instanceof CompositeTypeInterface,
         sprintf('Expected %s to be a GraphQL composite type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isAbstractType(TypeInterface $type): bool
-{
-    return $type instanceof AbstractTypeInterface;
 }
 
 /**
@@ -340,18 +217,9 @@ function isAbstractType(TypeInterface $type): bool
 function assertAbstractType(TypeInterface $type)
 {
     invariant(
-        isAbstractType($type),
+        $type instanceof AbstractTypeInterface,
         sprintf('Expected %s to be a GraphQL abstract type.', toString($type))
     );
-}
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isWrappingType(TypeInterface $type): bool
-{
-    return $type instanceof WrappingTypeInterface;
 }
 
 /**
@@ -361,7 +229,7 @@ function isWrappingType(TypeInterface $type): bool
 function assertWrappingType(TypeInterface $type)
 {
     invariant(
-        isWrappingType($type),
+        $type instanceof WrappingTypeInterface,
         sprintf('Expected %s to be a GraphQL wrapping type.', toString($type))
     );
 }
@@ -372,7 +240,7 @@ function assertWrappingType(TypeInterface $type)
  */
 function isNullableType(TypeInterface $type): bool
 {
-    return !isNonNullType($type);
+    return !$type instanceof NonNullType;
 }
 
 /**
@@ -389,21 +257,12 @@ function assertNullableType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @return bool
- */
-function isNamedType(TypeInterface $type): bool
-{
-    return $type instanceof NamedTypeInterface;
-}
-
-/**
- * @param TypeInterface $type
  * @throws \Exception
  */
 function assertNamedType(TypeInterface $type)
 {
     invariant(
-        isNamedType($type),
+        $type instanceof NamedTypeInterface,
         sprintf('Expected %s to be a GraphQL named type.', toString($type))
     );
 }
@@ -434,4 +293,166 @@ function isSpecifiedDirective(DirectiveInterface $directive): bool
         SkipDirective::class,
         DeprecatedDirective::class,
     ], true);
+}
+
+/**
+ * @return BooleanType
+ */
+function GraphQLBoolean(): BooleanType
+{
+    static $instance = null;
+
+    if (!$instance) {
+        $instance = new BooleanType();
+    }
+
+    return $instance;
+}
+
+/**
+ * @return FloatType
+ */
+function GraphQLFloat(): FloatType
+{
+    static $instance = null;
+
+    if (!$instance) {
+        $instance = new FloatType();
+    }
+
+    return $instance;
+}
+
+/**
+ * @return IntType
+ */
+function GraphQLInt(): IntType
+{
+    static $instance = null;
+
+    if (!$instance) {
+        $instance = new IntType();
+    }
+
+    return $instance;
+}
+
+/**
+ * @return IDType
+ */
+function GraphQLID(): IDType
+{
+    static $instance = null;
+
+    if (!$instance) {
+        $instance = new IDType();
+    }
+
+    return $instance;
+}
+
+/**
+ * @return StringType
+ */
+function GraphQLString(): StringType
+{
+    static $instance = null;
+
+    if (!$instance) {
+        $instance = new StringType();
+    }
+
+    return $instance;
+}
+
+/**
+ * @param array $config
+ * @return ScalarType
+ */
+function GraphQLScalarType(array $config = []): ScalarType
+{
+    return new ScalarType($config);
+}
+
+/**
+ * @param array $config
+ * @return EnumType
+ */
+function GraphQLEnumType(array $config = []): EnumType
+{
+    return new EnumType($config);
+}
+
+/**
+ * @param array $config
+ * @return InputObjectType
+ */
+function GraphQLInputObjectType(array $config = []): InputObjectType
+{
+    return new InputObjectType($config);
+}
+
+/**
+ * @param array $config
+ * @return InterfaceType
+ */
+function GraphQLInterfaceType(array $config = []): InterfaceType
+{
+    return new InterfaceType($config);
+}
+
+/**
+ * @param array $config
+ * @return ObjectType
+ */
+function GraphQLObjectType(array $config = []): ObjectType
+{
+    return new ObjectType($config);
+}
+
+/**
+ * @param array $config
+ * @return UnionType
+ */
+function GraphQLUnionType(array $config = []): UnionType
+{
+    return new UnionType($config);
+}
+
+/**
+ * @param array $config
+ * @return Schema
+ */
+function GraphQLSchema(array $config = []): Schema
+{
+    return new Schema($config);
+}
+
+/**
+ * @param array $config
+ * @return Directive
+ */
+function GraphQLDirective(array $config = []): Directive
+{
+    return new Directive($config);
+}
+
+/**
+ * @param TypeInterface $ofType
+ * @return ListType
+ * @throws \TypeError
+ */
+function GraphQLList(TypeInterface $ofType): ListType
+{
+    return new ListType($ofType);
+}
+
+/**
+ * @param TypeInterface $ofType
+ * @return NonNullType
+ * @throws \TypeError
+ */
+function GraphQLNonNull(TypeInterface $ofType): NonNullType
+{
+    return new NonNullType($ofType);
 }

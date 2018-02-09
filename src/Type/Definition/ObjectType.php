@@ -14,6 +14,7 @@ use Digia\GraphQL\Type\Definition\Contract\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use function Digia\GraphQL\Util\instantiateFromArray;
 
 /**
  * Object Type Definition
@@ -74,6 +75,35 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     private $isTypeOf;
 
     /**
+     * @throws \Exception
+     */
+    protected function afterConfig(): void
+    {
+        // TODO: Uncomment when it is time.
+
+//        invariant(
+//            $this->getName() !== null,
+//            'Must provide name.'
+//        );
+//
+//        invariant(
+//            $this->getIsTypeOf() !== null,
+//            sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
+//        );
+    }
+
+    /**
+     * @param mixed $value
+     * @param mixed context
+     * @param $info
+     * @return bool
+     */
+    public function isTypeOf($value, $context, $info): bool
+    {
+        return $this->getIsTypeOf()($value, $context, $info);
+    }
+
+    /**
      * @return InterfaceType[]
      */
     public function getInterfaces(): array
@@ -119,9 +149,7 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
      */
     protected function setInterfaces(array $interfaces)
     {
-        $this->addInterfaces(array_map(function ($config) {
-            return new InterfaceType($config);
-        }, $interfaces));
+        $this->addInterfaces(instantiateFromArray(InterfaceType::class, $interfaces));
 
         return $this;
     }

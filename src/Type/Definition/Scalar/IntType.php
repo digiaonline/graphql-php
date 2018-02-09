@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Type\Definition\TypeEnum;
 
-class IntType extends AbstractScalarType
+class IntType extends ScalarType
 {
 
     const MAX_INT = 2147483647;
@@ -43,7 +43,7 @@ class IntType extends AbstractScalarType
     /**
      * @inheritdoc
      */
-    public function parseLiteral(NodeInterface $astNode, ...$args)
+    public function parseLiteral(NodeInterface $astNode)
     {
         return $astNode->getKind() === KindEnum::INT ? $astNode->getValue() : null;
     }

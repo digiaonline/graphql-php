@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Type\Definition\TypeEnum;
 
-class FloatType extends AbstractScalarType
+class FloatType extends ScalarType
 {
 
     /**
