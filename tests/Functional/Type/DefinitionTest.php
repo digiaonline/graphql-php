@@ -421,6 +421,7 @@ class DefinitionTest extends TestCase
 
     public function identifiesInputTypesDataProvider(): array
     {
+        // We cannot use the class fields here because they do not get instantiated for data providers.
         return [
             [GraphQLInt(), true],
             [GraphQLObjectType(), true],
@@ -438,4 +439,152 @@ class DefinitionTest extends TestCase
     {
         GraphQLNonNull(GraphQLNonNull(GraphQLInt()));
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAllowsAThunkForUnionMemberTypes()
+    {
+        $union = GraphQLUnionType([
+            'name'  => 'ThunkUnion',
+            'types' => function () {
+                return [$this->objectType];
+            }
+        ]);
+
+        $types = $union->getTypes();
+
+        $this->assertEquals(1, count($types));
+        $this->assertEquals($this->objectType, $types[0]);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testDoesNotMutatePassedFieldDefinitions()
+    {
+        $fields = [
+            'field1' => ['type' => GraphQLString()],
+            'field2' => [
+                'type' => GraphQLString(),
+                'args' => [
+                    'id' => ['type' => GraphQLString()],
+                ],
+            ],
+        ];
+
+        $testObject1 = GraphQLObjectType([
+            'name'   => 'Test1',
+            'fields' => $fields,
+        ]);
+
+        $testObject2 = GraphQLObjectType([
+            'name'   => 'Test2',
+            'fields' => $fields,
+        ]);
+
+        $this->assertEquals($testObject2->getFields(), $testObject1->getFields());
+
+        $testInputObject1 = GraphQLInputObjectType([
+            'name'   => 'Test1',
+            'fields' => $fields,
+        ]);
+
+        $testInputObject2 = GraphQLInputObjectType([
+            'name'   => 'Test2',
+            'fields' => $fields,
+        ]);
+
+        $this->assertEquals($testInputObject2->getFields(), $testInputObject1->getFields());
+
+        $this->assertInstanceOf(StringType::class, $fields['field1']['type']);
+        $this->assertInstanceOf(StringType::class, $fields['field2']['type']);
+        $this->assertInstanceOf(StringType::class, $fields['field2']['args']['id']['type']);
+    }
+
+    // TODO: Assess if we want to test 'accepts an Object type with a field function'.
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRejectsAnObjectTypeFieldWithNullConfig()
+    {
+        $objType = GraphQLObjectType([
+            'name'   => 'SomeObject',
+            'fields' => ['f' => null],
+        ]);
+
+        $objType->getFields();
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    function testRejectsAnObjectTypeWithIncorrectlyTypedFields()
+    {
+        $objType = GraphQLObjectType([
+            'name'   => 'SomeObject',
+            'fields' => [['f' => null]],
+        ]);
+
+        $objType->getFields();
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRejectsAnObjectTypeWithAFieldFunctionThatReturnsIncorrectType()
+    {
+        $objType = GraphQLObjectType([
+            'name'   => 'SomeObject',
+            'fields' => function () {
+                return [['f' => null]];
+            },
+        ]);
+
+        $objType->getFields();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnObjectTypeWithFieldArgs()
+    {
+        $objType = GraphQLObjectType([
+            'name'   => 'SomeObject',
+            'fields' => [
+                'goodField' => [
+                    'type' => GraphQLString(),
+                    'args' => [
+                        'goodArg' => ['type' => GraphQLString()],
+                    ],
+                ],
+            ],
+        ]);
+
+        $objType->getFields();
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \Exception
+     */
+    public function testRejectsAnObjectTypeWithIncorrectlyTypedFieldArgs()
+    {
+        $objType = GraphQLObjectType([
+            'name'   => 'SomeObject',
+            'fields' => [
+                'badField' => [
+                    'type' => GraphQLString(),
+                    'args' => [['badArg' => GraphQLString()]],
+                ],
+            ],
+        ]);
+
+        $objType->getFields();
+    }
+
+
 }

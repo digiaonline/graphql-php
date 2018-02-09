@@ -32,7 +32,24 @@ use Digia\GraphQL\Type\Schema\Schema;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
+/**
+ * @param $thunk
+ * @return null|array
+ */
+function resolveThunk($thunk): ?array
+{
+    return is_callable($thunk) ? $thunk() : $thunk;
+}
 
+/**
+ * @param array $array
+ * @return bool
+ */
+function isAssocArray(array $array): bool
+{
+    $keys = array_keys($array);
+    return $keys !== array_keys($keys);
+}
 
 /**
  * @param $type

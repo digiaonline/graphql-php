@@ -38,10 +38,6 @@ function instantiateFromArray(string $className, array $array): array
 function instantiateAssocFromArray(string $className, array $array, string $keyName = 'name'): array
 {
     $objects = array_map(function ($item, $key) use ($className, $keyName) {
-        if ($item instanceof $className) {
-            return $item;
-        }
-
         return new $className(array_merge($item, [$keyName => $key]));
     }, $array, array_keys($array));
 

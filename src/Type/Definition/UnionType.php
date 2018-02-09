@@ -12,16 +12,15 @@ use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use function Digia\GraphQL\Type\resolveThunk;
+use function Digia\GraphQL\Util\invariant;
 
 /**
  * Union Type Definition
- *
  * When a field can return one of a heterogeneous set of types, a Union type
  * is used to describe what types are possible as well as providing a function
  * to determine which type is actually used when the field is resolved.
- *
  * Example:
- *
  *     const PetType = new GraphQLUnionType({
  *       name: 'Pet',
  *       types: [ DogType, CatType ],
@@ -34,7 +33,6 @@ use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
  *         }
  *       }
  *     });
- *
  */
 
 /**
@@ -53,9 +51,14 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     use ConfigTrait;
 
     /**
+     * @var array|callable
+     */
+    private $_typesThunk;
+
+    /**
      * @var TypeInterface[]
      */
-    private $types;
+    private $_typeMap;
 
     /**
      * @inheritdoc
@@ -67,33 +70,52 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
 
     /**
      * @return TypeInterface[]
+     * @throws \Exception
      */
     public function getTypes(): array
     {
-        return $this->types;
+        $this->buildTypeMap();
+
+        return $this->_typeMap ?? [];
     }
 
     /**
-     * @param TypeInterface $type
-     * @return $this
+     * @throws \Exception
      */
-    public function addType(TypeInterface $type)
+    protected function buildTypeMap()
     {
-        $this->types[] = $type;
-
-        return $this;
-    }
-
-    /**
-     * @param TypeInterface[] $types
-     * @return $this
-     */
-    protected function setTypes(array $types)
-    {
-        foreach ($types as $type) {
-            $this->addType($type);
+        // Types are lazy-loaded to avoid concurrency issues.
+        if ($this->_typeMap === null) {
+            $this->_typeMap = defineTypes($this, $this->_typesThunk);
         }
+    }
+
+    /**
+     * @param array|callable $typesThunk
+     * @return $this
+     */
+    protected function setTypes($typesThunk)
+    {
+        $this->_typesThunk = $typesThunk;
 
         return $this;
     }
+}
+
+/**
+ * @param UnionType $type
+ * @param mixed     $typesThunk
+ * @return array
+ * @throws \Exception
+ */
+function defineTypes(UnionType $type, $typesThunk): array
+{
+    $types = resolveThunk($typesThunk) ?: [];
+
+    invariant(
+        is_array($types),
+        sprintf('Must provide Array of types or a function which returns such an array for Union %s.', $type->getName())
+    );
+
+    return $types;
 }

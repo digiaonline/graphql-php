@@ -3,7 +3,9 @@
 namespace Digia\GraphQL\Type\Definition\Behavior;
 
 use Digia\GraphQL\Type\Definition\Argument;
+use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Util\instantiateAssocFromArray;
+use function Digia\GraphQL\Util\invariant;
 
 trait ArgumentsTrait
 {
@@ -56,10 +58,18 @@ trait ArgumentsTrait
     /**
      * @param Argument[] $args
      * @return $this
+     * @throws \Exception
      */
     protected function setArgs(array $args)
     {
-        $this->addArguments(instantiateAssocFromArray(Argument::class, $args));
+        invariant(
+            isAssocArray($args),
+            'Args must be an associative array with argument names as keys.'
+        );
+
+        foreach ($args as $argName => $argConfig) {
+            $this->addArgument(new Argument(array_merge($argConfig, ['name' => $argName])));
+        }
 
         return $this;
     }
