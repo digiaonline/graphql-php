@@ -58,7 +58,12 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     /**
      * @var TypeInterface[]
      */
-    private $_typeMap;
+    private $_typeMap = [];
+
+    /**
+     * @var bool
+     */
+    private $_isTypeMapBuilt = false;
 
     /**
      * @inheritdoc
@@ -69,21 +74,32 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     }
 
     /**
+     * @param TypeInterface $type
+     * @return UnionType
+     */
+    public function addType(TypeInterface $type): UnionType
+    {
+        $this->_typeMap[$type->getName()] = $type;
+
+        return $this;
+    }
+
+    /**
      * @return TypeInterface[]
      * @throws \Exception
      */
     public function getTypes(): array
     {
-        $this->buildTypeMap();
+        $this->buildTypeMapIfNecessary();
 
         return $this->_typeMap;
     }
 
     /**
      * @param array|callable $typesThunk
-     * @return $this
+     * @return UnionType
      */
-    protected function setTypes($typesThunk)
+    protected function setTypes($typesThunk): UnionType
     {
         $this->_typesThunk = $typesThunk;
 
@@ -93,11 +109,13 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     /**
      * @throws \Exception
      */
-    protected function buildTypeMap()
+    protected function buildTypeMapIfNecessary()
     {
-        // Types are lazy-loaded to avoid concurrency issues.
-        if ($this->_typeMap === null) {
-            $this->_typeMap = $this->defineTypes($this->_typesThunk);
+        // Types are built lazily to avoid concurrency issues.
+        if (!$this->_isTypeMapBuilt) {
+            $this->_typeMap = array_merge($this->defineTypes($this->_typesThunk), $this->_typeMap);
+
+            $this->_isTypeMapBuilt = true;
         }
     }
 

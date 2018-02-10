@@ -18,7 +18,12 @@ trait FieldsTrait
     /**
      * @var Field[]
      */
-    private $_fieldMap;
+    private $_fieldMap = [];
+
+    /**
+     * @var bool
+     */
+    private $_isFieldMapBuilt = false;
 
     /**
      * @param string $name
@@ -27,20 +32,9 @@ trait FieldsTrait
      */
     public function getField(string $name): ?Field
     {
-        $this->buildFieldMap();
+        $this->buildFieldMapIfNecessary();
 
         return $this->_fieldMap[$name] ?? null;
-    }
-
-    /**
-     * @return Field[]
-     * @throws \Exception
-     */
-    public function getFields(): array
-    {
-        $this->buildFieldMap();
-
-        return $this->_fieldMap ?? [];
     }
 
     /**
@@ -50,8 +44,6 @@ trait FieldsTrait
      */
     public function addField(Field $field)
     {
-        $this->buildFieldMap();
-
         $this->_fieldMap[$field->getName()] = $field;
 
         return $this;
@@ -71,13 +63,26 @@ trait FieldsTrait
     }
 
     /**
+     * @return Field[]
      * @throws \Exception
      */
-    protected function buildFieldMap()
+    public function getFields(): array
     {
-        // Fields are lazy-loaded to avoid concurrency issues.
-        if ($this->_fieldMap === null) {
-            $this->_fieldMap = $this->defineFieldMap($this->_fieldsThunk);
+        $this->buildFieldMapIfNecessary();
+
+        return $this->_fieldMap;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function buildFieldMapIfNecessary(): void
+    {
+        // Fields are built lazily to avoid concurrency issues.
+        if (!$this->_isFieldMapBuilt) {
+            $this->_fieldMap = array_merge($this->defineFieldMap($this->_fieldsThunk), $this->_fieldMap);
+
+            $this->_isFieldMapBuilt = true;
         }
     }
 

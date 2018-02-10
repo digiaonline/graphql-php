@@ -185,7 +185,7 @@ class DefinitionTest extends TestCase
                 ],
             ]),
             'types' => [$type],
-        ])->build();
+        ]);
     }
 
     /**
@@ -212,7 +212,7 @@ class DefinitionTest extends TestCase
                     'f' => ['type' => $badResolverType],
                 ],
             ])
-        ])->build();
+        ]);
     }
 
     // Type System: Example
@@ -381,7 +381,7 @@ class DefinitionTest extends TestCase
             'subscription' => $someSubscription,
         ]);
 
-        $this->assertEquals($nestedInputObject, $schema->build()->getTypeMap()[$nestedInputObject->getName()]);
+        $this->assertEquals($nestedInputObject, $schema->getTypeMap()[$nestedInputObject->getName()]);
     }
 
     /**
@@ -414,7 +414,7 @@ class DefinitionTest extends TestCase
             'types' => [$someSubtype],
         ]);
 
-        $this->assertEquals($someSubtype, $schema->build()->getTypeMap()[$someSubtype->getName()]);
+        $this->assertEquals($someSubtype, $schema->getTypeMap()[$someSubtype->getName()]);
     }
 
     /**

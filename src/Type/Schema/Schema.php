@@ -152,53 +152,12 @@ class Schema
     }
 
     /**
-     * @return Schema
      * @throws \Exception
      */
-    public function build(): Schema
+    protected function afterConfig(): void
     {
-        $initialTypes = [
-            $this->query,
-            $this->mutation,
-            $this->subscription,
-        ];
-
-        if ($this->types) {
-            $initialTypes = array_merge($initialTypes, $this->types);
-        }
-
-        // Keep track of all types referenced within the schema.
-        $typeMap = [];
-
-        // First by deeply visiting all initial types.
-        $typeMap = array_reduce($initialTypes, function ($map, $type) {
-            return typeMapReducer($map, $type);
-        }, $typeMap);
-
-        // Then by deeply visiting all directive types.
-        $typeMap = array_reduce($this->directives, function ($map, $directive) {
-            return typeMapDirectiveReducer($map, $directive);
-        }, $typeMap);
-
-        // Storing the resulting map for reference by the schema.
-        $this->_typeMap = $typeMap;
-
-        // Keep track of all implementations by interface name.
-        foreach ($this->_typeMap as $typeName => $type) {
-            if ($type instanceof ObjectType) {
-                foreach ($type->getInterfaces() as $interface) {
-                    $interfaceName = $interface->getName();
-
-                    if (!isset($this->_implementations[$interfaceName])) {
-                        $this->_implementations[$interfaceName] = [];
-                    }
-
-                    $this->_implementations[$interfaceName][] = $type;
-                }
-            }
-        }
-
-        return $this;
+        $this->buildTypeMap();
+        $this->buildImplementations();
     }
 
     /**
@@ -246,6 +205,63 @@ class Schema
         }
 
         return $this->_implementations[$abstractType->getName()] ?? null;
+    }
+
+    /**
+     *
+     */
+    protected function buildTypeMap(): void
+    {
+        $initialTypes = [
+            $this->query,
+            $this->mutation,
+            $this->subscription,
+        ];
+
+        if ($this->types) {
+            $initialTypes = array_merge($initialTypes, $this->types);
+        }
+
+        // Keep track of all types referenced within the schema.
+        $typeMap = [];
+
+        // First by deeply visiting all initial types.
+        $typeMap = array_reduce($initialTypes, function ($map, $type) {
+            return typeMapReducer($map, $type);
+        }, $typeMap);
+
+        // Then by deeply visiting all directive types.
+        $typeMap = array_reduce($this->directives, function ($map, $directive) {
+            return typeMapDirectiveReducer($map, $directive);
+        }, $typeMap);
+
+        // Storing the resulting map for reference by the schema.
+        $this->_typeMap = $typeMap;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function buildImplementations()
+    {
+        $implementations = [];
+        
+        // Keep track of all implementations by interface name.
+        foreach ($this->_typeMap as $typeName => $type) {
+            if ($type instanceof ObjectType) {
+                foreach ($type->getInterfaces() as $interface) {
+                    $interfaceName = $interface->getName();
+
+                    if (!isset($implementations[$interfaceName])) {
+                        $implementations[$interfaceName] = [];
+                    }
+
+                    $implementations[$interfaceName][] = $type;
+                }
+            }
+        }
+
+        $this->_implementations = $implementations;
     }
 
     /**
