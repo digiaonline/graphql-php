@@ -51,18 +51,6 @@ trait FieldsTrait
     }
 
     /**
-     * @param string $fieldName
-     * @return Field|null
-     * @throws \Exception
-     */
-    public function getField(string $fieldName): ?Field
-    {
-        $this->defineFieldMapIfNecessary();
-
-        return $this->_fieldMap[$fieldName] ?? null;
-    }
-
-    /**
      * @return Field[]
      * @throws \Exception
      */

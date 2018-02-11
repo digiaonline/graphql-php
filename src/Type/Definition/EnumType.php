@@ -128,30 +128,6 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @param EnumValue $value
-     * @return $this
-     */
-    public function addValue(EnumValue $value): EnumType
-    {
-        $this->_values[] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param array $values
-     * @return $this
-     */
-    public function addValues(array $values): EnumType
-    {
-        foreach ($values as $value) {
-            $this->addValue($value);
-        }
-
-        return $this;
-    }
-
-    /**
      * @param string $name
      * @return EnumValue
      * @throws \Exception
@@ -205,7 +181,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @param array $_valueMap
+     * @param array $valueMap
      * @return $this
      */
     protected function setValues(array $valueMap): EnumType

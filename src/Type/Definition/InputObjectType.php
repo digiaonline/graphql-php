@@ -59,18 +59,6 @@ class InputObjectType implements TypeInterface, InputTypeInterface
     private $_isFieldMapBuilt = false;
 
     /**
-     * @param string $fieldName
-     * @return InputField|null
-     * @throws \Exception
-     */
-    public function getField(string $fieldName): ?InputField
-    {
-        $this->buildFieldMapIfNecessary();
-
-        return $this->_fieldMap[$fieldName] ?? null;
-    }
-
-    /**
      * @return InputField[]
      * @throws \Exception
      */
