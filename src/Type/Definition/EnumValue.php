@@ -35,5 +35,4 @@ class EnumValue
             $this->value = $this->getName();
         }
     }
-
 }

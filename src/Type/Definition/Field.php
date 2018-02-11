@@ -10,6 +10,9 @@ use Digia\GraphQL\Type\Definition\Behavior\DeprecationTrait;
 use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Type\Definition\Behavior\ResolveTrait;
 use Digia\GraphQL\Type\Definition\Behavior\TypeTrait;
+use function Digia\GraphQL\Type\isValidResolver;
+use function Digia\GraphQL\Util\invariant;
+use function Digia\GraphQL\Util\toString;
 
 class Field
 {
@@ -22,4 +25,15 @@ class Field
     use ResolveTrait;
     use NodeTrait;
     use ConfigTrait;
+
+    /**
+     * @inheritdoc
+     */
+    protected function afterConfig(): void
+    {
+        invariant(
+            isValidResolver($this->resolve),
+            sprintf('Field resolver must be a function if provided, but got: %s', toString($this->resolve))
+        );
+    }
 }

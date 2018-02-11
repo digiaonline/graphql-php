@@ -55,6 +55,15 @@ function isAssocArray(array $array): bool
 }
 
 /**
+ * @param $resolver
+ * @return bool
+ */
+function isValidResolver($resolver): bool
+{
+    return $resolver === null || is_callable($resolver);
+}
+
+/**
  * @param $type
  * @throws \Exception
  */

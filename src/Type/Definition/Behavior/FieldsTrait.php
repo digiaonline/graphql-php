@@ -23,19 +23,7 @@ trait FieldsTrait
     /**
      * @var bool
      */
-    private $_isFieldMapBuilt = false;
-
-    /**
-     * @param string $name
-     * @return Field|null
-     * @throws \Exception
-     */
-    public function getField(string $name): ?Field
-    {
-        $this->buildFieldMapIfNecessary();
-
-        return $this->_fieldMap[$name] ?? null;
-    }
+    private $_isFieldMapDefined = false;
 
     /**
      * @param Field $field
@@ -63,12 +51,24 @@ trait FieldsTrait
     }
 
     /**
+     * @param string $fieldName
+     * @return Field|null
+     * @throws \Exception
+     */
+    public function getField(string $fieldName): ?Field
+    {
+        $this->defineFieldMapIfNecessary();
+
+        return $this->_fieldMap[$fieldName] ?? null;
+    }
+
+    /**
      * @return Field[]
      * @throws \Exception
      */
     public function getFields(): array
     {
-        $this->buildFieldMapIfNecessary();
+        $this->defineFieldMapIfNecessary();
 
         return $this->_fieldMap;
     }
@@ -76,13 +76,13 @@ trait FieldsTrait
     /**
      * @throws \Exception
      */
-    protected function buildFieldMapIfNecessary(): void
+    protected function defineFieldMapIfNecessary(): void
     {
         // Fields are built lazily to avoid concurrency issues.
-        if (!$this->_isFieldMapBuilt) {
+        if (!$this->_isFieldMapDefined) {
             $this->_fieldMap = array_merge($this->defineFieldMap($this->_fieldsThunk), $this->_fieldMap);
 
-            $this->_isFieldMapBuilt = true;
+            $this->_isFieldMapDefined = true;
         }
     }
 

@@ -13,7 +13,9 @@ use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
-use function Digia\GraphQL\Util\instantiateAssocFromArray;
+use function Digia\GraphQL\Type\isAssocArray;
+use function Digia\GraphQL\Util\invariant;
+use function Digia\GraphQL\Util\toString;
 
 /**
  * Enum Type Definition
@@ -48,9 +50,19 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     use ConfigTrait;
 
     /**
+     * @var array
+     */
+    private $_valueMap = [];
+
+    /**
      * @var EnumValue[]
      */
-    private $values = [];
+    private $_values = [];
+
+    /**
+     * @var bool
+     */
+    private $_isValuesDefined = false;
 
     /**
      * @inheritdoc
@@ -63,6 +75,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     /**
      * @param $value
      * @return null|string
+     * @throws \Exception
      */
     public function serialize($value)
     {
@@ -79,6 +92,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     /**
      * @param $value
      * @return mixed|null
+     * @throws \Exception
      */
     public function parseValue($value)
     {
@@ -97,6 +111,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     /**
      * @param NodeInterface $astNode
      * @return mixed|null
+     * @throws \Exception
      */
     public function parseLiteral(NodeInterface $astNode)
     {
@@ -113,59 +128,12 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @param string $name
-     * @return EnumValue
-     */
-    public function getValue(string $name): EnumValue
-    {
-        return $this->getValueByName($name);
-    }
-
-    /**
-     * @return array
-     */
-    public function getValues(): array
-    {
-        return $this->values;
-    }
-
-    /**
-     * @param string $name
-     * @return EnumValue|null
-     */
-    protected function getValueByName(string $name): ?EnumValue
-    {
-        foreach ($this->values as $val) {
-            if ($val->getName() === $name) {
-                return $val;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param mixed $value
-     * @return EnumValue|null
-     */
-    protected function getValueByValue($value): ?EnumValue
-    {
-        foreach ($this->values as $val) {
-            if ($val->getValue() === $value) {
-                return $val;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * @param EnumValue $value
      * @return $this
      */
-    protected function addValue(EnumValue $value)
+    public function addValue(EnumValue $value): EnumType
     {
-        $this->values[] = $value;
+        $this->_values[] = $value;
 
         return $this;
     }
@@ -174,7 +142,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
      * @param array $values
      * @return $this
      */
-    protected function addValues(array $values)
+    public function addValues(array $values): EnumType
     {
         foreach ($values as $value) {
             $this->addValue($value);
@@ -184,13 +152,118 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @param array $values
+     * @param string $name
+     * @return EnumValue
+     * @throws \Exception
+     */
+    public function getValue(string $name): EnumValue
+    {
+        return $this->getValueByName($name);
+    }
+
+    /**
+     * @return EnumValue[]
+     * @throws \Exception
+     */
+    public function getValues(): array
+    {
+        $this->defineEnumValuesIfNecessary();
+
+        return $this->_values;
+    }
+
+    /**
+     * @param string $name
+     * @return EnumValue|null
+     * @throws \Exception
+     */
+    protected function getValueByName(string $name): ?EnumValue
+    {
+        foreach ($this->getValues() as $enumValue) {
+            if ($enumValue->getName() === $name) {
+                return $enumValue;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param mixed $value
+     * @return EnumValue|null
+     * @throws \Exception
+     */
+    protected function getValueByValue($value): ?EnumValue
+    {
+        foreach ($this->getValues() as $enumValue) {
+            if ($enumValue->getValue() === $value) {
+                return $enumValue;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array $_valueMap
      * @return $this
      */
-    protected function setValues(array $values)
+    protected function setValues(array $valueMap): EnumType
     {
-        $this->addValues(instantiateAssocFromArray(EnumValue::class, $values));
+        $this->_valueMap = $valueMap;
 
         return $this;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function defineEnumValuesIfNecessary(): void
+    {
+        if (!$this->_isValuesDefined) {
+            $this->_values = array_merge($this->defineEnumValues($this->_valueMap), $this->_values);
+
+            $this->_isValuesDefined = true;
+        }
+    }
+
+    /**
+     * @param array $valueMap
+     * @return array
+     * @throws \Exception
+     */
+    protected function defineEnumValues(array $valueMap): array
+    {
+        invariant(
+            isAssocArray($valueMap),
+            sprintf('%s values must be an associative array with value names as keys.', $this->getName())
+        );
+
+        $values = [];
+
+        foreach ($valueMap as $valueName => $valueConfig) {
+            invariant(
+                isAssocArray($valueConfig),
+                sprintf(
+                    '%s.%s must refer to an object with a "value" key representing an internal value but got: %s',
+                    $this->getName(),
+                    $valueName,
+                    toString($valueConfig)
+                )
+            );
+
+            invariant(
+                !isset($valueConfig['isDeprecated']),
+                sprintf(
+                    '%s.%s should provided "deprecationReason" instead of "isDeprecated".',
+                    $this->getName(),
+                    $valueName
+                )
+            );
+
+            $values[] = new EnumValue(array_merge($valueConfig, ['name' => $valueName]));
+        }
+
+        return $values;
     }
 }

@@ -61,10 +61,13 @@ function toString($value): string
         return $value;
     }
     if (is_object($value)) {
-        return 'instance of ' . get_class($value);
+        return 'Object';
     }
     if (is_array($value)) {
-        return json_encode($value);
+        return 'Array';
+    }
+    if (is_callable($value)) {
+        return 'Function';
     }
     if ($value === '') {
         return '(empty string)';

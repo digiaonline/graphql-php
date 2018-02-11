@@ -84,7 +84,7 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     /**
      * @var bool
      */
-    private $_isInterfacesBuilt = false;
+    private $_isInterfacesDefined = false;
 
     /**
      * @inheritdoc
@@ -122,7 +122,7 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
      */
     public function getInterfaces(): array
     {
-        $this->buildInterfacesIfNecessary();
+        $this->defineInterfacesIfNecessary();
 
         return $this->_interfaces;
     }
@@ -186,13 +186,13 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     /**
      * @throws \Exception
      */
-    protected function buildInterfacesIfNecessary()
+    protected function defineInterfacesIfNecessary()
     {
         // Interfaces are built lazily to avoid concurrency issues.
-        if (!$this->_isInterfacesBuilt) {
+        if (!$this->_isInterfacesDefined) {
             $this->_interfaces = array_merge($this->defineInterfaces($this->_interfacesThunk), $this->_interfaces);
 
-            $this->_isInterfacesBuilt = true;
+            $this->_isInterfacesDefined = true;
         }
     }
 

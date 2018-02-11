@@ -63,7 +63,7 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     /**
      * @var bool
      */
-    private $_isTypeMapBuilt = false;
+    private $_isTypesDefines = false;
 
     /**
      * @inheritdoc
@@ -90,7 +90,7 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
      */
     public function getTypes(): array
     {
-        $this->buildTypeMapIfNecessary();
+        $this->defineTypesIfNecessary();
 
         return $this->_typeMap;
     }
@@ -109,13 +109,13 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     /**
      * @throws \Exception
      */
-    protected function buildTypeMapIfNecessary()
+    protected function defineTypesIfNecessary()
     {
         // Types are built lazily to avoid concurrency issues.
-        if (!$this->_isTypeMapBuilt) {
+        if (!$this->_isTypesDefines) {
             $this->_typeMap = array_merge($this->defineTypes($this->_typesThunk), $this->_typeMap);
 
-            $this->_isTypeMapBuilt = true;
+            $this->_isTypesDefines = true;
         }
     }
 
@@ -126,7 +126,7 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
      */
     protected function defineTypes($typesThunk): array
     {
-        $types = resolveThunk($typesThunk) ?: [];
+        $types = resolveThunk($typesThunk);
 
         invariant(
             is_array($types),

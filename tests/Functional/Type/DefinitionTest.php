@@ -228,32 +228,32 @@ class DefinitionTest extends TestCase
 
         $this->assertEquals($this->blogQuery, $schema->getQuery());
 
-        $articleField = $this->blogQuery->getField('article');
+        $articleField = $this->blogQuery->getFields()['article'];
 
-        $this->assertEquals($this->blogArticle, !$articleField ?: $articleField->getType());
+        $this->assertEquals($this->blogArticle, $articleField->getType());
         $this->assertEquals($this->blogArticle->getName(), $articleField->getType()->getName());
         $this->assertEquals('article', $articleField->getName());
 
         /** @var ObjectType $articleFieldType */
         $articleFieldType = $articleField->getType();
 
-        $titleField = $articleFieldType->getField('title');
-        $this->assertEquals('title', !$titleField ?: $titleField->getName());
+        $titleField = $articleFieldType->getFields()['title'];
+        $this->assertEquals('title', $titleField->getName());
         $this->assertInstanceOf(StringType::class, $titleField->getType());
         $this->assertEquals('String', $titleField->getType()->getName());
 
-        $authorField = $articleFieldType->getField('author');
+        $authorField = $articleFieldType->getFields()['author'];
 
         /** @var ObjectType $authorFieldType */
-        $authorFieldType = !$authorField ?: $authorField->getType();
+        $authorFieldType = $authorField->getType();
 
-        $recentArticleField = $authorFieldType->getField('recentArticle');
+        $recentArticleField = $authorFieldType->getFields()['recentArticle'];
         $this->assertEquals($this->blogArticle, !$recentArticleField ?: $recentArticleField->getType());
 
-        $feedField = $this->blogQuery->getField('feed');
+        $feedField = $this->blogQuery->getFields()['feed'];
 
         /** @var ListType $feedFieldType */
-        $feedFieldType = !$feedField ?: $feedField->getType();
+        $feedFieldType = $feedField->getType();
         $this->assertEquals($this->blogArticle, $feedFieldType->getOfType());
 
         $this->assertEquals('feed', $feedField->getName());
@@ -270,9 +270,9 @@ class DefinitionTest extends TestCase
 
         $this->assertEquals($this->blogMutation, $schema->getMutation());
 
-        $writeArticleField = $this->blogMutation->getField('writeArticle');
+        $writeArticleField = $this->blogMutation->getFields()['writeArticle'];
 
-        $this->assertEquals($this->blogArticle, !$writeArticleField ?: $writeArticleField->getType());
+        $this->assertEquals($this->blogArticle, $writeArticleField->getType());
         $this->assertEquals('Article', $writeArticleField->getType()->getName());
         $this->assertEquals('writeArticle', $writeArticleField->getName());
     }
@@ -288,9 +288,9 @@ class DefinitionTest extends TestCase
 
         $this->assertEquals($this->blogSubscription, $schema->getSubscription());
 
-        $articleSubscribeField = $this->blogSubscription->getField('articleSubscribe');
+        $articleSubscribeField = $this->blogSubscription->getFields()['articleSubscribe'];
 
-        $this->assertEquals($this->blogArticle, !$articleSubscribeField ?: $articleSubscribeField->getType());
+        $this->assertEquals($this->blogArticle, $articleSubscribeField->getType());
         $this->assertEquals('Article', $articleSubscribeField->getType()->getName());
         $this->assertEquals('articleSubscribe', $articleSubscribeField->getName());
     }
@@ -331,9 +331,9 @@ class DefinitionTest extends TestCase
             ],
         ]);
 
-        $field = $typeWithDeprecatedField->getField('bar');
+        $field = $typeWithDeprecatedField->getFields()['bar'];
 
-        $this->assertInstanceOf(StringType::class, !$field ?: $field->getType());
+        $this->assertInstanceOf(StringType::class, $field->getType());
         $this->assertEquals('A terrible reason', $field->getDeprecationReason());
         $this->assertTrue($field->isDeprecated());
         $this->assertEquals('bar', $field->getName());
@@ -904,5 +904,318 @@ class DefinitionTest extends TestCase
         );
 
         $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \TypeError
+     */
+    public function testRejectsAScalarTypeDefiningSerializeWithAnIncorrectType()
+    {
+        $this->schemaWithField(
+            GraphQLScalarType([
+                'name'      => 'SomeScalar',
+                'serialize' => [],
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAScalarTypeDefiningParseValueAndParseLiteral()
+    {
+        $this->schemaWithField(
+            GraphQLScalarType([
+                'name'         => 'SomeScalar',
+                'serialize'    => function () {
+                    return null;
+                },
+                'parseValue'   => function () {
+                    return null;
+                },
+                'parseLiteral' => function () {
+                    return null;
+                },
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \Exception
+     */
+    public function testRejectsAScalarTypeDefiningParseValueButNotParseLiteral()
+    {
+        $this->schemaWithField(
+            GraphQLScalarType([
+                'name'       => 'SomeScalar',
+                'serialize'  => function () {
+                    return null;
+                },
+                'parseValue' => function () {
+                    return null;
+                },
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \Exception
+     */
+    public function testRejectsAScalarTypeDefiningParseLiteralButNotParseValue()
+    {
+        $this->schemaWithField(
+            GraphQLScalarType([
+                'name'         => 'SomeScalar',
+                'serialize'    => function () {
+                    return null;
+                },
+                'parseLiteral' => function () {
+                    return null;
+                },
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \TypeError
+     */
+    public function testRejectsAScalarTypeDefiningParseValueAndParseLiteralWithAnIncorrectType()
+    {
+        $this->schemaWithField(
+            GraphQLScalarType([
+                'name'         => 'SomeScalar',
+                'serialize'    => function () {
+                    return null;
+                },
+                'parseValue'   => [],
+                'parseLiteral' => [],
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    // Type System: Object types must be assertable
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnObjectTypeWithAnIsTypeOfFunction()
+    {
+        $this->schemaWithField(
+            GraphQLObjectType([
+                'name'     => 'AnotherObject',
+                'fields'   => ['f' => ['type' => GraphQLString()]],
+                'isTypeOf' => function () {
+                    return true;
+                },
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \TypeError
+     */
+    public function testRejectsAnObjectWithAnIncorrectTypeForIsTypeOf()
+    {
+        $this->schemaWithField(
+            GraphQLObjectType([
+                'name'     => 'AnotherObject',
+                'fields'   => ['f' => ['type' => GraphQLString()]],
+                'isTypeOf' => [],
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    // Type System: Union types must be array
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnUnionTypeWithArrayTypes()
+    {
+        $this->schemaWithField(
+            GraphQLUnionType([
+                'name'  => 'AnotherObject',
+                'types' => [$this->objectType],
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnUnionTypeWithFunctionReturningAnArrayOfTypes()
+    {
+        $this->schemaWithField(
+            GraphQLUnionType([
+                'name'  => 'AnotherObject',
+                'types' => function () {
+                    return [$this->objectType];
+                },
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \Exception
+     */
+    public function testRejectsAnUnionWithoutTypes()
+    {
+        $this->schemaWithField(
+            GraphQLUnionType([
+                'name' => 'AnotherObject',
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \TypeError
+     */
+    public function testRejectsAnUnionTypeWithIncorrectlyTypedTypes()
+    {
+        $this->schemaWithField(
+            GraphQLUnionType([
+                'name'  => 'AnotherObject',
+                'types' => 1,
+            ])
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
+    // Type System: Input Objects must have fields
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnInputObjectTypeWithFields()
+    {
+        $inputObjectType = GraphQLInputObjectType([
+            'name'   => 'SomeInputObject',
+            'fields' => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $field = $inputObjectType->getFields()['f'];
+        $this->assertInstanceOf(StringType::class, !$field ?: $field->getType());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAnInputObjectTypeWithAFieldFunction()
+    {
+        $inputObjectType = GraphQLInputObjectType([
+            'name'   => 'SomeInputObject',
+            'fields' => function () {
+                return ['f' => ['type' => GraphQLString()]];
+            },
+        ]);
+
+        $field = $inputObjectType->getFields()['f'];
+        $this->assertInstanceOf(StringType::class, !$field ?: $field->getType());
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \TypeError
+     */
+    public function testRejectsAnInputObjectTypeWithIncorrectFields()
+    {
+        $inputObjectType = GraphQLInputObjectType([
+            'name'   => 'SomeInputObject',
+            'fields' => 1,
+        ]);
+
+        $inputObjectType->getFields();
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @throws \Exception
+     * @expectedException \TypeError
+     */
+    public function testRejectsAnInputObjectTypeWithFieldsFunctionThatReturnsIncorrectType()
+    {
+        $inputObjectType = GraphQLInputObjectType([
+            'name'   => 'SomeInputObject',
+            'fields' => function () {
+                return 1;
+            },
+        ]);
+
+        $inputObjectType->getFields();
+
+        $this->addToAssertionCount(1);
+    }
+
+    // Type System: Input Object fields must not have resolvers
+
+    /**
+     * @throws \Exception
+     * @expectedException \Exception
+     */
+    public function testRejectsAnInputObjectTypeWithResolvers()
+    {
+        $inputObjectType = GraphQLInputObjectType([
+            'name'   => 'SomeInputObject',
+            'fields' => [
+                'f' => [
+                    'type'    => GraphQLString(),
+                    'resolve' => function () {
+                        return 0;
+                    }
+                ],
+            ],
+        ]);
+
+        $inputObjectType->getFields();
+    }
+
+    // TODO: Asses if we want to test "rejects an Input Object type with resolver constant".
+
+    // Type System: Enum types must be well defined
+
+    /**
+     * @throws \Exception
+     */
+    public function testAcceptsAWellDefinedEnumTypeWithEmptyValueDefinition()
+    {
+        $enumType = GraphQLEnumType([
+            'name' => 'SomeEnum',
+            'values' => [
+                'FOO' => ['value' => 10],
+                'BAR' => ['value' => 20],
+            ],
+        ]);
+
+        $this->assertEquals(10, $enumType->getValue('FOO')->getValue());
+        $this->assertEquals(20, $enumType->getValue('BAR')->getValue());
     }
 }

@@ -25,6 +25,7 @@ use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
 
@@ -45,12 +46,29 @@ class InputObjectType implements TypeInterface, InputTypeInterface
     /**
      * @var array|callable
      */
-    private $_fieldsThunk = [];
+    private $_fieldsThunk;
 
     /**
      * @var null|InputField[]
      */
-    private $_fieldMap;
+    private $_fieldMap = [];
+
+    /**
+     * @var bool
+     */
+    private $_isFieldMapBuilt = false;
+
+    /**
+     * @param string $fieldName
+     * @return InputField|null
+     * @throws \Exception
+     */
+    public function getField(string $fieldName): ?InputField
+    {
+        $this->buildFieldMapIfNecessary();
+
+        return $this->_fieldMap[$fieldName] ?? null;
+    }
 
     /**
      * @return InputField[]
@@ -58,7 +76,7 @@ class InputObjectType implements TypeInterface, InputTypeInterface
      */
     public function getFields(): array
     {
-        $this->buildFieldMap();
+        $this->buildFieldMapIfNecessary();
 
         return $this->_fieldMap;
     }
@@ -70,8 +88,6 @@ class InputObjectType implements TypeInterface, InputTypeInterface
      */
     protected function addField(InputField $field)
     {
-        $this->buildFieldMap();
-
         $this->_fieldMap[$field->getName()] = $field;
 
         return $this;
@@ -105,10 +121,12 @@ class InputObjectType implements TypeInterface, InputTypeInterface
     /**
      * @throws \Exception
      */
-    protected function buildFieldMap()
+    protected function buildFieldMapIfNecessary()
     {
-        if ($this->_fieldMap === null) {
-            $this->_fieldMap = $this->defineFieldMap($this->_fieldsThunk);
+        if (!$this->_isFieldMapBuilt) {
+            $this->_fieldMap = array_merge($this->defineFieldMap($this->_fieldsThunk), $this->_fieldMap);
+
+            $this->_isFieldMapBuilt = true;
         }
     }
 
@@ -121,6 +139,14 @@ class InputObjectType implements TypeInterface, InputTypeInterface
     {
         $fields = resolveThunk($fieldsThunk) ?: [];
 
+        invariant(
+            isAssocArray($fields),
+            sprintf(
+                '%s fields must be an associative array with field names as keys or a function which returns such an array.',
+                $this->getName()
+            )
+        );
+
         $fieldMap = [];
 
         foreach ($fields as $fieldName => $fieldConfig) {
@@ -128,7 +154,7 @@ class InputObjectType implements TypeInterface, InputTypeInterface
                 !isset($fieldConfig['resolve']),
                 sprintf(
                     '%s.%s field type has a resolve property, but Input Types cannot define resolvers.',
-                    $this->getAstNode(),
+                    $this->getName(),
                     $fieldName
                 )
             );
