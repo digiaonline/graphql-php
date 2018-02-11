@@ -347,9 +347,11 @@ function typeMapReducer(array $map, ?TypeInterface $type): array
         return typeMapReducer($map, $type->getOfType());
     }
 
-    if (isset($map[$type->getName()])) {
+    $typeName = $type->getName();
+
+    if (isset($map[$typeName])) {
         invariant(
-            $map[$type->getName()] instanceof $type,
+            $map[$typeName] === $type,
             sprintf(
                 'Schema must contain unique named types but contains multiple types named "%s".',
                 $type->getName()
@@ -359,7 +361,7 @@ function typeMapReducer(array $map, ?TypeInterface $type): array
         return $map;
     }
 
-    $map[$type->getName()] = $type;
+    $map[$typeName] = $type;
 
     $reducedMap = $map;
 

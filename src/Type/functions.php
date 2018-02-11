@@ -42,15 +42,18 @@ function resolveThunk($thunk): ?array
 }
 
 /**
- * @param array $array
+ * @param mixed $value
  * @return bool
  */
-function isAssocArray(array $array): bool
+function isAssocArray($value): bool
 {
-    if (empty($array)) {
+    if (!is_array($value)) {
+        return false;
+    }
+    if (empty($value)) {
         return true;
     }
-    $keys = array_keys($array);
+    $keys = array_keys($value);
     return $keys !== array_keys($keys);
 }
 

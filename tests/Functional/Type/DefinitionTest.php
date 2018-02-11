@@ -1178,7 +1178,6 @@ class DefinitionTest extends TestCase
     // Type System: Input Object fields must not have resolvers
 
     /**
-     * @throws \Exception
      * @expectedException \Exception
      */
     public function testRejectsAnInputObjectTypeWithResolvers()
@@ -1196,6 +1195,8 @@ class DefinitionTest extends TestCase
         ]);
 
         $inputObjectType->getFields();
+
+        $this->addToAssertionCount(1);
     }
 
     // TODO: Asses if we want to test "rejects an Input Object type with resolver constant".
@@ -1208,7 +1209,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsAWellDefinedEnumTypeWithEmptyValueDefinition()
     {
         $enumType = GraphQLEnumType([
-            'name' => 'SomeEnum',
+            'name'   => 'SomeEnum',
             'values' => [
                 'FOO' => ['value' => 10],
                 'BAR' => ['value' => 20],
@@ -1217,5 +1218,235 @@ class DefinitionTest extends TestCase
 
         $this->assertEquals(10, $enumType->getValue('FOO')->getValue());
         $this->assertEquals(20, $enumType->getValue('BAR')->getValue());
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRejectsAnEnumWithIncorrectlyTypedValues()
+    {
+        $enumType = GraphQLEnumType([
+            'name'   => 'SomeEnum',
+            'values' => ['FOO' => 10],
+        ]);
+
+        $enumType->getValues();
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRejectsAnEnumTypeWithMissingValueDefinition()
+    {
+        $enumType = GraphQLEnumType([
+            'name'   => 'SomeEnum',
+            'values' => ['FOO' => null],
+        ]);
+
+        $enumType->getValues();
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRejectsAnEnumTypeWithIncorrectlyTypedValueDefinition()
+    {
+        $enumType = GraphQLEnumType([
+            'name'   => 'SomeEnum',
+            'values' => ['FOO' => 10],
+        ]);
+
+        $enumType->getValues();
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testDoesNotAllowIsDeprecatedWithoutDeprecationReasonOnEnum()
+    {
+        $enumType = GraphQLEnumType([
+            'name'   => 'SomeEnum',
+            'values' => ['FOO' => ['isDeprecated' => true]],
+        ]);
+
+        $enumType->getValues();
+
+        $this->addToAssertionCount(1);
+    }
+
+    // Type System: List must accept only types
+
+    /**
+     * @throws \TypeError
+     */
+    public function testListMustAcceptOnlyTypes()
+    {
+        $types = [
+            GraphQLString(),
+            $this->scalarType,
+            $this->objectType,
+            $this->unionType,
+            $this->interfaceType,
+            $this->enumType,
+            $this->inputObjectType,
+            GraphQLList(GraphQLString()),
+            GraphQLNonNull(GraphQLString()),
+        ];
+
+        foreach ($types as $type) {
+            GraphQLList($type);
+        }
+
+        $this->addToAssertionCount(9);
+    }
+
+    /**
+     * @expectedException \TypeError
+     */
+    public function testListMustNotAcceptNonTypes()
+    {
+        $nonTypes = [[], '', null];
+
+        foreach ($nonTypes as $nonType) {
+            GraphQLList($nonType);
+        }
+
+        $this->addToAssertionCount(3);
+    }
+
+    // Type System: NonNull must only accept non-nullable types
+
+    /**
+     * @throws \TypeError
+     */
+    public function testNonNullMustAcceptOnlyNonNullableTypes()
+    {
+        $types = [
+            GraphQLString(),
+            $this->scalarType,
+            $this->objectType,
+            $this->unionType,
+            $this->interfaceType,
+            $this->enumType,
+            $this->inputObjectType,
+            GraphQLList(GraphQLString()),
+            GraphQLList(GraphQLNonNull(GraphQLString())),
+        ];
+
+        foreach ($types as $type) {
+            GraphQLNonNull($type);
+            $this->addToAssertionCount(1);
+        }
+    }
+
+    /**
+     * @expectedException \TypeError
+     */
+    public function testNonNullMustNotAcceptNonTypes()
+    {
+        $nonTypes = [GraphQLNonNull(GraphQLString()), [], '', null];
+
+        foreach ($nonTypes as $nonType) {
+            GraphQLNonNull($nonType);
+            $this->addToAssertionCount(1);
+        }
+    }
+
+    // Type System: A Schema must contain uniquely named types
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRejectsASchemaWhichDefinesABuiltInType()
+    {
+        $fakeString = GraphQLScalarType([
+            'name'      => 'String',
+            'serialize' => function () {
+                return null;
+            },
+        ]);
+
+        $queryType = GraphQLObjectType([
+            'name'   => 'Query',
+            'fields' => [
+                'normal' => ['type' => GraphQLString()],
+                'fake'   => ['type' => $fakeString],
+            ]
+        ]);
+
+        GraphQLSchema(['query' => $queryType]);
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRejectsASchemaWhichDefinesAnObjectTypeTwice()
+    {
+        $a = GraphQLObjectType([
+            'name'   => 'SameName',
+            'fields' => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $b = GraphQLObjectType([
+            'name'   => 'SameName',
+            'fields' => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $queryType = GraphQLObjectType([
+            'name'   => 'Query',
+            'fields' => [
+                'a' => ['type' => $a],
+                'b' => ['type' => $b],
+            ]
+        ]);
+
+        GraphQLSchema(['query' => $queryType]);
+
+        $this->addToAssertionCount(1);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRejectsASchemaWhichHaveSameNamedObjectsImplementingAnInterface()
+    {
+        $anotherInterface = GraphQLInterfaceType([
+            'name'   => 'AnotherInterface',
+            'fields' => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $firstBadObject = GraphQLObjectType([
+            'name'       => 'BadObject',
+            'interfaces' => [$anotherInterface],
+            'fields'     => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $secondBadObject = GraphQLObjectType([
+            'name'       => 'BadObject',
+            'interfaces' => [$anotherInterface],
+            'fields'     => ['f' => ['type' => GraphQLString()]],
+        ]);
+
+        $queryType = GraphQLObjectType([
+            'name'   => 'Query',
+            'fields' => [
+                'iface' => ['type' => $anotherInterface],
+            ]
+        ]);
+
+        GraphQLSchema([
+            'query' => $queryType,
+            'types' => [$firstBadObject, $secondBadObject],
+        ]);
+
+        $this->addToAssertionCount(1);
     }
 }
