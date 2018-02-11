@@ -34,12 +34,8 @@ class BooleanType extends ScalarType
      */
     private function coerceValue($value): bool
     {
-        if ($value === '') {
-            throw new \TypeError('Boolean cannot represent non boolean value: (empty string)');
-        }
-
         if (!is_scalar($value)) {
-            throw new \TypeError('Boolean cannot represent a non-scalar value');
+            throw new \TypeError(sprintf('Boolean cannot represent a non-scalar value: %s', $value));
         }
 
         return (bool)$value;

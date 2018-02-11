@@ -44,16 +44,19 @@ class IntType extends ScalarType
             throw new \TypeError('Int cannot represent non 32-bit signed integer value: (empty string)');
         }
 
-        $intValue = (int)$value;
-
-        if (!is_int($intValue) || $value > self::MAX_INT || $value < self::MIN_INT) {
-            throw new \TypeError('Int cannot represent non 32-bit signed integer value');
+        if (\is_bool($value)) {
+            $value = (int)$value;
         }
 
+        if (!\is_int($value) || $value > self::MAX_INT || $value < self::MIN_INT) {
+            throw new \TypeError(sprintf('Int cannot represent non 32-bit signed integer value: %s', $value));
+        }
+
+        $intValue   = (int)$value;
         $floatValue = (float)$value;
 
         if ($floatValue != $intValue || floor($floatValue) !== $floatValue) {
-            throw new \TypeError('Int cannot represent non-integer value');
+            throw new \TypeError(sprintf('Int cannot represent non-integer value: %s', $value));
         }
 
         return $intValue;

@@ -42,10 +42,10 @@ class FloatType extends ScalarType
             throw new \TypeError('Float cannot represent non numeric value: (empty string)');
         }
 
-        if (is_numeric($value)) {
+        if (is_numeric($value) || \is_bool($value)) {
             return (float)$value;
         }
 
-        throw new \TypeError('Float cannot represent non numeric value');
+        throw new \TypeError(sprintf('Float cannot represent non numeric value: %s', $value));
     }
 }
