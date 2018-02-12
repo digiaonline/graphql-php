@@ -5,6 +5,8 @@ namespace Digia\GraphQL\Type\Directive;
 use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\Scalar\BooleanType;
+use function Digia\GraphQL\Type\GraphQLBoolean;
+use function Digia\GraphQL\Type\GraphQLNonNull;
 
 class SkipDirective extends Directive
 {
@@ -26,7 +28,7 @@ class SkipDirective extends Directive
         ]);
         $this->setArgs([
             'if' => [
-                'type'        => new NonNullType(new BooleanType()),
+                'type'        => GraphQLNonNull(GraphQLBoolean()),
                 'description' => 'Skipped when true.',
             ],
         ]);
