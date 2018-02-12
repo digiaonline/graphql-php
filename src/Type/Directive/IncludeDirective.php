@@ -11,27 +11,24 @@ class IncludeDirective extends Directive
 
     /**
      * @inheritdoc
+     * @throws \Exception
      * @throws \TypeError
      */
-    public function configure(): array
+    protected function beforeConfig(): void
     {
-        return [
-            'name'        => 'include',
-            'description' =>
-                'Directs the executor to include this field or fragment only when ' .
-                'the `if` argument is true.',
-            'locations'   => [
-                DirectiveLocationEnum::FIELD,
-                DirectiveLocationEnum::FRAGMENT_SPREAD,
-                DirectiveLocationEnum::INLINE_FRAGMENT,
-            ],
-            'arguments'   => [
-                [
-                    'name'        => 'if',
-                    'type'        => new NonNullType(new BooleanType()),
-                    'description' => 'Included when true.',
-                ],
+        $this->setName('include');
+        $this->setDescription('Directs the executor to include this field or fragment only when ' .
+            'the `if` argument is true.');
+        $this->setLocations([
+            DirectiveLocationEnum::FIELD,
+            DirectiveLocationEnum::FRAGMENT_SPREAD,
+            DirectiveLocationEnum::INLINE_FRAGMENT,
+        ]);
+        $this->setArgs([
+            'if ' => [
+                'type'        => new NonNullType(new BooleanType()),
+                'description' => 'Included when true.',
             ]
-        ];
+        ]);
     }
 }

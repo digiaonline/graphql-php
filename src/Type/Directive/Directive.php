@@ -32,7 +32,7 @@ class Directive implements DirectiveInterface
      * @param string $location
      * @return $this
      */
-    public function addLocation(string $location)
+    protected function addLocation(string $location)
     {
         $this->locations[] = $location;
 

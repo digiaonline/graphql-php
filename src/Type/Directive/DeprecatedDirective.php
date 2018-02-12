@@ -12,28 +12,25 @@ class DeprecatedDirective extends Directive
 
     /**
      * @inheritdoc
+     * @throws \Exception
      */
-    public function configure(): array
+    protected function beforeConfig(): void
     {
-        return [
-            'name' => 'deprecated',
-            'description' => 'Marks an element of a GraphQL schema as no longer supported.',
-            'locations' => [
-                DirectiveLocationEnum::FIELD_DEFINITION,
-                DirectiveLocationEnum::ENUM_VALUE,
+        $this->setName('deprecated');
+        $this->setDescription('Marks an element of a GraphQL schema as no longer supported.');
+        $this->setLocations([
+            DirectiveLocationEnum::FIELD_DEFINITION,
+            DirectiveLocationEnum::ENUM_VALUE,
+        ]);
+        $this->setArgs([
+            'reason' => [
+                'type'         => new StringType(),
+                'description'  =>
+                    'Explains why this element was deprecated, usually also including a ' .
+                    'suggestion for how to access supported similar data. Formatted ' .
+                    'in [Markdown](https://daringfireball.net/projects/markdown/).',
+                'defaultValue' => self::DEFAULT_DEPRECATION_VALUE,
             ],
-            'arguments' => [
-                [
-                    'name'         => 'reason',
-                    'type'         => new StringType(),
-                    'description'  =>
-                        'Explains why this element was deprecated, usually also including a ' .
-                        'suggestion for how to access supported similar data. Formatted ' .
-                        'in [Markdown](https://daringfireball.net/projects/markdown/).',
-                    'defaultValue' => self::DEFAULT_DEPRECATION_VALUE,
-                ],
-            ],
-        ];
+        ]);
     }
-
 }
