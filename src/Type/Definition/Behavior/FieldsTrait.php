@@ -4,8 +4,10 @@ namespace Digia\GraphQL\Type\Definition\Behavior;
 
 use Digia\GraphQL\Type\Definition\Field;
 use function Digia\GraphQL\Type\isAssocArray;
+use function Digia\GraphQL\Type\isValidResolver;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
+use function Digia\GraphQL\Util\toString;
 
 trait FieldsTrait
 {
@@ -118,6 +120,18 @@ trait FieldsTrait
                     $fieldName
                 )
             );
+
+            if (isset($fieldConfig['resolve'])) {
+                invariant(
+                    isValidResolver($fieldConfig['resolve']),
+                    sprintf(
+                        '%s.%s field resolver must be a function if provided, but got: %s',
+                        $this->getName(),
+                        $fieldName,
+                        toString($fieldConfig['resolve'])
+                    )
+                );
+            }
 
             $fieldMap[$fieldName] = new Field(array_merge($fieldConfig, ['name' => $fieldName]));
         }

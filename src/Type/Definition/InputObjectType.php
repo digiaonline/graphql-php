@@ -70,32 +70,6 @@ class InputObjectType implements TypeInterface, InputTypeInterface
     }
 
     /**
-     * @param InputField $field
-     * @return $this
-     * @throws \Exception
-     */
-    protected function addField(InputField $field)
-    {
-        $this->_fieldMap[$field->getName()] = $field;
-
-        return $this;
-    }
-
-    /**
-     * @param array $fields
-     * @return $this
-     * @throws \Exception
-     */
-    protected function addFields(array $fields)
-    {
-        foreach ($fields as $field) {
-            $this->addField($field);
-        }
-
-        return $this;
-    }
-
-    /**
      * @param array|callable $fieldsThunk
      * @return $this
      */

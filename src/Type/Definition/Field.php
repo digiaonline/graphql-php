@@ -25,15 +25,4 @@ class Field
     use ResolveTrait;
     use NodeTrait;
     use ConfigTrait;
-
-    /**
-     * @inheritdoc
-     */
-    protected function afterConfig(): void
-    {
-        invariant(
-            isValidResolver($this->resolve),
-            sprintf('Field resolver must be a function if provided, but got: %s', toString($this->resolve))
-        );
-    }
 }

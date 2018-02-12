@@ -136,32 +136,6 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     }
 
     /**
-     * @param InterfaceType $interface
-     * @return $this
-     * @throws \Exception
-     */
-    protected function addInterface(InterfaceType $interface)
-    {
-        $this->_interfaces[] = $interface;
-
-        return $this;
-    }
-
-    /**
-     * @param array $interfaces
-     * @return $this
-     * @throws \Exception
-     */
-    protected function addInterfaces(array $interfaces)
-    {
-        foreach ($interfaces as $interface) {
-            $this->addInterface($interface);
-        }
-
-        return $this;
-    }
-
-    /**
      * @param array $interfacesThunk
      * @return $this
      */

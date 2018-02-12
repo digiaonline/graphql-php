@@ -74,17 +74,6 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     }
 
     /**
-     * @param TypeInterface $type
-     * @return UnionType
-     */
-    public function addType(TypeInterface $type): UnionType
-    {
-        $this->_typeMap[$type->getName()] = $type;
-
-        return $this;
-    }
-
-    /**
      * @return TypeInterface[]
      * @throws \Exception
      */

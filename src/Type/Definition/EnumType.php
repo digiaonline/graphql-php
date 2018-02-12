@@ -194,7 +194,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     /**
      * @throws \Exception
      */
-    public function defineEnumValuesIfNecessary(): void
+    protected function defineEnumValuesIfNecessary(): void
     {
         if (!$this->_isValuesDefined) {
             $this->_values = array_merge($this->defineEnumValues($this->_valueMap), $this->_values);

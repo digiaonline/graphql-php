@@ -2,29 +2,32 @@
 
 namespace Digia\GraphQL\Type\Definition\Behavior;
 
+use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+
 trait ResolveTypeTrait
 {
 
     /**
      * @var ?callable
      */
-    private $resolveType;
+    private $resolveTypeFunction;
 
     /**
-     * @return callable|null
+     * @param array ...$args
+     * @return TypeInterface|null
      */
-    public function getResolveType(): ?callable
+    public function resolveType(...$args): ?TypeInterface
     {
-        return $this->resolveType;
+        return call_user_func_array($this->resolveTypeFunction, $args);
     }
 
     /**
-     * @param callable|null $resolveType
+     * @param callable|null $resolveTypeFunction
      * @return $this
      */
-    protected function setResolveType(?callable $resolveType)
+    protected function setResolveType(?callable $resolveTypeFunction)
     {
-        $this->resolveType = $resolveType;
+        $this->resolveTypeFunction = $resolveTypeFunction;
 
         return $this;
     }

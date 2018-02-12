@@ -701,7 +701,7 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @expectedException \TypeError
+     * @expectedException \Exception
      * @throws \Exception
      */
     public function testRejectsAnEmptyArrayFieldResolver()
@@ -712,7 +712,7 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @expectedException \TypeError
+     * @expectedException \Exception
      * @throws \Exception
      */
     public function testRejectsAnScalarFieldResolver()

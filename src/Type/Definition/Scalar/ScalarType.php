@@ -33,17 +33,17 @@ class ScalarType implements TypeInterface, LeafTypeInterface, NamedTypeInterface
     /**
      * @var callable
      */
-    private $_serialize;
+    private $_serializeFunction;
 
     /**
      * @var ?callable
      */
-    private $_parseValue;
+    private $_parseValueFunction;
 
     /**
      * @var ?callable
      */
-    private $_parseLiteral;
+    private $_parseLiteralFunction;
 
     /**
      * @inheritdoc
@@ -52,7 +52,7 @@ class ScalarType implements TypeInterface, LeafTypeInterface, NamedTypeInterface
     protected function afterConfig(): void
     {
         invariant(
-            is_callable($this->_serialize),
+            is_callable($this->_serializeFunction),
             sprintf(
                 '%s must provide "serialize" function. If this custom Scalar ' .
                 'is also used as an input type, ensure "parseValue" and "parseLiteral" ' .
@@ -61,39 +61,39 @@ class ScalarType implements TypeInterface, LeafTypeInterface, NamedTypeInterface
             )
         );
 
-        if ($this->_parseValue !== null || $this->_parseLiteral !== null) {
+        if ($this->_parseValueFunction !== null || $this->_parseLiteralFunction !== null) {
             invariant(
-                is_callable($this->_parseValue) && is_callable($this->_parseLiteral),
+                is_callable($this->_parseValueFunction) && is_callable($this->_parseLiteralFunction),
                 sprintf('%s must provide both "parseValue" and "parseLiteral" functions.', $this->getName())
             );
         }
     }
 
     /**
-     * @param mixed $value
+     * @param array ...$args
      * @return mixed
      */
-    public function serialize($value)
+    public function serialize(...$args)
     {
-        return call_user_func($this->_serialize, ($value));
+        return call_user_func_array($this->_serializeFunction, $args);
     }
 
     /**
-     * @param mixed $value
-     * @return mixed
+     * @param array ...$args
+     * @return mixed|null
      */
-    public function parseValue($value)
+    public function parseValue(...$args)
     {
-        return $this->_parseValue !== null ? call_user_func($this->_parseValue, $value) : null;
+        return $this->_parseValueFunction !== null ? call_user_func_array($this->_parseValueFunction, $args) : null;
     }
 
     /**
-     * @param mixed $value
-     * @return mixed
+     * @param array ...$args
+     * @return mixed|null
      */
-    public function parseLiteral(NodeInterface $astNode)
+    public function parseLiteral(...$args)
     {
-        return $this->_parseLiteral !== null ? call_user_func($this->_parseLiteral, $astNode) : null;
+        return $this->_parseLiteralFunction !== null ? call_user_func_array($this->_parseLiteralFunction, $args) : null;
     }
 
     /**
@@ -115,32 +115,32 @@ class ScalarType implements TypeInterface, LeafTypeInterface, NamedTypeInterface
     }
 
     /**
-     * @param callable $serialize
+     * @param callable $serializeFunction
      * @return ScalarType
      */
-    protected function setSerialize(callable $serialize): ScalarType
+    protected function setSerialize(callable $serializeFunction): ScalarType
     {
-        $this->_serialize = $serialize;
+        $this->_serializeFunction = $serializeFunction;
         return $this;
     }
 
     /**
-     * @param callable $parseValue
+     * @param callable $parseValueFunction
      * @return ScalarType
      */
-    protected function setParseValue(callable $parseValue): ScalarType
+    protected function setParseValue(callable $parseValueFunction): ScalarType
     {
-        $this->_parseValue = $parseValue;
+        $this->_parseValueFunction = $parseValueFunction;
         return $this;
     }
 
     /**
-     * @param callable $parseLiteral
+     * @param callable $parseLiteralFunction
      * @return ScalarType
      */
-    protected function setParseLiteral(callable $parseLiteral): ScalarType
+    protected function setParseLiteral(callable $parseLiteralFunction): ScalarType
     {
-        $this->_parseLiteral = $parseLiteral;
+        $this->_parseLiteralFunction = $parseLiteralFunction;
         return $this;
     }
 }
