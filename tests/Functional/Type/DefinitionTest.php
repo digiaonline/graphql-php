@@ -10,8 +10,7 @@ use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\Scalar\ScalarType;
-use Digia\GraphQL\Type\Definition\Scalar\StringType;
+use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Schema\Schema;
@@ -239,7 +238,7 @@ class DefinitionTest extends TestCase
 
         $titleField = $articleFieldType->getFields()['title'];
         $this->assertEquals('title', $titleField->getName());
-        $this->assertInstanceOf(StringType::class, $titleField->getType());
+        $this->assertEquals(GraphQLString(), $titleField->getType());
         $this->assertEquals('String', $titleField->getType()->getName());
 
         $authorField = $articleFieldType->getFields()['author'];
@@ -333,7 +332,7 @@ class DefinitionTest extends TestCase
 
         $field = $typeWithDeprecatedField->getFields()['bar'];
 
-        $this->assertInstanceOf(StringType::class, $field->getType());
+        $this->assertEquals(GraphQLString(), $field->getType());
         $this->assertEquals('A terrible reason', $field->getDeprecationReason());
         $this->assertTrue($field->isDeprecated());
         $this->assertEquals('bar', $field->getName());
@@ -529,9 +528,9 @@ class DefinitionTest extends TestCase
 
         $this->assertEquals($testInputObject2->getFields(), $testInputObject1->getFields());
 
-        $this->assertInstanceOf(StringType::class, $fields['field1']['type']);
-        $this->assertInstanceOf(StringType::class, $fields['field2']['type']);
-        $this->assertInstanceOf(StringType::class, $fields['field2']['args']['id']['type']);
+        $this->assertEquals(GraphQLString(), $fields['field1']['type']);
+        $this->assertEquals(GraphQLString(), $fields['field2']['type']);
+        $this->assertEquals(GraphQLString(), $fields['field2']['args']['id']['type']);
     }
 
     // TODO: Assess if we want to test "accepts an Object type with a field function".
@@ -1122,7 +1121,7 @@ class DefinitionTest extends TestCase
         ]);
 
         $field = $inputObjectType->getFields()['f'];
-        $this->assertInstanceOf(StringType::class, !$field ?: $field->getType());
+        $this->assertEquals(GraphQLString(), $field->getType());
     }
 
     /**
@@ -1138,7 +1137,7 @@ class DefinitionTest extends TestCase
         ]);
 
         $field = $inputObjectType->getFields()['f'];
-        $this->assertInstanceOf(StringType::class, !$field ?: $field->getType());
+        $this->assertEquals(GraphQLString(), $field->getType());
     }
 
     /**

@@ -16,12 +16,7 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\Scalar\ScalarType;
-use Digia\GraphQL\Type\Definition\Scalar\BooleanType;
-use Digia\GraphQL\Type\Definition\Scalar\FloatType;
-use Digia\GraphQL\Type\Definition\Scalar\IDType;
-use Digia\GraphQL\Type\Definition\Scalar\IntType;
-use Digia\GraphQL\Type\Definition\Scalar\StringType;
+use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Directive\Directive;
 use Digia\GraphQL\Type\Directive\DeprecatedDirective;
@@ -300,21 +295,6 @@ function assertNamedType(TypeInterface $type)
 }
 
 /**
- * @param TypeInterface $type
- * @return bool
- */
-function isSpecifiedScalarType(TypeInterface $type): bool
-{
-    return \in_array(get_class($type), [
-        StringType::class,
-        IntType::class,
-        FloatType::class,
-        BooleanType::class,
-        IDType::class,
-    ], true);
-}
-
-/**
  * @param DirectiveInterface $directive
  * @return bool
  */
@@ -325,76 +305,6 @@ function isSpecifiedDirective(DirectiveInterface $directive): bool
         SkipDirective::class,
         DeprecatedDirective::class,
     ], true);
-}
-
-/**
- * @return BooleanType
- */
-function GraphQLBoolean(): BooleanType
-{
-    static $instance = null;
-
-    if (!$instance) {
-        $instance = new BooleanType();
-    }
-
-    return $instance;
-}
-
-/**
- * @return FloatType
- */
-function GraphQLFloat(): FloatType
-{
-    static $instance = null;
-
-    if (!$instance) {
-        $instance = new FloatType();
-    }
-
-    return $instance;
-}
-
-/**
- * @return IntType
- */
-function GraphQLInt(): IntType
-{
-    static $instance = null;
-
-    if (!$instance) {
-        $instance = new IntType();
-    }
-
-    return $instance;
-}
-
-/**
- * @return IDType
- */
-function GraphQLID(): IDType
-{
-    static $instance = null;
-
-    if (!$instance) {
-        $instance = new IDType();
-    }
-
-    return $instance;
-}
-
-/**
- * @return StringType
- */
-function GraphQLString(): StringType
-{
-    static $instance = null;
-
-    if (!$instance) {
-        $instance = new StringType();
-    }
-
-    return $instance;
 }
 
 /**

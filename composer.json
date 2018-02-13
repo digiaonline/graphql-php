@@ -17,7 +17,8 @@
     },
     "autoload": {
         "files": [
-            "./src/Type/functions.php",
+            "./src/Type/definition.php",
+            "./src/Type/scalars.php",
             "./src/Util/functions.php"
         ],
         "psr-4": {
@@ -26,7 +27,8 @@
     },
     "autoload-dev": {
         "files": [
-            "./src/Type/functions.php",
+            "./src/Type/definition.php",
+            "./src/Type/scalars.php",
             "./src/Util/functions.php"
         ],
         "psr-4": {

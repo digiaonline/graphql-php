@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Type\Definition\Scalar;
+namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
