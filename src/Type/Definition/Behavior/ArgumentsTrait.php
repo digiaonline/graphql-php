@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Type\Definition\Behavior;
 
 use Digia\GraphQL\Type\Definition\Argument;
 use function Digia\GraphQL\Type\isAssocArray;
-use function Digia\GraphQL\Util\instantiateAssocFromArray;
 use function Digia\GraphQL\Util\invariant;
 
 trait ArgumentsTrait

@@ -18,6 +18,7 @@
     "autoload": {
         "files": [
             "./src/Type/definition.php",
+            "./src/Type/directives.php",
             "./src/Type/scalars.php",
             "./src/Util/functions.php"
         ],
@@ -28,6 +29,7 @@
     "autoload-dev": {
         "files": [
             "./src/Type/definition.php",
+            "./src/Type/directives.php",
             "./src/Type/scalars.php",
             "./src/Util/functions.php"
         ],

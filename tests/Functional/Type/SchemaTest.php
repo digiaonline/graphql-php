@@ -6,7 +6,7 @@ use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Directive\DirectiveInterface;
+use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
 use function Digia\GraphQL\Type\GraphQLDirective;
 use function Digia\GraphQL\Type\GraphQLInputObjectType;
 use function Digia\GraphQL\Type\GraphQLInterfaceType;

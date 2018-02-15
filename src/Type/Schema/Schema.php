@@ -14,11 +14,7 @@ use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Directive\DeprecatedDirective;
-use Digia\GraphQL\Type\Directive\DirectiveInterface;
-use Digia\GraphQL\Type\Directive\IncludeDirective;
-use Digia\GraphQL\Type\Directive\SkipDirective;
-use function Digia\GraphQL\Type\isWrappingType;
+use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
 use function Digia\GraphQL\Util\invariant;
 
 /**
@@ -144,11 +140,7 @@ class Schema
      */
     protected function beforeConfig(): void
     {
-        $this->setDirectives([
-            new IncludeDirective(),
-            new SkipDirective(),
-            new DeprecatedDirective(),
-        ]);
+        $this->setDirectives(specifiedDirectives());
     }
 
     /**

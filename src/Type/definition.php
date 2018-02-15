@@ -18,11 +18,8 @@ use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Directive\Directive;
-use Digia\GraphQL\Type\Directive\DeprecatedDirective;
-use Digia\GraphQL\Type\Directive\DirectiveInterface;
-use Digia\GraphQL\Type\Directive\IncludeDirective;
-use Digia\GraphQL\Type\Directive\SkipDirective;
+use Digia\GraphQL\Type\Definition\Directive;
+use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
 use Digia\GraphQL\Type\Schema\Schema;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
@@ -292,19 +289,6 @@ function assertNamedType(TypeInterface $type)
         $type instanceof NamedTypeInterface,
         sprintf('Expected %s to be a GraphQL named type.', toString($type))
     );
-}
-
-/**
- * @param DirectiveInterface $directive
- * @return bool
- */
-function isSpecifiedDirective(DirectiveInterface $directive): bool
-{
-    return \in_array(get_class($directive), [
-        IncludeDirective::class,
-        SkipDirective::class,
-        DeprecatedDirective::class,
-    ], true);
 }
 
 /**

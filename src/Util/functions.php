@@ -15,40 +15,15 @@ function invariant(bool $condition, string $message)
 }
 
 /**
- * @param string $className
- * @param array  $array
- * @return array
+ * @param array    $array
+ * @param callable $fn
+ * @return mixed
  */
-function instantiateFromArray(string $className, array $array): array
+function arraySome(array $array, callable $fn)
 {
-    return array_map(function ($item) use ($className) {
-        if ($item instanceof $className) {
-            return $item;
-        }
-
-        return new $className($item);
-    }, $array);
-}
-
-/**
- * @param string $className
- * @param array  $array
- * @return array
- */
-function instantiateAssocFromArray(string $className, array $array, string $keyName = 'name'): array
-{
-    $objects = array_map(function ($item, $key) use ($className, $keyName) {
-        return new $className(array_merge($item, [$keyName => $key]));
-    }, $array, array_keys($array));
-
-    $assoc = [];
-    $keyGetter = 'get' . ucfirst($keyName);
-
-    foreach ($objects as $object) {
-        $assoc[$object->$keyGetter()] = $object;
-    }
-
-    return $assoc;
+    return array_reduce($array, function ($result, $value) use ($fn) {
+        return $result || $fn($value);
+    });
 }
 
 /**

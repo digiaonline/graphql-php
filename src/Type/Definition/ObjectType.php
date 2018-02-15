@@ -15,7 +15,6 @@ use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 use function Digia\GraphQL\Type\resolveThunk;
-use function Digia\GraphQL\Util\instantiateFromArray;
 use function Digia\GraphQL\Util\invariant;
 
 /**

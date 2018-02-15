@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Type\Directive;
+namespace Digia\GraphQL\Type\Definition\Contract;
 
 interface DirectiveInterface
 {

@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeEnum;
+use function Digia\GraphQL\Util\arraySome;
 
 const MAX_INT = 2147483647;
 const MIN_INT = -2147483648;
@@ -242,16 +243,29 @@ function GraphQLString(): ScalarType
 }
 
 /**
+ * @return array
+ */
+function specifiedScalarTypes(): array
+{
+    return [
+        GraphQLString(),
+        GraphQLInt(),
+        GraphQLFloat(),
+        GraphQLBoolean(),
+        GraphQLID(),
+    ];
+}
+
+/**
  * @param TypeInterface $type
  * @return bool
  */
 function isSpecifiedScalarType(TypeInterface $type): bool
 {
-    return \in_array($type->getName(), [
-        TypeEnum::BOOLEAN,
-        TypeEnum::FLOAT,
-        TypeEnum::ID,
-        TypeEnum::INT,
-        TypeEnum::STRING,
-    ], true);
+    return arraySome(
+        specifiedScalarTypes(),
+        function (ScalarType $specifiedScalarType) use ($type) {
+            return $type->getName() === $specifiedScalarType->getName();
+        }
+    );
 }

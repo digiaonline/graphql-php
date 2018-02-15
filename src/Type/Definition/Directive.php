@@ -1,11 +1,12 @@
 <?php
 
-namespace Digia\GraphQL\Type\Directive;
+namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Type\Definition\Behavior\ArgumentsTrait;
 use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
+use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
 
 class Directive implements DirectiveInterface
 {
