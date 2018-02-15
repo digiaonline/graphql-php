@@ -2,22 +2,22 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Behavior\ConfigTrait;
-use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\Node\Behavior\KindTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\LocationTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\ValueTrait;
+use Digia\GraphQL\Language\AST\Node\Contract\ValueNodeInterface;
+use Digia\GraphQL\ConfigObject;
 
-class FloatValueNode implements NodeInterface
+class FloatValueNode extends ConfigObject implements ValueNodeInterface
 {
 
     use KindTrait;
+    use LocationTrait;
     use ValueTrait;
-    use ConfigTrait;
 
     /**
-     * @inheritdoc
+     * @var string
      */
-    protected function beforeConfig(): void
-    {
-        $this->setKind(KindEnum::FLOAT);
-    }
+    protected $kind = KindEnum::FLOAT;
 }

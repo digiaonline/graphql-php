@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
@@ -41,13 +41,12 @@ use function Digia\GraphQL\Util\toString;
  * @package Digia\GraphQL\Type\Definition\Enum
  * @property EnumTypeDefinitionNode $astNode
  */
-class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface
+class EnumType extends ConfigObject implements TypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
     use DescriptionTrait;
     use NodeTrait;
-    use ConfigTrait;
 
     /**
      * @var array

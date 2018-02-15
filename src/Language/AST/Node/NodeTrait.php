@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
+use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+
 trait NodeTrait
 {
 

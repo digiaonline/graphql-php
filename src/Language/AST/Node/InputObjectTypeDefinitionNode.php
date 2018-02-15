@@ -2,22 +2,28 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
-use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\InputFieldsTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\KindTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\LocationTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
+use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
+use Digia\GraphQL\ConfigObject;
 
-class InputObjectTypeDefinitionNode implements NodeInterface
+class InputObjectTypeDefinitionNode extends ConfigObject implements DefinitionNodeInterface
 {
 
     use KindTrait;
-    use ValueTrait;
-    use ConfigTrait;
+    use LocationTrait;
+    use DescriptionTrait;
+    use NameTrait;
+    use DirectivesTrait;
+    use InputFieldsTrait;
 
     /**
-     * @inheritdoc
+     * @var string
      */
-    protected function beforeConfig(): void
-    {
-        $this->setKind(KindEnum::INPUT_OBJECT_TYPE_DEFINITION);
-    }
+    protected $kind = KindEnum::INPUT_OBJECT_TYPE_DEFINITION;
 }

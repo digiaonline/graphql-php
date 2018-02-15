@@ -2,10 +2,9 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Type\Definition\Behavior\ResolveTypeTrait;
 use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
@@ -41,14 +40,13 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type\Definition
  * @property UnionTypeDefinitionNode $astNode
  */
-class UnionType implements AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface
+class UnionType extends ConfigObject implements AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
     use DescriptionTrait;
     use ResolveTypeTrait;
     use NodeTrait;
-    use ConfigTrait;
 
     /**
      * @var array|callable

@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Type\Schema;
 
-use Digia\GraphQL\Behavior\ConfigTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
+use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
@@ -44,11 +44,10 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type
  * @property SchemaDefinitionNode $astNode
  */
-class Schema
+class Schema extends ConfigObject
 {
 
     use NodeTrait;
-    use ConfigTrait;
 
     /**
      * @var ObjectType

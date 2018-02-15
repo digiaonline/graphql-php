@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
@@ -54,7 +54,7 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type\Definition
  * @property ObjectTypeDefinitionNode $astNode
  */
-class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInterface, OutputTypeInterface
+class ObjectType extends ConfigObject implements TypeInterface, CompositeTypeInterface, NamedTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
@@ -63,7 +63,6 @@ class ObjectType implements TypeInterface, CompositeTypeInterface, NamedTypeInte
     use ResolveTrait;
     use NodeTrait;
     use ExtensionASTNodesTrait;
-    use ConfigTrait;
 
     /**
      * @var callable

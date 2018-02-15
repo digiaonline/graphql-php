@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
@@ -16,7 +16,7 @@ use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
  * @package Digia\GraphQL\Type\Definition\Enum
  * @property EnumValueDefinitionNode $astNode
  */
-class EnumValue
+class EnumValue extends ConfigObject
 {
 
     use NameTrait;
@@ -24,7 +24,6 @@ class EnumValue
     use DeprecationTrait;
     use ValueTrait;
     use NodeTrait;
-    use ConfigTrait;
 
     /**
      *

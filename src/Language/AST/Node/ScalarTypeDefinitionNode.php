@@ -3,27 +3,25 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\KindTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\LocationTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
+use Digia\GraphQL\Language\AST\Node\Contract\TypeDefinitionNodeInterface;
+use Digia\GraphQL\ConfigObject;
 
-class ScalarTypeDefinitionNode implements NodeInterface
+class ScalarTypeDefinitionNode extends ConfigObject implements TypeDefinitionNodeInterface
 {
 
     use KindTrait;
+    use LocationTrait;
+    use DescriptionTrait;
+    use NameTrait;
+    use DirectivesTrait;
 
     /**
-     * @inheritdoc
+     * @var string
      */
-    protected function configure(): array
-    {
-        return [
-            'kind' => KindEnum::SCALAR_TYPE_DEFINITION,
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getValue()
-    {
-        // TODO: Implement getValue() method.
-    }
+    protected $kind = KindEnum::SCALAR_TYPE_DEFINITION;
 }

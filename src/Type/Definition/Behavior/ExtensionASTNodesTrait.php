@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition\Behavior;
 
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeExtensionNode;
 
 trait ExtensionASTNodesTrait

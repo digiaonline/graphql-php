@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
@@ -22,13 +22,12 @@ use function Digia\GraphQL\Util\invariant;
  * @property ScalarTypeDefinitionNode $astNode
  * @codeCoverageIgnore
  */
-class ScalarType implements TypeInterface, LeafTypeInterface, NamedTypeInterface, InputTypeInterface, OutputTypeInterface
+class ScalarType extends ConfigObject implements TypeInterface, LeafTypeInterface, NamedTypeInterface, InputTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
     use DescriptionTrait;
     use NodeTrait;
-    use ConfigTrait;
 
     /**
      * @var callable

@@ -3,27 +3,40 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\KindTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\LocationTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\TypeTrait;
+use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
+use Digia\GraphQL\ConfigObject;
 
-class FieldDefinitionNode implements NodeInterface
+class FieldDefinitionNode extends ConfigObject implements DefinitionNodeInterface
 {
 
     use KindTrait;
+    use LocationTrait;
+    use DescriptionTrait;
+    use NameTrait;
+    use TypeTrait;
+    use DirectivesTrait;
 
     /**
-     * @inheritdoc
+     * @var string
      */
-    protected function configure(): array
-    {
-        return [
-            'kind' => KindEnum::FIELD_DEFINITION,
-        ];
-    }
+    protected $kind = KindEnum::FIELD_DEFINITION;
 
     /**
-     * @inheritdoc
+     * @var InputValueDefinitionNode[]
      */
-    public function getValue()
+    protected $arguments;
+
+    /**
+     * @return InputValueDefinitionNode[]
+     */
+    public function getArguments(): array
     {
-        // TODO: Implement getValue() method.
+        return $this->arguments;
     }
 }

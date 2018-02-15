@@ -18,7 +18,7 @@ namespace Digia\GraphQL\Type\Definition;
  *     });
  */
 
-use Digia\GraphQL\Behavior\ConfigTrait;
+use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
@@ -35,13 +35,12 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type\Definition
  * @property InputObjectTypeDefinitionNode $astNode
  */
-class InputObjectType implements TypeInterface, InputTypeInterface
+class InputObjectType extends ConfigObject implements TypeInterface, InputTypeInterface
 {
 
     use NameTrait;
     use DescriptionTrait;
     use NodeTrait;
-    use ConfigTrait;
 
     /**
      * @var array|callable

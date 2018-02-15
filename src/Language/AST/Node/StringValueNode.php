@@ -2,22 +2,35 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Behavior\ConfigTrait;
-use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\Node\Behavior\KindTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\LocationTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\ValueTrait;
+use Digia\GraphQL\Language\AST\Node\Contract\ValueNodeInterface;
+use Digia\GraphQL\ConfigObject;
 
-class StringValueNode implements NodeInterface
+class StringValueNode extends ConfigObject implements ValueNodeInterface
 {
 
     use KindTrait;
+    use LocationTrait;
     use ValueTrait;
-    use ConfigTrait;
 
     /**
-     * @inheritdoc
+     * @var string
      */
-    protected function beforeConfig(): void
+    protected $kind = KindEnum::STRING;
+
+    /**
+     * @var bool
+     */
+    protected $block;
+
+    /**
+     * @return bool
+     */
+    public function isBlock(): bool
     {
-        $this->setKind(KindEnum::STRING);
+        return $this->block;
     }
 }

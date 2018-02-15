@@ -2,22 +2,35 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Behavior\ConfigTrait;
-use Digia\GraphQL\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\KindTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\LocationTrait;
+use Digia\GraphQL\Language\AST\Node\Contract\TypeSystemDefinitionNodeInterface;
+use Digia\GraphQL\ConfigObject;
 
-class SchemaDefinitionNode implements NodeInterface
+class SchemaDefinitionNode extends ConfigObject implements TypeSystemDefinitionNodeInterface
 {
 
     use KindTrait;
-    use ValueTrait;
-    use ConfigTrait;
+    use LocationTrait;
+    use DirectivesTrait;
 
     /**
-     * @inheritdoc
+     * @var string
      */
-    protected function beforeConfig(): void
+    protected $kind = KindEnum::SCHEMA_DEFINITION;
+
+    /**
+     * @var OperationTypeDefinitionNode[]
+     */
+    protected $operationTypes;
+
+    /**
+     * @return OperationTypeDefinitionNode[]
+     */
+    public function getOperationTypes(): array
     {
-        $this->setKind(KindEnum::SCHEMA_DEFINITION);
+        return $this->operationTypes;
     }
 }
