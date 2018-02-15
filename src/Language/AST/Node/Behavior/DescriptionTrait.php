@@ -2,18 +2,20 @@
 
 namespace Digia\GraphQL\Language\AST\Node\Behavior;
 
+use Digia\GraphQL\Language\AST\Node\StringValueNode;
+
 trait DescriptionTrait
 {
 
     /**
-     * @var ?string
+     * @var ?StringValueNode
      */
     protected $description;
 
     /**
-     * @return mixed
+     * @return StringValueNode
      */
-    public function getDescription()
+    public function getDescription(): ?StringValueNode
     {
         return $this->description;
     }
