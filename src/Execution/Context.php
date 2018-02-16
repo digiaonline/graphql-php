@@ -80,6 +80,19 @@ class Context
         $this->errors         = $errors;
     }
 
+
+    /**
+     * @return OperationDefinitionNode
+     */
+    public function getOperation(): OperationDefinitionNode
+    {
+        return $this->operation;
+    }
+
+    /**
+     * @param GraphQLError $error
+     * @return Context
+     */
     public function addError(GraphQLError $error)
     {
         $this->errors[] = $error;
