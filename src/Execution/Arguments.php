@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
-use Digia\GraphQL\Schema;
+use Digia\GraphQL\Type\Schema\Schema;
 
 class Arguments
 {

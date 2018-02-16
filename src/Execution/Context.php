@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Execution;
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
-use Digia\GraphQL\Schema;
+use Digia\GraphQL\Type\Schema\Schema;
 
 class Context
 {
