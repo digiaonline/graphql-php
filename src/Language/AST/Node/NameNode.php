@@ -15,9 +15,4 @@ class NameNode extends ConfigObject implements NodeInterface
     use KindTrait;
     use LocationTrait;
     use ValueTrait;
-
-    /**
-     * @var string
-     */
-    protected $kind = KindEnum::NAME;
 }

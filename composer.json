@@ -10,12 +10,16 @@
         }
     ],
     "require": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "ext-graphql": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {
+        "classmap": [
+            "GraphQL"
+        ],
         "files": [
             "./src/Type/definition.php",
             "./src/Type/directives.php",

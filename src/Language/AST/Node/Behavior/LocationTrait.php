@@ -10,13 +10,13 @@ trait LocationTrait
     /**
      * @var ?Location
      */
-    protected $location;
+    protected $loc;
 
     /**
      * @return mixed
      */
-    public function getLocation(): ?Location
+    public function getLoc(): ?Location
     {
-        return $this->location;
+        return $this->loc;
     }
 }

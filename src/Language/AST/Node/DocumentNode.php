@@ -16,11 +16,6 @@ class DocumentNode extends ConfigObject implements NodeInterface
     use LocationTrait;
 
     /**
-     * @var string
-     */
-    protected $kind = KindEnum::DOCUMENT;
-
-    /**
      * @var DefinitionNodeInterface
      */
     protected $definitions;

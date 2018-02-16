@@ -10,27 +10,27 @@ class Location extends ConfigObject
     /**
      * @var int
      */
-    private $start;
+    protected $start;
 
     /**
      * @var int
      */
-    private $end;
+    protected $end;
 
     /**
      * @var Token
      */
-    private $startToken;
+    protected $startToken;
 
     /**
      * @var Token
      */
-    private $endToken;
+    protected $endToken;
 
     /**
      * @var Source
      */
-    private $source;
+    protected $source;
 
     /**
      * @return int

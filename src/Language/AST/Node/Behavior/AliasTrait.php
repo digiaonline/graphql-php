@@ -15,7 +15,7 @@ trait AliasTrait
     /**
      * @return NameNode|null
      */
-    public function getName(): ?NameNode
+    public function getAlias(): ?NameNode
     {
         return $this->alias;
     }

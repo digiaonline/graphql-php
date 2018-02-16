@@ -16,11 +16,6 @@ class SelectionSetNode extends ConfigObject implements NodeInterface
     use LocationTrait;
 
     /**
-     * @var string
-     */
-    protected $kind = KindEnum::SELECTION_SET;
-
-    /**
      * @var SelectionNodeInterface[]
      */
     protected $selections;

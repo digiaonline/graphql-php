@@ -23,9 +23,4 @@ class FieldNode extends ConfigObject implements SelectionNodeInterface
     use ArgumentsTrait;
     use DirectivesTrait;
     use SelectionSetTrait;
-
-    /**
-     * @var string
-     */
-    protected $kind = KindEnum::FIELD;
 }
