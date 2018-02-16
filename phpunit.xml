@@ -2,18 +2,20 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.0/phpunit.xsd"
          bootstrap="vendor/autoload.php"
-         forceCoversAnnotation="true"
+         forceCoversAnnotation="false"
          beStrictAboutCoversAnnotation="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
          verbose="true">
     <testsuite name="default">
-        <directory suffix="Test.php">tests</directory>
+        <directory suffix="Test.php">tests/Functional</directory>
     </testsuite>
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
+            <directory suffix=".php">src/Type/Definition</directory>
+            <directory suffix=".php">src/Type/Schema</directory>
+            <directory suffix="functions.php">src/Type</directory>
         </whitelist>
     </filter>
 </phpunit>

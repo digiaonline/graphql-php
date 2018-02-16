@@ -18,8 +18,16 @@ namespace Digia\GraphQL\Type\Definition;
  *     });
  */
 
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\ConfigObject;
+use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
+use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use function Digia\GraphQL\Type\isAssocArray;
+use function Digia\GraphQL\Type\resolveThunk;
+use function Digia\GraphQL\Util\invariant;
 
 /**
  * Class InputObjectType
@@ -27,42 +35,94 @@ use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
  * @package Digia\GraphQL\Type\Definition
  * @property InputObjectTypeDefinitionNode $astNode
  */
-class InputObjectType implements TypeInterface, InputTypeInterface
+class InputObjectType extends ConfigObject implements TypeInterface, InputTypeInterface
 {
 
     use NameTrait;
     use DescriptionTrait;
-    use ASTNodeTrait;
-    use ConfigTrait;
+    use NodeTrait;
 
     /**
-     * @var InputField[]
+     * @var array|callable
      */
-    private $fields = [];
+    private $_fieldsThunk;
+
+    /**
+     * @var null|InputField[]
+     */
+    private $_fieldMap = [];
+
+    /**
+     * @var bool
+     */
+    private $_isFieldMapBuilt = false;
 
     /**
      * @return InputField[]
+     * @throws \Exception
      */
     public function getFields(): array
     {
-        return $this->fields;
+        $this->buildFieldMapIfNecessary();
+
+        return $this->_fieldMap;
     }
 
     /**
-     * @param InputField $field
+     * @param array|callable $fieldsThunk
+     * @return $this
      */
-    protected function addField(InputField $field): void
+    protected function setFields($fieldsThunk)
     {
-        $this->fields[] = $field;
+        $this->_fieldsThunk = $fieldsThunk;
+
+        return $this;
     }
 
     /**
-     * @param InputField[] $fields
+     * @throws \Exception
      */
-    protected function setFields(array $fields): void
+    protected function buildFieldMapIfNecessary()
     {
-        array_map(function ($config) {
-            $this->addField(new InputField($config));
-        }, $fields);
+        if (!$this->_isFieldMapBuilt) {
+            $this->_fieldMap = array_merge($this->defineFieldMap($this->_fieldsThunk), $this->_fieldMap);
+
+            $this->_isFieldMapBuilt = true;
+        }
+    }
+
+    /**
+     * @param array|callable $fieldsThunk
+     * @return array
+     * @throws \Exception
+     */
+    protected function defineFieldMap($fieldsThunk): array
+    {
+        $fields = resolveThunk($fieldsThunk) ?: [];
+
+        invariant(
+            isAssocArray($fields),
+            sprintf(
+                '%s fields must be an associative array with field names as keys or a function which returns such an array.',
+                $this->getName()
+            )
+        );
+
+        $fieldMap = [];
+
+        foreach ($fields as $fieldName => $fieldConfig) {
+            invariant(
+                !isset($fieldConfig['resolve']),
+                sprintf(
+                    '%s.%s field type has a resolve property, but Input Types cannot define resolvers.',
+                    $this->getName(),
+                    $fieldName
+                )
+            );
+
+            $fieldMap[$fieldName] = new InputField(array_merge($fieldConfig, ['name' => $fieldName]));
+        }
+
+        return $fieldMap;
     }
 }

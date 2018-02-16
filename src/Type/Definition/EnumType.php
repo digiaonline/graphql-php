@@ -2,10 +2,20 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Language\AST\ASTNodeInterface;
-use Digia\GraphQL\Language\AST\ASTNodeTrait;
+use Digia\GraphQL\ConfigObject;
+use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
+use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
+use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
+use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\LeafTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use function Digia\GraphQL\Type\isAssocArray;
+use function Digia\GraphQL\Util\invariant;
+use function Digia\GraphQL\Util\toString;
 
 /**
  * Enum Type Definition
@@ -31,21 +41,40 @@ use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
  * @package Digia\GraphQL\Type\Definition\Enum
  * @property EnumTypeDefinitionNode $astNode
  */
-class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface, ParseInterface, SerializeInterface
+class EnumType extends ConfigObject implements TypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
     use DescriptionTrait;
-    use ASTNodeTrait;
-    use ConfigTrait;
+    use NodeTrait;
+
+    /**
+     * @var array
+     */
+    private $_valueMap = [];
 
     /**
      * @var EnumValue[]
      */
-    private $values = [];
+    private $_values = [];
+
+    /**
+     * @var bool
+     */
+    private $_isValuesDefined = false;
 
     /**
      * @inheritdoc
+     */
+    protected function beforeConfig(): void
+    {
+        $this->setName(TypeEnum::ENUM);
+    }
+
+    /**
+     * @param $value
+     * @return null|string
+     * @throws \Exception
      */
     public function serialize($value)
     {
@@ -60,7 +89,9 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @inheritdoc
+     * @param $value
+     * @return mixed|null
+     * @throws \Exception
      */
     public function parseValue($value)
     {
@@ -68,7 +99,7 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
             /** @var EnumValue $enumValue */
             $enumValue = $this->getValueByName($value);
 
-            if ($enumValue) {
+            if ($enumValue !== null) {
                 return $enumValue->getValue();
             }
         }
@@ -77,15 +108,17 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @inheritdoc
+     * @param NodeInterface $astNode
+     * @return mixed|null
+     * @throws \Exception
      */
-    public function parseLiteral(ASTNodeInterface $astNode, ...$args)
+    public function parseLiteral(NodeInterface $astNode)
     {
         if ($astNode->getKind() === KindEnum::ENUM) {
             /** @var EnumValue $enumValue */
             $enumValue = $this->getValueByName($astNode->getValue());
 
-            if ($enumValue) {
+            if ($enumValue !== null) {
                 return $enumValue->getValue();
             }
         }
@@ -94,16 +127,9 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @param EnumValue $value
-     */
-    public function addValue(EnumValue $value): void
-    {
-        $this->values[] = $value;
-    }
-
-    /**
      * @param string $name
      * @return EnumValue
+     * @throws \Exception
      */
     public function getValue(string $name): EnumValue
     {
@@ -111,22 +137,26 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @return array
+     * @return EnumValue[]
+     * @throws \Exception
      */
     public function getValues(): array
     {
-        return $this->values;
+        $this->defineEnumValuesIfNecessary();
+
+        return $this->_values;
     }
 
     /**
      * @param string $name
      * @return EnumValue|null
+     * @throws \Exception
      */
     protected function getValueByName(string $name): ?EnumValue
     {
-        foreach ($this->values as $val) {
-            if ($val->getName() === $name) {
-                return $val;
+        foreach ($this->getValues() as $enumValue) {
+            if ($enumValue->getName() === $name) {
+                return $enumValue;
             }
         }
 
@@ -136,12 +166,13 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     /**
      * @param mixed $value
      * @return EnumValue|null
+     * @throws \Exception
      */
     protected function getValueByValue($value): ?EnumValue
     {
-        foreach ($this->values as $val) {
-            if ($val->getValue() === $value) {
-                return $val;
+        foreach ($this->getValues() as $enumValue) {
+            if ($enumValue->getValue() === $value) {
+                return $enumValue;
             }
         }
 
@@ -149,12 +180,65 @@ class EnumType implements TypeInterface, InputTypeInterface, LeafTypeInterface, 
     }
 
     /**
-     * @param array $values
+     * @param array $valueMap
+     * @return $this
      */
-    protected function setValues(array $values): void
+    protected function setValues(array $valueMap): EnumType
     {
-        array_map(function ($config) {
-            $this->addValue(new EnumValue($config));
-        }, $values);
+        $this->_valueMap = $valueMap;
+
+        return $this;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function defineEnumValuesIfNecessary(): void
+    {
+        if (!$this->_isValuesDefined) {
+            $this->_values = array_merge($this->defineEnumValues($this->_valueMap), $this->_values);
+
+            $this->_isValuesDefined = true;
+        }
+    }
+
+    /**
+     * @param array $valueMap
+     * @return array
+     * @throws \Exception
+     */
+    protected function defineEnumValues(array $valueMap): array
+    {
+        invariant(
+            isAssocArray($valueMap),
+            sprintf('%s values must be an associative array with value names as keys.', $this->getName())
+        );
+
+        $values = [];
+
+        foreach ($valueMap as $valueName => $valueConfig) {
+            invariant(
+                isAssocArray($valueConfig),
+                sprintf(
+                    '%s.%s must refer to an object with a "value" key representing an internal value but got: %s',
+                    $this->getName(),
+                    $valueName,
+                    toString($valueConfig)
+                )
+            );
+
+            invariant(
+                !isset($valueConfig['isDeprecated']),
+                sprintf(
+                    '%s.%s should provided "deprecationReason" instead of "isDeprecated".',
+                    $this->getName(),
+                    $valueName
+                )
+            );
+
+            $values[] = new EnumValue(array_merge($valueConfig, ['name' => $valueName]));
+        }
+
+        return $values;
     }
 }

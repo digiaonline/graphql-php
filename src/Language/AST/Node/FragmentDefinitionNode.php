@@ -2,29 +2,26 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\ASTNodeInterface;
 use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\Node\Behavior\KindTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\LocationTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\TypeConditionTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\VariableDefinitionsTrait;
+use Digia\GraphQL\Language\AST\Node\Contract\ExecutableDefinitionNodeInterface;
+use Digia\GraphQL\ConfigObject;
 
-/**
- * Class FragmentDefinitionNode
- * @package Digia\GraphQL\Language\AST\Node
- */
-class FragmentDefinitionNode implements ASTNodeInterface
+class FragmentDefinitionNode extends ConfigObject implements ExecutableDefinitionNodeInterface
 {
 
-    /**
-     * @return string
-     */
-    public function getKind(): string
-    {
-        return KindEnum::FRAGMENT_DEFINITION;
-    }
+    use KindTrait;
+    use LocationTrait;
+    use NameTrait;
+    use TypeConditionTrait;
+    use VariableDefinitionsTrait;
 
     /**
-     * @return mixed
+     * @var string
      */
-    public function getValue()
-    {
-        // TODO: Implement getValue() method.
-    }
+    protected $kind = KindEnum::FRAGMENT_DEFINITION;
 }
