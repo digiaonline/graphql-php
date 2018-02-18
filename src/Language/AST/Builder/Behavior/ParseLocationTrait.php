@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Language\AST\Builder\Behavior;
 
 use Digia\GraphQL\Language\AST\Builder\Contract\NodeFactoryInterface;
-use Digia\GraphQL\Language\AST\Location;
+use Digia\GraphQL\Language\Location;
 
 trait ParseLocationTrait
 {

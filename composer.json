@@ -17,14 +17,12 @@
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {
-        "classmap": [
-            "GraphQL"
-        ],
         "files": [
+            "./src/Language/helpers.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
             "./src/Type/scalars.php",
-            "./src/Util/functions.php"
+            "./src/Util/helpers.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\": "./src"
@@ -32,10 +30,11 @@
     },
     "autoload-dev": {
         "files": [
+            "./src/Language/helpers.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
             "./src/Type/scalars.php",
-            "./src/Util/functions.php"
+            "./src/Util/helpers.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\Test\\": "./tests"

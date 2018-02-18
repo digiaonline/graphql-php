@@ -1,10 +1,8 @@
 <?php
 
-namespace Digia\GraphQL\Language\AST;
+namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\ConfigObject;
-
-class Location extends ConfigObject
+class Location
 {
 
     /**
@@ -31,6 +29,22 @@ class Location extends ConfigObject
      * @var Source
      */
     protected $source;
+
+    /**
+     * Location constructor.
+     *
+     * @param Token  $startToken
+     * @param Token  $endToken
+     * @param Source $source
+     */
+    public function __construct(Token $startToken, Token $endToken, Source $source)
+    {
+        $this->start      = $startToken->getStart();
+        $this->end        = $endToken->getEnd();
+        $this->startToken = $startToken;
+        $this->endToken   = $endToken;
+        $this->source     = $source;
+    }
 
     /**
      * @return int
@@ -70,5 +84,16 @@ class Location extends ConfigObject
     public function getSource(): Source
     {
         return $this->source;
+    }
+
+    /**
+     * @return string
+     */
+    public function toJSON(): string
+    {
+        return json_encode([
+            'start' => $this->start,
+            'end'   => $this->end,
+        ]);
     }
 }

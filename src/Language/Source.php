@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Language\AST;
+namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\ConfigObject;
 use function Digia\GraphQL\Util\invariant;
@@ -14,7 +14,7 @@ use function Digia\GraphQL\Util\invariant;
  * line and column are 1-indexed
  */
 
-class Source extends ConfigObject
+class Source
 {
 
     /**
@@ -25,17 +25,41 @@ class Source extends ConfigObject
     /**
      * @var string
      */
-    private $name = 'GraphQL request';
+    private $name;
 
     /**
      * @var int
      */
-    private $line = 1;
+    private $line;
 
     /**
      * @var int
      */
-    private $column = 1;
+    private $column;
+
+    /**
+     * Source constructor.
+     *
+     * @param string      $body
+     * @param null|string $name
+     * @param int|null    $line
+     * @param int|null    $column
+     */
+    public function __construct(string $body, ?string $name = 'GraphQL request', ?int $line = 1, ?int $column = 1)
+    {
+        $this->body   = $body;
+        $this->name   = $name;
+        $this->line   = $line;
+        $this->column = $column;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBodyLength(): int
+    {
+        return mb_strlen($this->body);
+    }
 
     /**
      * @return string

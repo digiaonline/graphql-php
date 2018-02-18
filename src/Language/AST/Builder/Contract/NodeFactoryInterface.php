@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Builder\Contract;
 
-use Digia\GraphQL\Language\AST\Location;
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 
 interface NodeFactoryInterface

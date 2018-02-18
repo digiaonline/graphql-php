@@ -17,9 +17,4 @@ class ArgumentNode extends ConfigObject implements NodeInterface
     use LocationTrait;
     use NameTrait;
     use ValueTrait;
-
-    /**
-     * @var string
-     */
-    protected $kind = KindEnum::ARGUMENT;
 }

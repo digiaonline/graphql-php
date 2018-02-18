@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Language\AST\Builder;
 use Digia\GraphQL\Language\AST\Builder\Contract\NodeBuilderInterface;
 use Digia\GraphQL\Language\AST\Builder\Contract\NodeFactoryInterface;
 use Digia\GraphQL\Language\AST\Exception\NodeNotSupportedException;
-use Digia\GraphQL\Language\AST\Location;
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 
 class NodeFactory implements NodeFactoryInterface

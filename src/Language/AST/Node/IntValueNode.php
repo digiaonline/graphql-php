@@ -15,9 +15,4 @@ class IntValueNode extends ConfigObject implements ValueNodeInterface
     use KindTrait;
     use LocationTrait;
     use ValueTrait;
-
-    /**
-     * @var string
-     */
-    protected $kind = KindEnum::INT;
 }
