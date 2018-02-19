@@ -4,16 +4,11 @@ namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\KindTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\LocationTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\TypeSystemDefinitionNodeInterface;
-use Digia\GraphQL\ConfigObject;
 
-class SchemaDefinitionNode extends ConfigObject implements TypeSystemDefinitionNodeInterface
+class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionNodeInterface
 {
 
-    use KindTrait;
-    use LocationTrait;
     use DirectivesTrait;
 
     /**

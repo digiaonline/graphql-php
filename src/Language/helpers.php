@@ -169,3 +169,13 @@ function isBlank(string $string): bool
 {
     return leadingWhitespace($string) === mb_strlen($string);
 }
+
+/**
+ * @param string $value
+ * @return bool
+ */
+function isOperation(string $value): bool
+{
+    // TODO: Benchmark
+    return \in_array($value, ['query', 'mutation', 'subscription'], true);
+}

@@ -4,16 +4,12 @@ namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DefaultValueTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\KindTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\LocationTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\TypeNodeInterface;
-use Digia\GraphQL\ConfigObject;
 
-class VariableDefinitionNode extends ConfigObject implements DefinitionNodeInterface
+class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {
-    use KindTrait;
-    use LocationTrait;
+
     use DefaultValueTrait;
 
     /**
@@ -30,4 +26,20 @@ class VariableDefinitionNode extends ConfigObject implements DefinitionNodeInter
      * @var TypeNodeInterface
      */
     protected $type;
+
+    /**
+     * @return VariableNode
+     */
+    public function getVariable(): VariableNode
+    {
+        return $this->variable;
+    }
+
+    /**
+     * @return TypeNodeInterface
+     */
+    public function getType(): TypeNodeInterface
+    {
+        return $this->type;
+    }
 }

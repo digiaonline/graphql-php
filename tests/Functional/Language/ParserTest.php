@@ -37,15 +37,6 @@ class ParserTest extends TestCase
 
     public function setUp()
     {
-        $builders = [
-            new ArgumentBuilder(),
-            new DocumentBuilder(),
-            new FieldBuilder(),
-            new NameBuilder(),
-            new OperationDefinitionBuilder(),
-            new SelectionSetBuilder(),
-        ];
-
         $readers = [
             new AmpReader(),
             new AtReader(),
@@ -64,7 +55,7 @@ class ParserTest extends TestCase
             new SpreadReader(),
         ];
 
-        $this->parser = new Parser($builders, $readers);
+        $this->parser = new Parser($readers);
     }
 
     /**
