@@ -9,15 +9,14 @@ use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 
-class DocumentNodeBuilder extends AbstractNodeBuilder
+class DocumentBuilder extends AbstractBuilder
 {
 
     use ParseKindTrait;
     use ParseLocationTrait;
 
     /**
-     * @param array $ast
-     * @return NodeInterface
+     * @inheritdoc
      */
     public function build(array $ast): NodeInterface
     {
@@ -33,7 +32,7 @@ class DocumentNodeBuilder extends AbstractNodeBuilder
      */
     public function supportsKind(string $kind): bool
     {
-        return KindEnum::DOCUMENT === $kind;
+        return $kind === KindEnum::DOCUMENT;
     }
 
     /**
@@ -46,7 +45,7 @@ class DocumentNodeBuilder extends AbstractNodeBuilder
 
         if (isset($ast['definitions'])) {
             foreach ($ast['definitions'] as $definitionAst) {
-                $definitions[] = $this->factory->build($definitionAst);
+                $definitions[] = $this->director->build($definitionAst);
             }
         }
 

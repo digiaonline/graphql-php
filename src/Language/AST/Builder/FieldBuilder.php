@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Builder\Behavior\ParseAliasTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseArgumentsTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseDirectivesTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
@@ -13,26 +12,24 @@ use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 
-class FieldNodeBuilder extends AbstractNodeBuilder
+class FieldBuilder extends AbstractBuilder
 {
 
     use ParseKindTrait;
     use ParseNameTrait;
-    use ParseAliasTrait;
     use ParseArgumentsTrait;
     use ParseDirectivesTrait;
     use ParseSelectionSetTrait;
     use ParseLocationTrait;
 
     /**
-     * @param array $ast
-     * @return NodeInterface
+     * @inheritdoc
      */
     public function build(array $ast): NodeInterface
     {
         return new FieldNode([
             'kind'         => $this->parseKind($ast),
-            'alias'        => $this->parseAlias($ast),
+            'alias'        => $this->parseName($ast, 'alias'),
             'name'         => $this->parseName($ast),
             'arguments'    => $this->parseArguments($ast),
             'directives'   => $this->parseDirectives($ast),
@@ -47,6 +44,6 @@ class FieldNodeBuilder extends AbstractNodeBuilder
      */
     public function supportsKind(string $kind): bool
     {
-        return KindEnum::FIELD === $kind;
+        return $kind === KindEnum::FIELD;
     }
 }

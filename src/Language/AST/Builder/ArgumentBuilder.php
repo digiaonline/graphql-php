@@ -9,7 +9,7 @@ use Digia\GraphQL\Language\AST\KindEnum;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 
-class ArgumentNodeBuilder extends AbstractNodeBuilder
+class ArgumentBuilder extends AbstractBuilder
 {
 
     use ParseKindTrait;
@@ -17,15 +17,14 @@ class ArgumentNodeBuilder extends AbstractNodeBuilder
     use ParseValueLiteralTrait;
 
     /**
-     * @param array $ast
-     * @return NodeInterface
+     * @inheritdoc
      */
     public function build(array $ast): NodeInterface
     {
         return new ArgumentNode([
             'kind'  => $this->parseKind($ast),
             'name'  => $this->parseName($ast),
-            'value' => $this->parseValueLiteral($ast, false),
+            'value' => $this->parseValueLiteral($ast),
         ]);
     }
 
@@ -35,6 +34,6 @@ class ArgumentNodeBuilder extends AbstractNodeBuilder
      */
     public function supportsKind(string $kind): bool
     {
-        return KindEnum::ARGUMENT === $kind;
+        return $kind === KindEnum::ARGUMENT;
     }
 }

@@ -2,16 +2,16 @@
 
 namespace Digia\GraphQL\Language\AST\Builder\Behavior;
 
-use Digia\GraphQL\Language\AST\Builder\Contract\NodeFactoryInterface;
+use Digia\GraphQL\Language\AST\Builder\Contract\DirectorInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 
 trait ParseSelectionSetTrait
 {
 
     /**
-     * @return NodeFactoryInterface
+     * @return DirectorInterface
      */
-    abstract protected function getFactory(): NodeFactoryInterface;
+    abstract public function getDirector(): DirectorInterface;
 
     /**
      * @param array $ast
@@ -19,6 +19,8 @@ trait ParseSelectionSetTrait
      */
     protected function parseSelectionSet(array $ast): ?NodeInterface
     {
-        return isset($ast['selectionSet']) ? $this->getFactory()->build($ast['selectionSet']) : null;
+        return isset($ast['selectionSet']) && !empty($ast['selectionSet'])
+            ? $this->getDirector()->build($ast['selectionSet'])
+            : null;
     }
 }

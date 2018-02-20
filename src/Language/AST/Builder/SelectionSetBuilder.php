@@ -9,15 +9,14 @@ use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\SelectionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 
-class SelectionSetNodeBuilder extends AbstractNodeBuilder
+class SelectionSetBuilder extends AbstractBuilder
 {
 
     use ParseKindTrait;
     use ParseLocationTrait;
 
     /**
-     * @param array $ast
-     * @return NodeInterface
+     * @inheritdoc
      */
     public function build(array $ast): NodeInterface
     {
@@ -46,7 +45,7 @@ class SelectionSetNodeBuilder extends AbstractNodeBuilder
 
         if (isset($ast['selections'])) {
             foreach ($ast['selections'] as $selectionAst) {
-                $selections[] = $this->factory->build($selectionAst);
+                $selections[] = $this->director->build($selectionAst);
             }
         }
 

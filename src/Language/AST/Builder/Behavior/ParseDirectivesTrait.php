@@ -2,16 +2,16 @@
 
 namespace Digia\GraphQL\Language\AST\Builder\Behavior;
 
-use Digia\GraphQL\Language\AST\Builder\Contract\NodeFactoryInterface;
+use Digia\GraphQL\Language\AST\Builder\Contract\DirectorInterface;
 use Digia\GraphQL\Language\AST\Node\DirectiveNode;
 
 trait ParseDirectivesTrait
 {
 
     /**
-     * @return NodeFactoryInterface
+     * @return DirectorInterface
      */
-    abstract protected function getFactory(): NodeFactoryInterface;
+    abstract public function getDirector(): DirectorInterface;
 
     /**
      * @param array $ast
@@ -23,7 +23,7 @@ trait ParseDirectivesTrait
 
         if (isset($ast['directives'])) {
             foreach ($ast['directives'] as $directiveAst) {
-                $directives[] = $this->getFactory()->build($directiveAst);
+                $directives[] = $this->getDirector()->build($directiveAst);
             }
         }
 

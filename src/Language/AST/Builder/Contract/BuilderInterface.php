@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Language\AST\Builder\Contract;
 
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 
-interface NodeBuilderInterface
+interface BuilderInterface
 {
 
     /**
@@ -20,8 +20,7 @@ interface NodeBuilderInterface
     public function supportsKind(string $kind): bool;
 
     /**
-     * @param NodeFactoryInterface $factory
-     * @return $this
+     * @param DirectorInterface $factory
      */
-    public function setFactory(NodeFactoryInterface $factory);
+    public function setDirector(DirectorInterface $factory);
 }

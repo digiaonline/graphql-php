@@ -26,18 +26,18 @@ class Location
     protected $endToken;
 
     /**
-     * @var Source
+     * @var ?Source
      */
     protected $source;
 
     /**
      * Location constructor.
      *
-     * @param Token  $startToken
-     * @param Token  $endToken
-     * @param Source $source
+     * @param Token       $startToken
+     * @param Token       $endToken
+     * @param Source|null $source
      */
-    public function __construct(Token $startToken, Token $endToken, Source $source)
+    public function __construct(Token $startToken, Token $endToken, ?Source $source = null)
     {
         $this->start      = $startToken->getStart();
         $this->end        = $endToken->getEnd();
@@ -81,7 +81,7 @@ class Location
     /**
      * @return Source
      */
-    public function getSource(): Source
+    public function getSource(): ?Source
     {
         return $this->source;
     }

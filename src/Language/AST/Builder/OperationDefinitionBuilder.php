@@ -10,7 +10,7 @@ use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\VariableDefinitionNode;
 
-class OperationDefinitionNodeBuilder extends AbstractNodeBuilder
+class OperationDefinitionBuilder extends AbstractBuilder
 {
 
     use ParseKindTrait;
@@ -18,8 +18,7 @@ class OperationDefinitionNodeBuilder extends AbstractNodeBuilder
     use ParseSelectionSetTrait;
 
     /**
-     * @param array $ast
-     * @return OperationDefinitionNode
+     * @inheritdoc
      */
     public function build(array $ast): NodeInterface
     {
@@ -37,7 +36,7 @@ class OperationDefinitionNodeBuilder extends AbstractNodeBuilder
      */
     public function supportsKind(string $kind): bool
     {
-        return KindEnum::OPERATION_DEFINITION === $kind;
+        return $kind === KindEnum::OPERATION_DEFINITION;
     }
 
     /**
@@ -59,7 +58,7 @@ class OperationDefinitionNodeBuilder extends AbstractNodeBuilder
 
         if (isset($ast['variableDefinitions'])) {
             foreach ($ast['variableDefinitions'] as $variableDefinitionAst) {
-                $variableDefinitions[] = $this->factory->build($variableDefinitionAst);
+                $variableDefinitions[] = $this->director->build($variableDefinitionAst);
             }
         }
 

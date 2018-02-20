@@ -197,7 +197,7 @@ class Lexer
     {
         if ($code === 39) {
             // '
-            return 'Unexpected single quote character (\'), did you mean to use \' a double quote (")?';
+            return 'Unexpected single quote character (\'), did you mean to use a double quote (")?';
         }
 
         return sprintf('Cannot parse the unexpected character %s', printCharCode($code));

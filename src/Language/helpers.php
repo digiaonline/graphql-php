@@ -3,13 +3,33 @@
 namespace Digia\GraphQL\Language;
 
 /**
+ * @param int $cp
+ * @return string
+ */
+function chrUTF8(int $cp)
+{
+    return mb_convert_encoding(pack('N', $cp), 'UTF-8', 'UCS-4BE');
+}
+
+/**
+ * @param string $string
+ * @return int
+ */
+function ordUTF8(string $string)
+{
+    list(, $ord) = unpack('N', mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
+
+    return $ord;
+}
+
+/**
  * @param string $string
  * @param int    $position
  * @return int
  */
 function charCodeAt(string $string, int $position): int
 {
-    return ord($string[$position]);
+    return ordUTF8($string[$position]);
 }
 
 /**
@@ -23,7 +43,7 @@ function printCharCode(int $code): string
     }
     return $code < 0x007F
         // Trust JSON for ASCII.
-        ? json_encode(chr($code))
+        ? json_encode(chrUTF8($code))
         // Otherwise print the escaped form.
         : '"\\u' . dechex($code) . '"';
 }
@@ -98,7 +118,7 @@ function isSourceCharacter(int $code): bool
  */
 function uniCharCode(string $a, string $b, string $c, string $d): string
 {
-    return (dechex(ord($a)) << 12) | (dechex(ord($b)) << 8) | (dechex(ord($c)) << 4) | dechex(ord($d));
+    return (dechex(ordUTF8($a)) << 12) | (dechex(ordUTF8($b)) << 8) | (dechex(ordUTF8($c)) << 4) | dechex(ordUTF8($d));
 }
 
 /**

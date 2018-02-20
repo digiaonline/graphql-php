@@ -2,16 +2,16 @@
 
 namespace Digia\GraphQL\Language\AST\Builder\Behavior;
 
-use Digia\GraphQL\Language\AST\Builder\Contract\NodeFactoryInterface;
+use Digia\GraphQL\Language\AST\Builder\Contract\DirectorInterface;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 
 trait ParseArgumentsTrait
 {
 
     /**
-     * @return NodeFactoryInterface
+     * @return DirectorInterface
      */
-    abstract protected function getFactory(): NodeFactoryInterface;
+    abstract protected function getDirector(): DirectorInterface;
 
     /**
      * @param array $ast
@@ -23,7 +23,7 @@ trait ParseArgumentsTrait
 
         if (isset($ast['arguments'])) {
             foreach ($ast['arguments'] as $argumentAst) {
-                $arguments[] = $this->getFactory()->build($argumentAst);
+                $arguments[] = $this->getDirector()->build($argumentAst);
             }
         }
 
