@@ -6,7 +6,7 @@ use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
@@ -114,7 +114,7 @@ class EnumType extends ConfigObject implements TypeInterface, InputTypeInterface
      */
     public function parseLiteral(NodeInterface $astNode)
     {
-        if ($astNode->getKind() === KindEnum::ENUM) {
+        if ($astNode->getKind() === NodeKindEnum::ENUM) {
             /** @var EnumValue $enumValue */
             $enumValue = $this->getValueByName($astNode->getValue());
 

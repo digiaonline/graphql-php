@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\TypeConditionTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\VariableDefinitionsTrait;
@@ -18,5 +18,5 @@ class FragmentDefinitionNode extends AbstractNode implements ExecutableDefinitio
     /**
      * @var string
      */
-    protected $kind = KindEnum::FRAGMENT_DEFINITION;
+    protected $kind = NodeKindEnum::FRAGMENT_DEFINITION;
 }

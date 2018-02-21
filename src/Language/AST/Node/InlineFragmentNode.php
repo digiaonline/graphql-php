@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\SelectionSetTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\TypeConditionTrait;
@@ -18,5 +18,5 @@ class InlineFragmentNode extends AbstractNode implements NodeInterface
     /**
      * @var string
      */
-    protected $kind = KindEnum::INLINE_FRAGMENT;
+    protected $kind = NodeKindEnum::INLINE_FRAGMENT;
 }

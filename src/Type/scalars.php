@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
@@ -44,7 +44,7 @@ function GraphQLBoolean(): ScalarType
                 return coerceBoolean($value);
             },
             'parseLiteral' => function (NodeInterface $astNode) {
-                return $astNode->getKind() === KindEnum::BOOLEAN ? $astNode->getValue() : null;
+                return $astNode->getKind() === NodeKindEnum::BOOLEAN ? $astNode->getValue() : null;
             },
         ]);
     }
@@ -91,7 +91,7 @@ function GraphQLFloat(): ScalarType
                 return coerceFloat($value);
             },
             'parseLiteral' => function (NodeInterface $astNode) {
-                return in_array($astNode->getKind(), [KindEnum::FLOAT, KindEnum::INT]) ? $astNode->getValue() : null;
+                return in_array($astNode->getKind(), [NodeKindEnum::FLOAT, NodeKindEnum::INT]) ? $astNode->getValue() : null;
             },
         ]);
     }
@@ -148,7 +148,7 @@ function GraphQLInt(): ScalarType
                 return coerceInt($value);
             },
             'parseLiteral' => function (NodeInterface $astNode) {
-                return $astNode->getKind() === KindEnum::INT ? $astNode->getValue() : null;
+                return $astNode->getKind() === NodeKindEnum::INT ? $astNode->getValue() : null;
             },
         ]);
     }
@@ -205,7 +205,7 @@ function GraphQLID(): ScalarType
                 return coerceString($value);
             },
             'parseLiteral' => function (NodeInterface $astNode) {
-                return in_array($astNode->getKind(), [KindEnum::STRING, KindEnum::INT]) ? $astNode->getValue() : null;
+                return in_array($astNode->getKind(), [NodeKindEnum::STRING, NodeKindEnum::INT]) ? $astNode->getValue() : null;
             },
         ]);
     }
@@ -234,7 +234,7 @@ function GraphQLString(): ScalarType
                 return coerceString($value);
             },
             'parseLiteral' => function (NodeInterface $astNode) {
-                return $astNode->getKind() === KindEnum::STRING ? $astNode->getValue() : null;
+                return $astNode->getKind() === NodeKindEnum::STRING ? $astNode->getValue() : null;
             },
         ]);
     }

@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST;
 
-class KindEnum
+class NodeKindEnum
 {
 
     // Name

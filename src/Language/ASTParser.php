@@ -6,7 +6,7 @@ use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Error\SyntaxError;
 use Digia\GraphQL\Language\AST\Builder\Contract\BuilderInterface;
 use Digia\GraphQL\Language\AST\Builder\Contract\DirectorInterface;
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\Contract\ParserInterface;
 use Digia\GraphQL\Language\Reader\Contract\ReaderInterface;
@@ -321,7 +321,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         $token = $this->expect($lexer, TokenKindEnum::NAME);
 
         return [
-            'kind'  => KindEnum::NAME,
+            'kind'  => NodeKindEnum::NAME,
             'value' => $token->getValue(),
             'loc'   => $this->createLocation($lexer, $token),
         ];
@@ -345,7 +345,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         } while (!$this->skip($lexer, TokenKindEnum::EOF));
 
         return [
-            'kind'        => KindEnum::DOCUMENT,
+            'kind'        => NodeKindEnum::DOCUMENT,
             'definitions' => $definitions,
             'loc'         => $this->createLocation($lexer, $start),
         ];
@@ -423,7 +423,7 @@ class ASTParser implements ParserInterface, DirectorInterface
 
         if ($this->peek($lexer, TokenKindEnum::BRACE_L)) {
             return [
-                'kind'                => KindEnum::OPERATION_DEFINITION,
+                'kind'                => NodeKindEnum::OPERATION_DEFINITION,
                 'operation'           => 'query',
                 'name'                => null,
                 'variableDefinitions' => [],
@@ -440,7 +440,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         }
 
         return [
-            'kind'                => KindEnum::OPERATION_DEFINITION,
+            'kind'                => NodeKindEnum::OPERATION_DEFINITION,
             'operation'           => $operation,
             'name'                => $name ?? null,
             'variableDefinitions' => $this->parseVariableDefinitions($lexer),
@@ -482,7 +482,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind'         => KindEnum::VARIABLE_DEFINITION,
+            'kind'         => NodeKindEnum::VARIABLE_DEFINITION,
             'variable'     => $this->parseVariable($lexer),
             'type'         => $parseType($lexer),
             'defaultValue' => $this->skip($lexer, TokenKindEnum::EQUALS)
@@ -504,7 +504,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         $this->expect($lexer, TokenKindEnum::DOLLAR);
 
         return [
-            'kind' => KindEnum::VARIABLE,
+            'kind' => NodeKindEnum::VARIABLE,
             'name' => $this->parseName($lexer),
             'loc'  => $this->createLocation($lexer, $start),
         ];
@@ -520,7 +520,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         $start = $lexer->getToken();
 
         return [
-            'kind'       => KindEnum::SELECTION_SET,
+            'kind'       => NodeKindEnum::SELECTION_SET,
             'selections' => $this->many(
                 $lexer,
                 TokenKindEnum::BRACE_L,
@@ -562,7 +562,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         }
 
         return [
-            'kind'         => KindEnum::FIELD,
+            'kind'         => NodeKindEnum::FIELD,
             'alias'        => $alias ?? null,
             'name'         => $name,
             'arguments'    => $this->parseArguments($lexer, false),
@@ -612,7 +612,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind'  => KindEnum::ARGUMENT,
+            'kind'  => NodeKindEnum::ARGUMENT,
             'name'  => $this->parseName($lexer),
             'value' => $parseValue($lexer),
             'loc'   => $this->createLocation($lexer, $start),
@@ -639,7 +639,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind'  => KindEnum::ARGUMENT,
+            'kind'  => NodeKindEnum::ARGUMENT,
             'name'  => $this->parseName($lexer),
             'value' => $parseValue($lexer),
             'loc'   => $this->createLocation($lexer, $start),
@@ -661,7 +661,7 @@ class ASTParser implements ParserInterface, DirectorInterface
 
         if ($this->peek($lexer, TokenKindEnum::NAME) && $tokenValue !== 'on') {
             return [
-                'kind'       => KindEnum::FRAGMENT_SPREAD,
+                'kind'       => NodeKindEnum::FRAGMENT_SPREAD,
                 'name'       => $this->parseFragmentName($lexer),
                 'directives' => $this->parseDirectives($lexer, false),
                 'loc'        => $this->createLocation($lexer, $start),
@@ -675,7 +675,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         }
 
         return [
-            'kind'          => KindEnum::INLINE_FRAGMENT,
+            'kind'          => NodeKindEnum::INLINE_FRAGMENT,
             'typeCondition' => $typeCondition ?? null,
             'directives'    => $this->parseDirectives($lexer, false),
             'selectionSet'  => $this->parseSelectionSet($lexer),
@@ -702,7 +702,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind'          => KindEnum::FRAGMENT_DEFINITION,
+            'kind'          => NodeKindEnum::FRAGMENT_DEFINITION,
             'name'          => $this->parseFragmentName($lexer),
             'typeCondition' => $parseTypeCondition,
             'directives'    => $this->parseDirectives($lexer, false),
@@ -744,7 +744,7 @@ class ASTParser implements ParserInterface, DirectorInterface
                 $lexer->advance();
 
                 return [
-                    'kind'  => KindEnum::INT,
+                    'kind'  => NodeKindEnum::INT,
                     'value' => $token->getValue(),
                     'loc'   => $this->createLocation($lexer, $token),
                 ];
@@ -752,7 +752,7 @@ class ASTParser implements ParserInterface, DirectorInterface
                 $lexer->advance();
 
                 return [
-                    'kind'  => KindEnum::FLOAT,
+                    'kind'  => NodeKindEnum::FLOAT,
                     'value' => $token->getValue(),
                     'loc'   => $this->createLocation($lexer, $token),
                 ];
@@ -766,7 +766,7 @@ class ASTParser implements ParserInterface, DirectorInterface
                     $lexer->advance();
 
                     return [
-                        'kind'  => KindEnum::BOOLEAN,
+                        'kind'  => NodeKindEnum::BOOLEAN,
                         'value' => $value === 'true',
                         'loc'   => $this->createLocation($lexer, $token),
                     ];
@@ -774,7 +774,7 @@ class ASTParser implements ParserInterface, DirectorInterface
                     $lexer->advance();
 
                     return [
-                        'kind' => KindEnum::NULL,
+                        'kind' => NodeKindEnum::NULL,
                         'loc'  => $this->createLocation($lexer, $token),
                     ];
                 }
@@ -782,7 +782,7 @@ class ASTParser implements ParserInterface, DirectorInterface
                 $lexer->advance();
 
                 return [
-                    'kind'  => KindEnum::ENUM,
+                    'kind'  => NodeKindEnum::ENUM,
                     'value' => $token->getValue(),
                     'loc'   => $this->createLocation($lexer, $token),
                 ];
@@ -808,7 +808,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         $lexer->advance();
 
         return [
-            'kind'  => KindEnum::STRING,
+            'kind'  => NodeKindEnum::STRING,
             'value' => $token->getValue(),
             'block' => $token->getKind() === TokenKindEnum::BLOCK_STRING,
             'loc'   => $this->createLocation($lexer, $token),
@@ -846,7 +846,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         $start = $lexer->getToken();
 
         return [
-            'kind'   => KindEnum::LIST,
+            'kind'   => NodeKindEnum::LIST,
             'values' => $this->any(
                 $lexer,
                 TokenKindEnum::BRACKET_L,
@@ -876,7 +876,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         }
 
         return [
-            'kind'   => KindEnum::OBJECT,
+            'kind'   => NodeKindEnum::OBJECT,
             'fields' => $fields,
             'loc'    => $this->createLocation($lexer, $start),
         ];
@@ -898,7 +898,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind'  => KindEnum::OBJECT_FIELD,
+            'kind'  => NodeKindEnum::OBJECT_FIELD,
             'name'  => $this->parseName($lexer),
             'value' => $parseValue($lexer, $isConst),
             'loc'   => $this->createLocation($lexer, $start),
@@ -935,7 +935,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         $this->expect($lexer, TokenKindEnum::AT);
 
         return [
-            'kind'      => KindEnum::DIRECTIVE,
+            'kind'      => NodeKindEnum::DIRECTIVE,
             'name'      => $this->parseName($lexer),
             'arguments' => $this->parseArguments($lexer, $isConst),
             'loc'       => $this->createLocation($lexer, $start),
@@ -957,7 +957,7 @@ class ASTParser implements ParserInterface, DirectorInterface
             $this->expect($lexer, TokenKindEnum::BRACKET_R);
 
             $type = [
-                'kind' => KindEnum::LIST_TYPE,
+                'kind' => NodeKindEnum::LIST_TYPE,
                 'type' => $type,
                 'loc'  => $this->createLocation($lexer, $start),
             ];
@@ -967,7 +967,7 @@ class ASTParser implements ParserInterface, DirectorInterface
 
         if ($this->skip($lexer, TokenKindEnum::BANG)) {
             return [
-                'kind' => KindEnum::NON_NULL_TYPE,
+                'kind' => NodeKindEnum::NON_NULL_TYPE,
                 'type' => $type,
                 'loc'  => $this->createLocation($lexer, $start),
             ];
@@ -986,7 +986,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         $start = $lexer->getToken();
 
         return [
-            'kind' => KindEnum::NAMED_TYPE,
+            'kind' => NodeKindEnum::NAMED_TYPE,
             'name' => $this->parseName($lexer),
             'loc'  => $this->createLocation($lexer, $start),
         ];

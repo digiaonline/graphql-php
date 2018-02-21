@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Language\AST\Builder;
 
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseLocationTrait;
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\SelectionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
@@ -32,7 +32,7 @@ class SelectionSetBuilder extends AbstractBuilder
      */
     public function supportsKind(string $kind): bool
     {
-        return KindEnum::SELECTION_SET === $kind;
+        return NodeKindEnum::SELECTION_SET === $kind;
     }
 
     /**

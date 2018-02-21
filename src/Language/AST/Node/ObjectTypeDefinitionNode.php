@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\FieldsTrait;
@@ -22,5 +22,5 @@ class ObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNod
     /**
      * @var string
      */
-    protected $kind = KindEnum::OBJECT_TYPE_DEFINITION;
+    protected $kind = NodeKindEnum::OBJECT_TYPE_DEFINITION;
 }

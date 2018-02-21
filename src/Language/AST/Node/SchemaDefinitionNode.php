@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\TypeSystemDefinitionNodeInterface;
 
@@ -14,7 +14,7 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
     /**
      * @var string
      */
-    protected $kind = KindEnum::SCHEMA_DEFINITION;
+    protected $kind = NodeKindEnum::SCHEMA_DEFINITION;
 
     /**
      * @var OperationTypeDefinitionNode[]

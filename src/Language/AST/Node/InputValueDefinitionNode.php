@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DefaultValueTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
@@ -22,5 +22,5 @@ class InputValueDefinitionNode extends AbstractNode implements DefinitionNodeInt
     /**
      * @var string
      */
-    protected $kind = KindEnum::INPUT_VALUE_DEFINITION;
+    protected $kind = NodeKindEnum::INPUT_VALUE_DEFINITION;
 }

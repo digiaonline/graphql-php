@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Language\AST\Builder;
 
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseLocationTrait;
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
@@ -32,7 +32,7 @@ class DocumentBuilder extends AbstractBuilder
      */
     public function supportsKind(string $kind): bool
     {
-        return $kind === KindEnum::DOCUMENT;
+        return $kind === NodeKindEnum::DOCUMENT;
     }
 
     /**

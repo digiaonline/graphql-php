@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DefaultValueTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\TypeNodeInterface;
@@ -15,7 +15,7 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
     /**
      * @var string
      */
-    protected $kind = KindEnum::VARIABLE_DEFINITION;
+    protected $kind = NodeKindEnum::VARIABLE_DEFINITION;
 
     /**
      * @var VariableNode

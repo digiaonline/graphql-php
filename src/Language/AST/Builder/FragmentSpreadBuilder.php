@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\AST\Builder\Behavior\ParseDirectivesTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseLocationTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseNameTrait;
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
 
@@ -36,6 +36,6 @@ class FragmentSpreadBuilder extends AbstractBuilder
      */
     public function supportsKind(string $kind): bool
     {
-        return $kind === KindEnum::FRAGMENT_SPREAD;
+        return $kind === NodeKindEnum::FRAGMENT_SPREAD;
     }
 }

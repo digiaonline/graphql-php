@@ -8,7 +8,7 @@ use Digia\GraphQL\Language\AST\Builder\Behavior\ParseLocationTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseNameTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseSelectionSetTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseTypeConditionTrait;
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
 
@@ -42,6 +42,6 @@ class FragmentDefinitionBuilder extends AbstractBuilder
      */
     public function supportsKind(string $kind): bool
     {
-        return $kind === KindEnum::FRAGMENT_DEFINITION;
+        return $kind === NodeKindEnum::FRAGMENT_DEFINITION;
     }
 }

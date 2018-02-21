@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Language\AST\Builder;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseNameTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseValueLiteralTrait;
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 
@@ -34,6 +34,6 @@ class ArgumentBuilder extends AbstractBuilder
      */
     public function supportsKind(string $kind): bool
     {
-        return $kind === KindEnum::ARGUMENT;
+        return $kind === NodeKindEnum::ARGUMENT;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
@@ -18,5 +18,5 @@ class ScalarTypeDefinitionNode extends AbstractNode implements TypeDefinitionNod
     /**
      * @var string
      */
-    protected $kind = KindEnum::SCALAR_TYPE_DEFINITION;
+    protected $kind = NodeKindEnum::SCALAR_TYPE_DEFINITION;
 }

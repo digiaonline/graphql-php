@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\TypesTrait;
@@ -19,5 +19,5 @@ class UnionTypeDefinitionNode extends AbstractNode implements DefinitionNodeInte
     /**
      * @var string
      */
-    protected $kind = KindEnum::UNION_TYPE_DEFINITION;
+    protected $kind = NodeKindEnum::UNION_TYPE_DEFINITION;
 }

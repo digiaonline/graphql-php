@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\ArgumentsTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
@@ -18,7 +18,7 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
     /**
      * @var string
      */
-    protected $kind = KindEnum::DIRECTIVE_DEFINITION;
+    protected $kind = NodeKindEnum::DIRECTIVE_DEFINITION;
 
     /**
      * @var NameNode[]

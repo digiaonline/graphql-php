@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\TypesTrait;
@@ -18,5 +18,5 @@ class UnionTypeExtensionNode extends AbstractNode implements TypeExtensionNodeIn
     /**
      * @var string
      */
-    protected $kind = KindEnum::UNION_TYPE_EXTENSION;
+    protected $kind = NodeKindEnum::UNION_TYPE_EXTENSION;
 }

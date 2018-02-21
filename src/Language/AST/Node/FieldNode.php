@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\KindEnum;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\AliasTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\ArgumentsTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
@@ -22,5 +22,5 @@ class FieldNode extends AbstractNode implements SelectionNodeInterface
     /**
      * @var string
      */
-    protected $kind = KindEnum::FIELD;
+    protected $kind = NodeKindEnum::FIELD;
 }
