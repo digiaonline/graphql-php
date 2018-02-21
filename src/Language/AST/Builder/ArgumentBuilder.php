@@ -2,17 +2,15 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseNameTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseValueLiteralTrait;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class ArgumentBuilder extends AbstractBuilder
 {
 
-    use ParseKindTrait;
     use ParseNameTrait;
     use ParseValueLiteralTrait;
 
@@ -22,7 +20,6 @@ class ArgumentBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new ArgumentNode([
-            'kind'  => $this->parseKind($ast),
             'name'  => $this->parseName($ast),
             'value' => $this->parseValueLiteral($ast),
         ]);

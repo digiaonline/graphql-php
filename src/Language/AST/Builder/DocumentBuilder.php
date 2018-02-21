@@ -2,17 +2,15 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseLocationTrait;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class DocumentBuilder extends AbstractBuilder
 {
 
-    use ParseKindTrait;
     use ParseLocationTrait;
 
     /**
@@ -21,7 +19,6 @@ class DocumentBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new DocumentNode([
-            'kind'        => $this->parseKind($ast),
             'definitions' => $this->parseDefinitions($ast),
             'loc'         => $this->parseLocation($ast),
         ]);

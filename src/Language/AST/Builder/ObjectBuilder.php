@@ -2,18 +2,16 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseLocationTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseValueTrait;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\ObjectValueNode;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class ObjectBuilder extends AbstractBuilder
 {
 
-    use ParseKindTrait;
     use ParseValueTrait;
     use ParseLocationTrait;
 
@@ -23,7 +21,6 @@ class ObjectBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new ObjectValueNode([
-            'kind'   => $this->parseKind($ast),
             'fields' => $this->parseFields($ast),
             'loc'    => $this->parseLocation($ast),
         ]);

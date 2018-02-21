@@ -2,17 +2,15 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseLocationTrait;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\ValueNodeInterface;
 use Digia\GraphQL\Language\AST\Node\ListValueNode;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class ListBuilder extends AbstractBuilder
 {
 
-    use ParseKindTrait;
     use ParseLocationTrait;
 
     /**
@@ -21,7 +19,6 @@ class ListBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new ListValueNode([
-            'kind'   => $this->parseKind($ast),
             'values' => $this->parseValues($ast),
             'loc'    => $this->parseLocation($ast),
         ]);

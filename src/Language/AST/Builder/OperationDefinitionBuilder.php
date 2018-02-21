@@ -3,17 +3,15 @@
 namespace Digia\GraphQL\Language\AST\Builder;
 
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseDirectivesTrait;
-use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseSelectionSetTrait;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\VariableDefinitionNode;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class OperationDefinitionBuilder extends AbstractBuilder
 {
 
-    use ParseKindTrait;
     use ParseDirectivesTrait;
     use ParseSelectionSetTrait;
 
@@ -23,7 +21,6 @@ class OperationDefinitionBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new OperationDefinitionNode([
-            'kind'                => $this->parseKind($ast),
             'operation'           => $this->parseOperation($ast),
             'variableDefinitions' => $this->parseVariableDefinitions($ast),
             'directives'          => $this->parseDirectives($ast),

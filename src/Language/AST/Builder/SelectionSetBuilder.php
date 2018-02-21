@@ -2,17 +2,15 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Builder\Behavior\ParseKindTrait;
 use Digia\GraphQL\Language\AST\Builder\Behavior\ParseLocationTrait;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\Contract\SelectionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class SelectionSetBuilder extends AbstractBuilder
 {
 
-    use ParseKindTrait;
     use ParseLocationTrait;
 
     /**
@@ -21,7 +19,6 @@ class SelectionSetBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new SelectionSetNode([
-            'kind'       => $this->parseKind($ast),
             'selections' => $this->parseSelections($ast),
             'loc'        => $this->parseLocation($ast),
         ]);
