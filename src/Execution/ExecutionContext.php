@@ -2,11 +2,12 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Type\Schema\Schema;
 
-class Arguments
+class ExecutionContext
 {
     /**
      * @var Schema
@@ -14,9 +15,9 @@ class Arguments
     protected $schema;
 
     /**
-     * @var DocumentNode
+     * @var FragmentDefinitionNode[]
      */
-    protected $document;
+    protected $fragments;
 
     /**
      * @var mixed
@@ -34,40 +35,67 @@ class Arguments
     protected $variableValues;
 
     /**
-     * @var OperationDefinitionNode
-     */
-    protected $operation;
-
-    /**
      * @var mixed
      */
     protected $fieldResolver;
 
     /**
-     * Arguments constructor.
+     * @var OperationDefinitionNode
+     */
+    protected $operation;
+
+    /**
+     * @var GraphQLError[]
+     */
+    protected $errors;
+
+    /**
+     * ExecutionContext constructor.
      * @param Schema $schema
-     * @param DocumentNode $document
+     * @param FragmentDefinitionNode[] $fragments
      * @param mixed $rootValue
      * @param mixed $contextValue
      * @param $variableValues
-     * @param OperationDefinitionNode $operation
      * @param mixed $fieldResolver
+     * @param OperationDefinitionNode $operation
+     * @param GraphQLError[] $errors
      */
     public function __construct(
         Schema $schema,
-        DocumentNode $document,
+        array $fragments,
         mixed $rootValue,
         mixed $contextValue,
         $variableValues,
+        mixed $fieldResolver,
         OperationDefinitionNode $operation,
-        mixed $fieldResolver)
+        array $errors)
     {
         $this->schema         = $schema;
-        $this->document       = $document;
+        $this->fragments      = $fragments;
         $this->rootValue      = $rootValue;
         $this->contextValue   = $contextValue;
         $this->variableValues = $variableValues;
-        $this->operation      = $operation;
         $this->fieldResolver  = $fieldResolver;
+        $this->operation      = $operation;
+        $this->errors         = $errors;
+    }
+
+
+    /**
+     * @return OperationDefinitionNode
+     */
+    public function getOperation(): OperationDefinitionNode
+    {
+        return $this->operation;
+    }
+
+    /**
+     * @param GraphQLError $error
+     * @return ExecutionContext
+     */
+    public function addError(GraphQLError $error)
+    {
+        $this->errors[] = $error;
+        return $this;
     }
 }
