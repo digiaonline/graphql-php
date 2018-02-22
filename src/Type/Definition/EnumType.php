@@ -3,11 +3,11 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\ConfigObject;
-use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
+use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\LeafTypeInterface;

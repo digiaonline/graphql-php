@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Type\Definition\Behavior;
 
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
-use Digia\GraphQL\Type\Definition\NonNullType;
 
 trait OfTypeTrait
 {

@@ -11,7 +11,7 @@ trait ConfigTrait
     private $config;
 
     /**
-     * AbstractScalarType constructor.
+     * ConfigTrait constructor.
      *
      * @param array $config
      */
@@ -20,14 +20,6 @@ trait ConfigTrait
         $this->beforeConfig();
         $this->setConfig($config);
         $this->afterConfig();
-    }
-
-    /**
-     * @return array
-     */
-    public function getConfig(): array
-    {
-        return $this->config;
     }
 
     /**
@@ -50,24 +42,6 @@ trait ConfigTrait
      */
     protected function afterConfig(): void
     {
-    }
-
-    /**
-     * @param string $key
-     * @return mixed
-     */
-    protected function getConfigValue(string $key)
-    {
-        return $this->config[$key] ?? null;
-    }
-
-    /**
-     * @param string $key
-     * @return bool
-     */
-    protected function hasConfigValue(string $key): bool
-    {
-        return isset($this->config[$key]);
     }
 
     /**
