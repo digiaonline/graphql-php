@@ -4,7 +4,10 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema\Schema;
 
@@ -95,15 +98,42 @@ class Execution
         //TODO: Validate raw variables, operation name etc.
         //TODO: Validate document definition
 
+        $errors = [];
+        $fragments = [];
+        $operation = null;
+
+        foreach ($documentNode->getDefinition() as $definition) {
+            switch ($definition->getKind()) {
+                case NodeKindEnum::OPERATION_DEFINITION:
+                    if (!$operationName && $operation) {
+                        throw new GraphQLError(
+                            'Must provide operation name if query contains multiple operations.'
+                        );
+                    }
+                    if (!$operationName || (!empty($definition->getName()) && $definition->getName()->getValue() === $operationName)) {
+                        $operation = $definition;
+                    }
+                    break;
+                case NodeKindEnum::FRAGMENT_DEFINITION:
+                    $fragments[$definition->getName()->getValue()] = $definition;
+                    break;
+                default:
+                    throw new GraphQLError(
+                        "GraphQL cannot execute a request containing a {$definition->getKind()}.",
+                        [$definition]
+                    );
+            }
+        }
+
         $executionContext = new ExecutionContext(
             $schema,
-            null,
+            $fragments,
             $rootValue,
             $contextValue,
             $rawVariableValues,
             $fieldResolver,
-            $operationName,
-            []
+            $operation,
+            $errors
         );
 
         return $executionContext;
@@ -127,13 +157,38 @@ class Execution
         //QUERY
 
         //result = executionStrategy.execute(executionContext, parameters);
-        //return result
+        // type: query|mutation|suscription
+        $query  = $context->getSchema()->getQuery();
+        $fields = $this->collectFields($query, $operation->getSelectionSet(), [], []);
+        $path   = [];
+
+        if ($context->getOperation()->getName()->getValue() === 'query') {
+            $data = $this->executeFields($query, $rootValue, $path, $fields);
+
+            return new ExecutionResult($data, []);
+        }
+
         return new ExecutionResult([], []);
     }
 
-    private function executeFieldsSerially(ObjectType $parentType, $sourceValue, $path, $fields)
+    private function collectFields(
+        ObjectType $runtimeType,
+        SelectionSetNode $selectionSet,
+        $fields,
+        $visitedFragmentNames
+    )
     {
+        foreach ($selectionSet->getSelections() as $selection) {
+            switch ($selection->getKind()) {
+                case NodeKindEnum::FIELD:
+                    /** @var FieldNode $selection */
+                    $name = $selection->getName()->getValue();
+                    $fields[$name][] = $selection;
+                    break;
+            }
+        }
 
+        return $fields;
     }
 
     /**
@@ -143,17 +198,22 @@ class Execution
      * @param $source
      * @param $path
      * @param $fields
+     *
+     * @return array
      */
-    private function executeFields(ObjectType $parentType, $source, $path, $fields)
+    private function executeFields(ObjectType $parentType, $source, $path, $fields): array
     {
         $finalResults = [];
-
         foreach ($fields as $responseName => $fieldNodes) {
-            $fieldPath = $path;
+            $fieldPath   = $path;
             $fieldPath[] = $responseName;
+
             $result = $this->resolveField($parentType, $source, $fieldNodes, $fieldPath);
+
             $finalResults[$responseName] = $result;
         }
+
+        return $finalResults;
     }
 
     /**
@@ -166,6 +226,11 @@ class Execution
      */
     private function resolveField(ObjectType $parentType, $source, $fieldNodes, $path)
     {
+        /** @var FieldNode $fieldNode */
+        $fieldNode = $fieldNodes[0];
 
+        $field = $parentType->getFields()[$fieldNode->getName()->getValue()];
+
+        return $field->resolve();
     }
 }

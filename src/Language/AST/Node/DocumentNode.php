@@ -18,4 +18,12 @@ class DocumentNode extends AbstractNode implements NodeInterface
      * @var DefinitionNodeInterface[]
      */
     protected $definitions;
+
+    /**
+     * @return DefinitionNodeInterface[]
+     */
+    public function getDefinition()
+    {
+        return $this->definitions;
+    }
 }

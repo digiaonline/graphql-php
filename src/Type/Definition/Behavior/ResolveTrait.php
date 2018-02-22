@@ -8,7 +8,7 @@ trait ResolveTrait
     /**
      * @var ?callable
      */
-    protected $resolveFunction;
+    private $_resolveFunction;
 
     /**
      * @param array ...$args
@@ -16,16 +16,16 @@ trait ResolveTrait
      */
     public function resolve(...$args)
     {
-        return $this->resolveFunction !== null ? call_user_func_array($this->resolveFunction, $args) : null;
+        return $this->_resolveFunction !== null ? call_user_func_array($this->_resolveFunction, $args) : null;
     }
 
     /**
      * @param callable $resolveFunction
      * @return $this
      */
-    public function setResolve(callable $resolveFunction)
+    protected function setResolve(callable $resolveFunction)
     {
-        $this->resolveFunction = $resolveFunction;
+        $this->_resolveFunction = $resolveFunction;
         return $this;
     }
 }

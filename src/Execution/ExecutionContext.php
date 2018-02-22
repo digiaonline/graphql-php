@@ -52,21 +52,21 @@ class ExecutionContext
     /**
      * ExecutionContext constructor.
      * @param Schema $schema
-     * @param FragmentDefinitionNode[] $fragments
-     * @param mixed $rootValue
-     * @param mixed $contextValue
+     * @param array $fragments
+     * @param $rootValue
+     * @param $contextValue
      * @param $variableValues
-     * @param mixed $fieldResolver
-     * @param OperationDefinitionNode $operation
-     * @param GraphQLError[] $errors
+     * @param $fieldResolver
+     * @param OperationDefinitionNode $operatgion
+     * @param array $errors
      */
     public function __construct(
         Schema $schema,
         array $fragments,
-        mixed $rootValue,
-        mixed $contextValue,
+        $rootValue,
+        $contextValue,
         $variableValues,
-        mixed $fieldResolver,
+        $fieldResolver,
         OperationDefinitionNode $operation,
         array $errors)
     {
@@ -87,6 +87,14 @@ class ExecutionContext
     public function getOperation(): OperationDefinitionNode
     {
         return $this->operation;
+    }
+
+    /**
+     * @return Schema
+     */
+    public function getSchema(): Schema
+    {
+        return $this->schema;
     }
 
     /**

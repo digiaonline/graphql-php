@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\ConfigObject;
+use Digia\GraphQL\Language\Location;
 
 abstract class AbstractNode extends ConfigObject
 {
