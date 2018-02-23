@@ -18,34 +18,22 @@ class Location implements SerializationInterface
     protected $end;
 
     /**
-     * @var Token
-     */
-    protected $startToken;
-
-    /**
-     * @var Token
-     */
-    protected $endToken;
-
-    /**
-     * @var ?Source
+     * @var Source|null
      */
     protected $source;
 
     /**
      * Location constructor.
      *
-     * @param Token       $startToken
-     * @param Token       $endToken
+     * @param int         $start
+     * @param int         $end
      * @param Source|null $source
      */
-    public function __construct(Token $startToken, Token $endToken, ?Source $source = null)
+    public function __construct(int $start, int $end, ?Source $source = null)
     {
-        $this->start      = $startToken->getStart();
-        $this->end        = $endToken->getEnd();
-        $this->startToken = $startToken;
-        $this->endToken   = $endToken;
-        $this->source     = $source;
+        $this->start  = $start;
+        $this->end    = $end;
+        $this->source = $source;
     }
 
     /**
@@ -65,23 +53,7 @@ class Location implements SerializationInterface
     }
 
     /**
-     * @return Token
-     */
-    public function getStartToken(): Token
-    {
-        return $this->startToken;
-    }
-
-    /**
-     * @return Token
-     */
-    public function getEndToken(): Token
-    {
-        return $this->endToken;
-    }
-
-    /**
-     * @return Source
+     * @return Source|null
      */
     public function getSource(): ?Source
     {
@@ -97,13 +69,5 @@ class Location implements SerializationInterface
             'start' => $this->start,
             'end'   => $this->end,
         ];
-    }
-
-    /**
-     * @return string
-     */
-    public function toJSON(): string
-    {
-        return json_encode($this->toArray());
     }
 }

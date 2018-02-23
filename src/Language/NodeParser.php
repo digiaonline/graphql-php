@@ -202,7 +202,7 @@ class NodeParser implements ParserInterface
      */
     protected function createLocation(Lexer $lexer, Token $startToken): Location
     {
-        return new Location($startToken, $lexer->getLastToken(), $lexer->getSource());
+        return new Location($startToken->getStart(), $lexer->getLastToken()->getEnd(), $lexer->getSource());
     }
 
     /**

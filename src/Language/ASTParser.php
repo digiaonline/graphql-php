@@ -6,8 +6,8 @@ use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Error\SyntaxError;
 use Digia\GraphQL\Language\AST\Builder\Contract\BuilderInterface;
 use Digia\GraphQL\Language\AST\Builder\Contract\DirectorInterface;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Contract\ParserInterface;
 use Digia\GraphQL\Language\Reader\Contract\ReaderInterface;
 
@@ -254,8 +254,8 @@ class ASTParser implements ParserInterface, DirectorInterface
     protected function createLocation(Lexer $lexer, Token $startToken): array
     {
         return [
-            'startToken' => $startToken,
-            'endToken'   => $lexer->getLastToken(),
+            'start' => $startToken->getStart(),
+            'end'   => $lexer->getLastToken()->getEnd(),
         ];
     }
 

@@ -32,8 +32,8 @@ abstract class AbstractBuilder implements BuilderInterface
      */
     protected function createLocation(array $ast): Location
     {
-        return isset($ast['loc']['startToken'], $ast['loc']['endToken'])
-            ? new Location($ast['loc']['startToken'], $ast['loc']['endToken'])
+        return isset($ast['loc']['start'], $ast['loc']['end'])
+            ? new Location($ast['loc']['start'], $ast['loc']['end'])
             : null;
     }
 
