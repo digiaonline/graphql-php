@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\ConfigObject;
 use function Digia\GraphQL\Util\invariant;
 
 /**
@@ -13,44 +12,38 @@ use function Digia\GraphQL\Util\invariant;
  * be "Foo.graphql", line to be 40 and column to be 0.
  * line and column are 1-indexed
  */
-
 class Source
 {
 
     /**
      * @var string
      */
-    private $body;
+    protected $body;
 
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
-     * @var int
+     * @var SourceLocation|null
      */
-    private $line;
-
-    /**
-     * @var int
-     */
-    private $column;
+    protected $locationOffset;
 
     /**
      * Source constructor.
      *
-     * @param string      $body
-     * @param null|string $name
-     * @param int|null    $line
-     * @param int|null    $column
+     * @param string              $body
+     * @param null|string         $name
+     * @param SourceLocation|null $locationOffset
+     * @throws \Exception
      */
-    public function __construct(string $body, ?string $name = 'GraphQL request', ?int $line = 1, ?int $column = 1)
+    public function __construct(string $body, ?string $name = 'GraphQL request', ?SourceLocation $locationOffset = null)
     {
-        $this->body   = $body;
-        $this->name   = $name;
-        $this->line   = $line;
-        $this->column = $column;
+        $this->body = $body;
+        $this->name = $name;
+
+        $this->setLocationOffset($locationOffset);
     }
 
     /**
@@ -80,17 +73,9 @@ class Source
     /**
      * @return int
      */
-    public function getLine(): int
+    public function getLocationOffset(): ?SourceLocation
     {
-        return $this->line;
-    }
-
-    /**
-     * @return int
-     */
-    public function getColumn(): int
-    {
-        return $this->column;
+        return $this->locationOffset;
     }
 
     /**
@@ -118,24 +103,21 @@ class Source
      * @return Source
      * @throws \Exception
      */
-    protected function setLine(int $line): Source
+    protected function setLocationOffset(?SourceLocation $locationOffset): Source
     {
-        invariant($line > 0, 'line is 1-indexed and must be positive');
+        if (null !== $locationOffset) {
+            invariant(
+                $locationOffset->getLine() > 0,
+                'line is 1-indexed and must be positive'
+            );
 
-        $this->line = $line;
-        return $this;
-    }
+            invariant(
+                $locationOffset->getColumn() > 0,
+                'column is 1-indexed and must be positive'
+            );
+        }
 
-    /**
-     * @param int $column
-     * @return Source
-     * @throws \Exception
-     */
-    protected function setColumn(int $column): Source
-    {
-        invariant($column > 0, 'column is 1-indexed and must be positive');
-
-        $this->column = $column;
+        $this->locationOffset = $locationOffset;
         return $this;
     }
 }

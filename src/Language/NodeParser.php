@@ -634,7 +634,7 @@ class NodeParser implements ParserInterface
 
         return new FragmentDefinitionNode([
             'name'          => $this->parseFragmentName($lexer),
-            'typeCondition' => $parseTypeCondition,
+            'typeCondition' => $parseTypeCondition($lexer),
             'directives'    => $this->parseDirectives($lexer, false),
             'selectionSet'  => $this->parseSelectionSet($lexer),
             'loc'           => $this->createLocation($lexer, $start),
@@ -649,7 +649,7 @@ class NodeParser implements ParserInterface
     protected function parseFragmentName(Lexer $lexer): NameNode
     {
         if ($lexer->getToken()->getValue() === 'on') {
-            $this->unexpected($lexer);
+            throw $this->unexpected($lexer);
         }
 
         return $this->parseName($lexer);

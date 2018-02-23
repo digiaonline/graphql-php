@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Reader;
 
 use Digia\GraphQL\Error\SyntaxError;
 use function Digia\GraphQL\Language\charCodeAt;
+use function Digia\GraphQL\Language\chrUTF8;
 use function Digia\GraphQL\Language\printCharCode;
 use function Digia\GraphQL\Language\sliceString;
 use Digia\GraphQL\Language\Token;
@@ -50,6 +51,7 @@ class StringReader extends AbstractReader
             ++$pos;
 
             if ($code === 92) {
+                // \
                 $value .= sliceString($body, $chunkStart, $pos + 1);
                 $code  = charCodeAt($body, $pos);
 
@@ -79,6 +81,7 @@ class StringReader extends AbstractReader
                         $value .= '\t';
                         break;
                     case 117:
+                        // u
                         $charCode = uniCharCode(
                             charCodeAt($body, $pos + 1),
                             charCodeAt($body, $pos + 2),

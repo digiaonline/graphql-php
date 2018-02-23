@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\AST\Node\Contract;
 
+use Digia\GraphQL\Language\Location;
+
 interface NodeInterface
 {
 
@@ -9,4 +11,9 @@ interface NodeInterface
      * @return string
      */
     public function getKind(): string;
+
+    /**
+     * @return Location|null
+     */
+    public function getLocation(): ?Location;
 }

@@ -704,7 +704,7 @@ class ASTParser implements ParserInterface, DirectorInterface
         return [
             'kind'          => NodeKindEnum::FRAGMENT_DEFINITION,
             'name'          => $this->parseFragmentName($lexer),
-            'typeCondition' => $parseTypeCondition,
+            'typeCondition' => $parseTypeCondition($lexer),
             'directives'    => $this->parseDirectives($lexer, false),
             'selectionSet'  => $this->parseSelectionSet($lexer),
             'loc'           => $this->createLocation($lexer, $start),
@@ -719,7 +719,7 @@ class ASTParser implements ParserInterface, DirectorInterface
     protected function parseFragmentName(Lexer $lexer): array
     {
         if ($lexer->getToken()->getValue() === 'on') {
-            $this->unexpected($lexer);
+            throw $this->unexpected($lexer);
         }
 
         return $this->parseName($lexer);

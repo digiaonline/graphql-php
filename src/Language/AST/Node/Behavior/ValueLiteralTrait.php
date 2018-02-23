@@ -21,6 +21,9 @@ trait ValueLiteralTrait
         return $this->value;
     }
 
+    /**
+     * @return array
+     */
     public function getValueAsArray(): array
     {
         return null !== $this->value ? $this->value->toArray() : null;

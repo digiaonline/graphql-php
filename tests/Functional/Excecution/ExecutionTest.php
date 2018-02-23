@@ -13,8 +13,7 @@ use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Source;
-use Digia\GraphQL\Language\Token;
-use Digia\GraphQL\Language\TokenKindEnum;
+use Digia\GraphQL\Language\SourceLocation;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use function Digia\GraphQL\Type\GraphQLInt;
@@ -24,6 +23,10 @@ use function Digia\GraphQL\Type\GraphQLString;
 
 class ExecutionTest extends TestCase
 {
+
+    /**
+     * @throws \Exception
+     */
     public function testExecuteHelloQuery()
     {
         $schema = new Schema([
@@ -46,7 +49,7 @@ class ExecutionTest extends TestCase
                 new OperationDefinitionNode([
                     'kind' => NodeKindEnum::OPERATION_DEFINITION,
                     'name' => new NameNode([
-                        'value' => 'query'
+                        'value' => 'query',
                     ]),
                     'selectionSet' => new SelectionSetNode([
                         'selections' => [
@@ -54,9 +57,9 @@ class ExecutionTest extends TestCase
                                 'name' => new NameNode([
                                     'value' => 'hello',
                                     'location' => new Location(
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Source('query Example {hello}', 'GraphQL', 1)
+                                        15,
+                                        20,
+                                        new Source('query Example {hello}', 'GraphQL', new SourceLocation())
                                     )
                                 ]),
                                 'arguments' => []
@@ -92,6 +95,9 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testExecuteQueryHelloWithArgs()
     {
         $schema = new Schema([
@@ -122,9 +128,9 @@ class ExecutionTest extends TestCase
                                 'name' => new NameNode([
                                     'value' => 'greeting',
                                     'location' => new Location(
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Source('query Hello($name: String) {greeting(name: $name)}', 'GraphQL', 1)
+                                        15,
+                                        20,
+                                        new Source('query Hello($name: String) {greeting(name: $name)}', 'GraphQL', new SourceLocation())
                                     )
                                 ]),
                                 'arguments' => [
@@ -170,6 +176,7 @@ class ExecutionTest extends TestCase
 
     /**
      * @throws \TypeError
+     * @throws \Exception
      */
     public function testExecuteQueryWithMultipleFields()
     {
@@ -225,9 +232,9 @@ class ExecutionTest extends TestCase
                                 'name' => new NameNode([
                                     'value' => 'id',
                                     'location' => new Location(
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', 1)
+                                        15,
+                                        20,
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
                                     )
                                 ]),
                             ]),
@@ -235,9 +242,9 @@ class ExecutionTest extends TestCase
                                 'name' => new NameNode([
                                     'value' => 'type',
                                     'location' => new Location(
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', 1)
+                                        15,
+                                        20,
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
                                     )
                                 ]),
                             ]),
@@ -245,9 +252,9 @@ class ExecutionTest extends TestCase
                                 'name' => new NameNode([
                                     'value' => 'friends',
                                     'location' => new Location(
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', 1)
+                                        15,
+                                        20,
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
                                     )
                                 ]),
                             ]),
@@ -255,9 +262,9 @@ class ExecutionTest extends TestCase
                                 'name' => new NameNode([
                                     'value' => 'appearsIn',
                                     'location' => new Location(
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', 1)
+                                        15,
+                                        20,
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
                                     )
                                 ]),
                             ]),
@@ -265,9 +272,9 @@ class ExecutionTest extends TestCase
                                 'name' => new NameNode([
                                     'value' => 'homePlanet',
                                     'location' => new Location(
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', 1)
+                                        15,
+                                        20,
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
                                     )
                                 ]),
                             ])

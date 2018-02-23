@@ -15,4 +15,16 @@ class NonNullTypeNode extends AbstractNode implements TypeNodeInterface
      * @var string
      */
     protected $kind = NodeKindEnum::NON_NULL_TYPE;
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind' => $this->kind,
+            'loc'  => $this->getLocationAsArray(),
+            'type' => $this->getTypeAsArray(),
+        ];
+    }
 }

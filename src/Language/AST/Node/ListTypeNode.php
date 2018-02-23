@@ -15,4 +15,16 @@ class ListTypeNode extends AbstractNode implements TypeNodeInterface
      * @var string
      */
     protected $kind = NodeKindEnum::LIST_TYPE;
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind' => $this->kind,
+            'loc'  => $this->getLocationAsArray(),
+            'type' => $this->getTypeAsArray(),
+        ];
+    }
 }
