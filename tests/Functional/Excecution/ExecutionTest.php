@@ -6,6 +6,7 @@ use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
+use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NameNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
@@ -23,7 +24,7 @@ use function Digia\GraphQL\Type\GraphQLString;
 
 class ExecutionTest extends TestCase
 {
-    public function testExecuteSchemaHelloWorld()
+    public function testExecuteHelloQuery()
     {
         $schema = new Schema([
             'query' =>
@@ -58,6 +59,7 @@ class ExecutionTest extends TestCase
                                         new Source('query Example {hello}', 'GraphQL', 1)
                                     )
                                 ]),
+                                'arguments' => []
                             ])
                         ]
                     ]),
@@ -90,10 +92,86 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
+    public function testExecuteQueryHelloWithArgs()
+    {
+        $schema = new Schema([
+            'query' =>
+                new ObjectType([
+                    'name'   => 'Greeting',
+                    'fields' => [
+                        'greeting' => [
+                            'type'    => GraphQLString(),
+                            'resolve' => function ($name) {
+                                return sprintf('Hello %s', $name);
+                            }
+                        ]
+                    ]
+                ])
+        ]);
+
+        $documentNode = new DocumentNode([
+            'definitions' => [
+                new OperationDefinitionNode([
+                    'kind' => NodeKindEnum::OPERATION_DEFINITION,
+                    'name' => new NameNode([
+                        'value' => 'query'
+                    ]),
+                    'selectionSet' => new SelectionSetNode([
+                        'selections' => [
+                            new FieldNode([
+                                'name' => new NameNode([
+                                    'value' => 'greeting',
+                                    'location' => new Location(
+                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
+                                        new Token(TokenKindEnum::NAME, 15, 20, 1),
+                                        new Source('query Hello($name: String) {greeting(name: $name)}', 'GraphQL', 1)
+                                    )
+                                ]),
+                                'arguments' => [
+                                    new InputValueDefinitionNode([
+                                        'name' => new NameNode([
+                                            'value' => 'name'
+                                        ]),
+                                        'type' => GraphQLString(),
+                                        'defaultValue' => 'Han Solo'
+                                    ])
+                                ]
+                            ])
+                        ]
+                    ]),
+                    'operation' => 'query',
+                    'directives' => [],
+                    'variableDefinitions' => []
+                ])
+            ],
+        ]);
+
+        $rootValue      = [];
+        $contextValue   = '';
+        $variableValues = [];
+        $operationName  = 'query';
+        $fieldResolver  = null;
+
+        /** @var ExecutionResult $executionResult */
+        $executionResult = Execution::execute(
+            $schema,
+            $documentNode,
+            $rootValue,
+            $contextValue,
+            $variableValues,
+            $operationName,
+            $fieldResolver
+        );
+
+        $expected = new ExecutionResult(['greeting' => 'Hello Han Solo'], []);
+
+        $this->assertEquals($expected, $executionResult);
+    }
+
     /**
      * @throws \TypeError
      */
-    public function testExecuteMultipleFields()
+    public function testExecuteQueryWithMultipleFields()
     {
         $schema = new Schema([
             'query' =>

@@ -231,6 +231,14 @@ class Execution
 
         $field = $parentType->getFields()[$fieldNode->getName()->getValue()];
 
-        return $field->resolve();
+        $inputValues = $fieldNode->getArguments() ?? [];
+
+        $args = [];
+
+        foreach($inputValues as $value) {
+            $args[] = $value->getDefaultValue();
+        }
+
+        return $field->resolve(...$args);
     }
 }

@@ -17,6 +17,6 @@ trait ArgumentsTrait
      */
     public function getArguments(): array
     {
-        return $this->arguments;
+        return $this->arguments ?? [];
     }
 }
