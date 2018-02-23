@@ -3,9 +3,10 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\ConfigObject;
+use Digia\GraphQL\Contract\SerializationInterface;
 use Digia\GraphQL\Language\Location;
 
-abstract class AbstractNode extends ConfigObject
+abstract class AbstractNode extends ConfigObject implements SerializationInterface
 {
 
     /**
@@ -14,7 +15,7 @@ abstract class AbstractNode extends ConfigObject
     protected $kind;
 
     /**
-     * @var ?Location
+     * @var Location|null
      */
     protected $location;
 
@@ -27,10 +28,30 @@ abstract class AbstractNode extends ConfigObject
     }
 
     /**
-     * @return mixed
+     * @return Location|null
      */
-    public function getLocation()
+    public function getLocation(): ?Location
     {
         return $this->location;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getLocationAsArray(): ?array
+    {
+        return null !== $this->location ? $this->location->toArray() : null;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        // TODO: Remove this method when every node implement its own toArray-method.
+        return [
+            'kind' => $this->kind,
+            'loc'  => $this->getLocationAsArray(),
+        ];
     }
 }

@@ -569,7 +569,7 @@ class ASTParser implements ParserInterface, DirectorInterface
             'directives'   => $this->parseDirectives($lexer, false),
             'selectionSet' => $this->peek($lexer, TokenKindEnum::BRACE_L)
                 ? $this->parseSelectionSet($lexer)
-                : [],
+                : null,
             'loc'          => $this->createLocation($lexer, $start),
         ];
     }

@@ -507,7 +507,7 @@ class NodeParser implements ParserInterface
             'directives'   => $this->parseDirectives($lexer, false),
             'selectionSet' => $this->peek($lexer, TokenKindEnum::BRACE_L)
                 ? $this->parseSelectionSet($lexer)
-                : [],
+                : null,
             'loc'          => $this->createLocation($lexer, $start),
         ]);
     }

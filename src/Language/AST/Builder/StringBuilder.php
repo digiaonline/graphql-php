@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Builder\Behavior\ParseLocationTrait;
-use Digia\GraphQL\Language\AST\Builder\Behavior\ParseValueTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
@@ -11,18 +9,15 @@ use Digia\GraphQL\Language\AST\NodeKindEnum;
 class StringBuilder extends AbstractBuilder
 {
 
-    use ParseValueTrait;
-    use ParseLocationTrait;
-
     /**
      * @inheritdoc
      */
     public function build(array $ast): NodeInterface
     {
         return new StringValueNode([
-            'value' => $this->parseValue($ast),
-            'block' => $this->parseBlock($ast),
-            'loc'   => $this->parseLocation($ast),
+            'value'    => $this->getOne($ast, 'value'),
+            'block'    => $this->getOne($ast, 'block', false),
+            'location' => $this->createLocation($ast),
         ]);
     }
 
@@ -32,14 +27,5 @@ class StringBuilder extends AbstractBuilder
     public function supportsKind(string $kind): bool
     {
         return $kind === NodeKindEnum::STRING;
-    }
-
-    /**
-     * @param array $ast
-     * @return bool
-     */
-    protected function parseBlock(array $ast): bool
-    {
-        return $ast['block'] ?? false;
     }
 }

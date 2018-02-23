@@ -8,7 +8,7 @@ trait AliasTrait
 {
 
     /**
-     * @var ?NameNode
+     * @var NameNode|null
      */
     protected $alias;
 
@@ -18,5 +18,13 @@ trait AliasTrait
     public function getAlias(): ?NameNode
     {
         return $this->alias;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getAliasAsArray(): ?array
+    {
+        return null !== $this->alias ? $this->alias->toArray() : null;
     }
 }

@@ -8,14 +8,14 @@ trait NameTrait
 {
 
     /**
-     * @var NameNode
+     * @var NameNode|null
      */
     protected $name;
 
     /**
-     * @return NameNode
+     * @return NameNode|null
      */
-    public function getName(): NameNode
+    public function getName(): ?NameNode
     {
         return $this->name;
     }
@@ -26,5 +26,13 @@ trait NameTrait
     public function getNameValue(): string
     {
         return $this->name->getValue();
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getNameAsArray(): ?array
+    {
+        return null !== $this->name ? $this->name->toArray() : null;
     }
 }

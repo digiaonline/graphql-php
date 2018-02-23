@@ -8,15 +8,23 @@ trait SelectionSetTrait
 {
 
     /**
-     * @var SelectionSetNode
+     * @var SelectionSetNode|null
      */
     protected $selectionSet;
 
     /**
-     * @return SelectionSetNode
+     * @return SelectionSetNode|null
      */
-    public function getSelectionSet(): SelectionSetNode
+    public function getSelectionSet(): ?SelectionSetNode
     {
         return $this->selectionSet;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getSelectionSetAsArray(): ?array
+    {
+        return null !== $this->selectionSet ? $this->selectionSet->toArray() : null;
     }
 }
