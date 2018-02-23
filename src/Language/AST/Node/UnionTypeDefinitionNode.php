@@ -11,7 +11,6 @@ use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
 class UnionTypeDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {
 
-    use DescriptionTrait;
     use NameTrait;
     use DescriptionTrait;
     use TypesTrait;

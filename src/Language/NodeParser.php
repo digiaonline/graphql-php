@@ -57,10 +57,10 @@ class NodeParser implements ParserInterface
 
     /**
      * @inheritdoc
-     * @return DocumentNode
+     * @return NodeInterface|DocumentNode
      * @throws GraphQLError
      */
-    public function parse(Source $source, array $options = []): DocumentNode
+    public function parse(Source $source, array $options = []): NodeInterface
     {
         $lexer = $this->createLexer($source, $options);
 
@@ -69,10 +69,10 @@ class NodeParser implements ParserInterface
 
     /**
      * @inheritdoc
-     * @return ValueNodeInterface
+     * @return NodeInterface|ValueNodeInterface
      * @throws GraphQLError
      */
-    public function parseValue(Source $source, array $options = []): ValueNodeInterface
+    public function parseValue(Source $source, array $options = []): NodeInterface
     {
         $lexer = $this->createLexer($source, $options);
 
@@ -85,10 +85,10 @@ class NodeParser implements ParserInterface
 
     /**
      * @inheritdoc
-     * @return TypeNodeInterface
+     * @return NodeInterface|TypeNodeInterface
      * @throws GraphQLError
      */
-    public function parseType(Source $source, array $options = []): TypeNodeInterface
+    public function parseType(Source $source, array $options = []): NodeInterface
     {
         $lexer = $this->createLexer($source, $options);
 
