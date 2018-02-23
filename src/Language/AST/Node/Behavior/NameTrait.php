@@ -19,4 +19,12 @@ trait NameTrait
     {
         return $this->name;
     }
+
+    /**
+     * @return string
+     */
+    public function getNameValue(): string
+    {
+        return $this->name->getValue();
+    }
 }

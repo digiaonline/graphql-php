@@ -109,7 +109,7 @@ trait FieldsTrait
         foreach ($fields as $fieldName => $fieldConfig) {
             invariant(
                 is_array($fieldConfig),
-                sprintf('%s.%s field config must be an object', $this->getName(), $fieldName)
+                sprintf('%s.%s field config must be an array', $this->getName(), $fieldName)
             );
 
             invariant(

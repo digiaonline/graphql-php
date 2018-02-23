@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLError;
 
-class Result
+class ExecutionResult
 {
     /**
      * @var GraphQLError[]
@@ -17,7 +17,7 @@ class Result
     protected $data;
 
     /**
-     * Result constructor.
+     * ExecutionResult constructor.
      * @param mixed[] $data
      * @param GraphQLError[] $errors
      */
@@ -29,9 +29,9 @@ class Result
 
     /**
      * @param GraphQLError $error
-     * @return Result
+     * @return ExecutionResult
      */
-    public function addError(GraphQLError $error): Result
+    public function addError(GraphQLError $error): ExecutionResult
     {
         $this->errors[] = $error;
         return $this;

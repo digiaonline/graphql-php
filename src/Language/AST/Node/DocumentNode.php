@@ -15,7 +15,15 @@ class DocumentNode extends AbstractNode implements NodeInterface
     protected $kind = NodeKindEnum::DOCUMENT;
 
     /**
-     * @var DefinitionNodeInterface
+     * @var DefinitionNodeInterface[]
      */
     protected $definitions;
+
+    /**
+     * @return DefinitionNodeInterface[]
+     */
+    public function getDefinition()
+    {
+        return $this->definitions;
+    }
 }
