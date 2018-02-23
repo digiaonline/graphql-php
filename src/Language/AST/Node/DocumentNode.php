@@ -21,11 +21,21 @@ class DocumentNode extends AbstractNode implements NodeInterface
     protected $definitions;
 
     /**
-     * @return DefinitionNodeInterface[]
+     * @return array|DefinitionNodeInterface[]
      */
-    public function getDefinition()
+    public function getDefinitions(): array
     {
         return $this->definitions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefinitionsAsArray(): array
+    {
+        return array_map(function (SerializationInterface $node) {
+            return $node->toArray();
+        }, $this->definitions);
     }
 
     /**
@@ -36,9 +46,7 @@ class DocumentNode extends AbstractNode implements NodeInterface
         return [
             'kind'        => $this->kind,
             'loc'         => $this->getLocationAsArray(),
-            'definitions' => array_map(function (SerializationInterface $node) {
-                return $node->toArray();
-            }, $this->definitions),
+            'definitions' => $this->getDefinitionsAsArray(),
         ];
     }
 }

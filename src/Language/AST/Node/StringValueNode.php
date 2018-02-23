@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\ValueTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\ValueNodeInterface;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class StringValueNode extends AbstractNode implements ValueNodeInterface
 {
@@ -27,5 +27,18 @@ class StringValueNode extends AbstractNode implements ValueNodeInterface
     public function isBlock(): bool
     {
         return $this->block;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind'  => $this->kind,
+            'loc'   => $this->getLocationAsArray(),
+            'block' => $this->block,
+            'value' => $this->value,
+        ];
     }
 }

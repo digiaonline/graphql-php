@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Test\Functional\Language\AST;
 
-use Digia\GraphQL\Error\SyntaxError;
 use Digia\GraphQL\Language\AST\Builder\ArgumentBuilder;
 use Digia\GraphQL\Language\AST\Builder\BooleanBuilder;
 use Digia\GraphQL\Language\AST\Builder\DirectiveBuilder;
@@ -24,8 +23,9 @@ use Digia\GraphQL\Language\AST\Builder\OperationDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\SelectionSetBuilder;
 use Digia\GraphQL\Language\AST\Builder\StringBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableBuilder;
+use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\ASTParser;
-use function Digia\GraphQL\Language\chrUTF8;
 use Digia\GraphQL\Language\Contract\ParserInterface;
 use Digia\GraphQL\Language\Reader\AmpReader;
 use Digia\GraphQL\Language\Reader\AtReader;
@@ -214,13 +214,93 @@ class ParserTest extends TestCase
      */
     public function testCreatesAST()
     {
-        $result = $this->parser->parse(new Source('
-        {
-            node(id: 4) {
-                id,
-                name
-            }
-        }
-        '));
+        /** @var DocumentNode $actual */
+        $actual = $this->parser->parse(new Source('{
+  node(id: 4) {
+    id,
+    name
+  }
+}
+'));
+
+        $this->assertEquals([
+            'kind'        => NodeKindEnum::DOCUMENT,
+            'loc'         => ['start' => 0, 'end' => 41],
+            'definitions' => [
+                [
+                    'kind'                => NodeKindEnum::OPERATION_DEFINITION,
+                    'loc'                 => ['start' => 0, 'end' => 40],
+                    'operation'           => 'query',
+                    'name'                => null,
+                    'variableDefinitions' => [],
+                    'directives'          => [],
+                    'selectionSet'        => [
+                        'kind'       => NodeKindEnum::SELECTION_SET,
+                        'loc'        => ['start' => 0, 'end' => 40],
+                        'selections' => [
+                            [
+                                'kind'         => NodeKindEnum::FIELD,
+                                'loc'          => ['start' => 4, 'end' => 38],
+                                'alias'        => null,
+                                'name'         => [
+                                    'kind'  => NodeKindEnum::NAME,
+                                    'loc'   => ['start' => 4, 'end' => 8],
+                                    'value' => 'node',
+                                ],
+                                'arguments'    => [
+                                    [
+                                        'kind'  => NodeKindEnum::ARGUMENT,
+                                        'name'  => [
+                                            'kind'  => NodeKindEnum::NAME,
+                                            'loc'   => ['start' => 9, 'end' => 11],
+                                            'value' => 'id',
+                                        ],
+                                        'value' => [
+                                            'kind'  => NodeKindEnum::INT,
+                                            'loc'   => ['start' => 13, 'end' => 14],
+                                            'value' => '4',
+                                        ],
+                                        'loc'   => ['start' => 9, 'end' => 14],
+                                    ],
+                                ],
+                                'directives'   => [],
+                                'selectionSet' => [
+                                    'kind'       => NodeKindEnum::SELECTION_SET,
+                                    'loc'        => ['start' => 16, 'end' => 38],
+                                    'selections' => [
+                                        [
+                                            'kind'         => NodeKindEnum::FIELD,
+                                            'loc'          => ['start' => 22, 'end' => 24],
+                                            'alias'        => null,
+                                            'name'         => [
+                                                'kind'  => NodeKindEnum::NAME,
+                                                'loc'   => ['start' => 22, 'end' => 24],
+                                                'value' => 'id',
+                                            ],
+                                            'arguments'    => [],
+                                            'directives'   => [],
+                                            'selectionSet' => null,
+                                        ],
+                                        [
+                                            'kind'         => NodeKindEnum::FIELD,
+                                            'loc'          => ['start' => 30, 'end' => 34],
+                                            'alias'        => null,
+                                            'name'         => [
+                                                'kind'  => NodeKindEnum::NAME,
+                                                'loc'   => ['start' => 30, 'end' => 34],
+                                                'value' => 'name',
+                                            ],
+                                            'arguments'    => [],
+                                            'directives'   => [],
+                                            'selectionSet' => null,
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $actual->toArray());
     }
 }

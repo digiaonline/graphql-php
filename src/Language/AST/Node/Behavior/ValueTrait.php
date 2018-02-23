@@ -6,12 +6,12 @@ trait ValueTrait
 {
 
     /**
-     * @var mixed
+     * @var mixed|null
      */
     protected $value;
 
     /**
-     * @return mixed
+     * @return mixed|null
      */
     public function getValue()
     {

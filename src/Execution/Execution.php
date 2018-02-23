@@ -102,7 +102,7 @@ class Execution
         $fragments = [];
         $operation = null;
 
-        foreach ($documentNode->getDefinition() as $definition) {
+        foreach ($documentNode->getDefinitions() as $definition) {
             switch ($definition->getKind()) {
                 case NodeKindEnum::OPERATION_DEFINITION:
                     if (!$operationName && $operation) {

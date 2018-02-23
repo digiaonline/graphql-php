@@ -12,7 +12,7 @@ interface DefinitionNodeInterface extends NodeInterface
     function getKind(): string;
 
     /**
-     * @return NameNode
+     * @return NameNode|null
      */
-    function getName(): NameNode;
+    function getName(): ?NameNode;
 }
