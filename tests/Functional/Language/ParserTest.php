@@ -26,6 +26,7 @@ use Digia\GraphQL\Language\AST\Builder\OperationDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\SelectionSetBuilder;
 use Digia\GraphQL\Language\AST\Builder\StringBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableBuilder;
+use Digia\GraphQL\Language\AST\Builder\VariableDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NullValueNode;
@@ -85,6 +86,7 @@ class ParserTest extends TestCase
             new SelectionSetBuilder(),
             new StringBuilder(),
             new VariableBuilder(),
+            new VariableDefinitionBuilder(),
         ];
 
         $readers = [
@@ -206,6 +208,18 @@ class ParserTest extends TestCase
     }
 
     // TODO: Consider adding test for 'parses kitchen sink'
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testParsesKitchenSink()
+    {
+        $kitchenSink = mb_convert_encoding(file_get_contents(__DIR__ . '/kitchen-sink.graphql'), 'UTF-8');
+
+        $this->parser->parse(new Source($kitchenSink));
+        $this->addToAssertionCount(1);
+    }
 
     /**
      * @throws \Digia\GraphQL\Error\GraphQLError

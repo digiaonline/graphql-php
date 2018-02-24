@@ -217,14 +217,10 @@ class Schema extends ConfigObject
         $typeMap = [];
 
         // First by deeply visiting all initial types.
-        $typeMap = array_reduce($initialTypes, function ($map, $type) {
-            return typeMapReducer($map, $type);
-        }, $typeMap);
+        $typeMap = array_reduce($initialTypes, 'Digia\GraphQL\Type\Schema\typeMapReducer', $typeMap);
 
         // Then by deeply visiting all directive types.
-        $typeMap = array_reduce($this->directives, function ($map, $directive) {
-            return typeMapDirectiveReducer($map, $directive);
-        }, $typeMap);
+        $typeMap = array_reduce($this->directives, 'Digia\GraphQL\Type\Schema\typeMapDirectiveReducer', $typeMap);
 
         // Storing the resulting map for reference by the schema.
         $this->_typeMap = $typeMap;
@@ -330,7 +326,7 @@ class Schema extends ConfigObject
  */
 function typeMapReducer(array $map, ?TypeInterface $type): array
 {
-    if (!$type) {
+    if (null === $type) {
         return $map;
     }
 
@@ -357,15 +353,11 @@ function typeMapReducer(array $map, ?TypeInterface $type): array
     $reducedMap = $map;
 
     if ($type instanceof UnionType) {
-        $reducedMap = array_reduce($type->getTypes(), function ($map, $type) {
-            return typeMapReducer($map, $type);
-        }, $reducedMap);
+        $reducedMap = array_reduce($type->getTypes(), 'Digia\GraphQL\Type\Schema\typeMapReducer', $reducedMap);
     }
 
     if ($type instanceof ObjectType) {
-        $reducedMap = array_reduce($type->getInterfaces(), function ($map, $type) {
-            return typeMapReducer($map, $type);
-        }, $reducedMap);
+        $reducedMap = array_reduce($type->getInterfaces(), 'Digia\GraphQL\Type\Schema\typeMapReducer', $reducedMap);
     }
 
     if ($type instanceof ObjectType || $type instanceof InterfaceType) {
@@ -375,9 +367,7 @@ function typeMapReducer(array $map, ?TypeInterface $type): array
                     return $argument->getType();
                 }, $field->getArgs());
 
-                $reducedMap = array_reduce($fieldArgTypes, function ($map, $type) {
-                    return typeMapReducer($map, $type);
-                }, $reducedMap);
+                $reducedMap = array_reduce($fieldArgTypes, 'Digia\GraphQL\Type\Schema\typeMapReducer', $reducedMap);
             }
 
             $reducedMap = typeMapReducer($reducedMap, $field->getType());

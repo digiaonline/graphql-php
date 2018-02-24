@@ -138,10 +138,9 @@ function blockStringValue(string $rawString): string
 
     for ($i = 1; $i < $lineCount; $i++) {
         $line       = $lines[$i];
-        $lineLength = mb_strlen($line);
         $indent     = leadingWhitespace($line);
 
-        if ($indent < $lineLength && ($commonIndent === null || $indent < $commonIndent)) {
+        if ($indent < mb_strlen($line) && ($commonIndent === null || $indent < $commonIndent)) {
             $commonIndent = $indent;
 
             if ($commonIndent === 0) {
@@ -156,11 +155,11 @@ function blockStringValue(string $rawString): string
         }
     }
 
-    while ($lineCount > 0 && isBlank($lines[0])) {
+    while (count($lines) > 0 && isBlank($lines[0])) {
         array_shift($lines);
     }
 
-    while ($lineCount > 0 && isBlank($lines[$lineCount - 1])) {
+    while (($lineCount = count($lines)) > 0 && isBlank($lines[$lineCount - 1])) {
         array_pop($lines);
     }
 
