@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Contract\SerializationInterface;
+use function Digia\GraphQL\Util\jsonEncode;
 
 class Location implements SerializationInterface
 {
@@ -69,5 +70,21 @@ class Location implements SerializationInterface
             'start' => $this->start,
             'end'   => $this->end,
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function toJSON(): string
+    {
+        return jsonEncode($this->toArray());
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->toJSON();
     }
 }

@@ -64,3 +64,12 @@ function toString($value): string
     }
     return gettype($value);
 }
+
+/**
+ * @param $value
+ * @return string
+ */
+function jsonEncode($value): string
+{
+    return json_encode($value, JSON_UNESCAPED_UNICODE);
+}

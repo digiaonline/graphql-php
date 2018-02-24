@@ -8,8 +8,9 @@ use Digia\GraphQL\Type\Definition\Behavior\ArgumentsTrait;
 use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
 use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
 use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
+use function Digia\GraphQL\Util\jsonEncode;
 
-class Directive extends ConfigObject implements DirectiveInterface, SerializationInterface
+class Directive extends ConfigObject implements DirectiveInterface
 {
 
     use NameTrait;
@@ -51,14 +52,5 @@ class Directive extends ConfigObject implements DirectiveInterface, Serializatio
         }
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray(): array
-    {
-        // TODO: Implement this method.
-        return [];
     }
 }

@@ -28,21 +28,4 @@ class DocumentBuilder extends AbstractBuilder
     {
         return $kind === NodeKindEnum::DOCUMENT;
     }
-
-    /**
-     * @param array $ast
-     * @return array|DefinitionNodeInterface[]
-     */
-    protected function parseDefinitions(array $ast): array
-    {
-        $definitions = [];
-
-        if (isset($ast['definitions'])) {
-            foreach ($ast['definitions'] as $definitionAst) {
-                $definitions[] = $this->director->build($definitionAst);
-            }
-        }
-
-        return $definitions;
-    }
 }

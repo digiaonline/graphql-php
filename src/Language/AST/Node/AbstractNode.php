@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Language\AST\Node;
 use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Contract\SerializationInterface;
 use Digia\GraphQL\Language\Location;
+use function Digia\GraphQL\Util\jsonEncode;
 
 abstract class AbstractNode extends ConfigObject implements SerializationInterface
 {
@@ -53,5 +54,21 @@ abstract class AbstractNode extends ConfigObject implements SerializationInterfa
             'kind' => $this->kind,
             'loc'  => $this->getLocationAsArray(),
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function toJSON(): string
+    {
+        return jsonEncode($this->toArray());
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->toJSON();
     }
 }
