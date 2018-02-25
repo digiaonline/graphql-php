@@ -23,8 +23,8 @@ class NamedTypeNode extends AbstractNode implements TypeNodeInterface
     {
         return [
             'kind' => $this->kind,
-            'loc'  => $this->getLocationAsArray(),
             'name' => $this->getNameAsArray(),
+            'loc'  => $this->getLocationAsArray(),
         ];
     }
 }

@@ -51,6 +51,6 @@ class InterfaceType extends ConfigObject implements AbstractTypeInterface, Compo
      */
     protected function beforeConfig(): void
     {
-        $this->setName(TypeEnum::INTERFACE);
+        $this->setName(TypeNameEnum::INTERFACE);
     }
 }

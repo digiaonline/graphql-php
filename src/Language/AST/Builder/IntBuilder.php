@@ -15,7 +15,7 @@ class IntBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new IntValueNode([
-            'value'    => $this->getOne($ast, 'value'),
+            'value'    => $this->get($ast, 'value'),
             'location' => $this->createLocation($ast),
         ]);
     }

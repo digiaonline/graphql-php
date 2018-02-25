@@ -68,7 +68,7 @@ class EnumType extends ConfigObject implements TypeInterface, InputTypeInterface
      */
     protected function beforeConfig(): void
     {
-        $this->setName(TypeEnum::ENUM);
+        $this->setName(TypeNameEnum::ENUM);
     }
 
     /**

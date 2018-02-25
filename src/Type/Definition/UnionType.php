@@ -68,7 +68,7 @@ class UnionType extends ConfigObject implements AbstractTypeInterface, Composite
      */
     protected function beforeConfig(): void
     {
-        $this->setName(TypeEnum::UNION);
+        $this->setName(TypeNameEnum::UNION);
     }
 
     /**

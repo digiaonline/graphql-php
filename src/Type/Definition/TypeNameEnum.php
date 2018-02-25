@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-class TypeEnum
+class TypeNameEnum
 {
 
     const INT       = 'Int';

@@ -4,9 +4,10 @@ namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Language\Contract\LexerInterface;
 use Digia\GraphQL\Language\Reader\Contract\ReaderInterface;
 
-class Lexer
+class Lexer implements LexerInterface
 {
 
     /**
@@ -77,43 +78,59 @@ class Lexer
     }
 
     /**
-     * Advances the token stream to the next non-ignored token.
-     *
-     * @return Token
-     * @throws GraphQLError
+     * @inheritdoc
      */
     public function advance(): Token
     {
         $this->lastToken = $this->token;
-        return $this->token = $this->lookAhead();
+
+        return $this->token = $this->lookahead();
     }
 
     /**
-     * Looks ahead and returns the next non-ignored token, but does not change
-     * the Lexer's state.
-     *
-     * @return Token
-     * @throws GraphQLError
+     * @inheritdoc
      */
-    public function lookAhead(): Token
+    public function lookahead(): Token
     {
         $token = $this->token;
-        if ($token->getKind() !== TokenKindEnum::EOF) {
+
+        if (TokenKindEnum::EOF !== $token->getKind()) {
             do {
-                $next = $token->getNext();
-                if ($next === null) {
-                    $next = $this->readToken($token);
-                    $token->setNext($next);
-                }
+                $next = $this->readToken($token);
+                $token->setNext($next);
                 $token = $next;
-            } while ($token->getKind() === TokenKindEnum::COMMENT);
-            $this->token = $token;
+            } while (TokenKindEnum::COMMENT === $token->getKind());
         }
+
         return $token;
     }
 
     /**
-     * @return Token
+     * @inheritdoc
+     */
+    public function getBody(): string
+    {
+        return $this->source->getBody();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTokenKind(): string
+    {
+        return $this->token->getKind();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTokenValue(): ?string
+    {
+        return $this->token->getValue();
+    }
+
+    /**
+     * @inheritdoc
      */
     public function getToken(): Token
     {
@@ -121,7 +138,7 @@ class Lexer
     }
 
     /**
-     * @return Source
+     * @inheritdoc
      */
     public function getSource(): Source
     {
@@ -129,7 +146,7 @@ class Lexer
     }
 
     /**
-     * @return Token
+     * @inheritdoc
      */
     public function getLastToken(): Token
     {
@@ -137,11 +154,21 @@ class Lexer
     }
 
     /**
-     * @return string
+     * @param int   $code
+     * @param int   $pos
+     * @param int   $line
+     * @param int   $col
+     * @param Token $prev
+     * @return Token
+     * @throws SyntaxError
      */
-    public function getBody(): string
+    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
     {
-        return $this->source->getBody();
+        if (($reader = $this->getReader($code, $pos)) !== null) {
+            return $reader->read($code, $pos, $line, $col, $prev);
+        }
+
+        throw new SyntaxError($this->unexpectedCharacterMessage($code));
     }
 
     /**
@@ -169,24 +196,6 @@ class Lexer
         }
 
         return $this->read($code, $pos, $line, $col, $prev);
-    }
-
-    /**
-     * @param int   $code
-     * @param int   $pos
-     * @param int   $line
-     * @param int   $col
-     * @param Token $prev
-     * @return Token
-     * @throws SyntaxError
-     */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        if (($reader = $this->getReader($code, $pos)) !== null) {
-            return $reader->read($code, $pos, $line, $col, $prev);
-        }
-
-        throw new SyntaxError($this->unexpectedCharacterMessage($code));
     }
 
     /**

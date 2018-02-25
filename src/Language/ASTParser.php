@@ -6,8 +6,10 @@ use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Error\SyntaxError;
 use Digia\GraphQL\Language\AST\Builder\Contract\BuilderInterface;
 use Digia\GraphQL\Language\AST\Builder\Contract\DirectorInterface;
+use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\Contract\LexerInterface;
 use Digia\GraphQL\Language\Contract\ParserInterface;
 use Digia\GraphQL\Language\Reader\Contract\ReaderInterface;
 
@@ -155,9 +157,9 @@ class ASTParser implements ParserInterface, DirectorInterface
     /**
      * @param Source $source
      * @param array  $options
-     * @return Lexer
+     * @return LexerInterface
      */
-    protected function createLexer(Source $source, array $options): Lexer
+    protected function createLexer(Source $source, array $options): LexerInterface
     {
         return new Lexer($source, $this->readers, $options);
     }
@@ -165,25 +167,25 @@ class ASTParser implements ParserInterface, DirectorInterface
     /**
      * Determines if the next token is of a given kind.
      *
-     * @param Lexer  $lexer
+     * @param LexerInterface  $lexer
      * @param string $kind
      * @return bool
      */
-    protected function peek(Lexer $lexer, string $kind): bool
+    protected function peek(LexerInterface $lexer, string $kind): bool
     {
-        return $lexer->getToken()->getKind() === $kind;
+        return $lexer->getTokenKind() === $kind;
     }
 
     /**
      * If the next token is of the given kind, return true after advancing
      * the lexer. Otherwise, do not change the parser state and return false.
      *
-     * @param Lexer  $lexer
+     * @param LexerInterface  $lexer
      * @param string $kind
      * @return bool
      * @throws GraphQLError
      */
-    protected function skip(Lexer $lexer, string $kind): bool
+    protected function skip(LexerInterface $lexer, string $kind): bool
     {
         if ($match = $this->peek($lexer, $kind)) {
             $lexer->advance();
@@ -196,12 +198,12 @@ class ASTParser implements ParserInterface, DirectorInterface
      * If the next token is of the given kind, return that token after advancing
      * the lexer. Otherwise, do not change the parser state and throw an error.
      *
-     * @param Lexer  $lexer
+     * @param LexerInterface  $lexer
      * @param string $kind
      * @return Token
      * @throws GraphQLError
      */
-    protected function expect(Lexer $lexer, string $kind): Token
+    protected function expect(LexerInterface $lexer, string $kind): Token
     {
         $token = $lexer->getToken();
 
@@ -214,12 +216,12 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer  $lexer
+     * @param LexerInterface  $lexer
      * @param string $value
      * @return Token
      * @throws GraphQLError
      */
-    protected function expectKeyword(Lexer $lexer, string $value): Token
+    protected function expectKeyword(LexerInterface $lexer, string $value): Token
     {
         $token = $lexer->getToken();
 
@@ -235,11 +237,11 @@ class ASTParser implements ParserInterface, DirectorInterface
      * Helper function for creating an error when an unexpected lexed token
      * is encountered.
      *
-     * @param Lexer      $lexer
+     * @param LexerInterface      $lexer
      * @param Token|null $atToken
      * @return GraphQLError
      */
-    protected function unexpected(Lexer $lexer, ?Token $atToken = null): GraphQLError
+    protected function unexpected(LexerInterface $lexer, ?Token $atToken = null): GraphQLError
     {
         $token = $atToken ?: $lexer->getToken();
 
@@ -247,11 +249,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @param Token $startToken
      * @return array
      */
-    protected function createLocation(Lexer $lexer, Token $startToken): array
+    protected function createLocation(LexerInterface $lexer, Token $startToken): array
     {
         return [
             'start' => $startToken->getStart(),
@@ -265,14 +267,14 @@ class ASTParser implements ParserInterface, DirectorInterface
      * and ends with a lex token of closeKind. Advances the parser
      * to the next lex token after the closing token.
      *
-     * @param Lexer    $lexer
+     * @param LexerInterface    $lexer
      * @param string   $openKind
      * @param callable $parseFunction
      * @param string   $closeKind
      * @return array
      * @throws GraphQLError
      */
-    protected function any(Lexer $lexer, string $openKind, callable $parseFunction, string $closeKind): array
+    protected function any(LexerInterface $lexer, string $openKind, callable $parseFunction, string $closeKind): array
     {
         $this->expect($lexer, $openKind);
 
@@ -291,14 +293,14 @@ class ASTParser implements ParserInterface, DirectorInterface
      * and ends with a lex token of closeKind. Advances the parser
      * to the next lex token after the closing token.
      *
-     * @param Lexer    $lexer
+     * @param LexerInterface    $lexer
      * @param string   $openKind
      * @param callable $parseFunction
      * @param string   $closeKind
      * @return array
      * @throws GraphQLError
      */
-    protected function many(Lexer $lexer, string $openKind, callable $parseFunction, string $closeKind): array
+    protected function many(LexerInterface $lexer, string $openKind, callable $parseFunction, string $closeKind): array
     {
         $this->expect($lexer, $openKind);
 
@@ -312,11 +314,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseName(Lexer $lexer): array
+    protected function parseName(LexerInterface $lexer): array
     {
         $token = $this->expect($lexer, TokenKindEnum::NAME);
 
@@ -328,11 +330,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseDocument(Lexer $lexer): array
+    protected function parseDocument(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
@@ -352,57 +354,58 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
+     * @throws \ReflectionException
      */
-    protected function parseDefinition(Lexer $lexer): array
+    protected function parseDefinition(LexerInterface $lexer): array
     {
         // TODO: Consider adding experimental support for parsing schema definitions
 
         if ($this->peek($lexer, TokenKindEnum::NAME)) {
-            switch ($lexer->getToken()->getValue()) {
-                case 'query':
-                case 'mutation':
-                case 'subscription':
-                case 'fragment':
+            switch ($lexer->getTokenValue()) {
+                case KeywordEnum::QUERY:
+                case KeywordEnum::MUTATION:
+                case KeywordEnum::SUBSCRIPTION:
+                case KeywordEnum::FRAGMENT:
                     return $this->parseExecutableDefinition($lexer);
-                case 'schema':
-                case 'scalar':
-                case 'type':
-                case 'interface':
-                case 'union':
-                case 'enum':
-                case 'input':
-                case 'extend':
-                case 'directive':
+                case KeywordEnum::SCHEMA:
+                case KeywordEnum::SCALAR:
+                case KeywordEnum::TYPE:
+                case KeywordEnum::INTERFACE:
+                case KeywordEnum::UNION:
+                case KeywordEnum::ENUM:
+                case KeywordEnum::INPUT:
+                case KeywordEnum::EXTEND:
+                case KeywordEnum::DIRECTIVE:
                     // Note: The schema definition language is an experimental addition.
-//                    return $this->parseTypeSystemDefinition($lexer);
+                    return $this->parseTypeSystemDefinition($lexer);
             }
         } elseif ($this->peek($lexer, TokenKindEnum::BRACE_L)) {
             return $this->parseExecutableDefinition($lexer);
-//        } elseif ($this->peekDescription($lexer)) {
-//            // Note: The schema definition language is an experimental addition.
-//            return $this->parseTypeSystemDefinition($lexer);
+        } elseif ($this->peekDescription($lexer)) {
+            // Note: The schema definition language is an experimental addition.
+            return $this->parseTypeSystemDefinition($lexer);
         }
 
         throw $this->unexpected($lexer);
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseExecutableDefinition(Lexer $lexer): array
+    protected function parseExecutableDefinition(LexerInterface $lexer): array
     {
         if ($this->peek($lexer, TokenKindEnum::NAME)) {
             switch ($lexer->getToken()->getValue()) {
-                case 'query':
-                case 'mutation':
-                case 'subscription':
+                case KeywordEnum::QUERY:
+                case KeywordEnum::MUTATION:
+                case KeywordEnum::SUBSCRIPTION:
                     return $this->parseOperationDefinition($lexer);
-                case 'fragment':
+                case KeywordEnum::FRAGMENT:
                     return $this->parseFragmentDefinition($lexer);
             }
         } elseif ($this->peek($lexer, TokenKindEnum::BRACE_L)) {
@@ -413,11 +416,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseOperationDefinition(Lexer $lexer): array
+    protected function parseOperationDefinition(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
@@ -451,11 +454,28 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
+     * @return string
+     * @throws GraphQLError
+     */
+    protected function parseOperationType(LexerInterface $lexer): string
+    {
+        $token = $this->expect($lexer, TokenKindEnum::NAME);
+        $value = $token->getValue();
+
+        if (isOperation($value)) {
+            return $value;
+        }
+
+        throw $this->unexpected($lexer, $token);
+    }
+
+    /**
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseVariableDefinitions(Lexer $lexer): array
+    protected function parseVariableDefinitions(LexerInterface $lexer): array
     {
         return $this->peek($lexer, TokenKindEnum::PAREN_L)
             ? $this->many($lexer, TokenKindEnum::PAREN_L, [$this, 'parseVariableDefinition'], TokenKindEnum::PAREN_R)
@@ -463,20 +483,20 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseVariableDefinition(Lexer $lexer): array
+    protected function parseVariableDefinition(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
         /**
-         * @param Lexer $lexer
+         * @param LexerInterface $lexer
          * @return mixed
          * @throws GraphQLError
          */
-        $parseType = function (Lexer $lexer) {
+        $parseType = function (LexerInterface $lexer) {
             $this->expect($lexer, TokenKindEnum::COLON);
             return $this->parseTypeReference($lexer);
         };
@@ -493,11 +513,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseVariable(Lexer $lexer): array
+    protected function parseVariable(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
@@ -511,11 +531,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseSelectionSet(Lexer $lexer): array
+    protected function parseSelectionSet(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
@@ -532,11 +552,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseSelection(Lexer $lexer): array
+    protected function parseSelection(LexerInterface $lexer): array
     {
         return $this->peek($lexer, TokenKindEnum::SPREAD)
             ? $this->parseFragment($lexer)
@@ -544,11 +564,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseField(Lexer $lexer): array
+    protected function parseField(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
@@ -575,12 +595,12 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @param bool  $isConst
      * @return array
      * @throws GraphQLError
      */
-    protected function parseArguments(Lexer $lexer, bool $isConst): array
+    protected function parseArguments(LexerInterface $lexer, bool $isConst): array
     {
         return $this->peek($lexer, TokenKindEnum::PAREN_L)
             ? $this->many(
@@ -593,20 +613,20 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseArgument(Lexer $lexer): array
+    protected function parseArgument(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
         /**
-         * @param Lexer $lexer
+         * @param LexerInterface $lexer
          * @return mixed
          * @throws GraphQLError
          */
-        $parseValue = function (Lexer $lexer) {
+        $parseValue = function (LexerInterface $lexer) {
             $this->expect($lexer, TokenKindEnum::COLON);
             return $this->parseValueLiteral($lexer, false);
         };
@@ -620,20 +640,20 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseConstArgument(Lexer $lexer): array
+    protected function parseConstArgument(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
         /**
-         * @param Lexer $lexer
+         * @param LexerInterface $lexer
          * @return mixed
          * @throws GraphQLError
          */
-        $parseValue = function (Lexer $lexer) {
+        $parseValue = function (LexerInterface $lexer) {
             $this->expect($lexer, TokenKindEnum::COLON);
             return $this->parseConstValue($lexer);
         };
@@ -647,17 +667,17 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseFragment(Lexer $lexer): array
+    protected function parseFragment(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
         $this->expect($lexer, TokenKindEnum::SPREAD);
 
-        $tokenValue = $lexer->getToken()->getValue();
+        $tokenValue = $lexer->getTokenValue();
 
         if ($this->peek($lexer, TokenKindEnum::NAME) && $tokenValue !== 'on') {
             return [
@@ -684,19 +704,19 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseFragmentDefinition(Lexer $lexer): array
+    protected function parseFragmentDefinition(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
-        $this->expectKeyword($lexer, 'fragment');
+        $this->expectKeyword($lexer, KeywordEnum::FRAGMENT);
 
         // TODO: Consider adding experimental support fragment variables
 
-        $parseTypeCondition = function (Lexer $lexer) {
+        $parseTypeCondition = function (LexerInterface $lexer) {
             $this->expectKeyword($lexer, 'on');
             return $this->parseNamedType($lexer);
         };
@@ -712,13 +732,13 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseFragmentName(Lexer $lexer): array
+    protected function parseFragmentName(LexerInterface $lexer): array
     {
-        if ($lexer->getToken()->getValue() === 'on') {
+        if ($lexer->getTokenValue() === 'on') {
             throw $this->unexpected($lexer);
         }
 
@@ -726,12 +746,12 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @param bool  $isConst
      * @return array
      * @throws GraphQLError
      */
-    protected function parseValueLiteral(Lexer $lexer, bool $isConst): array
+    protected function parseValueLiteral(LexerInterface $lexer, bool $isConst): array
     {
         $token = $lexer->getToken();
 
@@ -797,11 +817,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseStringLiteral(Lexer $lexer): array
+    protected function parseStringLiteral(LexerInterface $lexer): array
     {
         $token = $lexer->getToken();
 
@@ -816,32 +836,32 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseConstValue(Lexer $lexer): array
+    protected function parseConstValue(LexerInterface $lexer): array
     {
         return $this->parseValueLiteral($lexer, true);
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseValueValue(Lexer $lexer): array
+    protected function parseValueValue(LexerInterface $lexer): array
     {
         return $this->parseValueLiteral($lexer, false);
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @param bool  $isConst
      * @return array
      * @throws GraphQLError
      */
-    protected function parseList(Lexer $lexer, bool $isConst): array
+    protected function parseList(LexerInterface $lexer, bool $isConst): array
     {
         $start = $lexer->getToken();
 
@@ -858,12 +878,12 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @param bool  $isConst
      * @return array
      * @throws GraphQLError
      */
-    protected function parseObject(Lexer $lexer, bool $isConst): array
+    protected function parseObject(LexerInterface $lexer, bool $isConst): array
     {
         $start = $lexer->getToken();
 
@@ -883,16 +903,16 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @param bool  $isConst
      * @return array
      * @throws GraphQLError
      */
-    protected function parseObjectField(Lexer $lexer, bool $isConst): array
+    protected function parseObjectField(LexerInterface $lexer, bool $isConst): array
     {
         $start = $lexer->getToken();
 
-        $parseValue = function (Lexer $lexer, bool $isConst) {
+        $parseValue = function (LexerInterface $lexer, bool $isConst) {
             $this->expect($lexer, TokenKindEnum::COLON);
             return $this->parseValueLiteral($lexer, $isConst);
         };
@@ -906,12 +926,12 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @param bool  $isConst
      * @return array
      * @throws GraphQLError
      */
-    protected function parseDirectives(Lexer $lexer, bool $isConst): array
+    protected function parseDirectives(LexerInterface $lexer, bool $isConst): array
     {
         $directives = [];
 
@@ -923,12 +943,12 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @param bool  $isConst
      * @return array
      * @throws GraphQLError
      */
-    protected function parseDirective(Lexer $lexer, bool $isConst): array
+    protected function parseDirective(LexerInterface $lexer, bool $isConst): array
     {
         $start = $lexer->getToken();
 
@@ -943,11 +963,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseTypeReference(Lexer $lexer): array
+    protected function parseTypeReference(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
@@ -977,11 +997,11 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseNamedType(Lexer $lexer): array
+    protected function parseNamedType(LexerInterface $lexer): array
     {
         $start = $lexer->getToken();
 
@@ -993,19 +1013,716 @@ class ASTParser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Lexer $lexer
-     * @return string
+     * @param LexerInterface $lexer
+     * @return array
      * @throws GraphQLError
+     * @throws \ReflectionException
      */
-    protected function parseOperationType(Lexer $lexer): string
+    protected function parseTypeSystemDefinition(LexerInterface $lexer): array
     {
-        $token = $this->expect($lexer, TokenKindEnum::NAME);
-        $value = $token->getValue();
+        // Many definitions begin with a description and require a lookahead.
+        $keywordToken = $this->peekDescription($lexer) ? $lexer->lookahead() : $lexer->getToken();
 
-        if (isOperation($value)) {
-            return $value;
+        if ($keywordToken->getKind() === TokenKindEnum::NAME) {
+            switch ($keywordToken->getValue()) {
+                case KeywordEnum::SCHEMA:
+                    return $this->parseSchemaDefinition($lexer);
+                case KeywordEnum::SCALAR:
+                    return $this->parseScalarTypeDefinition($lexer);
+                case KeywordEnum::TYPE:
+                    return $this->parseObjectTypeDefinition($lexer);
+                case KeywordEnum::INTERFACE:
+                    return $this->parseInterfaceTypeDefinition($lexer);
+                case KeywordEnum::UNION:
+                    return $this->parseUnionTypeDefinition($lexer);
+                case KeywordEnum::ENUM:
+                    return $this->parseEnumTypeDefinition($lexer);
+                case KeywordEnum::INPUT:
+                    return $this->parseInputObjectTypeDefinition($lexer);
+                case KeywordEnum::EXTEND:
+                    return $this->parseTypeExtension($lexer);
+                case KeywordEnum::DIRECTIVE:
+                    return $this->parseDirectiveDefinition($lexer);
+            }
         }
 
-        throw $this->unexpected($lexer, $token);
+        throw $this->unexpected($lexer, $keywordToken);
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return bool
+     */
+    protected function peekDescription(LexerInterface $lexer): bool
+    {
+        return $this->peek($lexer, TokenKindEnum::STRING) || $this->peek($lexer, TokenKindEnum::BLOCK_STRING);
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array|null
+     * @throws GraphQLError
+     */
+    protected function parseDescription(LexerInterface $lexer): ?array
+    {
+        return $this->peekDescription($lexer) ? $this->parseStringLiteral($lexer) : null;
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseSchemaDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $this->expectKeyword($lexer, KeywordEnum::SCHEMA);
+
+        $directives = $this->parseDirectives($lexer, true);
+
+        $operationTypes = $this->many(
+            $lexer,
+            TokenKindEnum::BRACE_L,
+            [$this, 'parseOperationTypeDefinition'],
+            TokenKindEnum::BRACE_R
+        );
+
+        return [
+            'kind'           => NodeKindEnum::SCHEMA_DEFINITION,
+            'directives'     => $directives,
+            'operationTypes' => $operationTypes,
+            'loc'            => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseOperationTypeDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $operation = $this->parseOperationType($lexer);
+
+        $this->expect($lexer, TokenKindEnum::COLON);
+
+        $type = $this->parseNamedType($lexer);
+
+        return [
+            'kind'      => NodeKindEnum::OPERATION_TYPE_DEFINITION,
+            'operation' => $operation,
+            'type'      => $type,
+            'loc'       => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseScalarTypeDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+
+        $this->expectKeyword($lexer, KeywordEnum::SCALAR);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+
+        return [
+            'kind'        => NodeKindEnum::SCALAR_TYPE_DEFINITION,
+            'description' => $description,
+            'name'        => $name,
+            'directives'  => $directives,
+            'loc'         => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseObjectTypeDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+
+        $this->expectKeyword($lexer, KeywordEnum::TYPE);
+
+        $name       = $this->parseName($lexer);
+        $interfaces = $this->parseImplementsInterfaces($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $fields     = $this->parseFieldsDefinition($lexer);
+
+        return [
+            'kind'        => NodeKindEnum::OBJECT_TYPE_DEFINITION,
+            'description' => $description,
+            'name'        => $name,
+            'interfaces'  => $interfaces,
+            'directives'  => $directives,
+            'fields'      => $fields,
+            'loc'         => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseImplementsInterfaces(LexerInterface $lexer): array
+    {
+        $types = [];
+
+        if ($lexer->getTokenValue() === 'implements') {
+            $lexer->advance();
+
+            // Optional leading ampersand
+            $this->skip($lexer, TokenKindEnum::AMP);
+
+            do {
+                $types[] = $this->parseNamedType($lexer);
+            } while ($this->skip($lexer, TokenKindEnum::AMP));
+        }
+
+        return $types;
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseFieldsDefinition(LexerInterface $lexer): array
+    {
+        return $this->peek($lexer, TokenKindEnum::BRACE_L)
+            ? $this->many($lexer, TokenKindEnum::BRACE_L, [$this, 'parseFieldDefinition'], TokenKindEnum::BRACE_R)
+            : [];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseFieldDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+        $name        = $this->parseName($lexer);
+        $arguments   = $this->parseArgumentsDefinition($lexer);
+
+        $this->expect($lexer, TokenKindEnum::COLON);
+
+        $type       = $this->parseTypeReference($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+
+        return [
+            'kind'        => NodeKindEnum::FIELD_DEFINITION,
+            'description' => $description,
+            'name'        => $name,
+            'arguments'   => $arguments,
+            'type'        => $type,
+            'directives'  => $directives,
+            'loc'         => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseArgumentsDefinition(LexerInterface $lexer): array
+    {
+        return $this->peek($lexer, TokenKindEnum::PAREN_L)
+            ? $this->many($lexer, TokenKindEnum::PAREN_L, [$this, 'parseInputValueDefinition'], TokenKindEnum::PAREN_R)
+            : [];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseInputValueDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+        $name        = $this->parseName($lexer);
+
+        $this->expect($lexer, TokenKindEnum::COLON);
+
+        $type         = $this->parseTypeReference($lexer);
+        $defaultValue = $this->skip($lexer, TokenKindEnum::EQUALS) ? $this->parseConstValue($lexer) : null;
+        $directives   = $this->parseDirectives($lexer, true);
+
+        return [
+            'kind'         => NodeKindEnum::INPUT_VALUE_DEFINITION,
+            'description'  => $description,
+            'name'         => $name,
+            'type'         => $type,
+            'defaultValue' => $defaultValue,
+            'directives'   => $directives,
+            'loc'          => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseInterfaceTypeDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+
+        $this->expectKeyword($lexer, KeywordEnum::INTERFACE);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $fields     = $this->parseFieldsDefinition($lexer);
+
+        return [
+            'kind'        => NodeKindEnum::INTERFACE_TYPE_DEFINITION,
+            'description' => $description,
+            'name'        => $name,
+            'directives'  => $directives,
+            'fields'      => $fields,
+            'loc'         => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseUnionTypeDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+
+        $this->expectKeyword($lexer, KeywordEnum::UNION);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $types      = $this->parseUnionMemberTypes($lexer);
+
+        return [
+            'kind'        => NodeKindEnum::UNION_TYPE_DEFINITION,
+            'description' => $description,
+            'name'        => $name,
+            'directives'  => $directives,
+            'types'       => $types,
+            'loc'         => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseUnionMemberTypes(LexerInterface $lexer): array
+    {
+        $types = [];
+
+        if ($this->skip($lexer, TokenKindEnum::EQUALS)) {
+            // Optional leading pipe
+            $this->skip($lexer, TokenKindEnum::PIPE);
+
+            do {
+                $types[] = $this->parseNamedType($lexer);
+            } while ($this->skip($lexer, TokenKindEnum::PIPE));
+        }
+
+        return $types;
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseEnumTypeDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+
+        $this->expectKeyword($lexer, KeywordEnum::ENUM);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $values     = $this->parseEnumValuesDefinition($lexer);
+
+        return [
+            'kind'        => NodeKindEnum::ENUM_TYPE_DEFINITION,
+            'description' => $description,
+            'name'        => $name,
+            'directives'  => $directives,
+            'values'      => $values,
+            'loc'         => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseEnumValuesDefinition(LexerInterface $lexer): array
+    {
+        return $this->peek($lexer, TokenKindEnum::BRACE_L)
+            ? $this->many($lexer, TokenKindEnum::BRACE_L, [$this, 'parseEnumValueDefinition'], TokenKindEnum::BRACE_R)
+            : [];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseEnumValueDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+        $name        = $this->parseName($lexer);
+        $directives  = $this->parseDirectives($lexer, true);
+
+        return [
+            'kind'        => NodeKindEnum::ENUM_VALUE_DEFINITION,
+            'description' => $description,
+            'name'        => $name,
+            'directives'  => $directives,
+            'loc'         => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseInputObjectTypeDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+
+        $this->expectKeyword($lexer, KeywordEnum::INPUT);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $fields     = $this->parseInputFieldsDefinition($lexer);
+
+        return [
+            'kind'        => NodeKindEnum::INPUT_OBJECT_TYPE_DEFINITION,
+            'description' => $description,
+            'name'        => $name,
+            'directives'  => $directives,
+            'fields'      => $fields,
+            'loc'         => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseInputFieldsDefinition(LexerInterface $lexer): array
+    {
+        return $this->peek($lexer, TokenKindEnum::BRACE_L)
+            ? $this->many($lexer, TokenKindEnum::BRACE_L, [$this, 'parseInputValueDefinition'], TokenKindEnum::BRACE_R)
+            : [];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseTypeExtension(LexerInterface $lexer): array
+    {
+        $keywordToken = $lexer->lookahead();
+
+        if ($keywordToken->getKind() === TokenKindEnum::NAME) {
+            switch ($keywordToken->getValue()) {
+                case KeywordEnum::SCALAR:
+                    return $this->parseScalarTypeExtension($lexer);
+                case KeywordEnum::TYPE:
+                    return $this->parseObjectTypeExtension($lexer);
+                case KeywordEnum::INTERFACE:
+                    return $this->parseInterfaceTypeExtension($lexer);
+                case KeywordEnum::UNION:
+                    return $this->parseUnionTypeExtension($lexer);
+                case KeywordEnum::ENUM:
+                    return $this->parseEnumTypeExtension($lexer);
+                case KeywordEnum::INPUT:
+                    return $this->parseInputObjectTypeExtension($lexer);
+            }
+        }
+
+        throw $this->unexpected($lexer, $keywordToken);
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseScalarTypeExtension(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $this->expectKeyword($lexer, KeywordEnum::EXTEND);
+        $this->expectKeyword($lexer, KeywordEnum::SCALAR);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+
+        if (count($directives) === 0) {
+            throw $this->unexpected($lexer);
+        }
+
+        return [
+            'kind'       => NodeKindEnum::SCALAR_TYPE_EXTENSION,
+            'name'       => $name,
+            'directives' => $directives,
+            'loc'        => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseObjectTypeExtension(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $this->expectKeyword($lexer, KeywordEnum::EXTEND);
+        $this->expectKeyword($lexer, KeywordEnum::TYPE);
+
+        $name       = $this->parseName($lexer);
+        $interfaces = $this->parseImplementsInterfaces($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $fields     = $this->parseFieldsDefinition($lexer);
+
+        if (count($interfaces) === 0 && count($directives) === 0 && count($fields) === 0) {
+            throw $this->unexpected($lexer);
+        }
+
+        return [
+            'kind'       => NodeKindEnum::OBJECT_TYPE_EXTENSION,
+            'name'       => $name,
+            'interfaces' => $interfaces,
+            'directives' => $directives,
+            'fields'     => $fields,
+            'loc'        => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseInterfaceTypeExtension(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $this->expectKeyword($lexer, KeywordEnum::EXTEND);
+        $this->expectKeyword($lexer, KeywordEnum::INTERFACE);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $fields     = $this->parseFieldsDefinition($lexer);
+
+        if (count($directives) === 0 && count($fields) === 0) {
+            throw $this->unexpected($lexer);
+        }
+
+        return [
+            'kind'       => NodeKindEnum::INTERFACE_TYPE_EXTENSION,
+            'name'       => $name,
+            'directives' => $directives,
+            'fields'     => $fields,
+            'loc'        => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseUnionTypeExtension(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $this->expectKeyword($lexer, KeywordEnum::EXTEND);
+        $this->expectKeyword($lexer, KeywordEnum::UNION);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $types      = $this->parseUnionMemberTypes($lexer);
+
+        if (count($directives) === 0 && count($types) === 0) {
+            throw $this->unexpected($lexer);
+        }
+
+        return [
+            'kind'       => NodeKindEnum::UNION_TYPE_EXTENSION,
+            'name'       => $name,
+            'directives' => $directives,
+            'types'      => $types,
+            'loc'        => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseEnumTypeExtension(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $this->expectKeyword($lexer, KeywordEnum::EXTEND);
+        $this->expectKeyword($lexer, KeywordEnum::ENUM);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $values     = $this->parseEnumValuesDefinition($lexer);
+
+        if (count($directives) === 0 && count($values) === 0) {
+            throw $this->unexpected($lexer);
+        }
+
+        return [
+            'kind'       => NodeKindEnum::ENUM_TYPE_EXTENSION,
+            'name'       => $name,
+            'directives' => $directives,
+            'values'     => $values,
+            'loc'        => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     */
+    protected function parseInputObjectTypeExtension(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $this->expectKeyword($lexer, KeywordEnum::EXTEND);
+        $this->expectKeyword($lexer, KeywordEnum::INPUT);
+
+        $name       = $this->parseName($lexer);
+        $directives = $this->parseDirectives($lexer, true);
+        $fields     = $this->parseInputFieldsDefinition($lexer);
+
+        if (count($directives) === 0 && count($fields) === 0) {
+            throw $this->unexpected($lexer);
+        }
+
+        return [
+            'kind'       => NodeKindEnum::INPUT_OBJECT_TYPE_EXTENSION,
+            'name'       => $name,
+            'directives' => $directives,
+            'fields'     => $fields,
+            'loc'        => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     * @throws \ReflectionException
+     */
+    protected function parseDirectiveDefinition(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $description = $this->parseDescription($lexer);
+
+        $this->expectKeyword($lexer, KeywordEnum::DIRECTIVE);
+        $this->expect($lexer, TokenKindEnum::AT);
+
+        $name      = $this->parseName($lexer);
+        $arguments = $this->parseArgumentsDefinition($lexer);
+
+        $this->expectKeyword($lexer, KeywordEnum::ON);
+
+        $locations = $this->parseDirectiveLocations($lexer);
+
+        return [
+            'kind'        => NodeKindEnum::DIRECTIVE_DEFINITION,
+            'description' => $description,
+            'name'        => $name,
+            'arguments'   => $arguments,
+            'locations'   => $locations,
+            'loc'         => $this->createLocation($lexer, $start),
+        ];
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     * @throws \ReflectionException
+     */
+    protected function parseDirectiveLocations(LexerInterface $lexer): array
+    {
+        $this->skip($lexer, TokenKindEnum::PIPE);
+
+        $locations = [];
+
+        do {
+            $locations[] = $this->parseDirectiveLocation($lexer);
+        } while ($this->skip($lexer, TokenKindEnum::PIPE));
+
+        return $locations;
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return array
+     * @throws GraphQLError
+     * @throws \ReflectionException
+     */
+    protected function parseDirectiveLocation(LexerInterface $lexer): array
+    {
+        $start = $lexer->getToken();
+
+        $name = $this->parseName($lexer);
+
+        if (\in_array($name['value'], DirectiveLocationEnum::values(), true)) {
+            return $name;
+        }
+
+        throw $this->unexpected($lexer, $start);
     }
 }

@@ -25,4 +25,13 @@ class DirectiveLocationEnum
     const ENUM_VALUE             = 'ENUM_VALUE';
     const INPUT_OBJECT           = 'INPUT_OBJECT';
     const INPUT_FIELD_DEFINITION = 'INPUT_FIELD_DEFINITION';
+
+    /**
+     * @return array
+     * @throws \ReflectionException
+     */
+    public static function values(): array
+    {
+        return array_values((new \ReflectionClass(__CLASS__))->getConstants());
+    }
 }

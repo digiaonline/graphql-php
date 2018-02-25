@@ -2,18 +2,20 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\AST\Node\Behavior\ArgumentsTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\TypeTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class FieldDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {
 
     use DescriptionTrait;
     use NameTrait;
+    use ArgumentsTrait;
     use TypeTrait;
     use DirectivesTrait;
 
@@ -23,15 +25,18 @@ class FieldDefinitionNode extends AbstractNode implements DefinitionNodeInterfac
     protected $kind = NodeKindEnum::FIELD_DEFINITION;
 
     /**
-     * @var InputValueDefinitionNode[]
+     * @inheritdoc
      */
-    protected $arguments;
-
-    /**
-     * @return InputValueDefinitionNode[]
-     */
-    public function getArguments(): array
+    public function toArray(): array
     {
-        return $this->arguments;
+        return [
+            'kind'        => $this->kind,
+            'description' => $this->description,
+            'name'        => $this->getNameAsArray(),
+            'arguments'   => $this->getArgumentsAsArray(),
+            'type'        => $this->getTypeAsArray(),
+            'directives'  => $this->getDirectivesAsArray(),
+            'loc'         => $this->getLocationAsArray(),
+        ];
     }
 }

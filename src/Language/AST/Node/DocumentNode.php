@@ -45,8 +45,8 @@ class DocumentNode extends AbstractNode implements NodeInterface
     {
         return [
             'kind'        => $this->kind,
-            'loc'         => $this->getLocationAsArray(),
             'definitions' => $this->getDefinitionsAsArray(),
+            'loc'         => $this->getLocationAsArray(),
         ];
     }
 }

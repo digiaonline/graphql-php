@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use Digia\GraphQL\Type\Definition\TypeEnum;
+use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use function Digia\GraphQL\Util\arraySome;
 
 const MAX_INT = 2147483647;
@@ -35,7 +35,7 @@ function GraphQLBoolean(): ScalarType
 
     if (!$instance) {
         $instance = GraphQLScalarType([
-            'name'         => TypeEnum::BOOLEAN,
+            'name'         => TypeNameEnum::BOOLEAN,
             'description'  => 'The `Boolean` scalar type represents `true` or `false`.',
             'serialize'    => function ($value) {
                 return coerceBoolean($value);
@@ -79,7 +79,7 @@ function GraphQLFloat(): ScalarType
 
     if (!$instance) {
         $instance = GraphQLScalarType([
-            'name'         => TypeEnum::FLOAT,
+            'name'         => TypeNameEnum::FLOAT,
             'description'  =>
                 'The `Float` scalar type represents signed double-precision fractional ' .
                 'values as specified by ' .
@@ -137,7 +137,7 @@ function GraphQLInt(): ScalarType
 
     if (!$instance) {
         $instance = GraphQLScalarType([
-            'name' => TypeEnum::INT,
+            'name' => TypeNameEnum::INT,
             'description' =>
                 'The `Int` scalar type represents non-fractional signed whole numeric ' .
                 'values. Int can represent values between -(2^31) and 2^31 - 1.',
@@ -191,7 +191,7 @@ function GraphQLID(): ScalarType
 
     if (!$instance) {
         $instance = GraphQLScalarType([
-            'name' => TypeEnum::ID,
+            'name' => TypeNameEnum::ID,
             'description' =>
                 'The `ID` scalar type represents a unique identifier, often used to ' .
                 'refetch an object or as key for a cache. The ID type appears in a JSON ' .
@@ -222,7 +222,7 @@ function GraphQLString(): ScalarType
 
     if (!$instance) {
         $instance = GraphQLScalarType([
-            'name' => TypeEnum::STRING,
+            'name' => TypeNameEnum::STRING,
             'description' =>
                 'The `String` scalar type represents textual data, represented as UTF-8 ' .
                 'character sequences. The String type is most often used by GraphQL to ' .
