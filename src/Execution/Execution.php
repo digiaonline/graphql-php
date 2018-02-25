@@ -7,11 +7,8 @@ use Digia\GraphQL\Execution\Strategies\MutationStrategy;
 use Digia\GraphQL\Execution\Strategies\QueryStrategy;
 use Digia\GraphQL\Execution\Strategies\SubscriptionStrategy;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema\Schema;
 
 /**
@@ -52,8 +49,7 @@ class Execution
         $variableValues = null,
         $operationName = null,
         callable $fieldResolver = null
-    )
-    {
+    ) {
         try {
             $context = self::buildExecutionContext(
                 $schema,
@@ -96,12 +92,11 @@ class Execution
         $rawVariableValues,
         $operationName = null,
         callable $fieldResolver = null
-    ): ExecutionContext
-    {
+    ): ExecutionContext {
         //TODO: Validate raw variables, operation name etc.
         //TODO: Validate document definition
 
-        $errors = [];
+        $errors    = [];
         $fragments = [];
         $operation = null;
 
@@ -113,12 +108,14 @@ class Execution
                             'Must provide operation name if query contains multiple operations.'
                         );
                     }
-                    if (!$operationName || (!empty($definition->getName()) && $definition->getName()->getValue() === $operationName)) {
+                    if (!$operationName || (!empty($definition->getName()) && $definition->getName()
+                                                                                         ->getValue() === $operationName)) {
                         $operation = $definition;
                     }
                     break;
                 case NodeKindEnum::FRAGMENT_DEFINITION:
-                    $fragments[$definition->getName()->getValue()] = $definition;
+                    $fragments[$definition->getName()
+                                          ->getValue()] = $definition;
                     break;
                 default:
                     throw new GraphQLError(
@@ -153,13 +150,12 @@ class Execution
         ExecutionContext $context,
         OperationDefinitionNode $operation,
         $rootValue
-    ): ExecutionResult
-    {
+    ): ExecutionResult {
         $operationName = $context->getOperation()->getName()->getValue();
 
         if ($operationName === 'subscription') {
             $strategy = new SubscriptionStrategy($context, $operation, $rootValue);
-        } elseif ($operationName === 'mutation'){
+        } elseif ($operationName === 'mutation') {
             $strategy = new MutationStrategy($context, $operation, $rootValue);
         } else {
             $strategy = new QueryStrategy($context, $operation, $rootValue);
@@ -167,6 +163,4 @@ class Execution
 
         return $strategy->execute();
     }
-
-
 }
