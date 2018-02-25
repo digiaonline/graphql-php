@@ -42,6 +42,8 @@ trait FieldsTrait
     /**
      * @param array $fields
      * @return $this
+     *
+     * @throws \Exception
      */
     public function addFields(array $fields)
     {

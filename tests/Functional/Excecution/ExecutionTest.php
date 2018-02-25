@@ -10,6 +10,7 @@ use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NameNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
+use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Source;
@@ -18,6 +19,7 @@ use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
+use function Digia\GraphQL\Type\GraphQLSchema;
 use Digia\GraphQL\Type\Schema\Schema;
 use function Digia\GraphQL\Type\GraphQLString;
 
@@ -139,7 +141,9 @@ class ExecutionTest extends TestCase
                                             'value' => 'name'
                                         ]),
                                         'type' => GraphQLString(),
-                                        'defaultValue' => 'Han Solo'
+                                        'defaultValue' => new StringValueNode([
+                                            'value' => 'Han Solo',
+                                        ]),
                                     ])
                                 ]
                             ])
