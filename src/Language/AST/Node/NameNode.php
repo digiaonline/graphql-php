@@ -23,8 +23,8 @@ class NameNode extends AbstractNode implements NodeInterface
     {
         return [
             'kind'  => $this->kind,
-            'loc'   => $this->getLocationAsArray(),
             'value' => $this->value,
+            'loc'   => $this->getLocationAsArray(),
         ];
     }
 }

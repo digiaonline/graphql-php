@@ -2,7 +2,10 @@
 
 namespace Digia\GraphQL\Language;
 
-class Token
+use Digia\GraphQL\Contract\SerializationInterface;
+use function Digia\GraphQL\Util\jsonEncode;
+
+class Token implements SerializationInterface
 {
 
     /**
@@ -149,16 +152,24 @@ class Token
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function toJSON(): string
+    public function toArray(): array
     {
-        return json_encode([
+        return [
             'kind'   => $this->kind,
             'value'  => $this->value,
             'line'   => $this->line,
             'column' => $this->column,
-        ]);
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function toJSON(): string
+    {
+        return jsonEncode($this->toArray());
     }
 
     /**

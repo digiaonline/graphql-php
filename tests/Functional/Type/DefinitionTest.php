@@ -11,7 +11,7 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use Digia\GraphQL\Type\Definition\TypeEnum;
+use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Schema\Schema;
 
@@ -422,12 +422,12 @@ class DefinitionTest extends TestCase
      */
     public function testStringifySimpleTypes()
     {
-        $this->assertEquals(TypeEnum::INT, (string)GraphQLInt());
+        $this->assertEquals(TypeNameEnum::INT, (string)GraphQLInt());
         $this->assertEquals('Article', (string)$this->blogArticle);
         $this->assertEquals('Interface', (string)GraphQLInterfaceType());
         $this->assertEquals('Union', (string)GraphQLUnionType());
         $this->assertEquals('Enum', (string)GraphQLEnumType());
-        $this->assertEquals(TypeEnum::INT, (string)GraphQLInt());
+        $this->assertEquals(TypeNameEnum::INT, (string)GraphQLInt());
         $this->assertEquals('Int!', (string)GraphQLNonNull(GraphQLInt()));
         $this->assertEquals('[Int]!', (string)GraphQLNonNull(GraphQLList(GraphQLInt())));
         $this->assertEquals('[Int!]', (string)GraphQLList(GraphQLNonNull(GraphQLInt())));

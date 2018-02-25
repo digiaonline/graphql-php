@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\ValuesTrait;
+use Digia\GraphQL\Language\AST\Node\Behavior\EnumValuesTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
 
 class EnumTypeDefinitionNode extends AbstractNode implements DefinitionNodeInterface
@@ -15,10 +15,25 @@ class EnumTypeDefinitionNode extends AbstractNode implements DefinitionNodeInter
     use DescriptionTrait;
     use NameTrait;
     use DirectivesTrait;
-    use ValuesTrait;
+    use EnumValuesTrait;
 
     /**
      * @var string
      */
     protected $kind = NodeKindEnum::ENUM_TYPE_DEFINITION;
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind'        => $this->kind,
+            'description' => $this->getDescriptionAsArray(),
+            'name'        => $this->getNameAsArray(),
+            'directives'  => $this->getDirectivesAsArray(),
+            'values'      => $this->getValuesAsArray(),
+            'loc'         => $this->getLocationAsArray(),
+        ];
+    }
 }

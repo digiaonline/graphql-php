@@ -16,7 +16,7 @@ class EnumBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new EnumValueNode([
-            'value'    => $this->getOne($ast, 'value'),
+            'value'    => $this->get($ast, 'value'),
             'location' => $this->createLocation($ast),
         ]);
     }

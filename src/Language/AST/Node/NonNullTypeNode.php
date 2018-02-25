@@ -23,8 +23,8 @@ class NonNullTypeNode extends AbstractNode implements TypeNodeInterface
     {
         return [
             'kind' => $this->kind,
-            'loc'  => $this->getLocationAsArray(),
             'type' => $this->getTypeAsArray(),
+            'loc'  => $this->getLocationAsArray(),
         ];
     }
 }

@@ -15,7 +15,7 @@ class FloatBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new FloatValueNode([
-            'value'    => $this->getOne($ast, 'value'),
+            'value'    => $this->get($ast, 'value'),
             'location' => $this->createLocation($ast),
         ]);
     }

@@ -15,8 +15,8 @@ class StringBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new StringValueNode([
-            'value'    => $this->getOne($ast, 'value'),
-            'block'    => $this->getOne($ast, 'block', false),
+            'value'    => $this->get($ast, 'value'),
+            'block'    => $this->get($ast, 'block', false),
             'location' => $this->createLocation($ast),
         ]);
     }

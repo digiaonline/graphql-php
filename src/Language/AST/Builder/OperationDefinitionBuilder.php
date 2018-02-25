@@ -15,7 +15,7 @@ class OperationDefinitionBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new OperationDefinitionNode([
-            'operation'           => $this->getOne($ast, 'operation'),
+            'operation'           => $this->get($ast, 'operation'),
             'variableDefinitions' => $this->buildMany($ast, 'variableDefinitions'),
             'directives'          => $this->buildMany($ast, 'directives'),
             'selectionSet'        => $this->buildOne($ast, 'selectionSet'),

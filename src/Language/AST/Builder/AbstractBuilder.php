@@ -45,7 +45,7 @@ abstract class AbstractBuilder implements BuilderInterface
      * @param null   $defaultValue
      * @return mixed|null
      */
-    protected function getOne(array $ast, string $propertyName, $defaultValue = null)
+    protected function get(array $ast, string $propertyName, $defaultValue = null)
     {
         return $ast[$propertyName] ?? $defaultValue;
     }

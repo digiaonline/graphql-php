@@ -23,8 +23,8 @@ class BooleanValueNode extends AbstractNode implements ValueNodeInterface
     {
         return [
             'kind'  => $this->kind,
-            'loc'   => $this->getLocationAsArray(),
             'value' => $this->value,
+            'loc'   => $this->getLocationAsArray(),
         ];
     }
 }

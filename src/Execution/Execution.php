@@ -236,7 +236,7 @@ class Execution
         $args = [];
 
         foreach($inputValues as $value) {
-            $args[] = $value->getDefaultValue();
+            $args[] = $value->getDefaultValue()->getValue();
         }
 
         return $field->resolve(...$args);

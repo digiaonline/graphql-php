@@ -7,12 +7,18 @@ use Digia\GraphQL\Language\AST\Builder\BooleanBuilder;
 use Digia\GraphQL\Language\AST\Builder\DirectiveBuilder;
 use Digia\GraphQL\Language\AST\Builder\DocumentBuilder;
 use Digia\GraphQL\Language\AST\Builder\EnumBuilder;
+use Digia\GraphQL\Language\AST\Builder\EnumTypeDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\EnumValueDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\FieldBuilder;
+use Digia\GraphQL\Language\AST\Builder\FieldDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\FloatBuilder;
 use Digia\GraphQL\Language\AST\Builder\FragmentDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\FragmentSpreadBuilder;
 use Digia\GraphQL\Language\AST\Builder\InlineFragmentBuilder;
+use Digia\GraphQL\Language\AST\Builder\InputObjectTypeDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\InputValueDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\IntBuilder;
+use Digia\GraphQL\Language\AST\Builder\InterfaceTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\ListBuilder;
 use Digia\GraphQL\Language\AST\Builder\ListTypeBuilder;
 use Digia\GraphQL\Language\AST\Builder\NameBuilder;
@@ -21,9 +27,13 @@ use Digia\GraphQL\Language\AST\Builder\NonNullTypeBuilder;
 use Digia\GraphQL\Language\AST\Builder\NullBuilder;
 use Digia\GraphQL\Language\AST\Builder\ObjectBuilder;
 use Digia\GraphQL\Language\AST\Builder\ObjectFieldBuilder;
+use Digia\GraphQL\Language\AST\Builder\ObjectTypeDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\ObjectTypeExtensionBuilder;
 use Digia\GraphQL\Language\AST\Builder\OperationDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\ScalarTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\SelectionSetBuilder;
 use Digia\GraphQL\Language\AST\Builder\StringBuilder;
+use Digia\GraphQL\Language\AST\Builder\UnionTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableDefinitionBuilder;
 use Digia\GraphQL\Language\ASTParser;
@@ -48,6 +58,7 @@ use Digia\GraphQL\Test\TestCase;
 
 abstract class AbstractParserTest extends TestCase
 {
+
     /**
      * @var ParserInterface
      */
@@ -56,6 +67,7 @@ abstract class AbstractParserTest extends TestCase
     public function setUp()
     {
         $builders = [
+            // Standard
             new ArgumentBuilder(),
             new BooleanBuilder(),
             new DirectiveBuilder(),
@@ -80,6 +92,17 @@ abstract class AbstractParserTest extends TestCase
             new StringBuilder(),
             new VariableBuilder(),
             new VariableDefinitionBuilder(),
+            // Schema Definition Language (SDL)
+            new FieldDefinitionBuilder(),
+            new ObjectTypeDefinitionBuilder(),
+            new ObjectTypeExtensionBuilder(),
+            new EnumTypeDefinitionBuilder(),
+            new EnumValueDefinitionBuilder(),
+            new InterfaceTypeDefinitionBuilder(),
+            new InputValueDefinitionBuilder(),
+            new UnionTypeDefinitionBuilder(),
+            new ScalarTypeDefinitionBuilder(),
+            new InputObjectTypeDefinitionBuilder(),
         ];
 
         $readers = [
