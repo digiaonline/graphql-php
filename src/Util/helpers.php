@@ -2,15 +2,17 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Error\GraphQLError;
+
 /**
  * @param bool   $condition
  * @param string $message
- * @throws \Exception
+ * @throws GraphQLError
  */
 function invariant(bool $condition, string $message)
 {
     if (!$condition) {
-        throw new \Exception($message);
+        throw new GraphQLError($message);
     }
 }
 
