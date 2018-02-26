@@ -19,6 +19,7 @@
         "files": [
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
+            "./src/Language/parse.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
             "./src/Type/scalars.php",
@@ -32,6 +33,7 @@
         "files": [
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
+            "./src/Language/parse.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
             "./src/Type/scalars.php",
