@@ -5,10 +5,12 @@ namespace Digia\GraphQL\Execution\Strategies;
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Execution\ExecutionContext;
 use Digia\GraphQL\Execution\ExecutionResult;
+use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\Contract\ValueNodeInterface;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
+use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\ObjectType;
 
@@ -73,7 +75,6 @@ abstract class AbstractStrategy
                     break;
             }
         }
-
         return $fields;
     }
 
@@ -138,9 +139,12 @@ abstract class AbstractStrategy
         $args = [];
 
         foreach ($inputValues as $value) {
-            $args[] = $value->getDefaultValue()->getValue();
+            if ($value instanceof ArgumentNode) {
+                $args[] = $value->getValue()->getValue();
+            } elseif ($value instanceof StringValueNode) {
+                $args[] = $value->getDefaultValue()->getValue();
+            }
         }
-
         return $field->resolve(...$args);
     }
 }

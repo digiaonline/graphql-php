@@ -23,7 +23,7 @@ class MutationStrategy extends AbstractStrategy
         try {
             $data = $this->executeFields($mutation, $this->rootValue, $path, $fields);
         } catch (\Exception $ex) {
-            return new ExecutionResult([], [$ex]);
+            return new ExecutionResult([], [$ex->getMessage()]);
         }
 
         return new ExecutionResult($data, []);

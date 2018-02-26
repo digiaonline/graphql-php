@@ -5,9 +5,11 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Test\Functional\Language\AbstractParserTest;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Definition\ScalarType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
@@ -22,12 +24,21 @@ class MutationTest extends AbstractParserTest
         $schema = GraphQLSchema([
             'mutation' =>
                 new ObjectType([
-                    'name'   => 'greeting',
+                    'name'   => 'M',
                     'fields' => [
-                        ' message' => [
-                            'type'    => GraphQLString(),
+                        'greeting' => [
+                            'type'    => new ObjectType([
+                                'name' => 'GreetingType',
+                                'fields' => [
+                                    'message' => [
+                                        'type' => GraphQLString(),
+                                    ]
+                                ],
+                            ]),
                             'resolve' => function ($name) {
-                                return sprintf("Hello %s. Record was written to database", $name);
+                                return [
+                                    'message' => sprintf('Hello %s.', $name)
+                                ];
                             }
                         ]
                     ]
@@ -61,7 +72,9 @@ class MutationTest extends AbstractParserTest
         );
 
         $expected = new ExecutionResult([
-            'message' => 'Hello Han Solo. Record was written to database'
+            'greeting' => [
+                'message' => 'Hello Han Solo.'
+            ]
         ], []);
 
         $this->assertEquals($expected, $executionResult);
