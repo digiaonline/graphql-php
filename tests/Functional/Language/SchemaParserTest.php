@@ -5,8 +5,9 @@ namespace Digia\GraphQL\Test\Functional\Language;
 use Digia\GraphQL\Error\SyntaxError;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\Source;
+use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
+use function Digia\GraphQL\Language\parse;
 use function Digia\GraphQL\Util\jsonEncode;
 
 function typeNode($name, $loc)
@@ -69,7 +70,7 @@ function inputValueNode($name, $type, $defaultValue, $loc)
     ];
 }
 
-class SchemaParserTest extends AbstractParserTest
+class SchemaParserTest extends TestCase
 {
 
     /**
@@ -79,10 +80,10 @@ class SchemaParserTest extends AbstractParserTest
     public function testSimpleType()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 type Hello {
   world: String
-}'));
+}');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -114,11 +115,11 @@ type Hello {
     public function testParsesWithDescriptionString()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 "Description"
 type Hello {
   world: String
-}'));
+}');
 
         $this->assertArraySubset([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -144,14 +145,14 @@ type Hello {
     public function testParsesWithDescriptionMultiLineString()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 """
 Description
 """
 # Even with comments between them
 type Hello {
   world: String
-}'));
+}');
 
         $this->assertArraySubset([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -177,10 +178,10 @@ type Hello {
     public function testSimpleExtension()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 extend type Hello {
   world: String
-}'));
+}');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -211,7 +212,7 @@ extend type Hello {
     public function testExtensionWithoutFields()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('extend type Hello implements Greeting'));
+        $node = parse('extend type Hello implements Greeting');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -238,11 +239,11 @@ extend type Hello {
     public function testExtensionWithoutFieldsFollowedByExtension()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
       extend type Hello implements Greeting
 
       extend type Hello implements SecondGreeting
-    '));
+    ');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -280,7 +281,7 @@ extend type Hello {
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Unexpected <EOF>');
-        $this->parser->parse(new Source('extend type Hello'));
+        parse('extend type Hello');
     }
 
     /**
@@ -291,18 +292,18 @@ extend type Hello {
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Unexpected Name "extend"');
-        $this->parser->parse(new Source('
+        parse('
 "Description"
 extend type Hello {
   world: String
-}'));
+}');
 
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Unexpected String "Description"');
-        $this->parser->parse(new Source('
+        parse('
 extend "Description" type Hello {
   world: String
-}'));
+}');
     }
 
     /**
@@ -312,10 +313,10 @@ extend "Description" type Hello {
     public function testSimpleNonNullType()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 type Hello {
   world: String!
-}'));
+}');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -351,7 +352,7 @@ type Hello {
     public function testSimpleTypeInheritingInterface()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('type Hello implements World { field: String }'));
+        $node = parse('type Hello implements World { field: String }');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -385,7 +386,7 @@ type Hello {
     public function testSimpleTypeInheritingMultipleInterface()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('type Hello implements Wo & rld { field: String }'));
+        $node = parse('type Hello implements Wo & rld { field: String }');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -420,7 +421,7 @@ type Hello {
     public function testSimpleTypeInheritingMultipleInterfaceWithLeadingAmpersand()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('type Hello implements & Wo & rld { field: String }'));
+        $node = parse('type Hello implements & Wo & rld { field: String }');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -455,7 +456,7 @@ type Hello {
     public function testSingleValueEnum()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('enum Hello { WORLD }'));
+        $node = parse('enum Hello { WORLD }');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -482,7 +483,7 @@ type Hello {
     public function testDoubleValueEnum()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('enum Hello { WO, RLD }'));
+        $node = parse('enum Hello { WO, RLD }');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -510,10 +511,10 @@ type Hello {
     public function testSimpleInterface()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 interface Hello {
   world: String
-}'));
+}');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -544,10 +545,10 @@ interface Hello {
     public function parseSimpleFieldWithArgument()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 type Hello {
   world(flag: Boolean): String
-}'));
+}');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -587,10 +588,10 @@ type Hello {
     public function testSimpleFieldWithArgumentWithDefaultValue()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 type Hello {
   world(flag: Boolean = true): String
-}'));
+}');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -634,10 +635,10 @@ type Hello {
     public function testSimpleFieldWithListArgument()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 type Hello {
   world(things: [String]): String
-}'));
+}');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -681,10 +682,10 @@ type Hello {
     public function parseSimpleFieldWithTwoArguments()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 type Hello {
   world(argOne: Boolean, argTwo: Int): String
-}'));
+}');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -730,7 +731,7 @@ type Hello {
     public function testSimpleUnion()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('union Hello = World'));
+        $node = parse('union Hello = World');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -757,7 +758,7 @@ type Hello {
     public function testSimpleUnionWithTypes()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('union Hello = Wo | Rld'));
+        $node = parse('union Hello = Wo | Rld');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -785,7 +786,7 @@ type Hello {
     public function testSimpleUnionWithTypesAndLeadingPipe()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('union Hello = | Wo | Rld'));
+        $node = parse('union Hello = | Wo | Rld');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -814,7 +815,7 @@ type Hello {
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
-        $this->parser->parse(new Source('union Hello = |'));
+        parse('union Hello = |');
     }
 
     /**
@@ -825,7 +826,7 @@ type Hello {
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Expected Name, found |');
-        $this->parser->parse(new Source('union Hello = || Wo | Rld'));
+        parse('union Hello = || Wo | Rld');
     }
 
     /**
@@ -836,7 +837,7 @@ type Hello {
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
-        $this->parser->parse(new Source('union Hello = | Wo | Rld |'));
+        parse('union Hello = | Wo | Rld |');
     }
 
     /**
@@ -846,7 +847,7 @@ type Hello {
     public function testSimpleScalar()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('scalar Hello'));
+        $node = parse('scalar Hello');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -870,10 +871,10 @@ type Hello {
     public function testSimpleInputObject()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse('
 input Hello {
   world: String
-}'));
+}');
 
         $this->assertEquals(jsonEncode([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -906,10 +907,10 @@ input Hello {
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Expected :, found (');
-        $this->parser->parse(new Source('
+        parse('
 input Hello {
   world(foo: Int): String
-}'));
+}');
     }
 
     /**
@@ -920,7 +921,7 @@ input Hello {
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Unexpected Name "INCORRECT_LOCATION"');
-        $this->parser->parse(new Source('
-directive @foo on FIELD | INCORRECT_LOCATION'));
+        parse('
+directive @foo on FIELD | INCORRECT_LOCATION');
     }
 }

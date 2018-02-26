@@ -1,7 +1,8 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\Language;
+namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Builder\ArgumentBuilder;
 use Digia\GraphQL\Language\AST\Builder\BooleanBuilder;
 use Digia\GraphQL\Language\AST\Builder\DirectiveBuilder;
@@ -36,7 +37,7 @@ use Digia\GraphQL\Language\AST\Builder\StringBuilder;
 use Digia\GraphQL\Language\AST\Builder\UnionTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableDefinitionBuilder;
-use Digia\GraphQL\Language\ASTParser;
+use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\Contract\ParserInterface;
 use Digia\GraphQL\Language\Reader\AmpReader;
 use Digia\GraphQL\Language\Reader\AtReader;
@@ -54,18 +55,15 @@ use Digia\GraphQL\Language\Reader\ParenthesisReader;
 use Digia\GraphQL\Language\Reader\PipeReader;
 use Digia\GraphQL\Language\Reader\SpreadReader;
 use Digia\GraphQL\Language\Reader\StringReader;
-use Digia\GraphQL\Test\TestCase;
 
-abstract class AbstractParserTest extends TestCase
+/**
+ * @return ParserInterface
+ */
+function parser(): ParserInterface
 {
+    static $instance = null;
 
-    /**
-     * @var ParserInterface
-     */
-    protected $parser;
-
-    public function setUp()
-    {
+    if (null === $instance) {
         $builders = [
             // Standard
             new ArgumentBuilder(),
@@ -124,6 +122,47 @@ abstract class AbstractParserTest extends TestCase
             new StringReader(),
         ];
 
-        $this->parser = new ASTParser($builders, $readers);
+        $instance = new ASTParser($builders, $readers);
     }
+
+    return $instance;
+}
+
+/**
+ * @param string|Source $source
+ * @param array         $options
+ * @return NodeInterface
+ * @throws GraphQLError
+ * @throws \Exception
+ */
+function parse($source, array $options = [])
+{
+    return parser()
+        ->parse($source instanceof Source ? $source : new Source($source), $options);
+}
+
+/**
+ * @param string|Source $source
+ * @param array         $options
+ * @return NodeInterface
+ * @throws GraphQLError
+ * @throws \Exception
+ */
+function parseValue($source, array $options = [])
+{
+    return parser()
+        ->parseValue($source instanceof Source ? $source : new Source($source), $options);
+}
+
+/**
+ * @param string|Source $source
+ * @param array         $options
+ * @return NodeInterface
+ * @throws GraphQLError
+ * @throws \Exception
+ */
+function parseType($source, array $options = [])
+{
+    return parser()
+        ->parseType($source instanceof Source ? $source : new Source($source), $options);
 }
