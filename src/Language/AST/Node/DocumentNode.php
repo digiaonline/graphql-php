@@ -42,9 +42,9 @@ class DocumentNode extends AbstractNode implements NodeInterface
     public function toArray(): array
     {
         return [
-            'kind'        => $this->kind,
+            'kind' => $this->kind,
             'definitions' => $this->getDefinitionsAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

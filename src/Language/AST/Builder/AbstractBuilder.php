@@ -26,9 +26,9 @@ abstract class AbstractBuilder implements BuilderInterface
      * Creates a location object.
      *
      * @param array $ast
-     * @return Location
+     * @return Location|null
      */
-    protected function createLocation(array $ast): Location
+    protected function createLocation(array $ast): ?Location
     {
         return isset($ast['loc']['start'], $ast['loc']['end'])
             ? new Location($ast['loc']['start'], $ast['loc']['end'])

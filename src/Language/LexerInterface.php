@@ -30,6 +30,13 @@ interface LexerInterface
     public function getBody(): string;
 
     /**
+     * @param string $name
+     * @param mixed|null $default
+     * @return mixed
+     */
+    public function getOption(string $name, $default = null);
+
+    /**
      * @return string
      */
     public function getTokenKind(): string;
