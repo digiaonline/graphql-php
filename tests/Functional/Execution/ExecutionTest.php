@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\Excecution;
+namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
@@ -17,10 +17,9 @@ use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Schema\Schema;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
-use function Digia\GraphQL\Type\GraphQLSchema;
-use Digia\GraphQL\Type\Schema\Schema;
 use function Digia\GraphQL\Type\GraphQLString;
 
 class ExecutionTest extends TestCase
@@ -315,81 +314,6 @@ class ExecutionTest extends TestCase
             'appearsIn'  => [4,5,6],
             'homePlanet' => 'Tatooine'
         ], []);
-
-        $this->assertEquals($expected, $executionResult);
-    }
-
-    public function testSimpleMutation()
-    {
-        $schema = new Schema([
-            'mutation' => new ObjectType([
-                'name' => 'M',
-                'fields' => [
-                    'name' => GraphQLString(),
-                    'resolve' => function($name) {
-                        return sprintf("%s was written to database", $name);
-                    }
-                ]
-            ])
-        ]);
-
-        $documentNode = new DocumentNode([
-            'definitions' => [
-                new OperationDefinitionNode([
-                    'kind' => NodeKindEnum::OPERATION_DEFINITION,
-                    'name' => new NameNode([
-                        'value' => 'mutation'
-                    ]),
-                    'selectionSet' => new SelectionSetNode([
-                        'selections' => [
-                            new FieldNode([
-                                'name' => new NameNode([
-                                    'value' => 'M',
-                                    'location' => new Location(
-                                        15,
-                                        20,
-                                        new Source('mutation M { name }', 'GraphQL', new SourceLocation())
-                                    )
-                                ]),
-                                'arguments' => [
-                                    new InputValueDefinitionNode([
-                                        'name' => new NameNode([
-                                            'value' => 'name'
-                                        ]),
-                                        'type' => GraphQLString(),
-                                        'defaultValue' => new StringValueNode([
-                                            'value' => 'Han Solo',
-                                        ]),
-                                    ])
-                                ]
-                            ])
-                        ]
-                    ]),
-                    'operation' => 'query',
-                    'directives' => [],
-                    'variableDefinitions' => []
-                ])
-            ],
-        ]);
-
-        $rootValue      = [];
-        $contextValue   = '';
-        $variableValues = [];
-        $operationName  = 'M';
-        $fieldResolver  = null;
-
-        /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
-            $schema,
-            $documentNode,
-            $rootValue,
-            $contextValue,
-            $variableValues,
-            $operationName,
-            $fieldResolver
-        );
-
-        $expected = new ExecutionResult([], []);
 
         $this->assertEquals($expected, $executionResult);
     }

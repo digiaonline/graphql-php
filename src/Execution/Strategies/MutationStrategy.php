@@ -16,6 +16,16 @@ class MutationStrategy extends AbstractStrategy
      */
     public function execute(): ExecutionResult
     {
-        return new ExecutionResult([], []);
+        $mutation  = $this->context->getSchema()->getMutation();
+        $fields = $this->collectFields($mutation, $this->operation->getSelectionSet(), [], []);
+        $path   = [];
+
+        try {
+            $data = $this->executeFields($mutation, $this->rootValue, $path, $fields);
+        } catch (\Exception $ex) {
+            return new ExecutionResult([], [$ex]);
+        }
+
+        return new ExecutionResult($data, []);
     }
 }

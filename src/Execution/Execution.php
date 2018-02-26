@@ -108,14 +108,13 @@ class Execution
                             'Must provide operation name if query contains multiple operations.'
                         );
                     }
-                    if (!$operationName || (!empty($definition->getName()) && $definition->getName()
-                                                                                         ->getValue() === $operationName)) {
+
+                    if (!$operationName || (!empty($definition->getName()) && $definition->getName()->getValue() === $operationName)) {
                         $operation = $definition;
                     }
                     break;
                 case NodeKindEnum::FRAGMENT_DEFINITION:
-                    $fragments[$definition->getName()
-                                          ->getValue()] = $definition;
+                    $fragments[$definition->getName()->getValue()] = $definition;
                     break;
                 default:
                     throw new GraphQLError(
@@ -151,7 +150,7 @@ class Execution
         OperationDefinitionNode $operation,
         $rootValue
     ): ExecutionResult {
-        $operationName = $context->getOperation()->getName()->getValue();
+        $operationName = $context->getOperation()->getOperation();
 
         if ($operationName === 'subscription') {
             $strategy = new SubscriptionStrategy($context, $operation, $rootValue);
