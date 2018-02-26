@@ -816,4 +816,111 @@ type Hello {
         $this->expectExceptionMessage('Expected Name, found <EOF>');
         $this->parser->parse(new Source('union Hello = |'));
     }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testUnionFailsWithLeadingDoublePipe()
+    {
+        $this->expectException(SyntaxError::class);
+        $this->expectExceptionMessage('Expected Name, found |');
+        $this->parser->parse(new Source('union Hello = || Wo | Rld'));
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testUnionFailsWithTrailingPipe()
+    {
+        $this->expectException(SyntaxError::class);
+        $this->expectExceptionMessage('Expected Name, found <EOF>');
+        $this->parser->parse(new Source('union Hello = | Wo | Rld |'));
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testSimpleScalar()
+    {
+        /** @var DocumentNode $node */
+        $node = $this->parser->parse(new Source('scalar Hello'));
+
+        $this->assertEquals(jsonEncode([
+            'kind'        => NodeKindEnum::DOCUMENT,
+            'definitions' => [
+                [
+                    'kind'        => NodeKindEnum::SCALAR_TYPE_DEFINITION,
+                    'description' => null,
+                    'name'        => nameNode('Hello', ['start' => 7, 'end' => 12]),
+                    'directives'  => [],
+                    'loc'         => ['start' => 0, 'end' => 12],
+                ],
+            ],
+            'loc'         => ['start' => 0, 'end' => 12],
+        ]), $node->toJSON());
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testSimpleInputObject()
+    {
+        /** @var DocumentNode $node */
+        $node = $this->parser->parse(new Source('
+input Hello {
+  world: String
+}'));
+
+        $this->assertEquals(jsonEncode([
+            'kind'        => NodeKindEnum::DOCUMENT,
+            'definitions' => [
+                [
+                    'kind'        => NodeKindEnum::INPUT_OBJECT_TYPE_DEFINITION,
+                    'description' => null,
+                    'name'        => nameNode('Hello', ['start' => 7, 'end' => 12]),
+                    'directives'  => [],
+                    'fields'      => [
+                        inputValueNode(
+                            nameNode('world', ['start' => 17, 'end' => 22]),
+                            typeNode(TypeNameEnum::STRING, ['start' => 24, 'end' => 30]),
+                            null,
+                            ['start' => 17, 'end' => 30]
+                        ),
+                    ],
+                    'loc'         => ['start' => 1, 'end' => 32],
+                ],
+            ],
+            'loc'         => ['start' => 0, 'end' => 32],
+        ]), $node->toJSON());
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testSimpleInputObjectWithArgumentsShouldFail()
+    {
+        $this->expectException(SyntaxError::class);
+        $this->expectExceptionMessage('Expected :, found (');
+        $this->parser->parse(new Source('
+input Hello {
+  world(foo: Int): String
+}'));
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testDirectiveWithIncorrectLocations()
+    {
+        $this->expectException(SyntaxError::class);
+        $this->expectExceptionMessage('Unexpected Name "INCORRECT_LOCATION"');
+        $this->parser->parse(new Source('
+directive @foo on FIELD | INCORRECT_LOCATION'));
+    }
 }

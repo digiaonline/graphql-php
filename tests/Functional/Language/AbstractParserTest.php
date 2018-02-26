@@ -15,6 +15,7 @@ use Digia\GraphQL\Language\AST\Builder\FloatBuilder;
 use Digia\GraphQL\Language\AST\Builder\FragmentDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\FragmentSpreadBuilder;
 use Digia\GraphQL\Language\AST\Builder\InlineFragmentBuilder;
+use Digia\GraphQL\Language\AST\Builder\InputObjectTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\InputValueDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\IntBuilder;
 use Digia\GraphQL\Language\AST\Builder\InterfaceTypeDefinitionBuilder;
@@ -29,6 +30,7 @@ use Digia\GraphQL\Language\AST\Builder\ObjectFieldBuilder;
 use Digia\GraphQL\Language\AST\Builder\ObjectTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\ObjectTypeExtensionBuilder;
 use Digia\GraphQL\Language\AST\Builder\OperationDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\ScalarTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\SelectionSetBuilder;
 use Digia\GraphQL\Language\AST\Builder\StringBuilder;
 use Digia\GraphQL\Language\AST\Builder\UnionTypeDefinitionBuilder;
@@ -90,7 +92,7 @@ abstract class AbstractParserTest extends TestCase
             new StringBuilder(),
             new VariableBuilder(),
             new VariableDefinitionBuilder(),
-            // Experimental
+            // Schema Definition Language (SDL)
             new FieldDefinitionBuilder(),
             new ObjectTypeDefinitionBuilder(),
             new ObjectTypeExtensionBuilder(),
@@ -99,6 +101,8 @@ abstract class AbstractParserTest extends TestCase
             new InterfaceTypeDefinitionBuilder(),
             new InputValueDefinitionBuilder(),
             new UnionTypeDefinitionBuilder(),
+            new ScalarTypeDefinitionBuilder(),
+            new InputObjectTypeDefinitionBuilder(),
         ];
 
         $readers = [

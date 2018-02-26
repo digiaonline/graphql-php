@@ -19,4 +19,18 @@ class ScalarTypeDefinitionNode extends AbstractNode implements TypeDefinitionNod
      * @var string
      */
     protected $kind = NodeKindEnum::SCALAR_TYPE_DEFINITION;
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind'        => $this->kind,
+            'description' => $this->getDescriptionAsArray(),
+            'name'        => $this->getNameAsArray(),
+            'directives'  => $this->getDirectivesAsArray(),
+            'loc'         => $this->getLocationAsArray(),
+        ];
+    }
 }

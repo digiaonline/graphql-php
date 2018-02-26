@@ -17,6 +17,7 @@
     },
     "autoload": {
         "files": [
+            "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
@@ -29,6 +30,7 @@
     },
     "autoload-dev": {
         "files": [
+            "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",

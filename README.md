@@ -8,7 +8,7 @@ A PHP7 implementation of the [GraphQL specification](http://facebook.github.io/g
 
 ## Requirements
 
-- PHP version >= 7.1
+- PHP version >= 7.1 (this might change to >= 7.0 before the first release)
 
 ## Motivation
 
@@ -29,6 +29,17 @@ Takes care of executing operation against a GraphQL schema.
 
 **Package lead: [@hungneox](https://github.com/hungneox/)**
 
+#### Resolving data
+
+Resolving data is a very important part of any GraphQL implementation, so we spent quite a lot of time figuring out how 
+we would solve this issue in a way that is easy to build on. The current plan is to use the 
+[Front Controller pattern](https://en.wikipedia.org/wiki/Front_controller) and a front resolver which maps each 
+operation to a corresponding resolver class, very much like a modern router would.
+
+The way this work in practice is that we need to resolve the result for an operation we call the resolver method on
+the front resolver after which it finds the correct resolver, calls it resolver and returns the result. This approach
+also allows us to support middleware for resolver, which is very handy for e.g. transformation or authorization checks.   
+
 ### Language
 
 Defines the GraphQL language and the associated AST.
@@ -37,8 +48,8 @@ Defines the GraphQL language and the associated AST.
 
 #### Parsing
 
-The plan is to encourage developers to use the official GraphQL parser written C++ through a PHP extension because
-its performance is outstanding. However, we will also provide a shim for the parser, which allows developers to use 
+We want to encourage developers to use the official GraphQL parser written C++ through a PHP extension because its 
+performance is outstanding. However, we will also provide a shim for the parser, which will allow developers to use 
 this library without installing a custom PHP extension in their environment.
 
 The official GraphQL parser takes a GQL string as its input and returns the corresponding Abstract Syntax Tree (AST), 
@@ -61,10 +72,11 @@ Describes the GraphQL type system and schema definition.
 
 #### Schema definition
 
-Most of the existing GraphQL implementations require the developer to create the schema programmatically. However,
-GraphQL has an experimental featured which lets you define your schema using its schema definition language. We think
-that this is the natural way to define the schema, so we built type system around this idea. This approach will also 
-allow developers to define the schema in formats native to different ecosystems, such as PHP array, YAML and even XML.
+Most of the existing GraphQL implementations encourages the developer to create the schema programmatically. However,
+GraphQL has an experimental featured which lets you define your schema using its Schema Definition Language (SDL). We 
+think that this is the natural way to define the schema, so we built our type system around this idea. This approach 
+will also allow developers to define the schema in formats native to different ecosystems, such as PHP array, YAML and 
+even XML.
 
 ## Usage
 
