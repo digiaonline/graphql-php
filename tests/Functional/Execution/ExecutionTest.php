@@ -15,14 +15,14 @@ use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
-use Digia\GraphQL\Test\TestCase;
+use Digia\GraphQL\Test\Functional\Language\AbstractParserTest;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema\Schema;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLString;
 
-class ExecutionTest extends TestCase
+class ExecutionTest extends AbstractParserTest
 {
 
     /**
@@ -313,6 +313,95 @@ class ExecutionTest extends TestCase
             'friends'    => ['1002', '1003', '2000', '2001'],
             'appearsIn'  => [4,5,6],
             'homePlanet' => 'Tatooine'
+        ], []);
+
+        $this->assertEquals($expected, $executionResult);
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testHandleFragments()
+    {
+        $documentNode = $this->parser->parse(new Source('
+      { a, ...FragOne, ...FragTwo }
+
+      fragment FragOne on Type {
+        b
+        deep { b, deeper: deep { b } }
+      }
+
+      fragment FragTwo on Type {
+        c
+        deep { c, deeper: deep { c } }
+      }'));
+
+        $Type = new ObjectType([
+            'name'   => 'Type',
+            'fields' => function() use (&$Type) {
+                return [
+                    'a'    => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Apple';
+                        }
+                    ],
+                    'b'    => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Banana';
+                        }
+                    ],
+                    'c'    => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Cherry';
+                        }
+                    ],
+                    'deep' => [
+                        'type'    => $Type,
+                        'resolve' => function () {
+                            return [];
+                        }
+                    ]
+                ];
+            }
+        ]);
+
+        $schema = new Schema([
+            'query' => $Type
+        ]);
+
+        $rootValue      = [];
+        $contextValue   = '';
+        $variableValues = [];
+        $operationName  = '';
+        $fieldResolver  = null;
+
+        /** @var ExecutionResult $executionResult */
+        $executionResult = Execution::execute(
+            $schema,
+            $documentNode,
+            $rootValue,
+            $contextValue,
+            $variableValues,
+            $operationName,
+            $fieldResolver
+        );
+
+        $expected = new ExecutionResult([
+            'a'    => 'Apple',
+            'b'    => 'Banana',
+            'c'    => 'Cherry',
+            'deep' => [
+//                'b'      => 'Banana',
+//                'c'      => 'Cherry',
+//                'deeper' => [
+//                    'b' => 'Banana',
+//                    'c' => 'Cherry'
+//                ]
+            ]
         ], []);
 
         $this->assertEquals($expected, $executionResult);

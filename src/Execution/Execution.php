@@ -57,7 +57,7 @@ class Execution
                 $fieldResolver
             );
         } catch (GraphQLError $error) {
-            return new ExecutionResult(null, [$error]);
+            return new ExecutionResult(['data' => null], [$error]);
         }
 
         $data = $context->getExecutionStrategy()->execute();
@@ -107,12 +107,12 @@ class Execution
                     }
                     break;
                 case NodeKindEnum::FRAGMENT_DEFINITION:
+                case NodeKindEnum::FRAGMENT_SPREAD:
                     $fragments[$definition->getName()->getValue()] = $definition;
                     break;
                 default:
                     throw new GraphQLError(
-                        "GraphQL cannot execute a request containing a {$definition->getKind()}.",
-                        [$definition]
+                        "GraphQL cannot execute a request containing a {$definition->getKind()}."
                     );
             }
         }

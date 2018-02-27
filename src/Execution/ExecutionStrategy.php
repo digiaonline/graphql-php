@@ -59,7 +59,7 @@ abstract class ExecutionStrategy
      * @param SelectionSetNode $selectionSet
      * @param $fields
      * @param $visitedFragmentNames
-     * @return mixed
+     * @return \ArrayObject
      */
     protected function collectFields(
         ObjectType $runtimeType,
@@ -71,7 +71,11 @@ abstract class ExecutionStrategy
             /** @var FieldNode $selection */
             switch ($selection->getKind()) {
                 case NodeKindEnum::FIELD:
-                    $fields[$selection->getNameValue()][] = $selection;
+                    $name = $selection->getNameValue();
+                    if (!isset($fields[$name])) {
+                        $fields[$name] = new \ArrayObject();
+                    }
+                    $fields[$name][] = $selection;
                     break;
                 case NodeKindEnum::INLINE_FRAGMENT:
                     //TODO check if should include this node
@@ -84,6 +88,9 @@ abstract class ExecutionStrategy
                     break;
                 case NodeKindEnum::FRAGMENT_SPREAD:
                     //TODO check if should include this node
+                    if (!empty($visitedFragmentNames[$selection->getNameValue()])) {
+                        continue;
+                    }
                     $visitedFragmentNames[$selection->getNameValue()] = true;
                     /** @var FragmentDefinitionNode $fragment */
                     $fragment = $this->context->getFragments()[$selection->getNameValue()];
@@ -96,6 +103,7 @@ abstract class ExecutionStrategy
                     break;
             }
         }
+
         return $fields;
     }
 
@@ -118,10 +126,10 @@ abstract class ExecutionStrategy
         $fields): array
     {
         $finalResults = [];
+
         foreach ($fields as $fieldName => $fieldNodes) {
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
-
             if (!$this->isDefinedField($parentType, $fieldName)) {
                 continue;
             }
@@ -181,6 +189,22 @@ abstract class ExecutionStrategy
                 $args[] = $value->getDefaultValue()->getValue();
             }
         }
-        return $field->resolve(...$args);
+
+        $result = $field->resolve(...$args);
+
+        //TODO Resolve sub fields
+
+        return $result;
+    }
+
+    private function completeValue(
+        $returnType,
+        $fieldNodes,
+        $info,
+        $path,
+        &$result)
+    {
+
+
     }
 }
