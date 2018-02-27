@@ -19,6 +19,8 @@
         "files": [
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
+            "./src/Language/parse.php",
+            "./src/Language/print.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
             "./src/Type/scalars.php",
@@ -29,14 +31,6 @@
         }
     },
     "autoload-dev": {
-        "files": [
-            "./src/Language/blockStringValue.php",
-            "./src/Language/helpers.php",
-            "./src/Type/definition.php",
-            "./src/Type/directives.php",
-            "./src/Type/scalars.php",
-            "./src/Util/helpers.php"
-        ],
         "psr-4": {
             "Digia\\GraphQL\\Test\\": "./tests"
         }

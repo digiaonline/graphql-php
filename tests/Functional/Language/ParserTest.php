@@ -8,9 +8,12 @@ use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NullValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Source;
-use Digia\GraphQL\Test\Functional\Language\AbstractParserTest;
+use Digia\GraphQL\Test\TestCase;
+use function Digia\GraphQL\Language\parse;
+use function Digia\GraphQL\Language\parseType;
+use function Digia\GraphQL\Language\parseValue;
 
-class ParserTest extends AbstractParserTest
+class ParserTest extends TestCase
 {
 
     /**
@@ -21,11 +24,11 @@ class ParserTest extends AbstractParserTest
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
-        $this->parser->parse(new Source('{'));
+        parse('{');
 
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Expected {, found <EOF>');
-        $this->parser->parse(new Source('query', 'MyQuery.graphql'));
+        parse('query', 'MyQuery.graphql');
     }
 
     /**
@@ -34,7 +37,7 @@ class ParserTest extends AbstractParserTest
      */
     public function testParsesVariableInlineValues()
     {
-        $this->parser->parse(new Source('{ field(complex: { a: { b: [ $var ] } }) }'));
+        parse('{ field(complex: { a: { b: [ $var ] } }) }');
         $this->addToAssertionCount(1);
     }
 
@@ -46,7 +49,7 @@ class ParserTest extends AbstractParserTest
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Unexpected $');
-        $this->parser->parse(new Source('query Foo($x: Complex = { a: { b: [ $var ] } }) { field }'));
+        parse('query Foo($x: Complex = { a: { b: [ $var ] } }) { field }');
         $this->addToAssertionCount(1);
     }
 
@@ -58,7 +61,7 @@ class ParserTest extends AbstractParserTest
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Unexpected Name "on"');
-        $this->parser->parse(new Source('fragment on on on { on }'));
+        parse('fragment on on on { on }');
         $this->addToAssertionCount(1);
     }
 
@@ -70,7 +73,7 @@ class ParserTest extends AbstractParserTest
     {
         $this->expectException(SyntaxError::class);
         $this->expectExceptionMessage('Expected Name, found }');
-        $this->parser->parse(new Source('{ ...on }'));
+        parse('{ ...on }');
         $this->addToAssertionCount(1);
     }
 
@@ -81,7 +84,7 @@ class ParserTest extends AbstractParserTest
     public function testParsesMultiByteCharacters()
     {
         /** @var DocumentNode $node */
-        $node = $this->parser->parse(new Source('
+        $node = parse(new Source('
           # This comment has a \u0A0A multi-byte character.
           { field(arg: "Has a \u0A0A multi-byte character.") }
         '));
@@ -119,7 +122,7 @@ class ParserTest extends AbstractParserTest
     {
         $kitchenSink = mb_convert_encoding(file_get_contents(__DIR__ . '/kitchen-sink.graphql'), 'UTF-8');
 
-        $this->parser->parse(new Source($kitchenSink));
+        parse($kitchenSink);
         $this->addToAssertionCount(1);
     }
 
@@ -147,7 +150,7 @@ class ParserTest extends AbstractParserTest
                 $fragmentName = 'a';
             }
 
-            $this->parser->parse(new Source("
+            parse(new Source("
 query $keyword {
   ... $fragmentName
   ... on $keyword { field }
@@ -167,7 +170,7 @@ fragment $fragmentName on Type {
      */
     public function testParsesAnonMutationOperations()
     {
-        $this->parser->parse(new Source('
+        parse(new Source('
         mutation {
             mutationField
         }
@@ -181,7 +184,7 @@ fragment $fragmentName on Type {
      */
     public function testParsesAnonSubscriptionOperations()
     {
-        $this->parser->parse(new Source('
+        parse(new Source('
         subscription {
             subscriptionField
         }
@@ -195,7 +198,7 @@ fragment $fragmentName on Type {
      */
     public function testParsesNamedMutationOperations()
     {
-        $this->parser->parse(new Source('
+        parse(new Source('
         mutation Foo {
             mutationField
         }
@@ -209,7 +212,7 @@ fragment $fragmentName on Type {
      */
     public function testParsesNamedSubscriptionOperations()
     {
-        $this->parser->parse(new Source('
+        parse(new Source('
         subscription Foo {
             subscriptionField
         }
@@ -224,7 +227,7 @@ fragment $fragmentName on Type {
     public function testCreatesAST()
     {
         /** @var DocumentNode $actual */
-        $actual = $this->parser->parse(new Source('{
+        $actual = parse(new Source('{
   node(id: 4) {
     id,
     name
@@ -320,7 +323,7 @@ fragment $fragmentName on Type {
     public function testCreatesAstFromNamelessQueryWithoutVariables()
     {
         /** @var DocumentNode $actual */
-        $actual = $this->parser->parse(new Source('query {
+        $actual = parse(new Source('query {
   node {
     id
   }
@@ -397,7 +400,7 @@ fragment $fragmentName on Type {
     public function testParsesNullValue()
     {
         /** @var NullValueNode $node */
-        $node = $this->parser->parseValue(new Source('null'));
+        $node = parseValue('null');
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::NULL,
@@ -412,7 +415,7 @@ fragment $fragmentName on Type {
     public function testParsesListValue()
     {
         /** @var NullValueNode $node */
-        $node = $this->parser->parseValue(new Source('[123 "abc"]'));
+        $node = parseValue('[123 "abc"]');
 
         $this->assertEquals($node->toArray(), [
             'kind'   => NodeKindEnum::LIST,
@@ -440,7 +443,7 @@ fragment $fragmentName on Type {
     public function testParsesBlockStrings()
     {
         /** @var NullValueNode $node */
-        $node = $this->parser->parseValue(new Source('["""long""" "short"]'));
+        $node = parseValue('["""long""" "short"]');
 
         $this->assertEquals($node->toArray(), [
             'kind'   => NodeKindEnum::LIST,
@@ -470,7 +473,7 @@ fragment $fragmentName on Type {
     public function testParsesWellKnownTypes()
     {
         /** @var NamedTypeNode $node */
-        $node = $this->parser->parseType(new Source('String'));
+        $node = parseType('String');
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::NAMED_TYPE,
@@ -490,7 +493,7 @@ fragment $fragmentName on Type {
     public function testParsesCustomTypes()
     {
         /** @var NamedTypeNode $node */
-        $node = $this->parser->parseType(new Source('MyType'));
+        $node = parseType('MyType');
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::NAMED_TYPE,
@@ -510,7 +513,7 @@ fragment $fragmentName on Type {
     public function testParsesListTypes()
     {
         /** @var NamedTypeNode $node */
-        $node = $this->parser->parseType(new Source('[MyType]'));
+        $node = parseType('[MyType]');
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::LIST_TYPE,
@@ -534,7 +537,7 @@ fragment $fragmentName on Type {
     public function testParsesNonNullTypes()
     {
         /** @var NamedTypeNode $node */
-        $node = $this->parser->parseType(new Source('MyType!'));
+        $node = parseType('MyType!');
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::NON_NULL_TYPE,
@@ -558,7 +561,7 @@ fragment $fragmentName on Type {
     public function testParsesNestedTypes()
     {
         /** @var NamedTypeNode $node */
-        $node = $this->parser->parseType(new Source('[MyType!]'));
+        $node = parseType('[MyType!]');
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::LIST_TYPE,

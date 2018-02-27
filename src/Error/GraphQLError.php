@@ -2,6 +2,9 @@
 
 namespace Digia\GraphQL\Error;
 
+use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\Source;
+
 /**
  * A GraphQLError describes an Error found during the parse, validate, or
  * execute phases of performing a GraphQL operation. In addition to a message
@@ -10,4 +13,63 @@ namespace Digia\GraphQL\Error;
  */
 class GraphQLError extends \Exception
 {
+
+    /**
+     * @var string[]
+     */
+    protected $locations;
+
+    /**
+     * @var string[]
+     */
+    protected $path;
+
+    /**
+     * @var NodeInterface[]
+     */
+    protected $nodes;
+
+    /**
+     * @var Source|null
+     */
+    protected $source;
+
+    /**
+     * @var int[]
+     */
+    protected $positions;
+
+    /**
+     * @var array
+     */
+    protected $extensions;
+
+    /**
+     * GraphQLError constructor.
+     *
+     * @param string      $message
+     * @param array|null  $nodes
+     * @param Source|null $source
+     * @param array|null  $positions
+     * @param array|null  $path
+     * @param array|null  $extensions
+     */
+    public function __construct(
+        string $message,
+        ?array $nodes = null,
+        ?Source $source = null,
+        ?array $positions = null,
+        ?array $path = null,
+        ?array $extensions = null
+    ) {
+        parent::__construct($message);
+
+        $this->nodes      = $nodes;
+        $this->source     = $source;
+        $this->positions  = $positions;
+        $this->path       = $path;
+        $this->extensions = $extensions;
+    }
+
+    // TODO: Implement the rest of this class.
 }

@@ -14,7 +14,7 @@ use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
-use Digia\GraphQL\Type\Schema\Schema;
+use Digia\GraphQL\Type\Schema;
 
 class SchemaTest extends TestCase
 {

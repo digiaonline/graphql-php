@@ -1,13 +1,16 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\Language;
+namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Builder\ArgumentBuilder;
 use Digia\GraphQL\Language\AST\Builder\BooleanBuilder;
 use Digia\GraphQL\Language\AST\Builder\DirectiveBuilder;
+use Digia\GraphQL\Language\AST\Builder\DirectiveDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\DocumentBuilder;
 use Digia\GraphQL\Language\AST\Builder\EnumBuilder;
 use Digia\GraphQL\Language\AST\Builder\EnumTypeDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\EnumTypeExtensionBuilder;
 use Digia\GraphQL\Language\AST\Builder\EnumValueDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\FieldBuilder;
 use Digia\GraphQL\Language\AST\Builder\FieldDefinitionBuilder;
@@ -16,9 +19,11 @@ use Digia\GraphQL\Language\AST\Builder\FragmentDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\FragmentSpreadBuilder;
 use Digia\GraphQL\Language\AST\Builder\InlineFragmentBuilder;
 use Digia\GraphQL\Language\AST\Builder\InputObjectTypeDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\InputObjectTypeExtensionBuilder;
 use Digia\GraphQL\Language\AST\Builder\InputValueDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\IntBuilder;
 use Digia\GraphQL\Language\AST\Builder\InterfaceTypeDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\InterfaceTypeExtensionBuilder;
 use Digia\GraphQL\Language\AST\Builder\ListBuilder;
 use Digia\GraphQL\Language\AST\Builder\ListTypeBuilder;
 use Digia\GraphQL\Language\AST\Builder\NameBuilder;
@@ -30,13 +35,17 @@ use Digia\GraphQL\Language\AST\Builder\ObjectFieldBuilder;
 use Digia\GraphQL\Language\AST\Builder\ObjectTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\ObjectTypeExtensionBuilder;
 use Digia\GraphQL\Language\AST\Builder\OperationDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\OperationTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\ScalarTypeDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\ScalarTypeExtensionBuilder;
+use Digia\GraphQL\Language\AST\Builder\SchemaDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\SelectionSetBuilder;
 use Digia\GraphQL\Language\AST\Builder\StringBuilder;
 use Digia\GraphQL\Language\AST\Builder\UnionTypeDefinitionBuilder;
+use Digia\GraphQL\Language\AST\Builder\UnionTypeExtensionBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableDefinitionBuilder;
-use Digia\GraphQL\Language\ASTParser;
+use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
 use Digia\GraphQL\Language\Contract\ParserInterface;
 use Digia\GraphQL\Language\Reader\AmpReader;
 use Digia\GraphQL\Language\Reader\AtReader;
@@ -54,18 +63,15 @@ use Digia\GraphQL\Language\Reader\ParenthesisReader;
 use Digia\GraphQL\Language\Reader\PipeReader;
 use Digia\GraphQL\Language\Reader\SpreadReader;
 use Digia\GraphQL\Language\Reader\StringReader;
-use Digia\GraphQL\Test\TestCase;
 
-abstract class AbstractParserTest extends TestCase
+/**
+ * @return ParserInterface
+ */
+function parser(): ParserInterface
 {
+    static $instance = null;
 
-    /**
-     * @var ParserInterface
-     */
-    protected $parser;
-
-    public function setUp()
-    {
+    if (null === $instance) {
         $builders = [
             // Standard
             new ArgumentBuilder(),
@@ -93,16 +99,24 @@ abstract class AbstractParserTest extends TestCase
             new VariableBuilder(),
             new VariableDefinitionBuilder(),
             // Schema Definition Language (SDL)
+            new SchemaDefinitionBuilder(),
+            new OperationTypeDefinitionBuilder(),
             new FieldDefinitionBuilder(),
+            new ScalarTypeDefinitionBuilder(),
             new ObjectTypeDefinitionBuilder(),
-            new ObjectTypeExtensionBuilder(),
+            new InterfaceTypeDefinitionBuilder(),
+            new UnionTypeDefinitionBuilder(),
             new EnumTypeDefinitionBuilder(),
             new EnumValueDefinitionBuilder(),
-            new InterfaceTypeDefinitionBuilder(),
-            new InputValueDefinitionBuilder(),
-            new UnionTypeDefinitionBuilder(),
-            new ScalarTypeDefinitionBuilder(),
             new InputObjectTypeDefinitionBuilder(),
+            new InputValueDefinitionBuilder(),
+            new ScalarTypeExtensionBuilder(),
+            new ObjectTypeExtensionBuilder(),
+            new InterfaceTypeExtensionBuilder(),
+            new EnumTypeExtensionBuilder(),
+            new UnionTypeExtensionBuilder(),
+            new InputObjectTypeExtensionBuilder(),
+            new DirectiveDefinitionBuilder(),
         ];
 
         $readers = [
@@ -124,6 +138,47 @@ abstract class AbstractParserTest extends TestCase
             new StringReader(),
         ];
 
-        $this->parser = new ASTParser($builders, $readers);
+        $instance = new ASTParser($builders, $readers);
     }
+
+    return $instance;
+}
+
+/**
+ * @param string|Source $source
+ * @param array         $options
+ * @return NodeInterface
+ * @throws GraphQLError
+ * @throws \Exception
+ */
+function parse($source, array $options = [])
+{
+    return parser()
+        ->parse($source instanceof Source ? $source : new Source($source), $options);
+}
+
+/**
+ * @param string|Source $source
+ * @param array         $options
+ * @return NodeInterface
+ * @throws GraphQLError
+ * @throws \Exception
+ */
+function parseValue($source, array $options = [])
+{
+    return parser()
+        ->parseValue($source instanceof Source ? $source : new Source($source), $options);
+}
+
+/**
+ * @param string|Source $source
+ * @param array         $options
+ * @return NodeInterface
+ * @throws GraphQLError
+ * @throws \Exception
+ */
+function parseType($source, array $options = [])
+{
+    return parser()
+        ->parseType($source instanceof Source ? $source : new Source($source), $options);
 }

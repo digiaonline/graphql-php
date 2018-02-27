@@ -16,4 +16,9 @@ interface NodeInterface
      * @return Location|null
      */
     public function getLocation(): ?Location;
+
+    /**
+     * @return string
+     */
+    public function toJSON(): string;
 }

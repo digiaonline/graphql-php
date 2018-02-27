@@ -13,16 +13,17 @@ use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Location;
+use function Digia\GraphQL\Language\parser;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
-use Digia\GraphQL\Test\Functional\Language\AbstractParserTest;
+use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Schema\Schema;
+use Digia\GraphQL\Type\Schema;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLString;
 
-class ExecutionTest extends AbstractParserTest
+class ExecutionTest extends TestCase
 {
 
     /**
@@ -324,7 +325,7 @@ class ExecutionTest extends AbstractParserTest
      */
     public function testHandleFragments()
     {
-        $documentNode = $this->parser->parse(new Source('
+        $documentNode = parser()->parse(new Source('
       { a, ...FragOne, ...FragTwo }
 
       fragment FragOne on Type {

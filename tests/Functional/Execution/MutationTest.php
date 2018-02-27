@@ -5,14 +5,14 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use function Digia\GraphQL\Language\parser;
 use Digia\GraphQL\Language\Source;
-use Digia\GraphQL\Test\Functional\Language\AbstractParserTest;
+use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
-use Digia\GraphQL\Type\Schema\Schema;
 
-class MutationTest extends AbstractParserTest
+class MutationTest extends TestCase
 {
 
     /**
@@ -45,7 +45,7 @@ class MutationTest extends AbstractParserTest
         ]);
 
         /** @var DocumentNode $documentNode */
-        $documentNode = $this->parser->parse(new Source('
+        $documentNode = parser()->parse(new Source('
         mutation M{
             greeting(name:"Han Solo") {
                message   
@@ -86,7 +86,7 @@ class MutationTest extends AbstractParserTest
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
         /** @var DocumentNode $documentNode */
-        $documentNode = $this->parser->parse(new Source('
+        $documentNode = parser()->parse(new Source('
         mutation M {
           thisIsIllegalDontIncludeMe
         }'
@@ -107,7 +107,7 @@ class MutationTest extends AbstractParserTest
                 ])
         ]);
 
-        $schema = new Schema([
+        $schema = GraphQLSchema([
             'query' => new ObjectType([
                 'name' => 'Q',
                 'fields' => [

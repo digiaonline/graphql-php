@@ -20,7 +20,7 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
-use Digia\GraphQL\Type\Schema\Schema;
+use Digia\GraphQL\Type\Schema;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 

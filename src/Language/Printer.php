@@ -1,14 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: chris
- * Date: 26/02/2018
- * Time: 14.07
- */
 
 namespace Digia\GraphQL\Language;
 
-class Printer
+use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\Contract\PrinterInterface;
+
+class Printer implements PrinterInterface
 {
 
+    /**
+     * @inheritdoc
+     */
+    public function print(NodeInterface $node): string
+    {
+        // TODO: Implement proper printing of AST trees
+        return $node->toJSON();
+    }
 }

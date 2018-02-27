@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Execution;
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Type\Schema\Schema;
+use Digia\GraphQL\Type\Schema;
 
 /**
  * Class Execution

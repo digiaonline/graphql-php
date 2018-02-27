@@ -13,7 +13,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Schema\Schema;
+use Digia\GraphQL\Type\Schema;
 
 class DefinitionTest extends TestCase
 {

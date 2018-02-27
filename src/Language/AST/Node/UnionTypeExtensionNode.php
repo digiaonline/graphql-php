@@ -2,11 +2,11 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\TypesTrait;
 use Digia\GraphQL\Language\AST\Node\Contract\TypeExtensionNodeInterface;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class UnionTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface
 {
@@ -19,4 +19,18 @@ class UnionTypeExtensionNode extends AbstractNode implements TypeExtensionNodeIn
      * @var string
      */
     protected $kind = NodeKindEnum::UNION_TYPE_EXTENSION;
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind'       => $this->kind,
+            'name'       => $this->getNameAsArray(),
+            'directives' => $this->getDirectivesAsArray(),
+            'types'      => $this->getTypesAsArray(),
+            'loc'        => $this->getLocationAsArray(),
+        ];
+    }
 }

@@ -1,20 +1,20 @@
 <?php
 
-namespace Digia\GraphQL\Type\Schema;
+namespace Digia\GraphQL\Type;
 
+use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
-use Digia\GraphQL\ConfigObject;
+use Digia\GraphQL\Type\Contract\SchemaInterface;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
+use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
 use Digia\GraphQL\Type\Definition\Contract\WrappingTypeInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
 use function Digia\GraphQL\Util\invariant;
 
 /**
@@ -44,7 +44,7 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type
  * @property SchemaDefinitionNode $astNode
  */
-class Schema extends ConfigObject
+class Schema extends ConfigObject implements SchemaInterface
 {
 
     use NodeTrait;
@@ -95,7 +95,7 @@ class Schema extends ConfigObject
     private $_possibleTypeMap = [];
 
     /**
-     * @return ObjectType
+     * @inheritdoc
      */
     public function getQuery(): ObjectType
     {
@@ -103,7 +103,7 @@ class Schema extends ConfigObject
     }
 
     /**
-     * @return ObjectType
+     * @inheritdoc
      */
     public function getMutation(): ObjectType
     {
@@ -111,7 +111,7 @@ class Schema extends ConfigObject
     }
 
     /**
-     * @return ObjectType
+     * @inheritdoc
      */
     public function getSubscription(): ObjectType
     {
@@ -119,7 +119,15 @@ class Schema extends ConfigObject
     }
 
     /**
-     * @return NamedTypeInterface[]
+     * @inheritdoc
+     */
+    public function getDirectives(): array
+    {
+        return $this->directives;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function getTypeMap(): array
     {
@@ -127,7 +135,7 @@ class Schema extends ConfigObject
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function getAssumeValid(): bool
     {
@@ -136,25 +144,6 @@ class Schema extends ConfigObject
 
     /**
      * @inheritdoc
-     */
-    protected function beforeConfig(): void
-    {
-        $this->setDirectives(specifiedDirectives());
-    }
-
-    /**
-     * @throws \Exception
-     */
-    protected function afterConfig(): void
-    {
-        $this->buildTypeMap();
-        $this->buildImplementations();
-    }
-
-    /**
-     * @param AbstractTypeInterface $abstractType
-     * @param TypeInterface         $possibleType
-     * @return bool
      * @throws \Exception
      */
     public function isPossibleType(AbstractTypeInterface $abstractType, TypeInterface $possibleType): bool
@@ -185,17 +174,41 @@ class Schema extends ConfigObject
     }
 
     /**
-     * @param AbstractTypeInterface $abstractType
-     * @return null|TypeInterface[]
+     * @inheritdoc
      * @throws \Exception
      */
-    protected function getPossibleTypes(AbstractTypeInterface $abstractType): ?array
+    public function getPossibleTypes(AbstractTypeInterface $abstractType): ?array
     {
         if ($abstractType instanceof UnionType) {
             return $abstractType->getTypes();
         }
 
         return $this->_implementations[$abstractType->getName()] ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getType(string $name): ?TypeInterface
+    {
+        return $this->_typeMap[$name] ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function beforeConfig(): void
+    {
+        $this->setDirectives(specifiedDirectives());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function afterConfig(): void
+    {
+        $this->buildTypeMap();
+        $this->buildImplementations();
     }
 
     /**
@@ -217,10 +230,10 @@ class Schema extends ConfigObject
         $typeMap = [];
 
         // First by deeply visiting all initial types.
-        $typeMap = array_reduce($initialTypes, 'Digia\GraphQL\Type\Schema\typeMapReducer', $typeMap);
+        $typeMap = array_reduce($initialTypes, 'Digia\GraphQL\Type\typeMapReducer', $typeMap);
 
         // Then by deeply visiting all directive types.
-        $typeMap = array_reduce($this->directives, 'Digia\GraphQL\Type\Schema\typeMapDirectiveReducer', $typeMap);
+        $typeMap = array_reduce($this->directives, 'Digia\GraphQL\Type\typeMapDirectiveReducer', $typeMap);
 
         // Storing the resulting map for reference by the schema.
         $this->_typeMap = $typeMap;
@@ -232,7 +245,7 @@ class Schema extends ConfigObject
     protected function buildImplementations()
     {
         $implementations = [];
-        
+
         // Keep track of all implementations by interface name.
         foreach ($this->_typeMap as $typeName => $type) {
             if ($type instanceof ObjectType) {
@@ -288,7 +301,7 @@ class Schema extends ConfigObject
      * @param array $types
      * @return Schema
      */
-    public function setTypes(array $types): Schema
+    protected function setTypes(array $types): Schema
     {
         $this->types = $types;
 
@@ -353,11 +366,11 @@ function typeMapReducer(array $map, ?TypeInterface $type): array
     $reducedMap = $map;
 
     if ($type instanceof UnionType) {
-        $reducedMap = array_reduce($type->getTypes(), 'Digia\GraphQL\Type\Schema\typeMapReducer', $reducedMap);
+        $reducedMap = array_reduce($type->getTypes(), 'Digia\GraphQL\Type\typeMapReducer', $reducedMap);
     }
 
     if ($type instanceof ObjectType) {
-        $reducedMap = array_reduce($type->getInterfaces(), 'Digia\GraphQL\Type\Schema\typeMapReducer', $reducedMap);
+        $reducedMap = array_reduce($type->getInterfaces(), 'Digia\GraphQL\Type\typeMapReducer', $reducedMap);
     }
 
     if ($type instanceof ObjectType || $type instanceof InterfaceType) {
@@ -367,7 +380,7 @@ function typeMapReducer(array $map, ?TypeInterface $type): array
                     return $argument->getType();
                 }, $field->getArgs());
 
-                $reducedMap = array_reduce($fieldArgTypes, 'Digia\GraphQL\Type\Schema\typeMapReducer', $reducedMap);
+                $reducedMap = array_reduce($fieldArgTypes, 'Digia\GraphQL\Type\typeMapReducer', $reducedMap);
             }
 
             $reducedMap = typeMapReducer($reducedMap, $field->getType());
