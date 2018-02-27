@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
+use Digia\GraphQL\Language\AST\Node\Behavior\SelectionSetTrait;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
 use Digia\GraphQL\Language\AST\Node\Behavior\TypeConditionTrait;
@@ -14,6 +15,7 @@ class FragmentDefinitionNode extends AbstractNode implements ExecutableDefinitio
     use NameTrait;
     use TypeConditionTrait;
     use VariableDefinitionsTrait;
+    use SelectionSetTrait;
 
     /**
      * @var string

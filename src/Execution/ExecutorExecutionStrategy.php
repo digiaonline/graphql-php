@@ -5,7 +5,10 @@ namespace Digia\GraphQL\Execution;
 class ExecutorExecutionStrategy extends ExecutionStrategy
 {
 
-    function execute(): ExecutionResult
+    /**
+     * @return ?array
+     */
+    function execute(): ?array
     {
         $operation = $this->context->getOperation()->getOperation();
         $schema    = $this->context->getSchema();
@@ -20,9 +23,10 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
         try {
             $data = $this->executeFields($objectType, $this->rootValue, $path, $fields);
         } catch (\Exception $ex) {
-            return new ExecutionResult([], [$ex->getMessage()]);
+            $this->context->addError($ex);
+            return null;
         }
 
-        return new ExecutionResult($data, []);
+        return $data;
     }
 }

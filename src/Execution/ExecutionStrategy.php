@@ -5,10 +5,10 @@ namespace Digia\GraphQL\Execution;
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
+use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
-use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\ObjectType;
 
@@ -49,7 +49,10 @@ abstract class ExecutionStrategy
         $this->rootValue = $rootValue;
     }
 
-    abstract function execute(): ExecutionResult;
+    /**
+     * @return array|null
+     */
+    abstract function execute(): ?array;
 
     /**
      * @param ObjectType $runtimeType
@@ -65,11 +68,31 @@ abstract class ExecutionStrategy
         $visitedFragmentNames
     ) {
         foreach ($selectionSet->getSelections() as $selection) {
+            /** @var FieldNode $selection */
             switch ($selection->getKind()) {
                 case NodeKindEnum::FIELD:
-                    /** @var FieldNode $selection */
-                    $name            = $selection->getName()->getValue();
-                    $fields[$name][] = $selection;
+                    $fields[$selection->getNameValue()][] = $selection;
+                    break;
+                case NodeKindEnum::INLINE_FRAGMENT:
+                    //TODO check if should include this node
+                    $this->collectFields(
+                        $runtimeType,
+                        $selection->getSelectionSet(),
+                        $fields,
+                        $visitedFragmentNames
+                    );
+                    break;
+                case NodeKindEnum::FRAGMENT_SPREAD:
+                    //TODO check if should include this node
+                    $visitedFragmentNames[$selection->getNameValue()] = true;
+                    /** @var FragmentDefinitionNode $fragment */
+                    $fragment = $this->context->getFragments()[$selection->getNameValue()];
+                    $this->collectFields(
+                        $runtimeType,
+                        $fragment->getSelectionSet(),
+                        $fields,
+                        $visitedFragmentNames
+                    );
                     break;
             }
         }
@@ -95,9 +118,13 @@ abstract class ExecutionStrategy
         $fields): array
     {
         $finalResults = [];
-        foreach ($fields as $responseName => $fieldNodes) {
+        foreach ($fields as $fieldName => $fieldNodes) {
             $fieldPath   = $path;
-            $fieldPath[] = $responseName;
+            $fieldPath[] = $fieldName;
+
+            if (!$this->isDefinedField($parentType, $fieldName)) {
+                continue;
+            }
 
             $result = $this->resolveField($parentType,
                 $source,
@@ -105,10 +132,21 @@ abstract class ExecutionStrategy
                 $fieldPath
             );
 
-            $finalResults[$responseName] = $result;
+            $finalResults[$fieldName] = $result;
         }
 
         return $finalResults;
+    }
+
+    /**
+     * @param ObjectType $parentType
+     * @param string $fieldName
+     * @return bool
+     * @throws \Exception
+     */
+    protected function isDefinedField(ObjectType $parentType, string $fieldName)
+    {
+       return isset($parentType->getFields()[$fieldName]);
     }
 
     /**
@@ -130,7 +168,7 @@ abstract class ExecutionStrategy
         /** @var FieldNode $fieldNode */
         $fieldNode = $fieldNodes[0];
 
-        $field = $parentType->getFields()[$fieldNode->getName()->getValue()];
+        $field = $parentType->getFields()[$fieldNode->getNameValue()];
 
         $inputValues = $fieldNode->getArguments() ?? [];
 

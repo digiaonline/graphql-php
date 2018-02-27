@@ -3,11 +3,7 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLError;
-use Digia\GraphQL\Execution\Strategies\MutationStrategy;
-use Digia\GraphQL\Execution\Strategies\QueryStrategy;
-use Digia\GraphQL\Execution\Strategies\SubscriptionStrategy;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Schema\Schema;
 
@@ -64,16 +60,13 @@ class Execution
             return new ExecutionResult(null, [$error]);
         }
 
-        $executor = new self($context);
+        $data = $context->getExecutionStrategy()->execute();
 
-        return $executor->executeOperation(
-            $context,
-            $context->getOperation(),
-            $rootValue
-        );
+        return new ExecutionResult($data, $context->getErrors());
     }
 
     /**
+     * @TODO: Consider to create a ExecutionContextBuilder
      * @param Schema $schema
      * @param DocumentNode $documentNode
      * @param $rootValue
@@ -136,23 +129,5 @@ class Execution
         );
 
         return $executionContext;
-    }
-
-    /**
-     * @param ExecutionContext $context
-     * @param OperationDefinitionNode $operation
-     * @param $rootValue
-     *
-     * @return ExecutionResult
-     */
-    private function executeOperation(
-        ExecutionContext $context,
-        OperationDefinitionNode $operation,
-        $rootValue
-    ): ExecutionResult {
-
-        $strategy = new ExecutorExecutionStrategy($context, $operation, $rootValue);
-
-        return $strategy->execute();
     }
 }

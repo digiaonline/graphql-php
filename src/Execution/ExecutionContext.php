@@ -98,6 +98,25 @@ class ExecutionContext
     }
 
     /**
+     * @return array|FragmentDefinitionNode[]
+     */
+    public function getFragments()
+    {
+        return $this->fragments;
+    }
+
+    /**
+     * Create proper ExecutionStrategy when needed
+     *
+     * @return ExecutionStrategy
+     */
+    public function getExecutionStrategy(): ExecutionStrategy
+    {
+        //We can probably return different strategy in the future e.g:AsyncExecutionStrategy
+        return new ExecutorExecutionStrategy($this, $this->operation, $this->rootValue);
+    }
+
+    /**
      * @param GraphQLError $error
      * @return ExecutionContext
      */
@@ -105,5 +124,13 @@ class ExecutionContext
     {
         $this->errors[] = $error;
         return $this;
+    }
+
+    /**
+     * @return array|GraphQLError[]
+     */
+    public function getErrors()
+    {
+        return $this->errors;
     }
 }
