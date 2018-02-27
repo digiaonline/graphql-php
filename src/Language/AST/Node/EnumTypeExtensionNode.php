@@ -19,4 +19,18 @@ class EnumTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInt
      * @var string
      */
     protected $kind = NodeKindEnum::ENUM_TYPE_EXTENSION;
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind'        => $this->kind,
+            'name'        => $this->getNameAsArray(),
+            'directives'  => $this->getDirectivesAsArray(),
+            'values'      => $this->getValuesAsArray(),
+            'loc'         => $this->getLocationAsArray(),
+        ];
+    }
 }
