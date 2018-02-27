@@ -21,6 +21,7 @@
             "./src/Execution/values.php",
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
+            "./src/Language/valueFromAST.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
             "./src/Type/scalars.php",
