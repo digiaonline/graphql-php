@@ -4,11 +4,7 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema;
 
 /**
@@ -49,8 +45,7 @@ class Execution
         $variableValues = null,
         $operationName = null,
         callable $fieldResolver = null
-    )
-    {
+    ) {
         try {
             $context = self::buildExecutionContext(
                 $schema,
@@ -62,19 +57,16 @@ class Execution
                 $fieldResolver
             );
         } catch (GraphQLError $error) {
-            return new ExecutionResult(null, [$error]);
+            return new ExecutionResult(['data' => null], [$error]);
         }
 
-        $executor = new self($context);
+        $data = $context->getExecutionStrategy()->execute();
 
-        return $executor->executeOperation(
-            $context,
-            $context->getOperation(),
-            $rootValue
-        );
+        return new ExecutionResult($data, $context->getErrors());
     }
 
     /**
+     * @TODO: Consider to create a ExecutionContextBuilder
      * @param Schema $schema
      * @param DocumentNode $documentNode
      * @param $rootValue
@@ -93,12 +85,11 @@ class Execution
         $rawVariableValues,
         $operationName = null,
         callable $fieldResolver = null
-    ): ExecutionContext
-    {
+    ): ExecutionContext {
         //TODO: Validate raw variables, operation name etc.
         //TODO: Validate document definition
 
-        $errors = [];
+        $errors    = [];
         $fragments = [];
         $operation = null;
 
@@ -110,17 +101,18 @@ class Execution
                             'Must provide operation name if query contains multiple operations.'
                         );
                     }
+
                     if (!$operationName || (!empty($definition->getName()) && $definition->getName()->getValue() === $operationName)) {
                         $operation = $definition;
                     }
                     break;
                 case NodeKindEnum::FRAGMENT_DEFINITION:
+                case NodeKindEnum::FRAGMENT_SPREAD:
                     $fragments[$definition->getName()->getValue()] = $definition;
                     break;
                 default:
                     throw new GraphQLError(
-                        "GraphQL cannot execute a request containing a {$definition->getKind()}.",
-                        [$definition]
+                        "GraphQL cannot execute a request containing a {$definition->getKind()}."
                     );
             }
         }
@@ -137,108 +129,5 @@ class Execution
         );
 
         return $executionContext;
-    }
-
-    /**
-     * @param ExecutionContext $context
-     * @param OperationDefinitionNode $operation
-     * @param $rootValue
-     *
-     * @return ExecutionResult
-     */
-    private function executeOperation(
-        ExecutionContext $context,
-        OperationDefinitionNode $operation,
-        $rootValue
-    ): ExecutionResult
-    {
-        //MUTATION
-        //SUBSCRIPTION
-        //QUERY
-
-        //result = executionStrategy.execute(executionContext, parameters);
-        // type: query|mutation|suscription
-        $query  = $context->getSchema()->getQuery();
-        $fields = $this->collectFields($query, $operation->getSelectionSet(), [], []);
-        $path   = [];
-
-        if ($context->getOperation()->getName()->getValue() === 'query') {
-            $data = $this->executeFields($query, $rootValue, $path, $fields);
-
-            return new ExecutionResult($data, []);
-        }
-
-        return new ExecutionResult([], []);
-    }
-
-    private function collectFields(
-        ObjectType $runtimeType,
-        SelectionSetNode $selectionSet,
-        $fields,
-        $visitedFragmentNames
-    )
-    {
-        foreach ($selectionSet->getSelections() as $selection) {
-            switch ($selection->getKind()) {
-                case NodeKindEnum::FIELD:
-                    /** @var FieldNode $selection */
-                    $name = $selection->getName()->getValue();
-                    $fields[$name][] = $selection;
-                    break;
-            }
-        }
-
-        return $fields;
-    }
-
-    /**
-     * Implements the "Evaluating selection sets" section of the spec
-     * for "read" mode.
-     * @param ObjectType $parentType
-     * @param $source
-     * @param $path
-     * @param $fields
-     *
-     * @return array
-     */
-    private function executeFields(ObjectType $parentType, $source, $path, $fields): array
-    {
-        $finalResults = [];
-        foreach ($fields as $responseName => $fieldNodes) {
-            $fieldPath   = $path;
-            $fieldPath[] = $responseName;
-
-            $result = $this->resolveField($parentType, $source, $fieldNodes, $fieldPath);
-
-            $finalResults[$responseName] = $result;
-        }
-
-        return $finalResults;
-    }
-
-    /**
-     * @param ObjectType $parentType
-     * @param $source
-     * @param $fieldNodes
-     * @param $path
-     *
-     * @return array|\Exception|mixed|null
-     */
-    private function resolveField(ObjectType $parentType, $source, $fieldNodes, $path)
-    {
-        /** @var FieldNode $fieldNode */
-        $fieldNode = $fieldNodes[0];
-
-        $field = $parentType->getFields()[$fieldNode->getName()->getValue()];
-
-        $inputValues = $fieldNode->getArguments() ?? [];
-
-        $args = [];
-
-        foreach($inputValues as $value) {
-            $args[] = $value->getDefaultValue()->getValue();
-        }
-
-        return $field->resolve(...$args);
     }
 }

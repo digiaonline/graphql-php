@@ -28,6 +28,14 @@ class ExecutionResult
     }
 
     /**
+     * @return array|GraphQLError[]
+     */
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+
+    /**
      * @param GraphQLError $error
      * @return ExecutionResult
      */

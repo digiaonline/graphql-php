@@ -15,9 +15,10 @@ class FragmentSpreadBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new FragmentSpreadNode([
-            'name'       => $this->buildOne($ast, 'name'),
-            'directives' => $this->buildMany($ast, 'directives'),
-            'location'   => $this->createLocation($ast),
+            'name'         => $this->buildOne($ast, 'name'),
+            'directives'   => $this->buildMany($ast, 'directives'),
+            'selectionSet' => $this->buildOne($ast, 'selectionSet'),
+            'location'     => $this->createLocation($ast),
         ]);
     }
 
