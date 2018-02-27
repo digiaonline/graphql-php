@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Test\Functional\Language;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\Language\parse;
+use function Digia\GraphQL\Language\printNode;
 use function Digia\GraphQL\Util\readFile;
 
 class SchemaPrinterTest extends TestCase
@@ -25,7 +26,7 @@ class SchemaPrinterTest extends TestCase
         $ast       = parse($kitchenSink);
         $astBefore = $ast->toJSON();
 
-        // TODO: Print the schema once the Printer is implemented
+        printNode($ast);
 
         $this->assertEquals($ast->toJSON(), $astBefore);
     }
