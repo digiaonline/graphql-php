@@ -267,14 +267,17 @@ function isNullableType(TypeInterface $type): bool
 
 /**
  * @param TypeInterface $type
+ * @return TypeInterface
  * @throws \Exception
  */
-function assertNullableType(TypeInterface $type)
+function assertNullableType(TypeInterface $type): TypeInterface
 {
     invariant(
         isNullableType($type),
         sprintf('Expected %s to be a GraphQL nullable type.', toString($type))
     );
+
+    return $type;
 }
 
 /**

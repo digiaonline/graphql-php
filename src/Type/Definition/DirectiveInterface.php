@@ -13,10 +13,10 @@ interface DirectiveInterface
     /**
      * @return bool
      */
-    public function hasArgs(): bool;
+    public function hasArguments(): bool;
 
     /**
      * @return array
      */
-    public function getArgs(): array;
+    public function getArguments(): array;
 }

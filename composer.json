@@ -18,6 +18,7 @@
     },
     "autoload": {
         "files": [
+            "./src/Execution/values.php",
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
             "./src/Type/definition.php",

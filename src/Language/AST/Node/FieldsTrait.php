@@ -13,6 +13,14 @@ trait FieldsTrait
     protected $fields;
 
     /**
+     * @return bool
+     */
+    public function hasFields(): bool
+    {
+        return !empty($this->fields);
+    }
+
+    /**
      * @return FieldDefinitionNode[]
      */
     public function getFields(): array

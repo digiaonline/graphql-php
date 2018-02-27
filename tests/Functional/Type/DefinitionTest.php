@@ -335,7 +335,7 @@ class DefinitionTest extends TestCase
         $this->assertEquals('A terrible reason', $field->getDeprecationReason());
         $this->assertTrue($field->isDeprecated());
         $this->assertEquals('bar', $field->getName());
-        $this->assertEmpty($field->getArgs());
+        $this->assertEmpty($field->getArguments());
     }
 
     /**

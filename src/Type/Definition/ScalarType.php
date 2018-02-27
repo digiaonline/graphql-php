@@ -15,7 +15,7 @@ use function Digia\GraphQL\Util\invariant;
  * @property ScalarTypeDefinitionNode $astNode
  * @codeCoverageIgnore
  */
-class ScalarType extends ConfigObject implements TypeInterface, LeafTypeInterface, NamedTypeInterface, InputTypeInterface, OutputTypeInterface
+class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterface, LeafTypeInterface, InputTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;

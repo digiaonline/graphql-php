@@ -33,7 +33,7 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type\Definition
  * @property UnionTypeDefinitionNode $astNode
  */
-class UnionType extends ConfigObject implements AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface
+class UnionType extends ConfigObject implements AbstractTypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;

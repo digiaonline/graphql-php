@@ -13,6 +13,14 @@ trait InterfacesTrait
     protected $interfaces;
 
     /**
+     * @return bool
+     */
+    public function hasInterfaces(): bool
+    {
+        return !empty($this->interfaces);
+    }
+
+    /**
      * @return NamedTypeNode[]
      */
     public function getInterfaces(): array

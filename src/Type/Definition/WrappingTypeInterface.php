@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-interface WrappingTypeInterface
+interface WrappingTypeInterface extends TypeInterface
 {
 
     /**

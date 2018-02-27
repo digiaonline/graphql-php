@@ -19,6 +19,14 @@ trait DescriptionTrait
     }
 
     /**
+     * @return null|string
+     */
+    public function getDescriptionValue(): ?string
+    {
+        return null !== $this->description ? $this->description->getValue() : null;
+    }
+
+    /**
      * @return array|null
      */
     public function getDescriptionAsArray(): ?array

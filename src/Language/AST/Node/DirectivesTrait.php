@@ -11,6 +11,14 @@ trait DirectivesTrait
     protected $directives;
 
     /**
+     * @return bool
+     */
+    public function hasDirectives(): bool
+    {
+        return !empty($this->directives);
+    }
+
+    /**
      * @return DirectiveNode[]
      */
     public function getDirectives(): array

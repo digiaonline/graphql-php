@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
-class UnionTypeDefinitionNode extends AbstractNode implements DefinitionNodeInterface
+class UnionTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface
 {
 
     use DescriptionTrait;

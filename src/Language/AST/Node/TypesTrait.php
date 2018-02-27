@@ -13,6 +13,14 @@ trait TypesTrait
     protected $types;
 
     /**
+     * @return bool
+     */
+    public function hasTypes(): bool
+    {
+        return !empty($this->types);
+    }
+
+    /**
      * @return NamedTypeNode[]
      */
     public function getTypes(): array

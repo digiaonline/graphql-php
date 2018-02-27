@@ -31,7 +31,7 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type\Definition
  * @property InputObjectTypeDefinitionNode $astNode
  */
-class InputObjectType extends ConfigObject implements TypeInterface, InputTypeInterface
+class InputObjectType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface
 {
 
     use NameTrait;

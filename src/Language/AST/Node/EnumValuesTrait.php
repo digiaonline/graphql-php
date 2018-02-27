@@ -13,6 +13,14 @@ trait EnumValuesTrait
     protected $values;
 
     /**
+     * @return bool
+     */
+    public function hasValues(): bool
+    {
+        return !empty($this->values);
+    }
+
+    /**
      * @return EnumValueDefinitionNode[]
      */
     public function getValues(): array

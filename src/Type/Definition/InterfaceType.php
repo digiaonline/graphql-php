@@ -27,7 +27,7 @@ use Digia\GraphQL\Language\AST\Node\NodeTrait;
  * @package Digia\GraphQL\Type\Definition
  * @property InterfaceTypeDefinitionNode $astNode
  */
-class InterfaceType extends ConfigObject implements AbstractTypeInterface, CompositeTypeInterface, NamedTypeInterface, OutputTypeInterface
+class InterfaceType extends ConfigObject implements NamedTypeInterface, AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
