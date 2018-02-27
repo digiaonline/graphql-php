@@ -150,15 +150,8 @@ class Execution
         OperationDefinitionNode $operation,
         $rootValue
     ): ExecutionResult {
-        $operationName = $context->getOperation()->getOperation();
 
-        if ($operationName === 'subscription') {
-            $strategy = new SubscriptionStrategy($context, $operation, $rootValue);
-        } elseif ($operationName === 'mutation') {
-            $strategy = new MutationStrategy($context, $operation, $rootValue);
-        } else {
-            $strategy = new QueryStrategy($context, $operation, $rootValue);
-        }
+        $strategy = new ExecutorExecutionStrategy($context, $operation, $rootValue);
 
         return $strategy->execute();
     }

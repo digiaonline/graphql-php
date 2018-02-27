@@ -1,13 +1,11 @@
 <?php
 
-namespace Digia\GraphQL\Execution\Strategies;
+namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLError;
-use Digia\GraphQL\Execution\ExecutionContext;
-use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
-use Digia\GraphQL\Language\AST\Node\Contract\ValueNodeInterface;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
+use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\Node\StringValueNode;
@@ -18,7 +16,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
  * Class AbstractStrategy
  * @package Digia\GraphQL\Execution\Strategies
  */
-abstract class AbstractStrategy
+abstract class ExecutionStrategy
 {
     /**
      * @var ExecutionContext
@@ -141,7 +139,7 @@ abstract class AbstractStrategy
         foreach ($inputValues as $value) {
             if ($value instanceof ArgumentNode) {
                 $args[] = $value->getValue()->getValue();
-            } elseif ($value instanceof StringValueNode) {
+            } elseif ($value instanceof InputValueDefinitionNode) {
                 $args[] = $value->getDefaultValue()->getValue();
             }
         }
