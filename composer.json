@@ -25,6 +25,8 @@
             "./src/Type/directives.php",
             "./src/Type/scalars.php",
             "./src/Util/helpers.php",
+            "./src/Util/invariant.php",
+            "./src/Util/valueFromAST.php",
             "./src/facades.php"
         ],
         "psr-4": {
