@@ -3,16 +3,10 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\ConfigObject;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Type\Definition\DescriptionTrait;
-use Digia\GraphQL\Type\Definition\NameTrait;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
-use Digia\GraphQL\Type\Definition\LeafTypeInterface;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;

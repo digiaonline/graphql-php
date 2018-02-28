@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Type\Definition\Argument;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Util\invariant;
 

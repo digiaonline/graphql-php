@@ -5,10 +5,10 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use function Digia\GraphQL\Language\parser;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use function Digia\GraphQL\Language\parser;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
@@ -27,7 +27,7 @@ class MutationTest extends TestCase
                     'fields' => [
                         'greeting' => [
                             'type'    => new ObjectType([
-                                'name' => 'GreetingType',
+                                'name'   => 'GreetingType',
                                 'fields' => [
                                     'message' => [
                                         'type' => GraphQLString(),
@@ -108,27 +108,25 @@ class MutationTest extends TestCase
         ]);
 
         $schema = GraphQLSchema([
-            'query' => new ObjectType([
-                'name' => 'Q',
+            'query'    => new ObjectType([
+                'name'   => 'Q',
                 'fields' => [
                     'a' => ['type' => GraphQLString()],
                 ]
             ]),
             'mutation' => new ObjectType([
-                'name' => 'M',
+                'name'   => 'M',
                 'fields' => [
                     'c' => ['type' => GraphQLString()],
                 ]
             ])
         ]);
 
-
         $rootValue      = [];
         $contextValue   = '';
         $variableValues = [];
         $operationName  = 'M';
         $fieldResolver  = null;
-
 
         /** @var ExecutionResult $executionResult */
         $executionResult = Execution::execute(

@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\SerializationInterface;
-use Digia\GraphQL\Language\AST\Node\VariableDefinitionNode;
 
 trait VariableDefinitionsTrait
 {

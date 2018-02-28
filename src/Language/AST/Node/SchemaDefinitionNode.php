@@ -2,10 +2,8 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\SerializationInterface;
-use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\TypeSystemDefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\SerializationInterface;
 
 class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionNodeInterface
 {

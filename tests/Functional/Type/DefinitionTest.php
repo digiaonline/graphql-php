@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -11,9 +10,9 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Schema;
 
 class DefinitionTest extends TestCase
 {

@@ -4,11 +4,12 @@ namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 
 interface SchemaInterface
 {
+
     /**
      * @return ObjectType
      */

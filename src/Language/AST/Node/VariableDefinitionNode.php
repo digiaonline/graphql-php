@@ -2,11 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\Node\NameTrait;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Node\DefaultValueTrait;
-use Digia\GraphQL\Language\AST\Node\DefinitionNodeInterface;
-use Digia\GraphQL\Language\AST\Node\TypeNodeInterface;
 
 class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {

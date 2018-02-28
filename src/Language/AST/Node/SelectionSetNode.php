@@ -2,10 +2,8 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\SerializationInterface;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\SelectionNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\SerializationInterface;
 
 class SelectionSetNode extends AbstractNode implements NodeInterface
 {

@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\Node\ValueTrait;
-use Digia\GraphQL\Language\AST\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class BooleanValueNode extends AbstractNode implements ValueNodeInterface

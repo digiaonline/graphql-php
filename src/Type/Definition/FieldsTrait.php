@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Type\Definition\Field;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\isValidResolver;
 use function Digia\GraphQL\Type\resolveThunk;
@@ -42,7 +41,6 @@ trait FieldsTrait
     /**
      * @param array $fields
      * @return $this
-     *
      * @throws \Exception
      */
     public function addFields(array $fields)

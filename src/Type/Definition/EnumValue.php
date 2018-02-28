@@ -5,10 +5,6 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Language\AST\Node\EnumValueDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Type\Definition\DeprecationTrait;
-use Digia\GraphQL\Type\Definition\DescriptionTrait;
-use Digia\GraphQL\Type\Definition\NameTrait;
-use Digia\GraphQL\Type\Definition\ValueTrait;
 
 /**
  * Class EnumValue

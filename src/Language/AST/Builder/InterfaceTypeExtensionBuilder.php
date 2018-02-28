@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\InterfaceTypeExtensionNode;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class InterfaceTypeExtensionBuilder extends AbstractBuilder

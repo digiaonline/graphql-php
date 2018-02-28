@@ -165,8 +165,8 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * Determines if the next token is of a given kind.
      *
-     * @param LexerInterface  $lexer
-     * @param string $kind
+     * @param LexerInterface $lexer
+     * @param string         $kind
      * @return bool
      */
     protected function peek(LexerInterface $lexer, string $kind): bool
@@ -178,8 +178,8 @@ class Parser implements ParserInterface, DirectorInterface
      * If the next token is of the given kind, return true after advancing
      * the lexer. Otherwise, do not change the parser state and return false.
      *
-     * @param LexerInterface  $lexer
-     * @param string $kind
+     * @param LexerInterface $lexer
+     * @param string         $kind
      * @return bool
      * @throws GraphQLError
      */
@@ -196,8 +196,8 @@ class Parser implements ParserInterface, DirectorInterface
      * If the next token is of the given kind, return that token after advancing
      * the lexer. Otherwise, do not change the parser state and throw an error.
      *
-     * @param LexerInterface  $lexer
-     * @param string $kind
+     * @param LexerInterface $lexer
+     * @param string         $kind
      * @return Token
      * @throws GraphQLError
      */
@@ -214,8 +214,8 @@ class Parser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param LexerInterface  $lexer
-     * @param string $value
+     * @param LexerInterface $lexer
+     * @param string         $value
      * @return Token
      * @throws GraphQLError
      */
@@ -235,8 +235,8 @@ class Parser implements ParserInterface, DirectorInterface
      * Helper function for creating an error when an unexpected lexed token
      * is encountered.
      *
-     * @param LexerInterface      $lexer
-     * @param Token|null $atToken
+     * @param LexerInterface $lexer
+     * @param Token|null     $atToken
      * @return GraphQLError
      */
     protected function unexpected(LexerInterface $lexer, ?Token $atToken = null): GraphQLError
@@ -248,7 +248,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param Token $startToken
+     * @param Token          $startToken
      * @return array
      */
     protected function createLocation(LexerInterface $lexer, Token $startToken): array
@@ -265,10 +265,10 @@ class Parser implements ParserInterface, DirectorInterface
      * and ends with a lex token of closeKind. Advances the parser
      * to the next lex token after the closing token.
      *
-     * @param LexerInterface    $lexer
-     * @param string   $openKind
-     * @param callable $parseFunction
-     * @param string   $closeKind
+     * @param LexerInterface $lexer
+     * @param string         $openKind
+     * @param callable       $parseFunction
+     * @param string         $closeKind
      * @return array
      * @throws GraphQLError
      */
@@ -291,10 +291,10 @@ class Parser implements ParserInterface, DirectorInterface
      * and ends with a lex token of closeKind. Advances the parser
      * to the next lex token after the closing token.
      *
-     * @param LexerInterface    $lexer
-     * @param string   $openKind
-     * @param callable $parseFunction
-     * @param string   $closeKind
+     * @param LexerInterface $lexer
+     * @param string         $openKind
+     * @param callable       $parseFunction
+     * @param string         $closeKind
      * @return array
      * @throws GraphQLError
      */
@@ -594,7 +594,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool  $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -745,7 +745,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool  $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -855,7 +855,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool  $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -877,7 +877,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool  $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -902,7 +902,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool  $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -925,7 +925,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool  $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -942,7 +942,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool  $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */

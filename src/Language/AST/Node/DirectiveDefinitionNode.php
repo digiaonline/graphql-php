@@ -2,12 +2,8 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\SerializationInterface;
-use Digia\GraphQL\Language\AST\Node\ArgumentsTrait;
-use Digia\GraphQL\Language\AST\Node\DescriptionTrait;
-use Digia\GraphQL\Language\AST\Node\NameTrait;
-use Digia\GraphQL\Language\AST\Node\DefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\SerializationInterface;
 
 class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {

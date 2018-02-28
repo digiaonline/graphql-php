@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Type\Definition\TypeInterface;
-
 trait TypeTrait
 {
 

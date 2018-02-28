@@ -2,12 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\Node\AliasTrait;
-use Digia\GraphQL\Language\AST\Node\ArgumentsTrait;
-use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\NameTrait;
-use Digia\GraphQL\Language\AST\Node\SelectionSetTrait;
-use Digia\GraphQL\Language\AST\Node\SelectionNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class FieldNode extends AbstractNode implements SelectionNodeInterface

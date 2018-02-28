@@ -3,11 +3,6 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Node\DescriptionTrait;
-use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\NameTrait;
-use Digia\GraphQL\Language\AST\Node\EnumValuesTrait;
-use Digia\GraphQL\Language\AST\Node\DefinitionNodeInterface;
 
 class EnumTypeDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {

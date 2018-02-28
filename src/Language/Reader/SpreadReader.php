@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Language\Reader;
 
-use function Digia\GraphQL\Language\charCodeAt;
 use Digia\GraphQL\Language\Token;
 use Digia\GraphQL\Language\TokenKindEnum;
+use function Digia\GraphQL\Language\charCodeAt;
 
 class SpreadReader extends AbstractReader
 {

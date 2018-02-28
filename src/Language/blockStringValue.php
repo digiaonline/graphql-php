@@ -18,8 +18,8 @@ function blockStringValue(string $rawString): string
     $commonIndent = null;
 
     for ($i = 1; $i < $lineCount; $i++) {
-        $line       = $lines[$i];
-        $indent     = leadingWhitespace($line);
+        $line   = $lines[$i];
+        $indent = leadingWhitespace($line);
 
         if ($indent < mb_strlen($line) && ($commonIndent === null || $indent < $commonIndent)) {
             $commonIndent = $indent;

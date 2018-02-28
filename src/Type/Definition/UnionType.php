@@ -4,13 +4,6 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Type\Definition\DescriptionTrait;
-use Digia\GraphQL\Type\Definition\NameTrait;
-use Digia\GraphQL\Type\Definition\ResolveTypeTrait;
-use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
-use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
 

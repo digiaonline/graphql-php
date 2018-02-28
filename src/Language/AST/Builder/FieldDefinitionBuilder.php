@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\FieldDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class FieldDefinitionBuilder extends AbstractBuilder

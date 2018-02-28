@@ -3,14 +3,14 @@
 namespace Digia\GraphQL\Test\Functional\Type;
 
 use Digia\GraphQL\Test\TestCase;
-use function Digia\GraphQL\Type\assertScalarType;
-use function Digia\GraphQL\Type\assertType;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
+use function Digia\GraphQL\Type\assertScalarType;
+use function Digia\GraphQL\Type\assertType;
 use function Digia\GraphQL\Type\GraphQLEnumType;
 use function Digia\GraphQL\Type\GraphQLInputObjectType;
 use function Digia\GraphQL\Type\GraphQLInterfaceType;

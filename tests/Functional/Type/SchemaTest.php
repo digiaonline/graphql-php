@@ -3,10 +3,11 @@
 namespace Digia\GraphQL\Test\Functional\Type;
 
 use Digia\GraphQL\Test\TestCase;
+use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
+use Digia\GraphQL\Type\Schema;
 use function Digia\GraphQL\Type\GraphQLDirective;
 use function Digia\GraphQL\Type\GraphQLInputObjectType;
 use function Digia\GraphQL\Type\GraphQLInterfaceType;
@@ -14,7 +15,6 @@ use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
-use Digia\GraphQL\Type\Schema;
 
 class SchemaTest extends TestCase
 {
@@ -97,7 +97,7 @@ class SchemaTest extends TestCase
         $this->directive = GraphQLDirective([
             'name'      => 'dir',
             'locations' => ['OBJECT'],
-            'args' => [
+            'args'      => [
                 'arg'     => [
                     'type' => $this->directiveInputType,
                 ],
@@ -113,7 +113,7 @@ class SchemaTest extends TestCase
         ]);
 
         $this->schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+            'query'      => GraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'getObject' => [

@@ -3,21 +3,19 @@
 namespace Digia\GraphQL\Language\Reader;
 
 use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Language\Token;
+use Digia\GraphQL\Language\TokenKindEnum;
 use function Digia\GraphQL\Language\blockStringValue;
 use function Digia\GraphQL\Language\charCodeAt;
 use function Digia\GraphQL\Language\isSourceCharacter;
 use function Digia\GraphQL\Language\printCharCode;
 use function Digia\GraphQL\Language\sliceString;
-use Digia\GraphQL\Language\Token;
-use Digia\GraphQL\Language\TokenKindEnum;
 
 /**
  * Class BlockStringReader
  *
  * @package Digia\GraphQL\Language\Reader
- *
  * Reads a block string token from the source file.
- *
  * """("?"?(\\"""|\\(?!=""")|[^"\\]))*"""
  */
 class BlockStringReader extends AbstractReader

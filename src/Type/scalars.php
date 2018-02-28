@@ -2,10 +2,10 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\ScalarType;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use function Digia\GraphQL\Util\arraySome;
 
@@ -91,7 +91,8 @@ function GraphQLFloat(): ScalarType
                 return coerceFloat($value);
             },
             'parseLiteral' => function (NodeInterface $astNode) {
-                return in_array($astNode->getKind(), [NodeKindEnum::FLOAT, NodeKindEnum::INT]) ? $astNode->getValue() : null;
+                return in_array($astNode->getKind(),
+                    [NodeKindEnum::FLOAT, NodeKindEnum::INT]) ? $astNode->getValue() : null;
             },
         ]);
     }
@@ -137,14 +138,14 @@ function GraphQLInt(): ScalarType
 
     if (!$instance) {
         $instance = GraphQLScalarType([
-            'name' => TypeNameEnum::INT,
-            'description' =>
+            'name'         => TypeNameEnum::INT,
+            'description'  =>
                 'The `Int` scalar type represents non-fractional signed whole numeric ' .
                 'values. Int can represent values between -(2^31) and 2^31 - 1.',
-            'serialize' => function ($value) {
+            'serialize'    => function ($value) {
                 return coerceInt($value);
             },
-            'parseValue' => function ($value) {
+            'parseValue'   => function ($value) {
                 return coerceInt($value);
             },
             'parseLiteral' => function (NodeInterface $astNode) {
@@ -191,21 +192,22 @@ function GraphQLID(): ScalarType
 
     if (!$instance) {
         $instance = GraphQLScalarType([
-            'name' => TypeNameEnum::ID,
-            'description' =>
+            'name'         => TypeNameEnum::ID,
+            'description'  =>
                 'The `ID` scalar type represents a unique identifier, often used to ' .
                 'refetch an object or as key for a cache. The ID type appears in a JSON ' .
                 'response as a String; however, it is not intended to be human-readable. ' .
                 'When expected as an input type, any string (such as `"4"`) or integer ' .
                 '(such as `4`) input value will be accepted as an ID.',
-            'serialize' => function ($value) {
+            'serialize'    => function ($value) {
                 return coerceString($value);
             },
-            'parseValue' => function ($value) {
+            'parseValue'   => function ($value) {
                 return coerceString($value);
             },
             'parseLiteral' => function (NodeInterface $astNode) {
-                return in_array($astNode->getKind(), [NodeKindEnum::STRING, NodeKindEnum::INT]) ? $astNode->getValue() : null;
+                return in_array($astNode->getKind(),
+                    [NodeKindEnum::STRING, NodeKindEnum::INT]) ? $astNode->getValue() : null;
             },
         ]);
     }
@@ -222,15 +224,15 @@ function GraphQLString(): ScalarType
 
     if (!$instance) {
         $instance = GraphQLScalarType([
-            'name' => TypeNameEnum::STRING,
-            'description' =>
+            'name'         => TypeNameEnum::STRING,
+            'description'  =>
                 'The `String` scalar type represents textual data, represented as UTF-8 ' .
                 'character sequences. The String type is most often used by GraphQL to ' .
                 'represent free-form human-readable text.',
-            'serialize' => function ($value) {
+            'serialize'    => function ($value) {
                 return coerceString($value);
             },
-            'parseValue' => function ($value) {
+            'parseValue'   => function ($value) {
                 return coerceString($value);
             },
             'parseLiteral' => function (NodeInterface $astNode) {

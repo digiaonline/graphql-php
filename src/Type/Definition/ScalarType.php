@@ -6,13 +6,6 @@ use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ScalarTypeDefinitionNode;
-use Digia\GraphQL\Type\Definition\DescriptionTrait;
-use Digia\GraphQL\Type\Definition\NameTrait;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
-use Digia\GraphQL\Type\Definition\LeafTypeInterface;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\invariant;
 
 /**

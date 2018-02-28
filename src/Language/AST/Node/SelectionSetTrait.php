@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
-
 trait SelectionSetTrait
 {
 

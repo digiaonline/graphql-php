@@ -3,10 +3,6 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\FieldsTrait;
-use Digia\GraphQL\Language\AST\Node\NameTrait;
-use Digia\GraphQL\Language\AST\Node\TypeExtensionNodeInterface;
 
 class InterfaceTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface
 {
@@ -26,11 +22,11 @@ class InterfaceTypeExtensionNode extends AbstractNode implements TypeExtensionNo
     public function toArray(): array
     {
         return [
-            'kind'        => $this->kind,
-            'name'        => $this->getNameAsArray(),
-            'directives'  => $this->getDirectivesAsArray(),
-            'fields'      => $this->getFieldsAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'kind'       => $this->kind,
+            'name'       => $this->getNameAsArray(),
+            'directives' => $this->getDirectivesAsArray(),
+            'fields'     => $this->getFieldsAsArray(),
+            'loc'        => $this->getLocationAsArray(),
         ];
     }
 }

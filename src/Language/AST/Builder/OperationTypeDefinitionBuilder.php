@@ -15,9 +15,9 @@ class OperationTypeDefinitionBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new OperationTypeDefinitionNode([
-            'operation'           => $this->get($ast, 'operation'),
-            'type'                => $this->buildOne($ast, 'type'),
-            'location'            => $this->createLocation($ast),
+            'operation' => $this->get($ast, 'operation'),
+            'type'      => $this->buildOne($ast, 'type'),
+            'location'  => $this->createLocation($ast),
         ]);
     }
 

@@ -5,13 +5,13 @@ namespace Digia\GraphQL\Test\Functional\Type;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Schema;
 use function Digia\GraphQL\Type\GraphQLBoolean;
 use function Digia\GraphQL\Type\GraphQLEnumType;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
-use Digia\GraphQL\Type\Schema;
 
 class EnumTypeTest extends TestCase
 {
