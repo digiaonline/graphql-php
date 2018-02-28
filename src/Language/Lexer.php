@@ -4,8 +4,7 @@ namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Error\SyntaxError;
-use Digia\GraphQL\Language\Contract\LexerInterface;
-use Digia\GraphQL\Language\Reader\Contract\ReaderInterface;
+use Digia\GraphQL\Language\Reader\ReaderInterface;
 
 class Lexer implements LexerInterface
 {

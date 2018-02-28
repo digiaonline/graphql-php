@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\InputObjectType;

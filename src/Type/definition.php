@@ -2,14 +2,14 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\CompositeTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\LeafTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\WrappingTypeInterface;
+use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
+use Digia\GraphQL\Type\Definition\InputTypeInterface;
+use Digia\GraphQL\Type\Definition\LeafTypeInterface;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use Digia\GraphQL\Type\Definition\OutputTypeInterface;
+use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -19,7 +19,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\Directive;
-use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
+use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Schema;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;

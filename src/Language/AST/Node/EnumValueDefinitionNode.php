@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
-use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
+use Digia\GraphQL\Language\AST\Node\DescriptionTrait;
+use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
+use Digia\GraphQL\Language\AST\Node\NameTrait;
+use Digia\GraphQL\Language\AST\Node\DefinitionNodeInterface;
 
 class EnumValueDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {

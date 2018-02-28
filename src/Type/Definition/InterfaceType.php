@@ -5,15 +5,15 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Language\AST\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
-use Digia\GraphQL\Type\Definition\Behavior\ExtensionASTNodesTrait;
-use Digia\GraphQL\Type\Definition\Behavior\FieldsTrait;
-use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
-use Digia\GraphQL\Type\Definition\Behavior\ResolveTypeTrait;
-use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\CompositeTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
+use Digia\GraphQL\Type\Definition\DescriptionTrait;
+use Digia\GraphQL\Type\Definition\ExtensionASTNodesTrait;
+use Digia\GraphQL\Type\Definition\FieldsTrait;
+use Digia\GraphQL\Type\Definition\NameTrait;
+use Digia\GraphQL\Type\Definition\ResolveTypeTrait;
+use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 
 /**
  * Interface Type Definition

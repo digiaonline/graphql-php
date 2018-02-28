@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\EnumValueNode;
 use Digia\GraphQL\Language\AST\Node\IntValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;

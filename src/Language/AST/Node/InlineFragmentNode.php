@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\SelectionSetTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\TypeConditionTrait;
-use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
+use Digia\GraphQL\Language\AST\Node\SelectionSetTrait;
+use Digia\GraphQL\Language\AST\Node\TypeConditionTrait;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 
 class InlineFragmentNode extends AbstractNode implements NodeInterface
 {

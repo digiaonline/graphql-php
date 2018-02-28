@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\ConfigObject;
-use Digia\GraphQL\Contract\SerializationInterface;
+use Digia\GraphQL\SerializationInterface;
 use Digia\GraphQL\Language\Location;
 use function Digia\GraphQL\Util\jsonEncode;
 

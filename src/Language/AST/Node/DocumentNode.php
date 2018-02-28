@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Contract\SerializationInterface;
-use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
-use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\SerializationInterface;
+use Digia\GraphQL\Language\AST\Node\DefinitionNodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class DocumentNode extends AbstractNode implements NodeInterface

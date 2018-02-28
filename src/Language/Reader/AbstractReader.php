@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\Reader;
 
 use Digia\GraphQL\Language\Lexer;
-use Digia\GraphQL\Language\Reader\Contract\ReaderInterface;
 
 abstract class AbstractReader implements ReaderInterface
 {

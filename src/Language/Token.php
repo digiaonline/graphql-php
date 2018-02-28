@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Contract\SerializationInterface;
+use Digia\GraphQL\SerializationInterface;
 use function Digia\GraphQL\Util\jsonEncode;
 
 class Token implements SerializationInterface

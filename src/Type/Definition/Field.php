@@ -4,12 +4,12 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Type\Definition\Behavior\ArgumentsTrait;
-use Digia\GraphQL\Type\Definition\Behavior\DeprecationTrait;
-use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
-use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
-use Digia\GraphQL\Type\Definition\Behavior\ResolveTrait;
-use Digia\GraphQL\Type\Definition\Behavior\TypeTrait;
+use Digia\GraphQL\Type\Definition\ArgumentsTrait;
+use Digia\GraphQL\Type\Definition\DeprecationTrait;
+use Digia\GraphQL\Type\Definition\DescriptionTrait;
+use Digia\GraphQL\Type\Definition\NameTrait;
+use Digia\GraphQL\Type\Definition\ResolveTrait;
+use Digia\GraphQL\Type\Definition\TypeTrait;
 
 class Field extends ConfigObject
 {

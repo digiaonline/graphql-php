@@ -2,8 +2,7 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
-use Digia\GraphQL\Language\Contract\PrinterInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 
 class Printer implements PrinterInterface
 {

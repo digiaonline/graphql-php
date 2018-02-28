@@ -2,12 +2,12 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\Node\Behavior\DescriptionTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\FieldsTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\InterfacesTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
-use Digia\GraphQL\Language\AST\Node\Contract\TypeDefinitionNodeInterface;
+use Digia\GraphQL\Language\AST\Node\DescriptionTrait;
+use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
+use Digia\GraphQL\Language\AST\Node\FieldsTrait;
+use Digia\GraphQL\Language\AST\Node\InterfacesTrait;
+use Digia\GraphQL\Language\AST\Node\NameTrait;
+use Digia\GraphQL\Language\AST\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class ObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface

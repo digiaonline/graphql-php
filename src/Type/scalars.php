@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
-use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use function Digia\GraphQL\Util\arraySome;

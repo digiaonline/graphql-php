@@ -3,16 +3,16 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\ConfigObject;
-use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ScalarTypeDefinitionNode;
-use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
-use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
-use Digia\GraphQL\Type\Definition\Contract\InputTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\LeafTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\NamedTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use Digia\GraphQL\Type\Definition\DescriptionTrait;
+use Digia\GraphQL\Type\Definition\NameTrait;
+use Digia\GraphQL\Type\Definition\InputTypeInterface;
+use Digia\GraphQL\Type\Definition\LeafTypeInterface;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use Digia\GraphQL\Type\Definition\OutputTypeInterface;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\invariant;
 
 /**

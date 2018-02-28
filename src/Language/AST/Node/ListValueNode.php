@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Contract\SerializationInterface;
-use Digia\GraphQL\Language\AST\Node\Contract\ValueNodeInterface;
+use Digia\GraphQL\SerializationInterface;
+use Digia\GraphQL\Language\AST\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class ListValueNode extends AbstractNode implements ValueNodeInterface
