@@ -20,6 +20,7 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
             : $schema->getQuery();
 
         $fields = $this->collectFields($objectType, $this->operation->getSelectionSet(), new \ArrayObject(), new \ArrayObject());
+
         $path   = [];
 
         try {

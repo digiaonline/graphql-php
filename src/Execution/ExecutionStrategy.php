@@ -71,7 +71,7 @@ abstract class ExecutionStrategy
             /** @var FieldNode $selection */
             switch ($selection->getKind()) {
                 case NodeKindEnum::FIELD:
-                    $name = $selection->getNameValue();
+                    $name = $this->getFieldNameKey($selection);
                     if (!isset($fields[$name])) {
                         $fields[$name] = new \ArrayObject();
                     }
@@ -108,6 +108,15 @@ abstract class ExecutionStrategy
     }
 
     /**
+     * @param FieldNode $node
+     * @return string
+     */
+    private function getFieldNameKey(FieldNode $node)
+    {
+        return $node->getAlias() ? $node->getAlias()->getValue() : $node->getNameValue();
+    }
+
+    /**
      * Implements the "Evaluating selection sets" section of the spec
      * for "read" mode.
      * @param ObjectType $parentType
@@ -130,9 +139,6 @@ abstract class ExecutionStrategy
         foreach ($fields as $fieldName => $fieldNodes) {
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
-            if (!$this->isDefinedField($parentType, $fieldName)) {
-                continue;
-            }
 
             $result = $this->resolveField($parentType,
                 $source,
@@ -144,17 +150,6 @@ abstract class ExecutionStrategy
         }
 
         return $finalResults;
-    }
-
-    /**
-     * @param ObjectType $parentType
-     * @param string $fieldName
-     * @return bool
-     * @throws \Exception
-     */
-    protected function isDefinedField(ObjectType $parentType, string $fieldName)
-    {
-       return isset($parentType->getFields()[$fieldName]);
     }
 
     /**
@@ -192,19 +187,23 @@ abstract class ExecutionStrategy
 
         $result = $field->resolve(...$args);
 
-        //TODO Resolve sub fields
+        if (!empty($fieldNode->getSelectionSet())) {
+            $fields = $this->collectFields(
+                $parentType,
+                $fieldNode->getSelectionSet(),
+                new \ArrayObject(),
+                new \ArrayObject()
+            );
+
+            $data = $this->executeFields(
+                $parentType,
+                $this->rootValue,
+                [],
+                $fields
+            );
+            $result = array_merge($result, $data);
+        }
 
         return $result;
-    }
-
-    private function completeValue(
-        $returnType,
-        $fieldNodes,
-        $info,
-        $path,
-        &$result)
-    {
-
-
     }
 }

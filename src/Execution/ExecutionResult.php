@@ -28,6 +28,14 @@ class ExecutionResult
     }
 
     /**
+     * @return array|mixed[]
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
      * @return array|GraphQLError[]
      */
     public function getErrors(): array
@@ -43,5 +51,16 @@ class ExecutionResult
     {
         $this->errors[] = $error;
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'data'   => $this->getData(),
+            'errors' => $this->getErrors(),
+        ];
     }
 }

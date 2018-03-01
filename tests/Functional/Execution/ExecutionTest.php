@@ -6,6 +6,7 @@ use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
+use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NameNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
@@ -327,12 +328,10 @@ class ExecutionTest extends TestCase
     {
         $documentNode = parser()->parse(new Source('
       { a, ...FragOne, ...FragTwo }
-
       fragment FragOne on Type {
         b
         deep { b, deeper: deep { b } }
       }
-
       fragment FragTwo on Type {
         c
         deep { c, deeper: deep { c } }
@@ -342,19 +341,19 @@ class ExecutionTest extends TestCase
             'name'   => 'Type',
             'fields' => function() use (&$Type) {
                 return [
-                    'a'    => [
+                    'a' => [
                         'type'    => GraphQLString(),
                         'resolve' => function () {
                             return 'Apple';
                         }
                     ],
-                    'b'    => [
+                    'b' => [
                         'type'    => GraphQLString(),
                         'resolve' => function () {
                             return 'Banana';
                         }
                     ],
-                    'c'    => [
+                    'c' => [
                         'type'    => GraphQLString(),
                         'resolve' => function () {
                             return 'Cherry';
@@ -396,12 +395,12 @@ class ExecutionTest extends TestCase
             'b'    => 'Banana',
             'c'    => 'Cherry',
             'deep' => [
-//                'b'      => 'Banana',
-//                'c'      => 'Cherry',
-//                'deeper' => [
-//                    'b' => 'Banana',
-//                    'c' => 'Cherry'
-//                ]
+                'b'      => 'Banana',
+                'c'      => 'Cherry',
+                'deeper' => [
+                    'b' => 'Banana',
+                    'c' => 'Cherry'
+                ]
             ]
         ], []);
 
