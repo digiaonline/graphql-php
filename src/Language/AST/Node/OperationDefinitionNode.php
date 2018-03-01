@@ -2,12 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Contract\SerializationInterface;
-use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\NameTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\SelectionSetTrait;
-use Digia\GraphQL\Language\AST\Node\Behavior\VariableDefinitionsTrait;
-use Digia\GraphQL\Language\AST\Node\Contract\ExecutableDefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class OperationDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface

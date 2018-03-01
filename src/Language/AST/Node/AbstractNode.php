@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\ConfigObject;
-use Digia\GraphQL\Contract\SerializationInterface;
 use Digia\GraphQL\Language\Location;
+use Digia\GraphQL\SerializationInterface;
 use function Digia\GraphQL\Util\jsonEncode;
 
 abstract class AbstractNode extends ConfigObject implements SerializationInterface

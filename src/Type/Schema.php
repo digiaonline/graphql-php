@@ -5,16 +5,15 @@ namespace Digia\GraphQL\Type;
 use Digia\GraphQL\ConfigObject;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
-use Digia\GraphQL\Type\Contract\SchemaInterface;
+use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
-use Digia\GraphQL\Type\Definition\Contract\AbstractTypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
-use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
-use Digia\GraphQL\Type\Definition\Contract\WrappingTypeInterface;
+use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
+use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use function Digia\GraphQL\Util\invariant;
 
 /**

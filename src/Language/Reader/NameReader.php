@@ -2,10 +2,10 @@
 
 namespace Digia\GraphQL\Language\Reader;
 
-use function Digia\GraphQL\Language\charCodeAt;
-use function Digia\GraphQL\Language\sliceString;
 use Digia\GraphQL\Language\Token;
 use Digia\GraphQL\Language\TokenKindEnum;
+use function Digia\GraphQL\Language\charCodeAt;
+use function Digia\GraphQL\Language\sliceString;
 
 class NameReader extends AbstractReader
 {

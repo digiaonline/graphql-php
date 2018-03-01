@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Node\Contract\ValueNodeInterface;
 
 class ObjectValueNode extends AbstractNode implements ValueNodeInterface
 {

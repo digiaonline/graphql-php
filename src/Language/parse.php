@@ -45,8 +45,7 @@ use Digia\GraphQL\Language\AST\Builder\UnionTypeDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\UnionTypeExtensionBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableBuilder;
 use Digia\GraphQL\Language\AST\Builder\VariableDefinitionBuilder;
-use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
-use Digia\GraphQL\Language\Contract\ParserInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\Reader\AmpReader;
 use Digia\GraphQL\Language\Reader\AtReader;
 use Digia\GraphQL\Language\Reader\BangReader;
@@ -138,7 +137,7 @@ function parser(): ParserInterface
             new StringReader(),
         ];
 
-        $instance = new ASTParser($builders, $readers);
+        $instance = new Parser($builders, $readers);
     }
 
     return $instance;

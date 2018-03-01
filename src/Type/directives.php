@@ -1,9 +1,8 @@
 <?php
 
 use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
-use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\Directive;
-use Digia\GraphQL\Type\Definition\SpecifiedDirectiveEnum;
+use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use function Digia\GraphQL\Type\GraphQLBoolean;
 use function Digia\GraphQL\Type\GraphQLDirective;
 use function Digia\GraphQL\Type\GraphQLNonNull;

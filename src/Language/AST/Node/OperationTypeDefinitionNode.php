@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\Node\Behavior\TypeTrait;
-use Digia\GraphQL\Language\AST\Node\Contract\DefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class OperationTypeDefinitionNode extends AbstractNode implements DefinitionNodeInterface

@@ -3,21 +3,18 @@
 namespace Digia\GraphQL\Language\Reader;
 
 use Digia\GraphQL\Error\SyntaxError;
-use function Digia\GraphQL\Language\charCodeAt;
-use function Digia\GraphQL\Language\chrUTF8;
-use function Digia\GraphQL\Language\printCharCode;
-use function Digia\GraphQL\Language\sliceString;
 use Digia\GraphQL\Language\Token;
 use Digia\GraphQL\Language\TokenKindEnum;
+use function Digia\GraphQL\Language\charCodeAt;
+use function Digia\GraphQL\Language\printCharCode;
+use function Digia\GraphQL\Language\sliceString;
 use function Digia\GraphQL\Language\uniCharCode;
 
 /**
  * Class StringReader
  *
  * @package Digia\GraphQL\Language\Reader
- *
  * Reads a string token from the source file.
- *
  * "([^"\\\u000A\u000D]|(\\(u[0-9a-fA-F]{4}|["\\/bfnrt])))*"
  */
 class StringReader extends AbstractReader

@@ -13,12 +13,12 @@ use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Location;
-use function Digia\GraphQL\Language\parser;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema;
+use function Digia\GraphQL\Language\parser;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLString;
@@ -49,15 +49,15 @@ class ExecutionTest extends TestCase
         $documentNode = new DocumentNode([
             'definitions' => [
                 new OperationDefinitionNode([
-                    'kind' => NodeKindEnum::OPERATION_DEFINITION,
-                    'name' => new NameNode([
+                    'kind'                => NodeKindEnum::OPERATION_DEFINITION,
+                    'name'                => new NameNode([
                         'value' => 'query',
                     ]),
-                    'selectionSet' => new SelectionSetNode([
+                    'selectionSet'        => new SelectionSetNode([
                         'selections' => [
                             new FieldNode([
-                                'name' => new NameNode([
-                                    'value' => 'hello',
+                                'name'      => new NameNode([
+                                    'value'    => 'hello',
                                     'location' => new Location(
                                         15,
                                         20,
@@ -68,8 +68,8 @@ class ExecutionTest extends TestCase
                             ])
                         ]
                     ]),
-                    'operation' => 'query',
-                    'directives' => [],
+                    'operation'           => 'query',
+                    'directives'          => [],
                     'variableDefinitions' => []
                 ])
             ],
@@ -120,27 +120,28 @@ class ExecutionTest extends TestCase
         $documentNode = new DocumentNode([
             'definitions' => [
                 new OperationDefinitionNode([
-                    'kind' => NodeKindEnum::OPERATION_DEFINITION,
-                    'name' => new NameNode([
+                    'kind'                => NodeKindEnum::OPERATION_DEFINITION,
+                    'name'                => new NameNode([
                         'value' => 'query'
                     ]),
-                    'selectionSet' => new SelectionSetNode([
+                    'selectionSet'        => new SelectionSetNode([
                         'selections' => [
                             new FieldNode([
-                                'name' => new NameNode([
-                                    'value' => 'greeting',
+                                'name'      => new NameNode([
+                                    'value'    => 'greeting',
                                     'location' => new Location(
                                         15,
                                         20,
-                                        new Source('query Hello($name: String) {greeting(name: $name)}', 'GraphQL', new SourceLocation())
+                                        new Source('query Hello($name: String) {greeting(name: $name)}', 'GraphQL',
+                                            new SourceLocation())
                                     )
                                 ]),
                                 'arguments' => [
                                     new InputValueDefinitionNode([
-                                        'name' => new NameNode([
+                                        'name'         => new NameNode([
                                             'value' => 'name'
                                         ]),
-                                        'type' => GraphQLString(),
+                                        'type'         => GraphQLString(),
                                         'defaultValue' => new StringValueNode([
                                             'value' => 'Han Solo',
                                         ]),
@@ -149,8 +150,8 @@ class ExecutionTest extends TestCase
                             ])
                         ]
                     ]),
-                    'operation' => 'query',
-                    'directives' => [],
+                    'operation'           => 'query',
+                    'directives'          => [],
                     'variableDefinitions' => []
                 ])
             ],
@@ -189,32 +190,32 @@ class ExecutionTest extends TestCase
                 new ObjectType([
                     'name'   => 'Human',
                     'fields' => [
-                        'id' =>  [
+                        'id'         => [
                             'type'    => GraphQLInt(),
                             'resolve' => function () {
                                 return 1000;
                             }
                         ],
-                        'type' => [
+                        'type'       => [
                             'type'    => GraphQLString(),
                             'resolve' => function () {
                                 return 'Human';
                             }
                         ],
-                        'friends' => [
+                        'friends'    => [
                             'type'    => GraphQLList(GraphQLString()),
                             'resolve' => function () {
                                 return ['1002', '1003', '2000', '2001'];
                             }
                         ],
-                        'appearsIn' => [
-                            'type' => GraphQLList(GraphQLInt()),
+                        'appearsIn'  => [
+                            'type'    => GraphQLList(GraphQLInt()),
                             'resolve' => function () {
                                 return [4, 5, 6];
                             }
                         ],
                         'homePlanet' => [
-                            'type' => GraphQLString(),
+                            'type'    => GraphQLString(),
                             'resolve' => function () {
                                 return 'Tatooine';
                             }
@@ -226,66 +227,71 @@ class ExecutionTest extends TestCase
         $documentNode = new DocumentNode([
             'definitions' => [
                 new OperationDefinitionNode([
-                    'kind' => NodeKindEnum::OPERATION_DEFINITION,
-                    'name' => new NameNode([
+                    'kind'                => NodeKindEnum::OPERATION_DEFINITION,
+                    'name'                => new NameNode([
                         'value' => 'query'
                     ]),
-                    'selectionSet' => new SelectionSetNode([
+                    'selectionSet'        => new SelectionSetNode([
                         'selections' => [
                             new FieldNode([
                                 'name' => new NameNode([
-                                    'value' => 'id',
+                                    'value'    => 'id',
                                     'location' => new Location(
                                         15,
                                         20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
+                                            new SourceLocation())
                                     )
                                 ]),
                             ]),
                             new FieldNode([
                                 'name' => new NameNode([
-                                    'value' => 'type',
+                                    'value'    => 'type',
                                     'location' => new Location(
                                         15,
                                         20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
+                                            new SourceLocation())
                                     )
                                 ]),
                             ]),
                             new FieldNode([
                                 'name' => new NameNode([
-                                    'value' => 'friends',
+                                    'value'    => 'friends',
                                     'location' => new Location(
                                         15,
                                         20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
+                                            new SourceLocation())
                                     )
                                 ]),
                             ]),
                             new FieldNode([
                                 'name' => new NameNode([
-                                    'value' => 'appearsIn',
+                                    'value'    => 'appearsIn',
                                     'location' => new Location(
                                         15,
                                         20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
+                                            new SourceLocation())
                                     )
                                 ]),
                             ]),
                             new FieldNode([
                                 'name' => new NameNode([
-                                    'value' => 'homePlanet',
+                                    'value'    => 'homePlanet',
                                     'location' => new Location(
                                         15,
                                         20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL', new SourceLocation())
+                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
+                                            new SourceLocation())
                                     )
                                 ]),
                             ])
                         ]
                     ]),
-                    'operation' => 'query',
-                    'directives' => [],
+                    'operation'           => 'query',
+                    'directives'          => [],
                     'variableDefinitions' => []
                 ])
             ],
@@ -312,7 +318,7 @@ class ExecutionTest extends TestCase
             'id'         => 1000,
             'type'       => 'Human',
             'friends'    => ['1002', '1003', '2000', '2001'],
-            'appearsIn'  => [4,5,6],
+            'appearsIn'  => [4, 5, 6],
             'homePlanet' => 'Tatooine'
         ], []);
 
@@ -340,7 +346,7 @@ class ExecutionTest extends TestCase
 
         $Type = new ObjectType([
             'name'   => 'Type',
-            'fields' => function() use (&$Type) {
+            'fields' => function () use (&$Type) {
                 return [
                     'a'    => [
                         'type'    => GraphQLString(),

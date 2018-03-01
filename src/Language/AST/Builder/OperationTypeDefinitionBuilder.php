@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Node\Contract\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
@@ -15,9 +15,9 @@ class OperationTypeDefinitionBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new OperationTypeDefinitionNode([
-            'operation'           => $this->get($ast, 'operation'),
-            'type'                => $this->buildOne($ast, 'type'),
-            'location'            => $this->createLocation($ast),
+            'operation' => $this->get($ast, 'operation'),
+            'type'      => $this->buildOne($ast, 'type'),
+            'location'  => $this->createLocation($ast),
         ]);
     }
 

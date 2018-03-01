@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Language\AST\Builder\Contract\BuilderInterface;
-use Digia\GraphQL\Language\AST\Builder\Contract\DirectorInterface;
 use Digia\GraphQL\Language\Location;
 
 abstract class AbstractBuilder implements BuilderInterface

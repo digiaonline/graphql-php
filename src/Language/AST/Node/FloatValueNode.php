@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\Language\AST\Node\Behavior\ValueTrait;
-use Digia\GraphQL\Language\AST\Node\Contract\ValueNodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 
 class FloatValueNode extends AbstractNode implements ValueNodeInterface

@@ -3,10 +3,6 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\ConfigObject;
-use Digia\GraphQL\Type\Definition\Behavior\ArgumentsTrait;
-use Digia\GraphQL\Type\Definition\Behavior\DescriptionTrait;
-use Digia\GraphQL\Type\Definition\Behavior\NameTrait;
-use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
 
 class Directive extends ConfigObject implements DirectiveInterface
 {
