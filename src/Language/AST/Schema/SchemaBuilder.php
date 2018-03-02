@@ -11,7 +11,7 @@ use Digia\GraphQL\Type\SchemaInterface;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Util\arraySome;
 
-class SchemaBuilder
+class SchemaBuilder implements SchemaBuilderInterface
 {
 
     /**

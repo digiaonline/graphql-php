@@ -4,14 +4,16 @@ namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\Schema\SchemaBuilderInterface;
 use Digia\GraphQL\Language\LexerInterface;
 use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\PrinterInterface;
 use Digia\GraphQL\Language\Source;
+use Digia\GraphQL\Type\SchemaInterface;
 
 /**
  * @param string|Source $source
- * @param array         $options
+ * @param array $options
  * @return NodeInterface
  * @throws GraphQLError
  * @throws \Exception
@@ -27,7 +29,7 @@ function parse($source, array $options = []): NodeInterface
 
 /**
  * @param string|Source $source
- * @param array         $options
+ * @param array $options
  * @return NodeInterface
  * @throws GraphQLError
  * @throws \Exception
@@ -43,7 +45,7 @@ function parseValue($source, array $options = []): NodeInterface
 
 /**
  * @param string|Source $source
- * @param array         $options
+ * @param array $options
  * @return NodeInterface
  * @throws GraphQLError
  * @throws \Exception
@@ -55,6 +57,18 @@ function parseType($source, array $options = []): NodeInterface
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options)
     );
+}
+
+/**
+ * @param string $source
+ * @param array $options
+ * @return SchemaInterface
+ * @throws \Digia\GraphQL\Error\GraphQLError
+ * @throws \Exception
+ */
+function buildSchema(string $source, array $options = []): SchemaInterface
+{
+    return GraphQL::get(SchemaBuilderInterface::class)->build(parse($source, $options));
 }
 
 /**

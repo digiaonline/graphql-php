@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language\AST\Schema;
 
-use Digia\GraphQL\Cache\CacheInterface;
 use Digia\GraphQL\Language\AST\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\EnumValueDefinitionNode;
@@ -20,7 +19,6 @@ use Digia\GraphQL\Language\AST\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
-use Digia\GraphQL\Language\AST\Schema\DefinitionBuilderInterface;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -45,6 +43,7 @@ use function Digia\GraphQL\Type\GraphQLUnionType;
 use function Digia\GraphQL\Type\specifiedScalarTypes;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\keyValMap;
+use Psr\SimpleCache\CacheInterface;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
@@ -68,6 +67,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * DefinitionBuilder constructor.
      *
      * @param callable $resolveTypeFunction
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function __construct(callable $resolveTypeFunction, CacheInterface $cache)
     {
@@ -82,7 +82,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         );
 
         foreach ($builtInTypes as $name => $type) {
-            $cache->setItem($name, $type);
+            $cache->set($name, $type);
         }
 
         $this->cache = $cache;
@@ -105,20 +105,20 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     {
         $typeName = $node->getNameValue();
 
-        if (!$this->cache->hasItem($typeName)) {
+        if (!$this->cache->has($typeName)) {
             if ($node instanceof NamedTypeNode) {
                 $definition = $this->getTypeDefinition($typeName);
 
-                $this->cache->setItem(
+                $this->cache->set(
                     $typeName,
                     null !== $definition ? $this->buildNamedType($definition) : $this->resolveType($node)
                 );
             } else {
-                $this->cache->setItem($typeName, $this->buildNamedType($node));
+                $this->cache->set($typeName, $this->buildNamedType($node));
             }
         }
 
-        return $this->cache->getItem($typeName);
+        return $this->cache->get($typeName);
     }
 
     /**

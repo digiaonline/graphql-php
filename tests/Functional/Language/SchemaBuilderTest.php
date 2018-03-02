@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Schema;
-use function Digia\GraphQL\Language\buildSchema;
+use function Digia\GraphQL\buildSchema;
 use function Digia\GraphQL\Util\readFile;
 
 class SchemaBuilderTest extends TestCase
