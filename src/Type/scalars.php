@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\GraphQLRuntime;
+use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\arraySome;
@@ -15,7 +15,7 @@ const MIN_INT = -2147483648;
  */
 function GraphQLBoolean(): ScalarType
 {
-    return GraphQLRuntime::get('GraphQLBoolean');
+    return GraphQL::get('GraphQLBoolean');
 }
 
 /**
@@ -23,7 +23,7 @@ function GraphQLBoolean(): ScalarType
  */
 function GraphQLFloat(): ScalarType
 {
-    return GraphQLRuntime::get('GraphQLFloat');
+    return GraphQL::get('GraphQLFloat');
 }
 
 /**
@@ -31,7 +31,7 @@ function GraphQLFloat(): ScalarType
  */
 function GraphQLInt(): ScalarType
 {
-    return GraphQLRuntime::get('GraphQLInt');
+    return GraphQL::get('GraphQLInt');
 }
 
 /**
@@ -39,7 +39,7 @@ function GraphQLInt(): ScalarType
  */
 function GraphQLID(): ScalarType
 {
-    return GraphQLRuntime::get('GraphQLID');
+    return GraphQL::get('GraphQLID');
 }
 
 /**
@@ -47,7 +47,7 @@ function GraphQLID(): ScalarType
  */
 function GraphQLString(): ScalarType
 {
-    return GraphQLRuntime::get('GraphQLString');
+    return GraphQL::get('GraphQLString');
 }
 
 /**

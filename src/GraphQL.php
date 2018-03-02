@@ -88,11 +88,11 @@ use function Digia\GraphQL\Type\GraphQLNonNull;
 use function Digia\GraphQL\Type\GraphQLScalarType;
 use function Digia\GraphQL\Type\GraphQLString;
 
-class GraphQLRuntime
+class GraphQL
 {
 
     /**
-     * @var GraphQLRuntime
+     * @var GraphQL
      */
     private static $instance;
 
@@ -122,7 +122,7 @@ class GraphQLRuntime
     }
 
     /**
-     * @return GraphQLRuntime
+     * @return GraphQL
      */
     public static function getInstance()
     {
