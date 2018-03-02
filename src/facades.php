@@ -18,8 +18,8 @@ use Digia\GraphQL\Language\Source;
  */
 function parse($source, array $options = []): NodeInterface
 {
-    return GraphQLRuntime::get()->make(ParserInterface::class)->parse(
-        GraphQLRuntime::get()->make(LexerInterface::class)
+    return GraphQLRuntime::get(ParserInterface::class)->parse(
+        GraphQLRuntime::get(LexerInterface::class)
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options)
     );
@@ -34,8 +34,8 @@ function parse($source, array $options = []): NodeInterface
  */
 function parseValue($source, array $options = []): NodeInterface
 {
-    return GraphQLRuntime::get()->make(ParserInterface::class)->parseValue(
-        GraphQLRuntime::get()->make(LexerInterface::class)
+    return GraphQLRuntime::get(ParserInterface::class)->parseValue(
+        GraphQLRuntime::get(LexerInterface::class)
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options)
     );
@@ -50,8 +50,8 @@ function parseValue($source, array $options = []): NodeInterface
  */
 function parseType($source, array $options = []): NodeInterface
 {
-    return GraphQLRuntime::get()->make(ParserInterface::class)->parseType(
-        GraphQLRuntime::get()->make(LexerInterface::class)
+    return GraphQLRuntime::get(ParserInterface::class)->parseType(
+        GraphQLRuntime::get(LexerInterface::class)
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options)
     );
@@ -63,5 +63,5 @@ function parseType($source, array $options = []): NodeInterface
  */
 function printNode(NodeInterface $node): string
 {
-    return GraphQLRuntime::get()->make(PrinterInterface::class)->print($node);
+    return GraphQLRuntime::getInstance()->get(PrinterInterface::class)->print($node);
 }

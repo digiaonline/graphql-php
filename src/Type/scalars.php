@@ -15,7 +15,7 @@ const MIN_INT = -2147483648;
  */
 function GraphQLBoolean(): ScalarType
 {
-    return GraphQLRuntime::get()->make('GraphQLBoolean');
+    return GraphQLRuntime::get('GraphQLBoolean');
 }
 
 /**
@@ -23,7 +23,7 @@ function GraphQLBoolean(): ScalarType
  */
 function GraphQLFloat(): ScalarType
 {
-    return GraphQLRuntime::get()->make('GraphQLFloat');
+    return GraphQLRuntime::get('GraphQLFloat');
 }
 
 /**
@@ -31,7 +31,7 @@ function GraphQLFloat(): ScalarType
  */
 function GraphQLInt(): ScalarType
 {
-    return GraphQLRuntime::get()->make('GraphQLInt');
+    return GraphQLRuntime::get('GraphQLInt');
 }
 
 /**
@@ -39,7 +39,7 @@ function GraphQLInt(): ScalarType
  */
 function GraphQLID(): ScalarType
 {
-    return GraphQLRuntime::get()->make('GraphQLID');
+    return GraphQLRuntime::get('GraphQLID');
 }
 
 /**
@@ -47,7 +47,7 @@ function GraphQLID(): ScalarType
  */
 function GraphQLString(): ScalarType
 {
-    return GraphQLRuntime::get()->make('GraphQLString');
+    return GraphQLRuntime::get('GraphQLString');
 }
 
 /**

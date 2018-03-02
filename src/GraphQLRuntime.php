@@ -114,7 +114,7 @@ class GraphQLRuntime
     /**
      * GraphQL constructor.
      */
-    public function __construct()
+    private function __construct()
     {
         $this->container = new Container();
 
@@ -124,7 +124,7 @@ class GraphQLRuntime
     /**
      * @return GraphQLRuntime
      */
-    public static function get()
+    public static function getInstance()
     {
         if (null === self::$instance) {
             self::$instance = new static();
@@ -139,52 +139,9 @@ class GraphQLRuntime
     public static function getNodeBuilders(): array
     {
         if (null === self::$nodeBuilders) {
-            self::$nodeBuilders = [
-                // Standard
-                new ArgumentBuilder(),
-                new BooleanBuilder(),
-                new DirectiveBuilder(),
-                new DocumentBuilder(),
-                new EnumBuilder(),
-                new FieldBuilder(),
-                new FloatBuilder(),
-                new FragmentDefinitionBuilder(),
-                new FragmentSpreadBuilder(),
-                new InlineFragmentBuilder(),
-                new IntBuilder(),
-                new ListBuilder(),
-                new ListTypeBuilder(),
-                new NameBuilder(),
-                new NamedTypeBuilder(),
-                new NonNullTypeBuilder(),
-                new NullBuilder(),
-                new ObjectBuilder(),
-                new ObjectFieldBuilder(),
-                new OperationDefinitionBuilder(),
-                new SelectionSetBuilder(),
-                new StringBuilder(),
-                new VariableBuilder(),
-                new VariableDefinitionBuilder(),
-                // Schema Definition Language (SDL)
-                new SchemaDefinitionBuilder(),
-                new OperationTypeDefinitionBuilder(),
-                new FieldDefinitionBuilder(),
-                new ScalarTypeDefinitionBuilder(),
-                new ObjectTypeDefinitionBuilder(),
-                new InterfaceTypeDefinitionBuilder(),
-                new UnionTypeDefinitionBuilder(),
-                new EnumTypeDefinitionBuilder(),
-                new EnumValueDefinitionBuilder(),
-                new InputObjectTypeDefinitionBuilder(),
-                new InputValueDefinitionBuilder(),
-                new ScalarTypeExtensionBuilder(),
-                new ObjectTypeExtensionBuilder(),
-                new InterfaceTypeExtensionBuilder(),
-                new EnumTypeExtensionBuilder(),
-                new UnionTypeExtensionBuilder(),
-                new InputObjectTypeExtensionBuilder(),
-                new DirectiveDefinitionBuilder(),
-            ];
+            foreach (self::$supportedNodeBuilders as $className) {
+                self::$nodeBuilders[] = new $className();
+            }
         }
 
         return self::$nodeBuilders;
@@ -196,24 +153,9 @@ class GraphQLRuntime
     public static function getSourceReaders(): array
     {
         if (null === self::$sourceReaders) {
-            self::$sourceReaders = [
-                new AmpReader(),
-                new AtReader(),
-                new BangReader(),
-                new BlockStringReader(),
-                new BraceReader(),
-                new BracketReader(),
-                new ColonReader(),
-                new CommentReader(),
-                new DollarReader(),
-                new EqualsReader(),
-                new NameReader(),
-                new NumberReader(),
-                new ParenthesisReader(),
-                new PipeReader(),
-                new SpreadReader(),
-                new StringReader(),
-            ];
+            foreach (self::$supportedSourceReaders as $className) {
+                self::$sourceReaders[] = new $className();
+            }
         }
 
         return self::$sourceReaders;
@@ -221,7 +163,16 @@ class GraphQLRuntime
 
     /**
      * @param string $id
-     * @param mixed  $concrete
+     * @return mixed
+     */
+    public static function get(string $id)
+    {
+        return self::getInstance()->getContainer()->get($id);
+    }
+
+    /**
+     * @param string $id
+     * @param mixed $concrete
      * @return DefinitionInterface
      */
     public function bind(string $id, $concrete): DefinitionInterface
@@ -231,21 +182,20 @@ class GraphQLRuntime
 
     /**
      * @param string $id
-     * @param mixed  $concrete
+     * @param mixed $concrete
      * @return DefinitionInterface
      */
-    public function singleton(string $id, $concrete): DefinitionInterface
+    public function shared(string $id, $concrete): DefinitionInterface
     {
         return $this->container->add($id, $concrete, true);
     }
 
     /**
-     * @param string $id
-     * @return mixed
+     * @return Container
      */
-    public function make(string $id)
+    public function getContainer(): Container
     {
-        return $this->container->get($id);
+        return $this->container;
     }
 
     /**
@@ -264,11 +214,11 @@ class GraphQLRuntime
      */
     protected function registerParser()
     {
-        $this->singleton(NodeBuilderInterface::class, function () {
+        $this->shared(NodeBuilderInterface::class, function () {
             return new NodeBuilder(self::getNodeBuilders());
         });
 
-        $this->singleton(ParserInterface::class, Parser::class)
+        $this->shared(ParserInterface::class, Parser::class)
             ->addArgument(NodeBuilderInterface::class);
 
         $this->bind(LexerInterface::class, function () {
@@ -281,7 +231,7 @@ class GraphQLRuntime
      */
     protected function registerPrinter()
     {
-        $this->singleton(PrinterInterface::class, Printer::class);
+        $this->shared(PrinterInterface::class, Printer::class);
     }
 
     /**
@@ -303,14 +253,14 @@ class GraphQLRuntime
             return (bool)$value;
         }
 
-        $this->singleton('GraphQLBoolean', function () {
+        $this->shared('GraphQLBoolean', function () {
             return GraphQLScalarType([
-                'name'        => TypeNameEnum::BOOLEAN,
+                'name' => TypeNameEnum::BOOLEAN,
                 'description' => 'The `Boolean` scalar type represents `true` or `false`.',
-                'serialize'   => function ($value) {
+                'serialize' => function ($value) {
                     return coerceBoolean($value);
                 },
-                'parseValue'  => function ($value) {
+                'parseValue' => function ($value) {
                     return coerceBoolean($value);
                 },
 
@@ -339,17 +289,17 @@ class GraphQLRuntime
             throw new \TypeError(sprintf('Float cannot represent non numeric value: %s', $value));
         }
 
-        $this->singleton('GraphQLFloat', function () {
+        $this->shared('GraphQLFloat', function () {
             return GraphQLScalarType([
-                'name'         => TypeNameEnum::FLOAT,
-                'description'  =>
+                'name' => TypeNameEnum::FLOAT,
+                'description' =>
                     'The `Float` scalar type represents signed double-precision fractional ' .
                     'values as specified by ' .
                     '[IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).',
-                'serialize'    => function ($value) {
+                'serialize' => function ($value) {
                     return coerceFloat($value);
                 },
-                'parseValue'   => function ($value) {
+                'parseValue' => function ($value) {
                     return coerceFloat($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
@@ -380,7 +330,7 @@ class GraphQLRuntime
                 throw new \TypeError(sprintf('Int cannot represent non 32-bit signed integer value: %s', $value));
             }
 
-            $intValue   = (int)$value;
+            $intValue = (int)$value;
             $floatValue = (float)$value;
 
             if ($floatValue != $intValue || floor($floatValue) !== $floatValue) {
@@ -390,16 +340,16 @@ class GraphQLRuntime
             return $intValue;
         }
 
-        $this->singleton('GraphQLInt', function () {
+        $this->shared('GraphQLInt', function () {
             return GraphQLScalarType([
-                'name'         => TypeNameEnum::INT,
-                'description'  =>
+                'name' => TypeNameEnum::INT,
+                'description' =>
                     'The `Int` scalar type represents non-fractional signed whole numeric ' .
                     'values. Int can represent values between -(2^31) and 2^31 - 1.',
-                'serialize'    => function ($value) {
+                'serialize' => function ($value) {
                     return coerceInt($value);
                 },
-                'parseValue'   => function ($value) {
+                'parseValue' => function ($value) {
                     return coerceInt($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
@@ -435,19 +385,19 @@ class GraphQLRuntime
             return (string)$value;
         }
 
-        $this->singleton('GraphQLID', function () {
+        $this->shared('GraphQLID', function () {
             return GraphQLScalarType([
-                'name'         => TypeNameEnum::ID,
-                'description'  =>
+                'name' => TypeNameEnum::ID,
+                'description' =>
                     'The `ID` scalar type represents a unique identifier, often used to ' .
                     'refetch an object or as key for a cache. The ID type appears in a JSON ' .
                     'response as a String; however, it is not intended to be human-readable. ' .
                     'When expected as an input type, any string (such as `"4"`) or integer ' .
                     '(such as `4`) input value will be accepted as an ID.',
-                'serialize'    => function ($value) {
+                'serialize' => function ($value) {
                     return coerceString($value);
                 },
-                'parseValue'   => function ($value) {
+                'parseValue' => function ($value) {
                     return coerceString($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
@@ -459,17 +409,17 @@ class GraphQLRuntime
             ]);
         });
 
-        $this->singleton('GraphQLString', function () {
+        $this->shared('GraphQLString', function () {
             return GraphQLScalarType([
-                'name'         => TypeNameEnum::STRING,
-                'description'  =>
+                'name' => TypeNameEnum::STRING,
+                'description' =>
                     'The `String` scalar type represents textual data, represented as UTF-8 ' .
                     'character sequences. The String type is most often used by GraphQL to ' .
                     'represent free-form human-readable text.',
-                'serialize'    => function ($value) {
+                'serialize' => function ($value) {
                     return coerceString($value);
                 },
-                'parseValue'   => function ($value) {
+                'parseValue' => function ($value) {
                     return coerceString($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
@@ -485,58 +435,58 @@ class GraphQLRuntime
      */
     protected function registerDirectives()
     {
-        $this->singleton('GraphQLIncludeDirective', function () {
+        $this->shared('GraphQLIncludeDirective', function () {
             return GraphQLDirective([
-                'name'        => 'include',
+                'name' => 'include',
                 'description' =>
                     'Directs the executor to include this field or fragment only when ' .
                     'the `if` argument is true.',
-                'locations'   => [
+                'locations' => [
                     DirectiveLocationEnum::FIELD,
                     DirectiveLocationEnum::FRAGMENT_SPREAD,
                     DirectiveLocationEnum::INLINE_FRAGMENT,
                 ],
-                'args'        => [
+                'args' => [
                     'if ' => [
-                        'type'        => GraphQLNonNull(GraphQLBoolean()),
+                        'type' => GraphQLNonNull(GraphQLBoolean()),
                         'description' => 'Included when true.',
                     ],
                 ],
             ]);
         });
 
-        $this->singleton('GraphQLSkipDirective', function () {
+        $this->shared('GraphQLSkipDirective', function () {
             return GraphQLDirective([
-                'name'        => 'skip',
+                'name' => 'skip',
                 'description' =>
                     'Directs the executor to skip this field or fragment when the `if` ' .
                     'argument is true.',
-                'locations'   => [
+                'locations' => [
                     DirectiveLocationEnum::FIELD,
                     DirectiveLocationEnum::FRAGMENT_SPREAD,
                     DirectiveLocationEnum::INLINE_FRAGMENT,
                 ],
-                'args'        => [
+                'args' => [
                     'if' => [
-                        'type'        => GraphQLNonNull(GraphQLBoolean()),
+                        'type' => GraphQLNonNull(GraphQLBoolean()),
                         'description' => 'Skipped when true.',
                     ],
                 ],
             ]);
         });
 
-        $this->singleton('GraphQLDeprecatedDirective', function () {
+        $this->shared('GraphQLDeprecatedDirective', function () {
             return GraphQLDirective([
-                'name'        => 'deprecated',
+                'name' => 'deprecated',
                 'description' => 'Marks an element of a GraphQL schema as no longer supported.',
-                'locations'   => [
+                'locations' => [
                     DirectiveLocationEnum::FIELD_DEFINITION,
                     DirectiveLocationEnum::ENUM_VALUE,
                 ],
-                'args'        => [
+                'args' => [
                     'reason' => [
-                        'type'         => GraphQLString(),
-                        'description'  =>
+                        'type' => GraphQLString(),
+                        'description' =>
                             'Explains why this element was deprecated, usually also including a ' .
                             'suggestion for how to access supported similar data. Formatted ' .
                             'in [Markdown](https://daringfireball.net/projects/markdown/).',
@@ -546,4 +496,76 @@ class GraphQLRuntime
             ]);
         });
     }
+
+    /**
+     * @var array
+     */
+    private static $supportedNodeBuilders = [
+        // Standard
+        ArgumentBuilder::class,
+        BooleanBuilder::class,
+        DirectiveBuilder::class,
+        DocumentBuilder::class,
+        EnumBuilder::class,
+        FieldBuilder::class,
+        FloatBuilder::class,
+        FragmentDefinitionBuilder::class,
+        FragmentSpreadBuilder::class,
+        InlineFragmentBuilder::class,
+        IntBuilder::class,
+        ListBuilder::class,
+        ListTypeBuilder::class,
+        NameBuilder::class,
+        NamedTypeBuilder::class,
+        NonNullTypeBuilder::class,
+        NullBuilder::class,
+        ObjectBuilder::class,
+        ObjectFieldBuilder::class,
+        OperationDefinitionBuilder::class,
+        SelectionSetBuilder::class,
+        StringBuilder::class,
+        VariableBuilder::class,
+        VariableDefinitionBuilder::class,
+        // Schema Definition Language (SDL)
+        SchemaDefinitionBuilder::class,
+        OperationTypeDefinitionBuilder::class,
+        FieldDefinitionBuilder::class,
+        ScalarTypeDefinitionBuilder::class,
+        ObjectTypeDefinitionBuilder::class,
+        InterfaceTypeDefinitionBuilder::class,
+        UnionTypeDefinitionBuilder::class,
+        EnumTypeDefinitionBuilder::class,
+        EnumValueDefinitionBuilder::class,
+        InputObjectTypeDefinitionBuilder::class,
+        InputValueDefinitionBuilder::class,
+        ScalarTypeExtensionBuilder::class,
+        ObjectTypeExtensionBuilder::class,
+        InterfaceTypeExtensionBuilder::class,
+        EnumTypeExtensionBuilder::class,
+        UnionTypeExtensionBuilder::class,
+        InputObjectTypeExtensionBuilder::class,
+        DirectiveDefinitionBuilder::class,
+    ];
+
+    /**
+     * @var array
+     */
+    private static $supportedSourceReaders = [
+        AmpReader::class,
+        AtReader::class,
+        BangReader::class,
+        BlockStringReader::class,
+        BraceReader::class,
+        BracketReader::class,
+        ColonReader::class,
+        CommentReader::class,
+        DollarReader::class,
+        EqualsReader::class,
+        NameReader::class,
+        NumberReader::class,
+        ParenthesisReader::class,
+        PipeReader::class,
+        SpreadReader::class,
+        StringReader::class,
+    ];
 }

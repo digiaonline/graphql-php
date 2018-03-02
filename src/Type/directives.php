@@ -11,7 +11,7 @@ use function Digia\GraphQL\Util\arraySome;
  */
 function GraphQLIncludeDirective(): Directive
 {
-    return GraphQLRuntime::get()->make('GraphQLIncludeDirective');
+    return GraphQLRuntime::get('GraphQLIncludeDirective');
 }
 
 /**
@@ -20,7 +20,7 @@ function GraphQLIncludeDirective(): Directive
  */
 function GraphQLSkipDirective(): Directive
 {
-    return GraphQLRuntime::get()->make('GraphQLSkipDirective');
+    return GraphQLRuntime::get('GraphQLSkipDirective');
 }
 
 const DEFAULT_DEPRECATION_REASON = 'No longer supported';
@@ -31,7 +31,7 @@ const DEFAULT_DEPRECATION_REASON = 'No longer supported';
  */
 function GraphQLDeprecatedDirective(): Directive
 {
-    return GraphQLRuntime::get()->make('GraphQLDeprecatedDirective');
+    return GraphQLRuntime::get('GraphQLDeprecatedDirective');
 }
 
 /**
