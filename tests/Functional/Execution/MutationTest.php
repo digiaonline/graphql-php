@@ -5,11 +5,11 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use function Digia\GraphQL\Language\parse;
+use function Digia\GraphQL\parse;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use function Digia\GraphQL\Language\parser;
+use function Digia\GraphQL\parser;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 

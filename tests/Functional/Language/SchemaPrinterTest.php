@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Test\TestCase;
-use function Digia\GraphQL\Language\parse;
-use function Digia\GraphQL\Language\printNode;
+use function Digia\GraphQL\parse;
+use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Util\readFile;
 
 class SchemaPrinterTest extends TestCase

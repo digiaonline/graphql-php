@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
-use function Digia\GraphQL\Language\parse;
+use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Util\jsonEncode;
 
 function typeNode($name, $loc)

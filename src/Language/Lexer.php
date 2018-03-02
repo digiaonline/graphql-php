@@ -10,19 +10,19 @@ class Lexer implements LexerInterface
 {
 
     /**
-     * @var Source
+     * @var Source|null
      */
     protected $source;
+
+    /**
+     * @var array
+     */
+    protected $options = [];
 
     /**
      * @var array|ReaderInterface[]
      */
     protected $readers;
-
-    /**
-     * @var array
-     */
-    protected $options;
 
     /**
      * The previously focused non-ignored token.
@@ -55,11 +55,9 @@ class Lexer implements LexerInterface
     /**
      * Lexer constructor.
      *
-     * @param Source $source
-     * @param array  $readers
-     * @param array  $options
+     * @param ReaderInterface[] $readers
      */
-    public function __construct(Source $source, array $readers, array $options = [])
+    public function __construct(array $readers)
     {
         $startOfFileToken = new Token(TokenKindEnum::SOF);
 
@@ -67,9 +65,7 @@ class Lexer implements LexerInterface
             $reader->setLexer($this);
         }
 
-        $this->source    = $source;
         $this->readers   = $readers;
-        $this->options   = $options;
         $this->lastToken = $startOfFileToken;
         $this->token     = $startOfFileToken;
         $this->line      = 1;
@@ -109,7 +105,7 @@ class Lexer implements LexerInterface
      */
     public function getBody(): string
     {
-        return $this->source->getBody();
+        return $this->getSource()->getBody();
     }
 
     /**
@@ -141,7 +137,11 @@ class Lexer implements LexerInterface
      */
     public function getSource(): Source
     {
-        return $this->source;
+        if ($this->source instanceof Source) {
+            return $this->source;
+        }
+
+        throw new \Exception('No source has been set.');
     }
 
     /**
@@ -150,6 +150,26 @@ class Lexer implements LexerInterface
     public function getLastToken(): Token
     {
         return $this->lastToken;
+    }
+
+    /**
+     * @param Source $source
+     * @return Lexer
+     */
+    public function setSource(Source $source)
+    {
+        $this->source = $source;
+        return $this;
+    }
+
+    /**
+     * @param array $options
+     * @return
+     */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+        return $this;
     }
 
     /**
