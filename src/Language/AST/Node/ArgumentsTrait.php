@@ -13,6 +13,14 @@ trait ArgumentsTrait
     protected $arguments;
 
     /**
+     * @return bool
+     */
+    public function hasArguments(): bool
+    {
+        return !empty($this->arguments);
+    }
+
+    /**
      * @return InputValueDefinitionNode[]
      */
     public function getArguments(): array

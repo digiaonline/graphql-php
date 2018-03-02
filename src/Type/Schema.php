@@ -275,10 +275,10 @@ class Schema extends ConfigObject implements SchemaInterface
     }
 
     /**
-     * @param ObjectType $mutation
+     * @param ObjectType|null $mutation
      * @return Schema
      */
-    protected function setMutation(ObjectType $mutation): Schema
+    protected function setMutation(?ObjectType $mutation): Schema
     {
         $this->mutation = $mutation;
 
@@ -286,10 +286,10 @@ class Schema extends ConfigObject implements SchemaInterface
     }
 
     /**
-     * @param ObjectType $subscription
+     * @param ObjectType|null $subscription
      * @return Schema
      */
-    protected function setSubscription(ObjectType $subscription): Schema
+    protected function setSubscription(?ObjectType $subscription): Schema
     {
         $this->subscription = $subscription;
 
@@ -374,10 +374,10 @@ function typeMapReducer(array $map, ?TypeInterface $type): array
 
     if ($type instanceof ObjectType || $type instanceof InterfaceType) {
         foreach ($type->getFields() as $field) {
-            if ($field->hasArgs()) {
+            if ($field->hasArguments()) {
                 $fieldArgTypes = array_map(function (Argument $argument) {
                     return $argument->getType();
-                }, $field->getArgs());
+                }, $field->getArguments());
 
                 $reducedMap = array_reduce($fieldArgTypes, 'Digia\GraphQL\Type\typeMapReducer', $reducedMap);
             }
@@ -402,11 +402,11 @@ function typeMapReducer(array $map, ?TypeInterface $type): array
  */
 function typeMapDirectiveReducer(array $map, ?DirectiveInterface $directive): array
 {
-    if (!$directive || !$directive->hasArgs()) {
+    if (!$directive || !$directive->hasArguments()) {
         return $map;
     }
 
-    return array_reduce($directive->getArgs(), function ($map, Argument $argument) {
+    return array_reduce($directive->getArguments(), function ($map, Argument $argument) {
         return typeMapReducer($map, $argument->getType());
     }, $map);
 }

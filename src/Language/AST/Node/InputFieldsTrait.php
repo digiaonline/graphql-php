@@ -13,6 +13,14 @@ trait InputFieldsTrait
     protected $fields;
 
     /**
+     * @return bool
+     */
+    public function hasFields(): bool
+    {
+        return !empty($this->fields);
+    }
+
+    /**
      * @return InputValueDefinitionNode[]
      */
     public function getFields(): array

@@ -19,11 +19,11 @@ trait NameTrait
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getNameValue(): string
+    public function getNameValue(): ?string
     {
-        return $this->name->getValue();
+        return null !== $this->name ? $this->name->getValue() : null;
     }
 
     /**

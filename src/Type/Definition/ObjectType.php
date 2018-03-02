@@ -45,7 +45,7 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type\Definition
  * @property ObjectTypeDefinitionNode $astNode
  */
-class ObjectType extends ConfigObject implements TypeInterface, CompositeTypeInterface, NamedTypeInterface, OutputTypeInterface
+class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
@@ -125,10 +125,10 @@ class ObjectType extends ConfigObject implements TypeInterface, CompositeTypeInt
     }
 
     /**
-     * @param array $interfacesThunk
+     * @param array|callable $interfacesThunk
      * @return $this
      */
-    protected function setInterfaces(array $interfacesThunk)
+    protected function setInterfaces($interfacesThunk)
     {
         $this->_interfacesThunk = $interfacesThunk;
 

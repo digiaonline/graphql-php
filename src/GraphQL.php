@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL;
 
+use Digia\GraphQL\Cache\RuntimeCache;
 use Digia\GraphQL\Language\AST\Builder\ArgumentBuilder;
 use Digia\GraphQL\Language\AST\Builder\BooleanBuilder;
 use Digia\GraphQL\Language\AST\Builder\BuilderInterface;
@@ -51,9 +52,14 @@ use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
 use Digia\GraphQL\Language\AST\Node\BooleanValueNode;
 use Digia\GraphQL\Language\AST\Node\FloatValueNode;
 use Digia\GraphQL\Language\AST\Node\IntValueNode;
+use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\AST\Schema\DefinitionBuilder;
+use Digia\GraphQL\Language\AST\Schema\DefinitionBuilderInterface;
+use Digia\GraphQL\Language\AST\Schema\SchemaBuilder;
+use Digia\GraphQL\Language\AST\Schema\SchemaBuilderInterface;
 use Digia\GraphQL\Language\Lexer;
 use Digia\GraphQL\Language\LexerInterface;
 use Digia\GraphQL\Language\Parser;
@@ -80,6 +86,7 @@ use Digia\GraphQL\Language\Reader\StringReader;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use League\Container\Container;
 use League\Container\Definition\DefinitionInterface;
+use Psr\SimpleCache\CacheInterface;
 use const Digia\GraphQL\Type\MAX_INT;
 use const Digia\GraphQL\Type\MIN_INT;
 use function Digia\GraphQL\Type\GraphQLBoolean;
@@ -203,10 +210,20 @@ class GraphQL
      */
     protected function registerBindings()
     {
+        $this->registerCache();
         $this->registerParser();
         $this->registerPrinter();
+        $this->registerSchemaBuilder();
         $this->registerScalarTypes();
         $this->registerDirectives();
+    }
+
+    /**
+     * Registers the cache with the container.
+     */
+    protected function registerCache()
+    {
+        $this->bind(CacheInterface::class, RuntimeCache::class);
     }
 
     /**
@@ -232,6 +249,20 @@ class GraphQL
     protected function registerPrinter()
     {
         $this->shared(PrinterInterface::class, Printer::class);
+    }
+
+    protected function registerSchemaBuilder()
+    {
+        $this->shared(DefinitionBuilderInterface::class, DefinitionBuilder::class)
+            ->withArguments([
+                function (NamedTypeNode $node) {
+                    throw new \Exception(sprintf('Type "%s" not found in document.', $node->getNameValue()));
+                },
+                CacheInterface::class,
+            ]);
+
+        $this->shared(SchemaBuilderInterface::class, SchemaBuilder::class)
+            ->withArgument(DefinitionBuilderInterface::class);
     }
 
     /**

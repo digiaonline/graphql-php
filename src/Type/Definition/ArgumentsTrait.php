@@ -11,62 +11,38 @@ trait ArgumentsTrait
     /**
      * @var Argument[]
      */
-    private $args = [];
+    private $_arguments = [];
 
     /**
      * @return bool
      */
-    public function hasArgs(): bool
+    public function hasArguments(): bool
     {
-        return !empty($this->args);
+        return !empty($this->_arguments);
     }
 
     /**
      * @return Argument[]
      */
-    public function getArgs(): array
+    public function getArguments(): array
     {
-        return $this->args;
+        return $this->_arguments;
     }
 
     /**
-     * @param Argument $arg
-     * @return $this
-     */
-    protected function addArgument(Argument $arg)
-    {
-        $this->args[] = $arg;
-
-        return $this;
-    }
-
-    /**
-     * @param array $args
-     * @return $this
-     */
-    protected function addArguments(array $args)
-    {
-        foreach ($args as $argument) {
-            $this->addArgument($argument);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Argument[] $args
+     * @param Argument[] $arguments
      * @return $this
      * @throws \Exception
      */
-    protected function setArgs(array $args)
+    protected function setArgs(array $arguments)
     {
         invariant(
-            isAssocArray($args),
+            isAssocArray($arguments),
             'Args must be an associative array with argument names as keys.'
         );
 
-        foreach ($args as $argName => $argConfig) {
-            $this->addArgument(new Argument(array_merge($argConfig, ['name' => $argName])));
+        foreach ($arguments as $argName => $argConfig) {
+            $this->_arguments[] = new Argument(array_merge($argConfig, ['name' => $argName]));
         }
 
         return $this;

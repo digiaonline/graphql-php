@@ -2,20 +2,6 @@
 
 namespace Digia\GraphQL\Util;
 
-use Digia\GraphQL\Error\GraphQLError;
-
-/**
- * @param bool   $condition
- * @param string $message
- * @throws GraphQLError
- */
-function invariant(bool $condition, string $message)
-{
-    if (!$condition) {
-        throw new GraphQLError($message);
-    }
-}
-
 /**
  * @param array    $array
  * @param callable $fn
@@ -26,6 +12,49 @@ function arraySome(array $array, callable $fn)
     return array_reduce($array, function ($result, $value) use ($fn) {
         return $result || $fn($value);
     });
+}
+
+/**
+ * @param array    $array
+ * @param callable $predicate
+ * @return mixed|null
+ */
+function find(array $array, callable $predicate)
+{
+    foreach ($array as $value) {
+        if ($predicate($value)) {
+            return $value;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * @param array    $array
+ * @param callable $keyFn
+ * @return array
+ */
+function keyMap(array $array, callable $keyFn): array
+{
+    return array_reduce($array, function ($map, $item) use ($keyFn) {
+        $map[$keyFn($item)] = $item;
+        return $map;
+    }, []);
+}
+
+/**
+ * @param array    $array
+ * @param callable $keyFn
+ * @param callable $valFn
+ * @return array
+ */
+function keyValMap(array $array, callable $keyFn, callable $valFn): array
+{
+    return array_reduce($array, function ($map, $item) use ($keyFn, $valFn) {
+        $map[$keyFn($item)] = $valFn($item);
+        return $map;
+    }, []);
 }
 
 /**
