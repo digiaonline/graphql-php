@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Language\Reader;
 
+use Digia\GraphQL\Language\LexerInterface;
 use Digia\GraphQL\Language\Token;
 
 interface ReaderInterface
@@ -23,4 +24,9 @@ interface ReaderInterface
      * @return bool
      */
     public function supportsReader(int $code, int $pos): bool;
+
+    /**
+     * @param LexerInterface $lexer
+     */
+    public function setLexer(LexerInterface $lexer): void;
 }

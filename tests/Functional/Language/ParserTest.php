@@ -9,9 +9,9 @@ use Digia\GraphQL\Language\AST\Node\NullValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Test\TestCase;
-use function Digia\GraphQL\Language\parse;
-use function Digia\GraphQL\Language\parseType;
-use function Digia\GraphQL\Language\parseValue;
+use function Digia\GraphQL\parse;
+use function Digia\GraphQL\parseType;
+use function Digia\GraphQL\parseValue;
 
 class ParserTest extends TestCase
 {
