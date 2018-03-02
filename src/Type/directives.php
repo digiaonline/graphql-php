@@ -1,8 +1,8 @@
 <?php
 
+use Digia\GraphQL\GraphQLRuntime;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
-use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\Util\arraySome;
 
 /**
@@ -11,7 +11,7 @@ use function Digia\GraphQL\Util\arraySome;
  */
 function GraphQLIncludeDirective(): Directive
 {
-    return graphql()->get('GraphQLIncludeDirective');
+    return GraphQLRuntime::get()->make('GraphQLIncludeDirective');
 }
 
 /**
@@ -20,7 +20,7 @@ function GraphQLIncludeDirective(): Directive
  */
 function GraphQLSkipDirective(): Directive
 {
-    return graphql()->get('GraphQLSkipDirective');
+    return GraphQLRuntime::get()->make('GraphQLSkipDirective');
 }
 
 const DEFAULT_DEPRECATION_REASON = 'No longer supported';
@@ -31,7 +31,7 @@ const DEFAULT_DEPRECATION_REASON = 'No longer supported';
  */
 function GraphQLDeprecatedDirective(): Directive
 {
-    return graphql()->get('GraphQLDeprecatedDirective');
+    return GraphQLRuntime::get()->make('GraphQLDeprecatedDirective');
 }
 
 /**

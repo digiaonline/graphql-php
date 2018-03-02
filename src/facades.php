@@ -4,15 +4,10 @@ namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\LexerInterface;
+use Digia\GraphQL\Language\ParserInterface;
+use Digia\GraphQL\Language\PrinterInterface;
 use Digia\GraphQL\Language\Source;
-
-/**
- * @return GraphQLRuntime
- */
-function graphql(): GraphQLRuntime
-{
-    return GraphQLRuntime::getInstance();
-}
 
 /**
  * @param string|Source $source
@@ -23,8 +18,8 @@ function graphql(): GraphQLRuntime
  */
 function parse($source, array $options = []): NodeInterface
 {
-    return graphql()->getParser()->parse(
-        graphql()->getLexer()
+    return GraphQLRuntime::get()->make(ParserInterface::class)->parse(
+        GraphQLRuntime::get()->make(LexerInterface::class)
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options)
     );
@@ -39,8 +34,8 @@ function parse($source, array $options = []): NodeInterface
  */
 function parseValue($source, array $options = []): NodeInterface
 {
-    return graphql()->getParser()->parseValue(
-        graphql()->getLexer()
+    return GraphQLRuntime::get()->make(ParserInterface::class)->parseValue(
+        GraphQLRuntime::get()->make(LexerInterface::class)
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options)
     );
@@ -55,8 +50,8 @@ function parseValue($source, array $options = []): NodeInterface
  */
 function parseType($source, array $options = []): NodeInterface
 {
-    return graphql()->getParser()->parseType(
-        graphql()->getLexer()
+    return GraphQLRuntime::get()->make(ParserInterface::class)->parseType(
+        GraphQLRuntime::get()->make(LexerInterface::class)
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options)
     );
@@ -68,5 +63,5 @@ function parseType($source, array $options = []): NodeInterface
  */
 function printNode(NodeInterface $node): string
 {
-    return graphql()->getPrinter()->print($node);
+    return GraphQLRuntime::get()->make(PrinterInterface::class)->print($node);
 }

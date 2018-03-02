@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Type;
 
+use Digia\GraphQL\GraphQLRuntime;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\Util\arraySome;
 
 const MAX_INT = 2147483647;
@@ -15,7 +15,7 @@ const MIN_INT = -2147483648;
  */
 function GraphQLBoolean(): ScalarType
 {
-    return graphql()->get('GraphQLBoolean');
+    return GraphQLRuntime::get()->make('GraphQLBoolean');
 }
 
 /**
@@ -23,7 +23,7 @@ function GraphQLBoolean(): ScalarType
  */
 function GraphQLFloat(): ScalarType
 {
-    return graphql()->get('GraphQLFloat');
+    return GraphQLRuntime::get()->make('GraphQLFloat');
 }
 
 /**
@@ -31,7 +31,7 @@ function GraphQLFloat(): ScalarType
  */
 function GraphQLInt(): ScalarType
 {
-    return graphql()->get('GraphQLInt');
+    return GraphQLRuntime::get()->make('GraphQLInt');
 }
 
 /**
@@ -39,7 +39,7 @@ function GraphQLInt(): ScalarType
  */
 function GraphQLID(): ScalarType
 {
-    return graphql()->get('GraphQLID');
+    return GraphQLRuntime::get()->make('GraphQLID');
 }
 
 /**
@@ -47,7 +47,7 @@ function GraphQLID(): ScalarType
  */
 function GraphQLString(): ScalarType
 {
-    return graphql()->get('GraphQLString');
+    return GraphQLRuntime::get()->make('GraphQLString');
 }
 
 /**

@@ -4,6 +4,7 @@ namespace Digia\GraphQL;
 
 use Digia\GraphQL\Language\AST\Builder\ArgumentBuilder;
 use Digia\GraphQL\Language\AST\Builder\BooleanBuilder;
+use Digia\GraphQL\Language\AST\Builder\BuilderInterface;
 use Digia\GraphQL\Language\AST\Builder\DirectiveBuilder;
 use Digia\GraphQL\Language\AST\Builder\DirectiveDefinitionBuilder;
 use Digia\GraphQL\Language\AST\Builder\DocumentBuilder;
@@ -73,6 +74,7 @@ use Digia\GraphQL\Language\Reader\NameReader;
 use Digia\GraphQL\Language\Reader\NumberReader;
 use Digia\GraphQL\Language\Reader\ParenthesisReader;
 use Digia\GraphQL\Language\Reader\PipeReader;
+use Digia\GraphQL\Language\Reader\ReaderInterface;
 use Digia\GraphQL\Language\Reader\SpreadReader;
 use Digia\GraphQL\Language\Reader\StringReader;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
@@ -89,7 +91,20 @@ use function Digia\GraphQL\Type\GraphQLString;
 class GraphQLRuntime
 {
 
+    /**
+     * @var GraphQLRuntime
+     */
     private static $instance;
+
+    /**
+     * @var BuilderInterface[]
+     */
+    private static $nodeBuilders;
+
+    /**
+     * @var ReaderInterface[]
+     */
+    private static $sourceReaders;
 
     /**
      * @var Container
@@ -103,13 +118,13 @@ class GraphQLRuntime
     {
         $this->container = new Container();
 
-        $this->register();
+        $this->registerBindings();
     }
 
     /**
      * @return GraphQLRuntime
      */
-    public static function getInstance()
+    public static function get()
     {
         if (null === self::$instance) {
             self::$instance = new static();
@@ -119,65 +134,12 @@ class GraphQLRuntime
     }
 
     /**
-     * @param string $id
-     * @return mixed
+     * @return BuilderInterface[]
      */
-    public function get(string $id)
+    public static function getNodeBuilders(): array
     {
-        return $this->container->get($id);
-    }
-
-    /**
-     * @param $id
-     * @param $concrete
-     */
-    public function add($id, $concrete)
-    {
-        $this->container->add($id, $concrete);
-    }
-
-    /**
-     * @return ParserInterface
-     */
-    public function getParser(): ParserInterface
-    {
-        return $this->container->get(ParserInterface::class);
-    }
-
-    /**
-     * @return LexerInterface
-     */
-    public function getLexer(): LexerInterface
-    {
-        return $this->container->get(LexerInterface::class);
-    }
-
-    /**
-     * @return PrinterInterface
-     */
-    public function getPrinter(): PrinterInterface
-    {
-        return $this->container->get(PrinterInterface::class);
-    }
-
-    /**
-     *
-     */
-    protected function register()
-    {
-        $this->registerParser();
-        $this->registerPrinter();
-        $this->registerScalarTypes();
-        $this->registerDirectives();
-    }
-
-    /**
-     * Registers the GraphQL parser with the container.
-     */
-    protected function registerParser()
-    {
-        $this->singleton(NodeBuilderInterface::class, function () {
-            $builders = [
+        if (null === self::$nodeBuilders) {
+            self::$nodeBuilders = [
                 // Standard
                 new ArgumentBuilder(),
                 new BooleanBuilder(),
@@ -223,16 +185,18 @@ class GraphQLRuntime
                 new InputObjectTypeExtensionBuilder(),
                 new DirectiveDefinitionBuilder(),
             ];
+        }
 
-            return new NodeBuilder($builders);
-        });
+        return self::$nodeBuilders;
+    }
 
-        $this
-            ->singleton(ParserInterface::class, Parser::class)
-            ->addArgument(NodeBuilderInterface::class);
-
-        $this->container->add(LexerInterface::class, function () {
-            $readers = [
+    /**
+     * @return ReaderInterface[]
+     */
+    public static function getSourceReaders(): array
+    {
+        if (null === self::$sourceReaders) {
+            self::$sourceReaders = [
                 new AmpReader(),
                 new AtReader(),
                 new BangReader(),
@@ -250,8 +214,65 @@ class GraphQLRuntime
                 new SpreadReader(),
                 new StringReader(),
             ];
+        }
 
-            return new Lexer($readers);
+        return self::$sourceReaders;
+    }
+
+    /**
+     * @param string $id
+     * @param mixed  $concrete
+     * @return DefinitionInterface
+     */
+    public function bind(string $id, $concrete): DefinitionInterface
+    {
+        return $this->container->add($id, $concrete);
+    }
+
+    /**
+     * @param string $id
+     * @param mixed  $concrete
+     * @return DefinitionInterface
+     */
+    public function singleton(string $id, $concrete): DefinitionInterface
+    {
+        return $this->container->add($id, $concrete, true);
+    }
+
+    /**
+     * @param string $id
+     * @return mixed
+     */
+    public function make(string $id)
+    {
+        return $this->container->get($id);
+    }
+
+    /**
+     *
+     */
+    protected function registerBindings()
+    {
+        $this->registerParser();
+        $this->registerPrinter();
+        $this->registerScalarTypes();
+        $this->registerDirectives();
+    }
+
+    /**
+     * Registers the GraphQL parser with the container.
+     */
+    protected function registerParser()
+    {
+        $this->singleton(NodeBuilderInterface::class, function () {
+            return new NodeBuilder(self::getNodeBuilders());
+        });
+
+        $this->singleton(ParserInterface::class, Parser::class)
+            ->addArgument(NodeBuilderInterface::class);
+
+        $this->bind(LexerInterface::class, function () {
+            return new Lexer(self::getSourceReaders());
         });
     }
 
@@ -524,25 +545,5 @@ class GraphQLRuntime
                 ]
             ]);
         });
-    }
-
-    /**
-     * @param string $id
-     * @param mixed  $concrete
-     * @return DefinitionInterface
-     */
-    protected function bind(string $id, $concrete): DefinitionInterface
-    {
-        return $this->container->add($id, $concrete);
-    }
-
-    /**
-     * @param string $id
-     * @param mixed  $concrete
-     * @return DefinitionInterface
-     */
-    protected function singleton(string $id, $concrete): DefinitionInterface
-    {
-        return $this->container->add($id, $concrete, true);
     }
 }
