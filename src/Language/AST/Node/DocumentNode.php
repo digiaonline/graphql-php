@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\SerializationInterface;
+use Digia\GraphQL\Util\SerializationInterface;
 
 class DocumentNode extends AbstractNode implements NodeInterface
 {

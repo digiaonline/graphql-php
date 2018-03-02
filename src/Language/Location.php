@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\SerializationInterface;
+use Digia\GraphQL\Util\SerializationInterface;
 use function Digia\GraphQL\Util\jsonEncode;
 
 class Location implements SerializationInterface

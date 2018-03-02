@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Node;
 
-use Digia\GraphQL\SerializationInterface;
+use Digia\GraphQL\Util\SerializationInterface;
 
 trait VariableDefinitionsTrait
 {
