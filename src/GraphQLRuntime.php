@@ -219,7 +219,7 @@ class GraphQLRuntime
         });
 
         $this->shared(ParserInterface::class, Parser::class)
-            ->addArgument(NodeBuilderInterface::class);
+            ->withArgument(NodeBuilderInterface::class);
 
         $this->bind(LexerInterface::class, function () {
             return new Lexer(self::getSourceReaders());
