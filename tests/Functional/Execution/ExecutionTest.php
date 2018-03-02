@@ -13,6 +13,7 @@ use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Location;
+use function Digia\GraphQL\Language\parse;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
 use Digia\GraphQL\Test\TestCase;
@@ -331,7 +332,7 @@ class ExecutionTest extends TestCase
      */
     public function testHandleFragments()
     {
-        $documentNode = parser()->parse(new Source('
+        $documentNode = parse('
       { a, ...FragOne, ...FragTwo }
 
       fragment FragOne on Type {
@@ -342,7 +343,7 @@ class ExecutionTest extends TestCase
       fragment FragTwo on Type {
         c
         deep { c, deeper: deep { c } }
-      }'));
+      }');
 
         $Type = new ObjectType([
             'name'   => 'Type',

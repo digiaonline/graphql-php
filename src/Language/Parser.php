@@ -6,38 +6,27 @@ use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Error\SyntaxError;
 use Digia\GraphQL\Language\AST\Builder\BuilderInterface;
 use Digia\GraphQL\Language\AST\Builder\DirectorInterface;
+use Digia\GraphQL\Language\AST\Builder\NodeBuilderInterface;
 use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\Reader\ReaderInterface;
 
 class Parser implements ParserInterface, DirectorInterface
 {
 
     /**
-     * @var array|BuilderInterface[]
+     * @var NodeBuilderInterface
      */
-    protected $builders = [];
-
-    /**
-     * @var array|ReaderInterface[]
-     */
-    protected $readers = [];
+    protected $builder;
 
     /**
      * Parser constructor.
      *
      * @param BuilderInterface[] $builders
-     * @param ReaderInterface[]  $readers
      */
-    public function __construct(array $builders, array $readers)
+    public function __construct(NodeBuilderInterface $builder)
     {
-        foreach ($builders as $builder) {
-            $builder->setDirector($this);
-        }
-
-        $this->builders = $builders;
-        $this->readers  = $readers;
+        $this->builder = $builder;
     }
 
     /**
@@ -45,9 +34,9 @@ class Parser implements ParserInterface, DirectorInterface
      * @return NodeInterface
      * @throws GraphQLError
      */
-    public function parse(Source $source, array $options = []): NodeInterface
+    public function parse(LexerInterface $lexer): NodeInterface
     {
-        return $this->build($this->parseAST($source, $options));
+        return $this->builder->build($this->parseAST($lexer));
     }
 
     /**
@@ -55,9 +44,9 @@ class Parser implements ParserInterface, DirectorInterface
      * @return NodeInterface
      * @throws GraphQLError
      */
-    public function parseValue(Source $source, array $options = []): NodeInterface
+    public function parseValue(LexerInterface $lexer): NodeInterface
     {
-        return $this->build($this->parseValueAST($source, $options));
+        return $this->builder->build($this->parseValueAST($lexer));
     }
 
     /**
@@ -65,34 +54,28 @@ class Parser implements ParserInterface, DirectorInterface
      * @return NodeInterface
      * @throws GraphQLError
      */
-    public function parseType(Source $source, array $options = []): NodeInterface
+    public function parseType(LexerInterface $lexer): NodeInterface
     {
-        return $this->build($this->parseTypeAST($source, $options));
+        return $this->builder->build($this->parseTypeAST($lexer));
     }
 
     /**
-     * @param Source $source
-     * @param array  $options
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseAST(Source $source, array $options = []): array
+    protected function parseAST(LexerInterface $lexer): array
     {
-        $lexer = $this->createLexer($source, $options);
-
         return $this->parseDocument($lexer);
     }
 
     /**
-     * @param Source $source
-     * @param array  $options
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseValueAST(Source $source, array $options = []): array
+    protected function parseValueAST(LexerInterface $lexer): array
     {
-        $lexer = $this->createLexer($source, $options);
-
         $this->expect($lexer, TokenKindEnum::SOF);
         $value = $this->parseValueLiteral($lexer, false);
         $this->expect($lexer, TokenKindEnum::EOF);
@@ -101,15 +84,12 @@ class Parser implements ParserInterface, DirectorInterface
     }
 
     /**
-     * @param Source $source
-     * @param array  $options
+     * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
      */
-    protected function parseTypeAST(Source $source, array $options = []): array
+    protected function parseTypeAST(LexerInterface $lexer): array
     {
-        $lexer = $this->createLexer($source, $options);
-
         $this->expect($lexer, TokenKindEnum::SOF);
         $type = $this->parseTypeReference($lexer);
         $this->expect($lexer, TokenKindEnum::EOF);
@@ -124,42 +104,7 @@ class Parser implements ParserInterface, DirectorInterface
      */
     public function build(array $ast): NodeInterface
     {
-        if (!isset($ast['kind'])) {
-            throw new GraphQLError(sprintf('Nodes must specify a kind, got %s', json_encode($ast)));
-        }
-
-        $builder = $this->getBuilder($ast['kind']);
-
-        if ($builder !== null) {
-            return $builder->build($ast);
-        }
-
-        throw new GraphQLError(sprintf('Node of kind "%s" not supported.', $ast['kind']));
-    }
-
-    /**
-     * @param string $kind
-     * @return BuilderInterface|null
-     */
-    protected function getBuilder(string $kind): ?BuilderInterface
-    {
-        foreach ($this->builders as $builder) {
-            if ($builder instanceof BuilderInterface && $builder->supportsKind($kind)) {
-                return $builder;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param Source $source
-     * @param array  $options
-     * @return LexerInterface
-     */
-    protected function createLexer(Source $source, array $options): LexerInterface
-    {
-        return new Lexer($source, $this->readers, $options);
+        return $this->builder->build($ast);
     }
 
     /**

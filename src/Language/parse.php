@@ -28,6 +28,7 @@ use Digia\GraphQL\Language\AST\Builder\ListBuilder;
 use Digia\GraphQL\Language\AST\Builder\ListTypeBuilder;
 use Digia\GraphQL\Language\AST\Builder\NameBuilder;
 use Digia\GraphQL\Language\AST\Builder\NamedTypeBuilder;
+use Digia\GraphQL\Language\AST\Builder\NodeBuilder;
 use Digia\GraphQL\Language\AST\Builder\NonNullTypeBuilder;
 use Digia\GraphQL\Language\AST\Builder\NullBuilder;
 use Digia\GraphQL\Language\AST\Builder\ObjectBuilder;
@@ -118,42 +119,40 @@ function parser(): ParserInterface
             new DirectiveDefinitionBuilder(),
         ];
 
-        $readers = [
-            new AmpReader(),
-            new AtReader(),
-            new BangReader(),
-            new BlockStringReader(),
-            new BraceReader(),
-            new BracketReader(),
-            new ColonReader(),
-            new CommentReader(),
-            new DollarReader(),
-            new EqualsReader(),
-            new NameReader(),
-            new NumberReader(),
-            new ParenthesisReader(),
-            new PipeReader(),
-            new SpreadReader(),
-            new StringReader(),
-        ];
-
-        $instance = new Parser($builders, $readers);
+        $instance = new Parser(new NodeBuilder($builders));
     }
 
     return $instance;
 }
 
 /**
- * @param string|Source $source
- * @param array         $options
- * @return NodeInterface
- * @throws GraphQLError
+ * @param       $source
+ * @param array $options
+ * @return LexerInterface
  * @throws \Exception
  */
-function parse($source, array $options = [])
+function lexer($source, array $options = []): LexerInterface
 {
-    return parser()
-        ->parse($source instanceof Source ? $source : new Source($source), $options);
+    $readers = [
+        new AmpReader(),
+        new AtReader(),
+        new BangReader(),
+        new BlockStringReader(),
+        new BraceReader(),
+        new BracketReader(),
+        new ColonReader(),
+        new CommentReader(),
+        new DollarReader(),
+        new EqualsReader(),
+        new NameReader(),
+        new NumberReader(),
+        new ParenthesisReader(),
+        new PipeReader(),
+        new SpreadReader(),
+        new StringReader(),
+    ];
+
+    return new Lexer($source instanceof Source ? $source : new Source($source), $readers, $options);
 }
 
 /**
@@ -163,10 +162,10 @@ function parse($source, array $options = [])
  * @throws GraphQLError
  * @throws \Exception
  */
-function parseValue($source, array $options = [])
+function parse($source, array $options = []): NodeInterface
 {
     return parser()
-        ->parseValue($source instanceof Source ? $source : new Source($source), $options);
+        ->parse(lexer($source instanceof Source ? $source : new Source($source), $options));
 }
 
 /**
@@ -176,8 +175,23 @@ function parseValue($source, array $options = [])
  * @throws GraphQLError
  * @throws \Exception
  */
-function parseType($source, array $options = [])
+function parseValue($source, array $options = []): NodeInterface
+{
+
+
+    return parser()
+        ->parseValue(lexer($source instanceof Source ? $source : new Source($source), $options));
+}
+
+/**
+ * @param string|Source $source
+ * @param array         $options
+ * @return NodeInterface
+ * @throws GraphQLError
+ * @throws \Exception
+ */
+function parseType($source, array $options = []): NodeInterface
 {
     return parser()
-        ->parseType($source instanceof Source ? $source : new Source($source), $options);
+        ->parseType(lexer($source instanceof Source ? $source : new Source($source), $options));
 }
