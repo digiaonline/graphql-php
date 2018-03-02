@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\ConfigObject;
+use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;

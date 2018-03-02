@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL;
+namespace Digia\GraphQL\Config;
 
 trait ConfigTrait
 {

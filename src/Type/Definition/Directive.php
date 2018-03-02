@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\ConfigObject;
+use Digia\GraphQL\Config\ConfigObject;
 
 class Directive extends ConfigObject implements DirectiveInterface
 {

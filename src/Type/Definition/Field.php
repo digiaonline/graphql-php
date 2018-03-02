@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\ConfigObject;
+use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 
 class Field extends ConfigObject
