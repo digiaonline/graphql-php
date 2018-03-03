@@ -4,9 +4,16 @@ namespace Digia\GraphQL\Test\Functional\Language\AST;
 
 use Digia\GraphQL\Error\SyntaxError;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\AST\Node\FieldNode;
+use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
+use Digia\GraphQL\Language\AST\Node\NameNode;
 use Digia\GraphQL\Language\AST\Node\NullValueNode;
+use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
@@ -110,6 +117,246 @@ class ParserTest extends TestCase
                 ],
             ],
         ], $node->toArray());
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testMultipleFragments()
+    {
+        $node = parse(new Source('
+          { a, ...FragOne, ...FragTwo }
+          fragment FragOne on Type {
+            b
+            deep { b, deeper: deep { b } }
+          }
+          fragment FragTwo on Type {
+            c
+            deep { c, deeper: deep { c } }
+          }
+        '));
+
+        $expected = new DocumentNode([
+            'location'     => new Location(0, 261, null),
+            'definitions' => [
+                new OperationDefinitionNode([
+                    'name' => null,
+                    'location' => new Location(11, 40),
+                    'selectionSet' => new SelectionSetNode([
+                        'location' => new Location(11, 40, null),
+                        'selections' => [
+                            new FieldNode([
+                                'name'         => new NameNode([
+                                    'value'    => 'a',
+                                    'location' => new Location(13, 14, null)
+                                ]),
+                                'location'     => new Location(13, 14, null),
+                                'alias'        => null,
+                                'directives'   => [],
+                                'arguments'    => [],
+                                'selectionSet' => null
+                            ]),
+                            new FragmentSpreadNode([
+                                'name' => new NameNode([
+                                    'value'    => 'FragOne',
+                                    'location' => new Location(19, 26, null)
+                                ]),
+                                'location' => new Location(16, 26, null),
+                                'directives'   => [],
+                                'selectionSet' => null
+                            ]),
+                            new FragmentSpreadNode([
+                                'name' => new NameNode([
+                                    'value'    => 'FragTwo',
+                                    'location' => new Location(31, 38, null)
+                                ]),
+                                'location' => new Location(28, 38, null),
+                                'directives'   => [],
+                                'selectionSet' => null
+                            ])
+                        ]
+                    ]),
+                    'operation' => 'query',
+                    'directives' => [],
+                    'variableDefinitions' => []
+                ]),
+                new FragmentSpreadNode([
+                    'name'         => new NameNode([
+                        'value'    => 'FragOne',
+                        'location' => new Location(60, 67, null)
+                    ]),
+                    'location' => new Location(51, 146),
+                    'typeCondition' => new NamedTypeNode([
+                        'name' => new NameNode([
+                            'value' => 'Type',
+                            'location' => new Location(71, 75),
+                        ]),
+                        'location' => new Location(71, 75),
+                    ]),
+                    'directives' => [],
+                    'selectionSet' => new SelectionSetNode([
+                        'location' => new Location(76, 146, null),
+                        'selections' => [
+                            new FieldNode([
+                                'name'         => new NameNode([
+                                    'value'    => 'b',
+                                    'location' => new Location(90, 91, null)
+                                ]),
+                                'location'     => new Location(90, 91, null),
+                                'alias'        => null,
+                                'directives'   => [],
+                                'arguments'    => [],
+                                'selectionSet' => null
+                            ]),
+                            new FieldNode([
+                                'name'         => new NameNode([
+                                    'value'    => 'deep',
+                                    'location' => new Location(104, 108, null)
+                                ]),
+                                'location'     => new Location(104, 134, null),
+                                'alias'        => null,
+                                'directives'   => [],
+                                'arguments'    => [],
+                                'selectionSet' => new SelectionSetNode([
+                                    'location' => new Location(109, 134, null),
+                                    'selections' => [
+                                        new FieldNode([
+                                            'name'         => new NameNode([
+                                                'value'    => 'b',
+                                                'location' => new Location(111, 112, null)
+                                            ]),
+                                            'location'     => new Location(111, 112, null),
+                                            'alias'        => null,
+                                            'directives'   => [],
+                                            'arguments'    => [],
+                                            'selectionSet' => null
+                                        ]),
+                                        new FieldNode([
+                                            'name'         => new NameNode([
+                                                'value'    => 'deep',
+                                                'location' => new Location(122, 126, null)
+                                            ]),
+                                            'location'     => new Location(114, 132, null),
+                                            'alias'        => new NameNode([
+                                                'value' => 'deeper',
+                                                'location' => new Location(114, 120, null)
+                                            ]),
+                                            'directives'   => [],
+                                            'arguments'    => [],
+                                            'selectionSet' => new SelectionSetNode([
+                                                'location' => new Location(127, 132, null),
+                                                'selections' => [
+                                                    new FieldNode([
+                                                        'name'         => new NameNode([
+                                                            'value'    => 'b',
+                                                            'location' => new Location(129, 130, null)
+                                                        ]),
+                                                        'location'     => new Location(129, 130, null),
+                                                        'alias'        => null,
+                                                        'directives'   => [],
+                                                        'arguments'    => [],
+                                                        'selectionSet' => null
+                                                    ]),
+                                                ]
+                                            ])
+                                        ]),
+                                    ]
+                                ])
+                            ]),
+                        ]
+                    ]),
+                ]),
+                new FragmentSpreadNode([
+                    'name'         => new NameNode([
+                        'value'    => 'FragTwo',
+                        'location' => new Location(166, 173, null)
+                    ]),
+                    'location' => new Location(157, 252),
+                    'typeCondition' => new NamedTypeNode([
+                        'name' => new NameNode([
+                            'value' => 'Type',
+                            'location' => new Location(177, 181),
+                        ]),
+                        'location' => new Location(177, 181),
+                    ]),
+                    'directives' => [],
+                    'selectionSet' => new SelectionSetNode([
+                        'location' => new Location(182, 252, null),
+                        'selections' => [
+                            new FieldNode([
+                                'name'         => new NameNode([
+                                    'value'    => 'c',
+                                    'location' => new Location(196, 197, null)
+                                ]),
+                                'location'     => new Location(196, 197, null),
+                                'alias'        => null,
+                                'directives'   => [],
+                                'arguments'    => [],
+                                'selectionSet' => null
+                            ]),
+                            new FieldNode([
+                                'name'         => new NameNode([
+                                    'value'    => 'deep',
+                                    'location' => new Location(210, 214, null)
+                                ]),
+                                'location'     => new Location(210, 240, null),
+                                'alias'        => null,
+                                'directives'   => [],
+                                'arguments'    => [],
+                                'selectionSet' => new SelectionSetNode([
+                                    'location' => new Location(215, 240, null),
+                                    'selections' => [
+                                        new FieldNode([
+                                            'name'         => new NameNode([
+                                                'value'    => 'c',
+                                                'location' => new Location(217, 218, null)
+                                            ]),
+                                            'location'     => new Location(217, 218, null),
+                                            'alias'        => null,
+                                            'directives'   => [],
+                                            'arguments'    => [],
+                                            'selectionSet' => null
+                                        ]),
+                                        new FieldNode([
+                                            'name'         => new NameNode([
+                                                'value'    => 'deep',
+                                                'location' => new Location(228, 232, null)
+                                            ]),
+                                            'location'     => new Location(220, 238, null),
+                                            'alias'        => new NameNode([
+                                                'value' => 'deeper',
+                                                'location' => new Location(220, 226, null)
+                                            ]),
+                                            'directives'   => [],
+                                            'arguments'    => [],
+                                            'selectionSet' => new SelectionSetNode([
+                                                'location' => new Location(233, 238, null),
+                                                'selections' => [
+                                                    new FieldNode([
+                                                        'name'         => new NameNode([
+                                                            'value'    => 'c',
+                                                            'location' => new Location(235, 236, null)
+                                                        ]),
+                                                        'location'     => new Location(235, 236, null),
+                                                        'alias'        => null,
+                                                        'directives'   => [],
+                                                        'arguments'    => [],
+                                                        'selectionSet' => null
+                                                    ]),
+                                                ]
+                                            ])
+                                        ]),
+                                    ]
+                                ])
+                            ]),
+                        ]
+                    ]),
+                ])
+            ]
+        ]);
+
+        $this->assertEquals($expected, $node);
     }
 
     // TODO: Consider adding test for 'parses kitchen sink'
