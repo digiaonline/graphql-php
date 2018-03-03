@@ -35,6 +35,6 @@ trait ArgumentsTrait
     {
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
-        }, $this->arguments);
+        }, $this->getArguments());
     }
 }
