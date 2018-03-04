@@ -2,9 +2,14 @@
 
 namespace Digia\GraphQL\Language\AST\Visitor;
 
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+
 trait AcceptVisitorTrait
 {
 
+    /**
+     * @var array
+     */
     protected static $kindToNodesToVisitMap = [
         'Name' => [],
 
@@ -25,8 +30,7 @@ trait AcceptVisitorTrait
         'InlineFragment' => ['typeCondition', 'directives', 'selectionSet'],
         'FragmentDefinition' => [
             'name',
-            // Note: fragment variable definitions are experimental and may be changed
-            // or removed in the future.
+            // Note: fragment variable definitions are experimental and may be changed or removed in the future.
             'variableDefinitions',
             'typeCondition',
             'directives',
@@ -85,6 +89,21 @@ trait AcceptVisitorTrait
     ];
 
     /**
+     * @var VisitorInterface
+     */
+    protected $visitor;
+
+    /**
+     * @var array
+     */
+    protected $path;
+
+    /**
+     * @var array
+     */
+    protected $edited = [];
+
+    /**
      * @return string
      */
     abstract public function getKind(): string;
@@ -96,43 +115,109 @@ trait AcceptVisitorTrait
      */
     public function accept(VisitorInterface $visitor, ?string $key = null, array $path = []): ?array
     {
+        $this->visitor = $visitor;
+        $this->path = $path;
+
         /** @noinspection PhpParamsInspection */
-        if (null === ($enterResult = $visitor->enterNode($this, $key, $path))) {
+        if (null === ($enterResult = $visitor->enterNode($this->toArray(), $key, $this->path))) {
             return null;
         }
 
-        $edited = $enterResult;
+        $this->edited = $enterResult;
+
         foreach (self::$kindToNodesToVisitMap[$this->getKind()] as $name) {
-            unset($edited[$name]);
-            $value = $this->{$name};
-            if (\is_array($value) && !empty($value)) {
-                $path[] = $name;
-                $i = 0;
-                foreach ($value as $v) {
-                    if ($v instanceof AcceptVisitorInterface) {
-                        $path[] = $i;
-                        if (null !== ($result = $v->accept($visitor, $i, $path))) {
-                            $edited[$name][$i] = $result;
-                            $i++;
-                        }
-                        $path = \array_slice($path, 0, count($path) - 1);
-                    }
-                }
-                $path = \array_slice($path, 0, count($path) - 1);
-            } elseif ($value instanceof AcceptVisitorInterface) {
-                $path[] = $name;
-                if (null !== ($result = $value->accept($visitor, $name, $path))) {
-                    $edited[$name] = $result;
-                }
-                $path = \array_slice($path, 0, count($path) - 1);
+            // We have to remove children ensure that we do not include nodes in the result
+            // even though we return null from either enterNode or leaveNode.
+            unset($this->edited[$name]);
+
+            /** @var NodeInterface|NodeInterface[] $nodeOrNodes */
+            $nodeOrNodes = $this->{$name};
+
+            if (\is_array($nodeOrNodes) && !empty($nodeOrNodes)) {
+                $this->visitNodes($nodeOrNodes, $name);
+            } elseif ($nodeOrNodes instanceof AcceptVisitorInterface) {
+                $this->visitNode($nodeOrNodes, $name);
             }
         }
 
         /** @noinspection PhpParamsInspection */
-        if (null === ($leaveResult = $visitor->leaveNode($this, $key, $path))) {
+        if (null === ($leaveResult = $visitor->leaveNode($this->toArray(), $key, $this->path))) {
             return null;
         }
 
-        return array_merge($leaveResult, \is_array($edited) ? $edited : []);
+        return array_merge($leaveResult, $this->edited);
+    }
+
+    /**
+     * @param NodeInterface[] $nodes
+     * @param string $key
+     */
+    protected function visitNodes(array $nodes, string $key)
+    {
+        $this->addOneToPath($key);
+
+        $index = 0;
+
+        foreach ($nodes as $node) {
+            if ($node instanceof AcceptVisitorInterface) {
+                $this->addOneToPath($index);
+
+                if (null !== ($result = $this->acceptVisitor($node, $index))) {
+                    $this->edited[$key][$index] = $result;
+                    $index++;
+                }
+
+                $this->removeOneFromPath();
+            }
+        }
+
+        $this->removeOneFromPath();
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @param null|string $key
+     */
+    protected function visitNode(NodeInterface $node, ?string $key = null)
+    {
+        $this->addOneToPath($key);
+
+        if (null !== ($result = $this->acceptVisitor($node, $key))) {
+            $this->edited[$key] = $result;
+        }
+
+        $this->removeOneFromPath();
+    }
+
+    /**
+     * @param NodeInterface|AcceptVisitorInterface $node
+     * @param string|null $key
+     * @param array $path
+     * @return array|null
+     */
+    protected function acceptVisitor(NodeInterface $node, ?string $key): ?array
+    {
+        if (null === ($result = $node->accept($this->visitor, $key, $this->path))) {
+            return null;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Appends a key to the path.
+     * @param string $key
+     */
+    protected function addOneToPath(string $key)
+    {
+        $this->path[] = $key;
+    }
+
+    /**
+     * Removes the last item from the path.
+     */
+    protected function removeOneFromPath()
+    {
+        $this->path = \array_slice($this->path, 0, count($this->path) - 1);
     }
 }

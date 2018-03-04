@@ -3,11 +3,9 @@
 namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Visitor\AbstractVisitor;
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Util\SerializationInterface;
 use function Digia\GraphQL\parse;
 
 class VisitorTest extends TestCase
@@ -25,15 +23,13 @@ class VisitorTest extends TestCase
         $ast = parse('{ a }');
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?array {
-                /** @var $node SerializationInterface */
+            function (array $node, ?string $key, array $path = []) use (&$visited): ?array {
                 $visited[] = ['enter', array_slice($path, 0)];
-                return $node->toArray();
+                return $node;
             },
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?array {
-                /** @var $node SerializationInterface */
+            function (array $node, ?string $key, array $path = []) use (&$visited): ?array {
                 $visited[] = ['leave', array_slice($path, 0)];
-                return $node->toArray();
+                return $node;
             }
         );
 
@@ -63,21 +59,17 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []): ?array {
-                if ($node->getKind() === NodeKindEnum::OPERATION_DEFINITION) {
-                    return array_merge([
-                        'didEnter' => true,
-                    ], $node->toArray());
+            function (array $node, ?string $key, array $path = []): ?array {
+                if ($node['kind'] === NodeKindEnum::OPERATION_DEFINITION) {
+                    return array_merge(['didEnter' => true], $node);
                 }
-                return $node->toArray();
+                return $node;
             },
-            function (NodeInterface $node, ?string $key, array $path = []): ?array {
-                if ($node->getKind() === NodeKindEnum::OPERATION_DEFINITION) {
-                    return array_merge([
-                        'didLeave' => true,
-                    ], $node->toArray());
+            function (array $node, ?string $key, array $path = []): ?array {
+                if ($node['kind'] === NodeKindEnum::OPERATION_DEFINITION) {
+                    return array_merge(['didLeave' => true], $node);
                 }
-                return $node->toArray();
+                return $node;
             }
         );
 
@@ -103,21 +95,17 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []): ?array {
-                if ($node->getKind() === NodeKindEnum::DOCUMENT) {
-                    return array_merge([
-                        'didEnter' => true,
-                    ], $node->toArray());
+            function (array $node, ?string $key, array $path = []): ?array {
+                if ($node['kind'] === NodeKindEnum::DOCUMENT) {
+                    return array_merge(['didEnter' => true], $node);
                 }
-                return $node->toArray();
+                return $node;
             },
-            function (NodeInterface $node, ?string $key, array $path = []): ?array {
-                if ($node->getKind() === NodeKindEnum::DOCUMENT) {
-                    return array_merge([
-                        'didLeave' => true,
-                    ], $node->toArray());
+            function (array $node, ?string $key, array $path = []): ?array {
+                if ($node['kind'] === NodeKindEnum::DOCUMENT) {
+                    return array_merge(['didLeave' => true], $node);
                 }
-                return $node->toArray();
+                return $node;
             }
         );
 
@@ -139,11 +127,11 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []): ?array {
-                if ($node->getKind() === NodeKindEnum::FIELD && $node->getNameValue() === 'b') {
+            function (array $node, ?string $key, array $path = []): ?array {
+                if ($node['kind'] === NodeKindEnum::FIELD && isset($node['name']['value']) && $node['name']['value'] === 'b') {
                     return null;
                 }
-                return $node->toArray();
+                return $node;
             }
         );
 
@@ -159,6 +147,77 @@ class VisitorTest extends TestCase
             $editedAst
         );
     }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testAllowsForEditingOnLeave()
+    {
+        /** @var DocumentNode $ast */
+        $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
+
+        $visitor = new Visitor(
+            null,
+            function (array $node, ?string $key, array $path = []): ?array {
+                if ($node['kind'] === NodeKindEnum::FIELD && isset($node['name']['value']) && $node['name']['value'] === 'b') {
+                    return null;
+                }
+                return $node;
+            }
+        );
+
+        $editedAst = $ast->accept($visitor);
+
+        $this->assertEquals(
+            parse('{ a, b, c { a, b, c } }', ['noLocation' => true])->toArray(),
+            $ast->toArray()
+        );
+
+        $this->assertEquals(
+            parse('{ a,    c { a,    c } }', ['noLocation' => true])->toArray(),
+            $editedAst
+        );
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+//    public function testVisitsEditedNode()
+//    {
+//        $addedField = [
+//            'kind' => NodeKindEnum::FIELD,
+//            'name' => [
+//                'kind' => NodeKindEnum::NAME,
+//                'value' => '__typename',
+//            ],
+//        ];
+//
+//        $didVisitEditedNode = false;
+//
+//        /** @var DocumentNode $ast */
+//        $ast = parse('{ a { x } }', ['noLocation' => true]);
+//
+//        $visitor = new Visitor(
+//            function (array $node, ?string $key, array $path = []) use (&$didVisitEditedNode, $addedField): ?array {
+//                if ($node['kind'] === NodeKindEnum::FIELD && isset($node['name']['value']) && $node['name']['value'] === 'a') {
+//                    return [
+//                        'kind' => NodeKindEnum::FIELD,
+//                        'selectionSet' => array_merge($node['selectionSet'], [$addedField]),
+//                    ];
+//                }
+//                if ($node == $addedField) {
+//                    $didVisitEditedNode = true;
+//                }
+//                return $node;
+//            }
+//        );
+//
+//        $ast->accept($visitor);
+//
+//        $this->assertTrue($didVisitEditedNode);
+//    }
 }
 
 class Visitor extends AbstractVisitor
@@ -187,23 +246,21 @@ class Visitor extends AbstractVisitor
 
     /**
      * @inheritdoc
-     * @param NodeInterface|SerializationInterface $node
      */
-    public function enterNode(NodeInterface $node, ?string $key = null, array $path = []): ?array
+    public function enterNode(array $node, ?string $key = null, array $path = []): ?array
     {
         return null !== $this->enterFunction
             ? call_user_func($this->enterFunction, $node, $key, $path)
-            : $node->toArray();
+            : $node;
     }
 
     /**
      * @inheritdoc
-     * @param NodeInterface|SerializationInterface $node
      */
-    public function leaveNode(NodeInterface $node, ?string $key = null, array $path = []): ?array
+    public function leaveNode(array $node, ?string $key = null, array $path = []): ?array
     {
         return null !== $this->leaveFunction
             ? call_user_func($this->leaveFunction, $node, $key, $path)
-            : $node->toArray();
+            : $node;
     }
 }
