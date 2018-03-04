@@ -657,8 +657,6 @@ class Parser implements ParserInterface, DirectorInterface
 
         $this->expectKeyword($lexer, KeywordEnum::FRAGMENT);
 
-        // TODO: Consider adding experimental support fragment variables
-
         $parseTypeCondition = function (LexerInterface $lexer) {
             $this->expectKeyword($lexer, 'on');
             return $this->parseNamedType($lexer);
@@ -667,6 +665,7 @@ class Parser implements ParserInterface, DirectorInterface
         return [
             'kind' => NodeKindEnum::FRAGMENT_DEFINITION,
             'name' => $this->parseFragmentName($lexer),
+            'variableDefinitions' => $this->parseVariableDefinitions($lexer),
             'typeCondition' => $parseTypeCondition($lexer),
             'directives' => $this->parseDirectives($lexer, false),
             'selectionSet' => $this->parseSelectionSet($lexer),

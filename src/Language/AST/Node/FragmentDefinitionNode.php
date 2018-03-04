@@ -8,8 +8,9 @@ class FragmentDefinitionNode extends AbstractNode implements ExecutableDefinitio
 {
 
     use NameTrait;
-    use TypeConditionTrait;
     use VariableDefinitionsTrait;
+    use TypeConditionTrait;
+    use DirectivesTrait;
     use SelectionSetTrait;
 
     /**
