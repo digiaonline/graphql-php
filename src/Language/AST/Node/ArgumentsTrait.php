@@ -10,7 +10,7 @@ trait ArgumentsTrait
     /**
      * @var array|ArgumentNode[]
      */
-    protected $arguments;
+    protected $arguments = [];
 
     /**
      * @return bool

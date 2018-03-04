@@ -19,22 +19,32 @@ trait AcceptVisitorTrait
     protected $path;
 
     /**
+     * @var boolean
+     */
+    protected $isEdited = false;
+
+    /**
      * @param VisitorInterface $visitor
      * @param string|null $key
      * @param array $path
-     * @return NodeInterface|SerializationInterface|null
+     * @return NodeInterface|AcceptVisitorTrait|SerializationInterface|null
      */
     public function accept(VisitorInterface $visitor, ?string $key = null, array $path = []): ?NodeInterface
     {
         $this->visitor = $visitor;
         $this->path = $path;
 
-        // TODO: Benchmark
-        /** @var NodeInterface|AcceptVisitorTrait $newNode */
-        $newNode = clone $this;
+        /** @var NodeInterface|AcceptVisitorTrait|null $newNode */
+        $newNode = clone $this; // TODO: Benchmark cloning
 
         if (null === ($newNode = $visitor->enterNode($newNode, $key, $this->path))) {
             return null;
+        }
+
+        // If the node has been edited, we have to return early, because otherwise
+        // the edited AST won't be what we'd expect.
+        if ($newNode->determineIsEdited($this)) {
+            return $newNode;
         }
 
         foreach (self::$kindToNodesToVisitMap[$this->kind] as $name) {
@@ -61,7 +71,27 @@ trait AcceptVisitorTrait
             return null;
         }
 
+        $newNode->determineIsEdited($this);
+
         return $newNode;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEdited(): bool
+    {
+        return $this->isEdited;
+    }
+
+    /**
+     * @param bool $isEdited
+     * @return $this
+     */
+    public function setIsEdited(bool $isEdited)
+    {
+        $this->isEdited = $isEdited;
+        return $this;
     }
 
     /**
@@ -118,9 +148,32 @@ trait AcceptVisitorTrait
 
         $newNode = $node->accept($this->visitor, $key, $this->path);
 
+        if (null !== $newNode && $newNode->isEdited()) {
+            $newNode = $newNode->accept($this->visitor, $key, $this->path);
+        }
+
         $this->removeOneFromPath();
 
         return $newNode;
+    }
+
+    /**
+     * @param NodeInterface|AcceptVisitorTrait $node
+     * @return bool
+     */
+    protected function determineIsEdited(NodeInterface $node): bool
+    {
+        $this->isEdited = $this->isEdited || !$this->compareNode($node);
+        return $this->isEdited;
+    }
+
+    /**
+     * @param NodeInterface $other
+     * @return bool
+     */
+    protected function compareNode(NodeInterface $other)
+    {
+        return $this->toJSON() === $other->toJSON();
     }
 
     /**

@@ -184,41 +184,41 @@ class VisitorTest extends TestCase
         );
     }
 
-//    /**
-//     * @throws \Digia\GraphQL\Error\GraphQLError
-//     * @throws \Exception
-//     */
-//    public function testVisitsEditedNode()
-//    {
-//        $addedField = (new FieldNode([
-//            'name' => new NameNode([
-//                'value' => '__typename',
-//            ]),
-//        ]))->setConfigValue('isAddedField', true);
-//
-//        $didVisitEditedNode = false;
-//
-//        /** @var DocumentNode $ast */
-//        $ast = parse('{ a { x } }', ['noLocation' => true]);
-//
-//        $visitor = new Visitor(
-//            function (NodeInterface $node, ?string $key, array $path = []) use (&$didVisitEditedNode, $addedField): ?NodeInterface {
-//                if ($node instanceof FieldNode && $node->getNameValue() === 'a') {
-//                    return $addedField;
-//                }
-//
-//                if ($node->getConfigValue('isAddedField')) {
-//                    $didVisitEditedNode = true;
-//                }
-//
-//                return $node;
-//            }
-//        );
-//
-//        $ast->accept($visitor);
-//
-//        $this->assertTrue($didVisitEditedNode);
-//    }
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testVisitsEditedNode()
+    {
+        $addedField = (new FieldNode([
+            'name' => new NameNode([
+                'value' => '__typename',
+            ]),
+        ]))->setConfigValue('isAddedField', true);
+
+        $didVisitEditedNode = false;
+
+        /** @var DocumentNode $ast */
+        $ast = parse('{ a { x } }', ['noLocation' => true]);
+
+        $visitor = new Visitor(
+            function (NodeInterface $node, ?string $key, array $path = []) use (&$didVisitEditedNode, $addedField): ?NodeInterface {
+                if ($node instanceof FieldNode && $node->getNameValue() === 'a') {
+                    return $addedField;
+                }
+
+                if ($node->getConfigValue('isAddedField')) {
+                    $didVisitEditedNode = true;
+                }
+
+                return $node;
+            }
+        );
+
+        $ast->accept($visitor);
+
+        $this->assertTrue($didVisitEditedNode);
+    }
 }
 
 class Visitor extends AbstractVisitor
