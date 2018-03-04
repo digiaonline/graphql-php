@@ -6,18 +6,16 @@ use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Config\ConfigTrait;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\FieldsTrait;
 use Digia\GraphQL\Language\AST\Node\NameNode;
-use Digia\GraphQL\Language\AST\Node\NameTrait;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Visitor\AbstractVisitor;
-use Digia\GraphQL\Language\AST\Visitor\BreakNode;
-use const Digia\GraphQL\Language\AST\Visitor\VISITOR_BREAK;
+use Digia\GraphQL\Language\AST\Visitor\KindVisitor;
+use Digia\GraphQL\Language\AST\Visitor\Visitor;
 use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
+use function Digia\GraphQL\Util\readFile;
 
 class VisitorTest extends TestCase
 {
@@ -30,15 +28,16 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
-        /** @var DocumentNode $ast */
         $ast = parse('{ a }');
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['enter', array_slice($path, 0)];
                 return $node;
             },
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['leave', array_slice($path, 0)];
                 return $node;
             }
@@ -66,17 +65,26 @@ class VisitorTest extends TestCase
      */
     public function testAllowsEditingANodeBothOnEnterAndOnLeave()
     {
-        /** @var DocumentNode $ast */
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+            function (
+                NodeInterface $node,
+                $key,
+                ?NodeInterface $parent = null,
+                array $path = []
+            ): ?NodeInterface {
                 if ($node instanceof OperationDefinitionNode) {
                     return $node->setConfigValue('didEnter', true);
                 }
                 return $node;
             },
-            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+            function (
+                NodeInterface $node,
+                $key,
+                ?NodeInterface $parent = null,
+                array $path = []
+            ): ?NodeInterface {
                 if ($node instanceof OperationDefinitionNode) {
                     return $node->setConfigValue('didLeave', true);
                 }
@@ -100,17 +108,26 @@ class VisitorTest extends TestCase
      */
     public function testAllowsEditingTheRootNodeOnEnterAndOnLeave()
     {
-        /** @var DocumentNode $ast */
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+            function (
+                NodeInterface $node,
+                $key,
+                ?NodeInterface $parent = null,
+                array $path = []
+            ): ?NodeInterface {
                 if ($node instanceof DocumentNode) {
                     return $node->setConfigValue('didEnter', true);
                 }
                 return $node;
             },
-            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+            function (
+                NodeInterface $node,
+                $key,
+                ?NodeInterface $parent = null,
+                array $path = []
+            ): ?NodeInterface {
                 if ($node instanceof DocumentNode) {
                     return $node->setConfigValue('didLeave', true);
                 }
@@ -131,11 +148,15 @@ class VisitorTest extends TestCase
      */
     public function testAllowsForEditingOnEnter()
     {
-        /** @var DocumentNode $ast */
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+            function (
+                NodeInterface $node,
+                $key,
+                ?NodeInterface $parent = null,
+                array $path = []
+            ): ?NodeInterface {
                 if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
                     return null;
                 }
@@ -162,12 +183,16 @@ class VisitorTest extends TestCase
      */
     public function testAllowsForEditingOnLeave()
     {
-        /** @var DocumentNode $ast */
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
             null,
-            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+            function (
+                NodeInterface $node,
+                $key,
+                ?NodeInterface $parent = null,
+                array $path = []
+            ): ?NodeInterface {
                 if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
                     return null;
                 }
@@ -202,11 +227,13 @@ class VisitorTest extends TestCase
 
         $didVisitEditedNode = false;
 
-        /** @var DocumentNode $ast */
         $ast = parse('{ a { x } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$didVisitEditedNode, $addedField): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (
+                &$didVisitEditedNode,
+                $addedField
+            ): ?NodeInterface {
                 if ($node instanceof FieldNode && $node->getNameValue() === 'a') {
                     return $addedField;
                 }
@@ -232,11 +259,11 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
-        /** @var DocumentNode $ast */
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
+            ): ?NodeInterface {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
@@ -245,7 +272,8 @@ class VisitorTest extends TestCase
 
                 return $node;
             },
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
+            ): ?NodeInterface {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 return $node;
@@ -281,11 +309,11 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
-        /** @var DocumentNode $ast */
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
+            ): ?NodeInterface {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 if ($node instanceof NameNode && $node->getValue() === 'x') {
@@ -294,7 +322,8 @@ class VisitorTest extends TestCase
 
                 return $node;
             },
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
+            ): ?NodeInterface {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 return $node;
@@ -333,16 +362,17 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
-        /** @var DocumentNode $ast */
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
+            ): ?NodeInterface {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 return $node;
             },
-            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
+            ): ?NodeInterface {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 if ($node instanceof NameNode && $node->getValue() === 'x') {
@@ -353,7 +383,7 @@ class VisitorTest extends TestCase
             }
         );
 
-        // TODO: Find an alternative solution so that we don't need to use an Exception here.
+        // TODO: Find an alternative solution for this.
         try {
             $ast->accept($visitor);
         } catch (VisitorBreak $break) {
@@ -377,49 +407,446 @@ class VisitorTest extends TestCase
             ['leave', 'Name', 'x'],
         ], $visited);
     }
-}
-
-class Visitor extends AbstractVisitor
-{
 
     /**
-     * @var callable|null
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
      */
-    protected $enterFunction;
-
-    /**
-     * @var callable|null
-     */
-    protected $leaveFunction;
-
-    /**
-     * TestableVisitor constructor.
-     * @param callable|null $enterFunction
-     * @param callable|null $leaveFunction
-     */
-    public function __construct(?callable $enterFunction = null, ?callable $leaveFunction = null)
+    public function testAllowsAKindVisitor()
     {
-        $this->enterFunction = $enterFunction;
-        $this->leaveFunction = $leaveFunction;
+        $visited = [];
+
+        $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
+
+        $visitor = new KindVisitor(
+            [NodeKindEnum::NAME, NodeKindEnum::SELECTION_SET],
+            [NodeKindEnum::SELECTION_SET],
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
+            ): ?NodeInterface {
+                $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                return $node;
+            },
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
+            ): ?NodeInterface {
+                $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                return $node;
+            }
+        );
+
+        $ast->accept($visitor);
+
+        $this->assertEquals([
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Name', 'a'],
+            ['enter', 'Name', 'b'],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Name', 'x'],
+            ['leave', 'SelectionSet', null],
+            ['enter', 'Name', 'c'],
+            ['leave', 'SelectionSet', null],
+        ], $visited);
     }
 
     /**
-     * @inheritdoc
+     * @throws VisitorBreak
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
      */
-    public function enterNode(NodeInterface $node, ?string $key = null, array $path = []): ?NodeInterface
+    public function testVisitsVariablesDefinedInFragments()
     {
-        return null !== $this->enterFunction
-            ? call_user_func($this->enterFunction, $node, $key, $path)
-            : $node;
+        $visited = [];
+
+        $ast = parse('fragment a($v: Boolean = false) on t { f }', ['noLocation' => true]);
+
+        $visitor = new Visitor(
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
+                $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                return $node;
+            },
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
+                $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                return $node;
+            }
+        );
+
+        $ast->accept($visitor);
+
+        $this->assertEquals([
+            ['enter', 'Document', null],
+            ['enter', 'FragmentDefinition', null],
+            ['enter', 'Name', 'a'],
+            ['leave', 'Name', 'a'],
+            ['enter', 'VariableDefinition', null],
+            ['enter', 'Variable', null],
+            ['enter', 'Name', 'v'],
+            ['leave', 'Name', 'v'],
+            ['leave', 'Variable', null],
+            ['enter', 'NamedType', null],
+            ['enter', 'Name', 'Boolean'],
+            ['leave', 'Name', 'Boolean'],
+            ['leave', 'NamedType', null],
+            ['enter', 'BooleanValue', false],
+            ['leave', 'BooleanValue', false],
+            ['leave', 'VariableDefinition', null],
+            ['enter', 'NamedType', null],
+            ['enter', 'Name', 't'],
+            ['leave', 'Name', 't'],
+            ['leave', 'NamedType', null],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'f'],
+            ['leave', 'Name', 'f'],
+            ['leave', 'Field', null],
+            ['leave', 'SelectionSet', null],
+            ['leave', 'FragmentDefinition', null],
+            ['leave', 'Document', null],
+        ], $visited);
     }
 
     /**
-     * @inheritdoc
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
      */
-    public function leaveNode(NodeInterface $node, ?string $key = null, array $path = []): ?NodeInterface
+    public function testVisitsKitchenSink()
     {
-        return null !== $this->leaveFunction
-            ? call_user_func($this->leaveFunction, $node, $key, $path)
-            : $node;
+        $visited = [];
+
+        $kitchenSink = readFile(__DIR__ . '/kitchen-sink.graphql');
+
+        $ast = parse($kitchenSink);
+
+        $visitor = new Visitor(
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
+                $visited[] = ['enter', $node->getKind(), $key, $parent ? $parent->getKind() : null];
+                return $node;
+            },
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
+                $visited[] = ['leave', $node->getKind(), $key, $parent ? $parent->getKind() : null];
+                return $node;
+            }
+        );
+
+        $ast->accept($visitor);
+
+        $this->assertEquals([
+            ['enter', 'Document', null, null],
+            ['enter', 'OperationDefinition', 0, null],
+            ['enter', 'Name', 'name', 'OperationDefinition'],
+            ['leave', 'Name', 'name', 'OperationDefinition'],
+            ['enter', 'VariableDefinition', 0, null],
+            ['enter', 'Variable', 'variable', 'VariableDefinition'],
+            ['enter', 'Name', 'name', 'Variable'],
+            ['leave', 'Name', 'name', 'Variable'],
+            ['leave', 'Variable', 'variable', 'VariableDefinition'],
+            ['enter', 'NamedType', 'type', 'VariableDefinition'],
+            ['enter', 'Name', 'name', 'NamedType'],
+            ['leave', 'Name', 'name', 'NamedType'],
+            ['leave', 'NamedType', 'type', 'VariableDefinition'],
+            ['leave', 'VariableDefinition', 0, null],
+            ['enter', 'VariableDefinition', 1, null],
+            ['enter', 'Variable', 'variable', 'VariableDefinition'],
+            ['enter', 'Name', 'name', 'Variable'],
+            ['leave', 'Name', 'name', 'Variable'],
+            ['leave', 'Variable', 'variable', 'VariableDefinition'],
+            ['enter', 'NamedType', 'type', 'VariableDefinition'],
+            ['enter', 'Name', 'name', 'NamedType'],
+            ['leave', 'Name', 'name', 'NamedType'],
+            ['leave', 'NamedType', 'type', 'VariableDefinition'],
+            ['enter', 'EnumValue', 'defaultValue', 'VariableDefinition'],
+            ['leave', 'EnumValue', 'defaultValue', 'VariableDefinition'],
+            ['leave', 'VariableDefinition', 1, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'OperationDefinition'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'alias', 'Field'],
+            ['leave', 'Name', 'alias', 'Field'],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'Argument', 0, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'ListValue', 'value', 'Argument'],
+            ['enter', 'IntValue', 0, null],
+            ['leave', 'IntValue', 0, null],
+            ['enter', 'IntValue', 1, null],
+            ['leave', 'IntValue', 1, null],
+            ['leave', 'ListValue', 'value', 'Argument'],
+            ['leave', 'Argument', 0, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'Field'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['enter', 'InlineFragment', 1, null],
+            ['enter', 'NamedType', 'typeCondition', 'InlineFragment'],
+            ['enter', 'Name', 'name', 'NamedType'],
+            ['leave', 'Name', 'name', 'NamedType'],
+            ['leave', 'NamedType', 'typeCondition', 'InlineFragment'],
+            ['enter', 'Directive', 0, null],
+            ['enter', 'Name', 'name', 'Directive'],
+            ['leave', 'Name', 'name', 'Directive'],
+            ['leave', 'Directive', 0, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'InlineFragment'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'SelectionSet', 'selectionSet', 'Field'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['enter', 'Field', 1, null],
+            ['enter', 'Name', 'alias', 'Field'],
+            ['leave', 'Name', 'alias', 'Field'],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'Argument', 0, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'IntValue', 'value', 'Argument'],
+            ['leave', 'IntValue', 'value', 'Argument'],
+            ['leave', 'Argument', 0, null],
+            ['enter', 'Argument', 1, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'Variable', 'value', 'Argument'],
+            ['enter', 'Name', 'name', 'Variable'],
+            ['leave', 'Name', 'name', 'Variable'],
+            ['leave', 'Variable', 'value', 'Argument'],
+            ['leave', 'Argument', 1, null],
+            ['enter', 'Directive', 0, null],
+            ['enter', 'Name', 'name', 'Directive'],
+            ['leave', 'Name', 'name', 'Directive'],
+            ['enter', 'Argument', 0, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'Variable', 'value', 'Argument'],
+            ['enter', 'Name', 'name', 'Variable'],
+            ['leave', 'Name', 'name', 'Variable'],
+            ['leave', 'Variable', 'value', 'Argument'],
+            ['leave', 'Argument', 0, null],
+            ['leave', 'Directive', 0, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'Field'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['enter', 'FragmentSpread', 1, null],
+            ['enter', 'Name', 'name', 'FragmentSpread'],
+            ['leave', 'Name', 'name', 'FragmentSpread'],
+            ['leave', 'FragmentSpread', 1, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'Field'],
+            ['leave', 'Field', 1, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'InlineFragment'],
+            ['leave', 'InlineFragment', 1, null],
+            ['enter', 'InlineFragment', 2, null],
+            ['enter', 'Directive', 0, null],
+            ['enter', 'Name', 'name', 'Directive'],
+            ['leave', 'Name', 'name', 'Directive'],
+            ['enter', 'Argument', 0, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'Variable', 'value', 'Argument'],
+            ['enter', 'Name', 'name', 'Variable'],
+            ['leave', 'Name', 'name', 'Variable'],
+            ['leave', 'Variable', 'value', 'Argument'],
+            ['leave', 'Argument', 0, null],
+            ['leave', 'Directive', 0, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'InlineFragment'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'InlineFragment'],
+            ['leave', 'InlineFragment', 2, null],
+            ['enter', 'InlineFragment', 3, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'InlineFragment'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'InlineFragment'],
+            ['leave', 'InlineFragment', 3, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'OperationDefinition'],
+            ['leave', 'OperationDefinition', 0, null],
+            ['enter', 'OperationDefinition', 1, null],
+            ['enter', 'Name', 'name', 'OperationDefinition'],
+            ['leave', 'Name', 'name', 'OperationDefinition'],
+            ['enter', 'SelectionSet', 'selectionSet', 'OperationDefinition'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'Argument', 0, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'IntValue', 'value', 'Argument'],
+            ['leave', 'IntValue', 'value', 'Argument'],
+            ['leave', 'Argument', 0, null],
+            ['enter', 'Directive', 0, null],
+            ['enter', 'Name', 'name', 'Directive'],
+            ['leave', 'Name', 'name', 'Directive'],
+            ['leave', 'Directive', 0, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'Field'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'SelectionSet', 'selectionSet', 'Field'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'OperationDefinition'],
+            ['leave', 'OperationDefinition', 1, null],
+            ['enter', 'OperationDefinition', 2, null],
+            ['enter', 'Name', 'name', 'OperationDefinition'],
+            ['leave', 'Name', 'name', 'OperationDefinition'],
+            ['enter', 'VariableDefinition', 0, null],
+            ['enter', 'Variable', 'variable', 'VariableDefinition'],
+            ['enter', 'Name', 'name', 'Variable'],
+            ['leave', 'Name', 'name', 'Variable'],
+            ['leave', 'Variable', 'variable', 'VariableDefinition'],
+            ['enter', 'NamedType', 'type', 'VariableDefinition'],
+            ['enter', 'Name', 'name', 'NamedType'],
+            ['leave', 'Name', 'name', 'NamedType'],
+            ['leave', 'NamedType', 'type', 'VariableDefinition'],
+            ['leave', 'VariableDefinition', 0, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'OperationDefinition'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'Argument', 0, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'Variable', 'value', 'Argument'],
+            ['enter', 'Name', 'name', 'Variable'],
+            ['leave', 'Name', 'name', 'Variable'],
+            ['leave', 'Variable', 'value', 'Argument'],
+            ['leave', 'Argument', 0, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'Field'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'SelectionSet', 'selectionSet', 'Field'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'SelectionSet', 'selectionSet', 'Field'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['enter', 'Field', 1, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'SelectionSet', 'selectionSet', 'Field'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'Field'],
+            ['leave', 'Field', 1, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'Field'],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'OperationDefinition'],
+            ['leave', 'OperationDefinition', 2, null],
+            ['enter', 'FragmentDefinition', 3, null],
+            ['enter', 'Name', 'name', 'FragmentDefinition'],
+            ['leave', 'Name', 'name', 'FragmentDefinition'],
+            ['enter', 'NamedType', 'typeCondition', 'FragmentDefinition'],
+            ['enter', 'Name', 'name', 'NamedType'],
+            ['leave', 'Name', 'name', 'NamedType'],
+            ['leave', 'NamedType', 'typeCondition', 'FragmentDefinition'],
+            ['enter', 'SelectionSet', 'selectionSet', 'FragmentDefinition'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'Argument', 0, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'Variable', 'value', 'Argument'],
+            ['enter', 'Name', 'name', 'Variable'],
+            ['leave', 'Name', 'name', 'Variable'],
+            ['leave', 'Variable', 'value', 'Argument'],
+            ['leave', 'Argument', 0, null],
+            ['enter', 'Argument', 1, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'Variable', 'value', 'Argument'],
+            ['enter', 'Name', 'name', 'Variable'],
+            ['leave', 'Name', 'name', 'Variable'],
+            ['leave', 'Variable', 'value', 'Argument'],
+            ['leave', 'Argument', 1, null],
+            ['enter', 'Argument', 2, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'ObjectValue', 'value', 'Argument'],
+            ['enter', 'ObjectField', 0, null],
+            ['enter', 'Name', 'name', 'ObjectField'],
+            ['leave', 'Name', 'name', 'ObjectField'],
+            ['enter', 'StringValue', 'value', 'ObjectField'],
+            ['leave', 'StringValue', 'value', 'ObjectField'],
+            ['leave', 'ObjectField', 0, null],
+            ['enter', 'ObjectField', 1, null],
+            ['enter', 'Name', 'name', 'ObjectField'],
+            ['leave', 'Name', 'name', 'ObjectField'],
+            ['enter', 'StringValue', 'value', 'ObjectField'],
+            ['leave', 'StringValue', 'value', 'ObjectField'],
+            ['leave', 'ObjectField', 1, null],
+            ['leave', 'ObjectValue', 'value', 'Argument'],
+            ['leave', 'Argument', 2, null],
+            ['leave', 'Field', 0, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'FragmentDefinition'],
+            ['leave', 'FragmentDefinition', 3, null],
+            ['enter', 'OperationDefinition', 4, null],
+            ['enter', 'SelectionSet', 'selectionSet', 'OperationDefinition'],
+            ['enter', 'Field', 0, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['enter', 'Argument', 0, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'BooleanValue', 'value', 'Argument'],
+            ['leave', 'BooleanValue', 'value', 'Argument'],
+            ['leave', 'Argument', 0, null],
+            ['enter', 'Argument', 1, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'BooleanValue', 'value', 'Argument'],
+            ['leave', 'BooleanValue', 'value', 'Argument'],
+            ['leave', 'Argument', 1, null],
+            ['enter', 'Argument', 2, null],
+            ['enter', 'Name', 'name', 'Argument'],
+            ['leave', 'Name', 'name', 'Argument'],
+            ['enter', 'NullValue', 'value', 'Argument'],
+            ['leave', 'NullValue', 'value', 'Argument'],
+            ['leave', 'Argument', 2, null],
+            ['leave', 'Field', 0, null],
+            ['enter', 'Field', 1, null],
+            ['enter', 'Name', 'name', 'Field'],
+            ['leave', 'Name', 'name', 'Field'],
+            ['leave', 'Field', 1, null],
+            ['leave', 'SelectionSet', 'selectionSet', 'OperationDefinition'],
+            ['leave', 'OperationDefinition', 4, null],
+            ['leave', 'Document', null, null],
+        ], $visited);
     }
 }

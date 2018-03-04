@@ -3,6 +3,7 @@
 namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Schema\SchemaBuilderInterface;
 use Digia\GraphQL\Language\LexerInterface;
@@ -15,7 +16,7 @@ use Digia\GraphQL\Util\SerializationInterface;
 /**
  * @param string|Source $source
  * @param array $options
- * @return NodeInterface|SerializationInterface
+ * @return NodeInterface|DocumentNode|SerializationInterface
  * @throws GraphQLError
  * @throws \Exception
  */

@@ -9,9 +9,15 @@ interface AcceptVisitorInterface
 
     /**
      * @param VisitorInterface $visitor
-     * @param string|null $key
+     * @param string|int|null $key
+     * @param NodeInterface|null $parent
      * @param array $path
      * @return NodeInterface|null
      */
-    public function accept(VisitorInterface $visitor, ?string $key = null, array $path = []): ?NodeInterface;
+    public function accept(
+        VisitorInterface $visitor,
+        $key = null,
+        ?NodeInterface $parent = null,
+        array $path = []
+    ): ?NodeInterface;
 }

@@ -25,20 +25,25 @@ trait AcceptVisitorTrait
 
     /**
      * @param VisitorInterface $visitor
-     * @param string|null $key
+     * @param string|int||null $key
+     * @param NodeInterface|null $parent
      * @param array $path
      * @return NodeInterface|AcceptVisitorTrait|SerializationInterface|null
      * @throws VisitorBreak
      */
-    public function accept(VisitorInterface $visitor, ?string $key = null, array $path = []): ?NodeInterface
-    {
+    public function accept(
+        VisitorInterface $visitor,
+        $key = null,
+        ?NodeInterface $parent = null,
+        array $path = []
+    ): ?NodeInterface {
         $this->visitor = $visitor;
         $this->path = $path;
 
         /** @var NodeInterface|AcceptVisitorTrait|null $newNode */
         $newNode = clone $this; // TODO: Benchmark cloning
 
-        if (null === ($newNode = $visitor->enterNode($newNode, $key, $this->path))) {
+        if (null === ($newNode = $visitor->enterNode($newNode, $key, $parent, $this->path))) {
             return null;
         }
 
@@ -68,7 +73,7 @@ trait AcceptVisitorTrait
             }
         }
 
-        return $visitor->leaveNode($newNode, $key, $this->path);
+        return $visitor->leaveNode($newNode, $key, $parent, $this->path);
     }
 
     /**
@@ -90,30 +95,34 @@ trait AcceptVisitorTrait
     }
 
     /**
-     * @param string $key
+     * @param string|int $key
      * @return array|NodeInterface|NodeInterface[]|null
      */
-    protected function getNodeOrNodes(string $key)
+    protected function getNodeOrNodes($key)
     {
         return $this->{$key};
     }
 
     /**
      * @param $nodeOrNodes
-     * @param string $key
+     * @param string|int $key
      * @return array|NodeInterface|NodeInterface[]|null
+     * @throws VisitorBreak
      */
-    protected function visitNodeOrNodes($nodeOrNodes, string $key)
+    protected function visitNodeOrNodes($nodeOrNodes, $key)
     {
-        return \is_array($nodeOrNodes) ? $this->visitNodes($nodeOrNodes, $key) : $this->visitNode($nodeOrNodes, $key);
+        return \is_array($nodeOrNodes)
+            ? $this->visitNodes($nodeOrNodes, $key)
+            : $this->visitNode($nodeOrNodes, $key, $this);
     }
 
     /**
      * @param NodeInterface[] $nodes
-     * @param string $key
+     * @param string|int $key
      * @return NodeInterface[]
+     * @throws VisitorBreak
      */
-    protected function visitNodes(array $nodes, string $key): array
+    protected function visitNodes(array $nodes, $key): array
     {
         $this->addOneToPath($key);
 
@@ -121,7 +130,7 @@ trait AcceptVisitorTrait
         $newNodes = [];
 
         foreach ($nodes as $node) {
-            $newNode = $this->visitNode($node, $index);
+            $newNode = $this->visitNode($node, $index, null);
 
             if (null !== $newNode) {
                 $newNodes[$index] = $newNode;
@@ -136,19 +145,21 @@ trait AcceptVisitorTrait
 
     /**
      * @param NodeInterface|AcceptVisitorTrait $node
-     * @param string $key
+     * @param string|int $key
+     * @param NodeInterface|null $parent
      * @return NodeInterface|null
+     * @throws VisitorBreak
      */
-    protected function visitNode(NodeInterface $node, string $key): ?NodeInterface
+    protected function visitNode(NodeInterface $node, $key, ?NodeInterface $parent): ?NodeInterface
     {
         $this->addOneToPath($key);
 
-        $newNode = $node->accept($this->visitor, $key, $this->path);
+        $newNode = $node->accept($this->visitor, $key, $parent, $this->path);
 
         // If the node was edited, we need to revisit it
         // to produce the expected result.
         if (null !== $newNode && $newNode->isEdited()) {
-            $newNode = $newNode->accept($this->visitor, $key, $this->path);
+            $newNode = $newNode->accept($this->visitor, $key, $parent, $this->path);
         }
 
         $this->removeOneFromPath();
