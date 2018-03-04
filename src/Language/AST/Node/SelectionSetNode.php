@@ -37,6 +37,16 @@ class SelectionSetNode extends AbstractNode implements NodeInterface
     }
 
     /**
+     * @param SelectionNodeInterface[] $selections
+     * @return SelectionSetNode
+     */
+    public function setSelections(array $selections): SelectionSetNode
+    {
+        $this->selections = $selections;
+        return $this;
+    }
+
+    /**
      * @inheritdoc
      */
     public function toArray(): array

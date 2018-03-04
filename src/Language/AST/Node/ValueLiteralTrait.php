@@ -27,4 +27,14 @@ trait ValueLiteralTrait
     {
         return null !== $this->value ? $this->value->toArray() : null;
     }
+
+    /**
+     * @param ValueNodeInterface|null $value
+     * @return $this
+     */
+    public function setValue(?ValueNodeInterface $value)
+    {
+        $this->value = $value;
+        return $this;
+    }
 }

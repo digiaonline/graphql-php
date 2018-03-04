@@ -25,4 +25,14 @@ trait AliasTrait
     {
         return null !== $this->alias ? $this->alias->toArray() : null;
     }
+
+    /**
+     * @param NameNode|null $alias
+     * @return $this
+     */
+    public function setAlias(?NameNode $alias)
+    {
+        $this->alias = $alias;
+        return $this;
+    }
 }

@@ -33,7 +33,7 @@ class NonNullType implements TypeInterface, WrappingTypeInterface
      * @return $this
      * @throws \TypeError
      */
-    protected function setOfType(TypeInterface $ofType)
+    public function setOfType(TypeInterface $ofType)
     {
         if ($ofType instanceof NonNullType) {
             throw new \TypeError(sprintf('Expected %s to be a GraphQL nullable type.', $ofType));

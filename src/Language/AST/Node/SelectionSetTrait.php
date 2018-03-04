@@ -25,4 +25,14 @@ trait SelectionSetTrait
     {
         return null !== $this->selectionSet ? $this->selectionSet->toArray() : null;
     }
+
+    /**
+     * @param SelectionSetNode|null $selectionSet
+     * @return $this
+     */
+    public function setSelectionSet(?SelectionSetNode $selectionSet)
+    {
+        $this->selectionSet = $selectionSet;
+        return $this;
+    }
 }

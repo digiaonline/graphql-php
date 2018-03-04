@@ -10,11 +10,12 @@ use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\PrinterInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Util\SerializationInterface;
 
 /**
  * @param string|Source $source
  * @param array $options
- * @return NodeInterface
+ * @return NodeInterface|SerializationInterface
  * @throws GraphQLError
  * @throws \Exception
  */
@@ -30,7 +31,7 @@ function parse($source, array $options = []): NodeInterface
 /**
  * @param string|Source $source
  * @param array $options
- * @return NodeInterface
+ * @return NodeInterface|SerializationInterface
  * @throws GraphQLError
  * @throws \Exception
  */
@@ -46,7 +47,7 @@ function parseValue($source, array $options = []): NodeInterface
 /**
  * @param string|Source $source
  * @param array $options
- * @return NodeInterface
+ * @return NodeInterface|SerializationInterface
  * @throws GraphQLError
  * @throws \Exception
  */

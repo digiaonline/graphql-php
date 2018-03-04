@@ -33,4 +33,14 @@ trait NameTrait
     {
         return null !== $this->name ? $this->name->toArray() : null;
     }
+
+    /**
+     * @param NameNode|null $name
+     * @return $this
+     */
+    public function setName(?NameNode $name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 }

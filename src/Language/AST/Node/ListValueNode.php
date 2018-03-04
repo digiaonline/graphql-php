@@ -37,6 +37,16 @@ class ListValueNode extends AbstractNode implements ValueNodeInterface
     }
 
     /**
+     * @param array|ValueNodeInterface[] $values
+     * @return $this
+     */
+    public function setValues(array $values)
+    {
+        $this->values = $values;
+        return $this;
+    }
+
+    /**
      * @inheritdoc
      */
     public function toArray(): array

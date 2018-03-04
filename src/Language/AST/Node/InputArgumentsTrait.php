@@ -4,47 +4,47 @@ namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Util\SerializationInterface;
 
-trait InputFieldsTrait
+trait InputArgumentsTrait
 {
 
     /**
      * @var InputValueDefinitionNode[]
      */
-    protected $fields;
+    protected $arguments;
 
     /**
      * @return bool
      */
-    public function hasFields(): bool
+    public function hasArguments(): bool
     {
-        return !empty($this->fields);
+        return !empty($this->arguments);
     }
 
     /**
      * @return InputValueDefinitionNode[]
      */
-    public function getFields(): array
+    public function getArguments(): array
     {
-        return $this->fields;
+        return $this->arguments ?? [];
     }
 
     /**
      * @return array
      */
-    public function getFieldsAsArray(): array
+    public function getArgumentsAsArray(): array
     {
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
-        }, $this->fields);
+        }, $this->arguments);
     }
 
     /**
-     * @param array|InputValueDefinitionNode[] $fields
+     * @param array|InputValueDefinitionNode[] $arguments
      * @return $this
      */
-    public function setFields(array $fields)
+    public function setArguments(array $arguments)
     {
-        $this->fields = $fields;
+        $this->arguments = $arguments;
         return $this;
     }
 }

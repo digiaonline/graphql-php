@@ -9,7 +9,7 @@ class FieldDefinitionNode extends AbstractNode implements DefinitionNodeInterfac
 
     use DescriptionTrait;
     use NameTrait;
-    use ArgumentsTrait;
+    use InputArgumentsTrait;
     use TypeTrait;
     use DirectivesTrait;
 

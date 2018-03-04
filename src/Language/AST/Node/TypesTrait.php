@@ -37,4 +37,14 @@ trait TypesTrait
             return $node->toArray();
         }, $this->types);
     }
+
+    /**
+     * @param array|NamedTypeNode[] $types
+     * @return $this
+     */
+    public function setTypes(array $types)
+    {
+        $this->types = $types;
+        return $this;
+    }
 }

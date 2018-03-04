@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NameNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
@@ -141,9 +142,13 @@ class ExecutionTest extends TestCase
                                 'arguments' => [
                                     new InputValueDefinitionNode([
                                         'name'         => new NameNode([
-                                            'value' => 'name'
+                                            'value' => 'name',
                                         ]),
-                                        'type'         => GraphQLString(),
+                                        'type'         => new NamedTypeNode([
+                                            'name' => new NameNode([
+                                                'value' => 'String',
+                                            ]),
+                                        ]),
                                         'defaultValue' => new StringValueNode([
                                             'value' => 'Han Solo',
                                         ]),

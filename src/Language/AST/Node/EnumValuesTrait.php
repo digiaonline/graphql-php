@@ -37,4 +37,14 @@ trait EnumValuesTrait
             return $node->toArray();
         }, $this->values);
     }
+
+    /**
+     * @param array|EnumValueDefinitionNode[] $values
+     * @return $this
+     */
+    public function setValues(array $values)
+    {
+        $this->values = $values;
+        return $this;
+    }
 }

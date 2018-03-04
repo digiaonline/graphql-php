@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\AST\Visitor;
 
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+
 interface AcceptVisitorInterface
 {
 
@@ -9,7 +11,7 @@ interface AcceptVisitorInterface
      * @param VisitorInterface $visitor
      * @param string|null $key
      * @param array $path
-     * @return array|null
+     * @return NodeInterface|null
      */
-    public function accept(VisitorInterface $visitor, ?string $key = null, array $path = []): ?array;
+    public function accept(VisitorInterface $visitor, ?string $key = null, array $path = []): ?NodeInterface;
 }

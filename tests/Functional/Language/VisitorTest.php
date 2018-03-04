@@ -2,7 +2,14 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
+use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Config\ConfigTrait;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\AST\Node\FieldNode;
+use Digia\GraphQL\Language\AST\Node\FieldsTrait;
+use Digia\GraphQL\Language\AST\Node\NameNode;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Visitor\AbstractVisitor;
 use Digia\GraphQL\Test\TestCase;
@@ -23,11 +30,11 @@ class VisitorTest extends TestCase
         $ast = parse('{ a }');
 
         $visitor = new Visitor(
-            function (array $node, ?string $key, array $path = []) use (&$visited): ?array {
+            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
                 $visited[] = ['enter', array_slice($path, 0)];
                 return $node;
             },
-            function (array $node, ?string $key, array $path = []) use (&$visited): ?array {
+            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
                 $visited[] = ['leave', array_slice($path, 0)];
                 return $node;
             }
@@ -59,30 +66,28 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (array $node, ?string $key, array $path = []): ?array {
-                if ($node['kind'] === NodeKindEnum::OPERATION_DEFINITION) {
-                    return array_merge(['didEnter' => true], $node);
+            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+                if ($node instanceof OperationDefinitionNode) {
+                    return $node->setConfigValue('didEnter', true);
                 }
                 return $node;
             },
-            function (array $node, ?string $key, array $path = []): ?array {
-                if ($node['kind'] === NodeKindEnum::OPERATION_DEFINITION) {
-                    return array_merge(['didLeave' => true], $node);
+            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+                if ($node instanceof OperationDefinitionNode) {
+                    return $node->setConfigValue('didLeave', true);
                 }
                 return $node;
             }
         );
 
+        /** @var DocumentNode $editedAst */
         $editedAst = $ast->accept($visitor);
 
-        $this->assertEquals(array_merge($ast->toArray(), [
-            'definitions' => [
-                0 => array_merge($ast->getDefinitionsAsArray()[0], [
-                    'didEnter' => true,
-                    'didLeave' => true,
-                ]),
-            ],
-        ]), $editedAst);
+        /** @var ConfigObject $editedNode */
+        $editedNode = $editedAst->getDefinitions()[0];
+
+        $this->assertTrue($editedNode->getConfigValue('didEnter'));
+        $this->assertTrue($editedNode->getConfigValue('didLeave'));
     }
 
     /**
@@ -95,26 +100,25 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (array $node, ?string $key, array $path = []): ?array {
-                if ($node['kind'] === NodeKindEnum::DOCUMENT) {
-                    return array_merge(['didEnter' => true], $node);
+            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+                if ($node instanceof DocumentNode) {
+                    return $node->setConfigValue('didEnter', true);
                 }
                 return $node;
             },
-            function (array $node, ?string $key, array $path = []): ?array {
-                if ($node['kind'] === NodeKindEnum::DOCUMENT) {
-                    return array_merge(['didLeave' => true], $node);
+            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+                if ($node instanceof DocumentNode) {
+                    return $node->setConfigValue('didLeave', true);
                 }
                 return $node;
             }
         );
 
+        /** @var ConfigTrait $editedAst */
         $editedAst = $ast->accept($visitor);
 
-        $this->assertEquals(array_merge($ast->toArray(), [
-            'didEnter' => true,
-            'didLeave' => true,
-        ]), $editedAst);
+        $this->assertTrue($editedAst->getConfigValue('didEnter'));
+        $this->assertTrue($editedAst->getConfigValue('didLeave'));
     }
 
     /**
@@ -127,8 +131,8 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (array $node, ?string $key, array $path = []): ?array {
-                if ($node['kind'] === NodeKindEnum::FIELD && isset($node['name']['value']) && $node['name']['value'] === 'b') {
+            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+                if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
                     return null;
                 }
                 return $node;
@@ -144,7 +148,7 @@ class VisitorTest extends TestCase
 
         $this->assertEquals(
             parse('{ a,    c { a,    c } }', ['noLocation' => true])->toArray(),
-            $editedAst
+            $editedAst->toArray()
         );
     }
 
@@ -159,8 +163,8 @@ class VisitorTest extends TestCase
 
         $visitor = new Visitor(
             null,
-            function (array $node, ?string $key, array $path = []): ?array {
-                if ($node['kind'] === NodeKindEnum::FIELD && isset($node['name']['value']) && $node['name']['value'] === 'b') {
+            function (NodeInterface $node, ?string $key, array $path = []): ?NodeInterface {
+                if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
                     return null;
                 }
                 return $node;
@@ -176,23 +180,21 @@ class VisitorTest extends TestCase
 
         $this->assertEquals(
             parse('{ a,    c { a,    c } }', ['noLocation' => true])->toArray(),
-            $editedAst
+            $editedAst->toArray()
         );
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
+//    /**
+//     * @throws \Digia\GraphQL\Error\GraphQLError
+//     * @throws \Exception
+//     */
 //    public function testVisitsEditedNode()
 //    {
-//        $addedField = [
-//            'kind' => NodeKindEnum::FIELD,
-//            'name' => [
-//                'kind' => NodeKindEnum::NAME,
+//        $addedField = (new FieldNode([
+//            'name' => new NameNode([
 //                'value' => '__typename',
-//            ],
-//        ];
+//            ]),
+//        ]))->setConfigValue('isAddedField', true);
 //
 //        $didVisitEditedNode = false;
 //
@@ -200,16 +202,15 @@ class VisitorTest extends TestCase
 //        $ast = parse('{ a { x } }', ['noLocation' => true]);
 //
 //        $visitor = new Visitor(
-//            function (array $node, ?string $key, array $path = []) use (&$didVisitEditedNode, $addedField): ?array {
-//                if ($node['kind'] === NodeKindEnum::FIELD && isset($node['name']['value']) && $node['name']['value'] === 'a') {
-//                    return [
-//                        'kind' => NodeKindEnum::FIELD,
-//                        'selectionSet' => array_merge($node['selectionSet'], [$addedField]),
-//                    ];
+//            function (NodeInterface $node, ?string $key, array $path = []) use (&$didVisitEditedNode, $addedField): ?NodeInterface {
+//                if ($node instanceof FieldNode && $node->getNameValue() === 'a') {
+//                    return $addedField;
 //                }
-//                if ($node == $addedField) {
+//
+//                if ($node->getConfigValue('isAddedField')) {
 //                    $didVisitEditedNode = true;
 //                }
+//
 //                return $node;
 //            }
 //        );
@@ -247,7 +248,7 @@ class Visitor extends AbstractVisitor
     /**
      * @inheritdoc
      */
-    public function enterNode(array $node, ?string $key = null, array $path = []): ?array
+    public function enterNode(NodeInterface $node, ?string $key = null, array $path = []): ?NodeInterface
     {
         return null !== $this->enterFunction
             ? call_user_func($this->enterFunction, $node, $key, $path)
@@ -257,7 +258,7 @@ class Visitor extends AbstractVisitor
     /**
      * @inheritdoc
      */
-    public function leaveNode(array $node, ?string $key = null, array $path = []): ?array
+    public function leaveNode(NodeInterface $node, ?string $key = null, array $path = []): ?NodeInterface
     {
         return null !== $this->leaveFunction
             ? call_user_func($this->leaveFunction, $node, $key, $path)

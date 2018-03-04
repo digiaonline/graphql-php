@@ -2,22 +2,25 @@
 
 namespace Digia\GraphQL\Language\AST\Visitor;
 
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Util\SerializationInterface;
+
 interface VisitorInterface
 {
 
     /**
-     * @param array $node
+     * @param NodeInterface|AcceptVisitorTrait $node
      * @param string|null $key
      * @param array $path
-     * @return array|null
+     * @return NodeInterface|SerializationInterface|null
      */
-    public function enterNode(array $node, ?string $key = null, array $path = []): ?array;
+    public function enterNode(NodeInterface $node, ?string $key = null, array $path = []): ?NodeInterface;
 
     /**
-     * @param array $node
+     * @param NodeInterface|AcceptVisitorTrait $node
      * @param string|null $key
      * @param array $path
-     * @return array|null
+     * @return NodeInterface|SerializationInterface|null
      */
-    public function leaveNode(array $node, ?string $key = null, array $path = []): ?array;
+    public function leaveNode(NodeInterface $node, ?string $key = null, array $path = []): ?NodeInterface;
 }
