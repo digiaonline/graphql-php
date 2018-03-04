@@ -13,6 +13,9 @@ use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Visitor\AbstractVisitor;
+use Digia\GraphQL\Language\AST\Visitor\BreakNode;
+use const Digia\GraphQL\Language\AST\Visitor\VISITOR_BREAK;
+use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
 
@@ -267,6 +270,111 @@ class VisitorTest extends TestCase
             ['leave', 'SelectionSet', null],
             ['leave', 'OperationDefinition', null],
             ['leave', 'Document', null],
+        ], $visited);
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testAllowsEarlyExitWhileVisiting()
+    {
+        $visited = [];
+
+        /** @var DocumentNode $ast */
+        $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
+
+        $visitor = new Visitor(
+            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+                $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                if ($node instanceof NameNode && $node->getValue() === 'x') {
+                    throw new VisitorBreak();
+                }
+
+                return $node;
+            },
+            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+                $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                return $node;
+            }
+        );
+
+        // TODO: Find an alternative solution so that we don't need to use an Exception here.
+        try {
+            $ast->accept($visitor);
+        } catch (VisitorBreak $break) {
+
+        }
+
+        $this->assertEquals([
+            ['enter', 'Document', null],
+            ['enter', 'OperationDefinition', null],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'a'],
+            ['leave', 'Name', 'a'],
+            ['leave', 'Field', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'b'],
+            ['leave', 'Name', 'b'],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'x'],
+        ], $visited);
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testAllowsEarlyExitWhileLeaving()
+    {
+        $visited = [];
+
+        /** @var DocumentNode $ast */
+        $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
+
+        $visitor = new Visitor(
+            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+                $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                return $node;
+            },
+            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+                $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                if ($node instanceof NameNode && $node->getValue() === 'x') {
+                    throw new VisitorBreak();
+                }
+
+                return $node;
+            }
+        );
+
+        // TODO: Find an alternative solution so that we don't need to use an Exception here.
+        try {
+            $ast->accept($visitor);
+        } catch (VisitorBreak $break) {
+
+        }
+
+        $this->assertEquals([
+            ['enter', 'Document', null],
+            ['enter', 'OperationDefinition', null],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'a'],
+            ['leave', 'Name', 'a'],
+            ['leave', 'Field', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'b'],
+            ['leave', 'Name', 'b'],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'x'],
+            ['leave', 'Name', 'x'],
         ], $visited);
     }
 }

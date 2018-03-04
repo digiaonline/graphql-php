@@ -28,6 +28,7 @@ trait AcceptVisitorTrait
      * @param string|null $key
      * @param array $path
      * @return NodeInterface|AcceptVisitorTrait|SerializationInterface|null
+     * @throws VisitorBreak
      */
     public function accept(VisitorInterface $visitor, ?string $key = null, array $path = []): ?NodeInterface
     {
@@ -120,7 +121,9 @@ trait AcceptVisitorTrait
         $newNodes = [];
 
         foreach ($nodes as $node) {
-            if (null !== ($newNode = $this->visitNode($node, $index))) {
+            $newNode = $this->visitNode($node, $index);
+
+            if (null !== $newNode) {
                 $newNodes[$index] = $newNode;
                 $index++;
             }
@@ -142,6 +145,8 @@ trait AcceptVisitorTrait
 
         $newNode = $node->accept($this->visitor, $key, $this->path);
 
+        // If the node was edited, we need to revisit it
+        // to produce the expected result.
         if (null !== $newNode && $newNode->isEdited()) {
             $newNode = $newNode->accept($this->visitor, $key, $this->path);
         }
@@ -167,6 +172,7 @@ trait AcceptVisitorTrait
      */
     protected function compareNode(NodeInterface $other)
     {
+        // TODO: Figure out a better way to solve this.
         return $this->toJSON() === $other->toJSON();
     }
 
