@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FieldsTrait;
 use Digia\GraphQL\Language\AST\Node\NameNode;
+use Digia\GraphQL\Language\AST\Node\NameTrait;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
@@ -218,6 +219,55 @@ class VisitorTest extends TestCase
         $ast->accept($visitor);
 
         $this->assertTrue($didVisitEditedNode);
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Exception
+     */
+    public function testAllowsSkippingSubTree()
+    {
+        $visited = [];
+
+        /** @var DocumentNode $ast */
+        $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
+
+        $visitor = new Visitor(
+            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+                $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
+                    return null;
+                }
+
+                return $node;
+            },
+            function (NodeInterface $node, ?string $key, array $path = []) use (&$visited): ?NodeInterface {
+                $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                return $node;
+            }
+        );
+
+        $ast->accept($visitor);
+
+        $this->assertEquals([
+            ['enter', 'Document', null],
+            ['enter', 'OperationDefinition', null],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'a'],
+            ['leave', 'Name', 'a'],
+            ['leave', 'Field', null],
+            ['enter', 'Field', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'c'],
+            ['leave', 'Name', 'c'],
+            ['leave', 'Field', null],
+            ['leave', 'SelectionSet', null],
+            ['leave', 'OperationDefinition', null],
+            ['leave', 'Document', null],
+        ], $visited);
     }
 }
 

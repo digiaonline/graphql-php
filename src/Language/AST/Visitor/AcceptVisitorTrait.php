@@ -41,8 +41,8 @@ trait AcceptVisitorTrait
             return null;
         }
 
-        // If the node has been edited, we have to return early, because otherwise
-        // the edited AST won't be what we'd expect.
+        // If the node was edited, we want to return early
+        // to avoid visiting its sub-tree completely.
         if ($newNode->determineIsEdited($this)) {
             return $newNode;
         }
@@ -67,13 +67,7 @@ trait AcceptVisitorTrait
             }
         }
 
-        if (null === ($newNode = $visitor->leaveNode($newNode, $key, $this->path))) {
-            return null;
-        }
-
-        $newNode->determineIsEdited($this);
-
-        return $newNode;
+        return $visitor->leaveNode($newNode, $key, $this->path);
     }
 
     /**
