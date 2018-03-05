@@ -30,7 +30,7 @@ class IntrospectionTest extends TestCase
     {
         $emptySchema = GraphQLSchema([
             'query' => GraphQLObjectType([
-                'name' => 'QueryRoot',
+                'name'   => 'QueryRoot',
                 'fields' => [
                     'onlyField' => ['type' => GraphQLString()],
                 ],

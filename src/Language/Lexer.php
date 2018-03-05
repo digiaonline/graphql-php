@@ -102,7 +102,7 @@ class Lexer implements LexerInterface
 
     /**
      * @param string $name
-     * @param null $default
+     * @param null   $default
      * @return mixed|null
      */
     public function getOption(string $name, $default = null)

@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\AST\Visitor;
 
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Util\SerializationInterface;
 
 class KindVisitor extends Visitor
 {
@@ -20,8 +19,8 @@ class KindVisitor extends Visitor
 
     /**
      * KindVisitor constructor.
-     * @param array $enterKinds
-     * @param array $leaveKinds
+     * @param array         $enterKinds
+     * @param array         $leaveKinds
      * @param callable|null $enterFunction
      * @param callable|null $leaveFunction
      */

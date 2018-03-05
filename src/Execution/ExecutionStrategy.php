@@ -41,15 +41,15 @@ abstract class ExecutionStrategy
 
     /**
      * AbstractStrategy constructor.
-     * @param ExecutionContext $context
+     * @param ExecutionContext        $context
      *
      * @param OperationDefinitionNode $operation
      */
     public function __construct(
         ExecutionContext $context,
         OperationDefinitionNode $operation,
-        $rootValue)
-    {
+        $rootValue
+    ) {
         $this->context   = $context;
         $this->operation = $operation;
         $this->rootValue = $rootValue;
@@ -61,10 +61,10 @@ abstract class ExecutionStrategy
     abstract function execute(): ?array;
 
     /**
-     * @param ObjectType $runtimeType
+     * @param ObjectType       $runtimeType
      * @param SelectionSetNode $selectionSet
-     * @param $fields
-     * @param $visitedFragmentNames
+     * @param                  $fields
+     * @param                  $visitedFragmentNames
      * @return \ArrayObject
      */
     protected function collectFields(
@@ -78,7 +78,7 @@ abstract class ExecutionStrategy
             switch ($selection->getKind()) {
                 case NodeKindEnum::FIELD:
                     $name = $this->getFieldNameKey($selection);
-                    if(!isset($runtimeType->getFields()[$selection->getNameValue()])){
+                    if (!isset($runtimeType->getFields()[$selection->getNameValue()])) {
                         continue;
                     }
                     if (!isset($fields[$name])) {
@@ -131,9 +131,9 @@ abstract class ExecutionStrategy
      * Implements the "Evaluating selection sets" section of the spec
      * for "read" mode.
      * @param ObjectType $parentType
-     * @param $source
-     * @param $path
-     * @param $fields
+     * @param            $source
+     * @param            $path
+     * @param            $fields
      *
      * @return array
      *
@@ -143,8 +143,8 @@ abstract class ExecutionStrategy
         ObjectType $parentType,
         $source,
         $path,
-        $fields): array
-    {
+        $fields
+    ): array {
         $finalResults = [];
 
         foreach ($fields as $fieldName => $fieldNodes) {
@@ -165,9 +165,9 @@ abstract class ExecutionStrategy
 
     /**
      * @param ObjectType $parentType
-     * @param $source
-     * @param $fieldNodes
-     * @param $path
+     * @param            $source
+     * @param            $fieldNodes
+     * @param            $path
      *
      * @return mixed
      *
@@ -177,8 +177,8 @@ abstract class ExecutionStrategy
         ObjectType $parentType,
         $source,
         $fieldNodes,
-        $path)
-    {
+        $path
+    ) {
         $result = [];
         /** @var FieldNode $fieldNode */
         foreach ($fieldNodes as $fieldNode) {

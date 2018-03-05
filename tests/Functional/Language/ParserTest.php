@@ -5,7 +5,6 @@ namespace Digia\GraphQL\Test\Functional\Language\AST;
 use Digia\GraphQL\Error\SyntaxError;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NameNode;
@@ -141,13 +140,13 @@ class ParserTest extends TestCase
         $this->markTestIncomplete('This test is currently failing, should be fixed later.');
 
         $expected = new DocumentNode([
-            'location'     => new Location(0, 261, null),
+            'location'    => new Location(0, 261, null),
             'definitions' => [
                 new OperationDefinitionNode([
-                    'name' => null,
-                    'location' => new Location(11, 40),
-                    'selectionSet' => new SelectionSetNode([
-                        'location' => new Location(11, 40, null),
+                    'name'                => null,
+                    'location'            => new Location(11, 40),
+                    'selectionSet'        => new SelectionSetNode([
+                        'location'   => new Location(11, 40, null),
                         'selections' => [
                             new FieldNode([
                                 'name'         => new NameNode([
@@ -161,45 +160,45 @@ class ParserTest extends TestCase
                                 'selectionSet' => null
                             ]),
                             new FragmentSpreadNode([
-                                'name' => new NameNode([
+                                'name'         => new NameNode([
                                     'value'    => 'FragOne',
                                     'location' => new Location(19, 26, null)
                                 ]),
-                                'location' => new Location(16, 26, null),
+                                'location'     => new Location(16, 26, null),
                                 'directives'   => [],
                                 'selectionSet' => null
                             ]),
                             new FragmentSpreadNode([
-                                'name' => new NameNode([
+                                'name'         => new NameNode([
                                     'value'    => 'FragTwo',
                                     'location' => new Location(31, 38, null)
                                 ]),
-                                'location' => new Location(28, 38, null),
+                                'location'     => new Location(28, 38, null),
                                 'directives'   => [],
                                 'selectionSet' => null
                             ])
                         ]
                     ]),
-                    'operation' => 'query',
-                    'directives' => [],
+                    'operation'           => 'query',
+                    'directives'          => [],
                     'variableDefinitions' => []
                 ]),
                 new FragmentSpreadNode([
-                    'name'         => new NameNode([
+                    'name'          => new NameNode([
                         'value'    => 'FragOne',
                         'location' => new Location(60, 67, null)
                     ]),
-                    'location' => new Location(51, 146),
+                    'location'      => new Location(51, 146),
                     'typeCondition' => new NamedTypeNode([
-                        'name' => new NameNode([
-                            'value' => 'Type',
+                        'name'     => new NameNode([
+                            'value'    => 'Type',
                             'location' => new Location(71, 75),
                         ]),
                         'location' => new Location(71, 75),
                     ]),
-                    'directives' => [],
-                    'selectionSet' => new SelectionSetNode([
-                        'location' => new Location(76, 146, null),
+                    'directives'    => [],
+                    'selectionSet'  => new SelectionSetNode([
+                        'location'   => new Location(76, 146, null),
                         'selections' => [
                             new FieldNode([
                                 'name'         => new NameNode([
@@ -222,7 +221,7 @@ class ParserTest extends TestCase
                                 'directives'   => [],
                                 'arguments'    => [],
                                 'selectionSet' => new SelectionSetNode([
-                                    'location' => new Location(109, 134, null),
+                                    'location'   => new Location(109, 134, null),
                                     'selections' => [
                                         new FieldNode([
                                             'name'         => new NameNode([
@@ -242,13 +241,13 @@ class ParserTest extends TestCase
                                             ]),
                                             'location'     => new Location(114, 132, null),
                                             'alias'        => new NameNode([
-                                                'value' => 'deeper',
+                                                'value'    => 'deeper',
                                                 'location' => new Location(114, 120, null)
                                             ]),
                                             'directives'   => [],
                                             'arguments'    => [],
                                             'selectionSet' => new SelectionSetNode([
-                                                'location' => new Location(127, 132, null),
+                                                'location'   => new Location(127, 132, null),
                                                 'selections' => [
                                                     new FieldNode([
                                                         'name'         => new NameNode([
@@ -271,21 +270,21 @@ class ParserTest extends TestCase
                     ]),
                 ]),
                 new FragmentSpreadNode([
-                    'name'         => new NameNode([
+                    'name'          => new NameNode([
                         'value'    => 'FragTwo',
                         'location' => new Location(166, 173, null)
                     ]),
-                    'location' => new Location(157, 252),
+                    'location'      => new Location(157, 252),
                     'typeCondition' => new NamedTypeNode([
-                        'name' => new NameNode([
-                            'value' => 'Type',
+                        'name'     => new NameNode([
+                            'value'    => 'Type',
                             'location' => new Location(177, 181),
                         ]),
                         'location' => new Location(177, 181),
                     ]),
-                    'directives' => [],
-                    'selectionSet' => new SelectionSetNode([
-                        'location' => new Location(182, 252, null),
+                    'directives'    => [],
+                    'selectionSet'  => new SelectionSetNode([
+                        'location'   => new Location(182, 252, null),
                         'selections' => [
                             new FieldNode([
                                 'name'         => new NameNode([
@@ -308,7 +307,7 @@ class ParserTest extends TestCase
                                 'directives'   => [],
                                 'arguments'    => [],
                                 'selectionSet' => new SelectionSetNode([
-                                    'location' => new Location(215, 240, null),
+                                    'location'   => new Location(215, 240, null),
                                     'selections' => [
                                         new FieldNode([
                                             'name'         => new NameNode([
@@ -328,13 +327,13 @@ class ParserTest extends TestCase
                                             ]),
                                             'location'     => new Location(220, 238, null),
                                             'alias'        => new NameNode([
-                                                'value' => 'deeper',
+                                                'value'    => 'deeper',
                                                 'location' => new Location(220, 226, null)
                                             ]),
                                             'directives'   => [],
                                             'arguments'    => [],
                                             'selectionSet' => new SelectionSetNode([
-                                                'location' => new Location(233, 238, null),
+                                                'location'   => new Location(233, 238, null),
                                                 'selections' => [
                                                     new FieldNode([
                                                         'name'         => new NameNode([

@@ -45,13 +45,13 @@ class ExecutionArguments
 
     /**
      * ExecutionArguments constructor.
-     * @param Schema $schema
-     * @param DocumentNode $document
-     * @param mixed $rootValue
-     * @param mixed $contextValue
-     * @param $variableValues
+     * @param Schema                  $schema
+     * @param DocumentNode            $document
+     * @param mixed                   $rootValue
+     * @param mixed                   $contextValue
+     * @param                         $variableValues
      * @param OperationDefinitionNode $operation
-     * @param mixed $fieldResolver
+     * @param mixed                   $fieldResolver
      */
     public function __construct(
         Schema $schema,
@@ -60,8 +60,8 @@ class ExecutionArguments
         mixed $contextValue,
         $variableValues,
         OperationDefinitionNode $operation,
-        mixed $fieldResolver)
-    {
+        mixed $fieldResolver
+    ) {
         $this->schema         = $schema;
         $this->document       = $document;
         $this->rootValue      = $rootValue;

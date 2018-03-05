@@ -179,7 +179,7 @@ class GraphQL
 
     /**
      * @param string $id
-     * @param mixed $concrete
+     * @param mixed  $concrete
      * @return DefinitionInterface
      */
     public function bind(string $id, $concrete): DefinitionInterface
@@ -189,7 +189,7 @@ class GraphQL
 
     /**
      * @param string $id
-     * @param mixed $concrete
+     * @param mixed  $concrete
      * @return DefinitionInterface
      */
     public function shared(string $id, $concrete): DefinitionInterface
@@ -286,12 +286,12 @@ class GraphQL
 
         $this->shared('GraphQLBoolean', function () {
             return GraphQLScalarType([
-                'name' => TypeNameEnum::BOOLEAN,
+                'name'        => TypeNameEnum::BOOLEAN,
                 'description' => 'The `Boolean` scalar type represents `true` or `false`.',
-                'serialize' => function ($value) {
+                'serialize'   => function ($value) {
                     return coerceBoolean($value);
                 },
-                'parseValue' => function ($value) {
+                'parseValue'  => function ($value) {
                     return coerceBoolean($value);
                 },
 
@@ -322,15 +322,15 @@ class GraphQL
 
         $this->shared('GraphQLFloat', function () {
             return GraphQLScalarType([
-                'name' => TypeNameEnum::FLOAT,
-                'description' =>
+                'name'         => TypeNameEnum::FLOAT,
+                'description'  =>
                     'The `Float` scalar type represents signed double-precision fractional ' .
                     'values as specified by ' .
                     '[IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).',
-                'serialize' => function ($value) {
+                'serialize'    => function ($value) {
                     return coerceFloat($value);
                 },
-                'parseValue' => function ($value) {
+                'parseValue'   => function ($value) {
                     return coerceFloat($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
@@ -361,7 +361,7 @@ class GraphQL
                 throw new \TypeError(sprintf('Int cannot represent non 32-bit signed integer value: %s', $value));
             }
 
-            $intValue = (int)$value;
+            $intValue   = (int)$value;
             $floatValue = (float)$value;
 
             if ($floatValue != $intValue || floor($floatValue) !== $floatValue) {
@@ -373,14 +373,14 @@ class GraphQL
 
         $this->shared('GraphQLInt', function () {
             return GraphQLScalarType([
-                'name' => TypeNameEnum::INT,
-                'description' =>
+                'name'         => TypeNameEnum::INT,
+                'description'  =>
                     'The `Int` scalar type represents non-fractional signed whole numeric ' .
                     'values. Int can represent values between -(2^31) and 2^31 - 1.',
-                'serialize' => function ($value) {
+                'serialize'    => function ($value) {
                     return coerceInt($value);
                 },
-                'parseValue' => function ($value) {
+                'parseValue'   => function ($value) {
                     return coerceInt($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
@@ -418,17 +418,17 @@ class GraphQL
 
         $this->shared('GraphQLID', function () {
             return GraphQLScalarType([
-                'name' => TypeNameEnum::ID,
-                'description' =>
+                'name'         => TypeNameEnum::ID,
+                'description'  =>
                     'The `ID` scalar type represents a unique identifier, often used to ' .
                     'refetch an object or as key for a cache. The ID type appears in a JSON ' .
                     'response as a String; however, it is not intended to be human-readable. ' .
                     'When expected as an input type, any string (such as `"4"`) or integer ' .
                     '(such as `4`) input value will be accepted as an ID.',
-                'serialize' => function ($value) {
+                'serialize'    => function ($value) {
                     return coerceString($value);
                 },
-                'parseValue' => function ($value) {
+                'parseValue'   => function ($value) {
                     return coerceString($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
@@ -442,15 +442,15 @@ class GraphQL
 
         $this->shared('GraphQLString', function () {
             return GraphQLScalarType([
-                'name' => TypeNameEnum::STRING,
-                'description' =>
+                'name'         => TypeNameEnum::STRING,
+                'description'  =>
                     'The `String` scalar type represents textual data, represented as UTF-8 ' .
                     'character sequences. The String type is most often used by GraphQL to ' .
                     'represent free-form human-readable text.',
-                'serialize' => function ($value) {
+                'serialize'    => function ($value) {
                     return coerceString($value);
                 },
-                'parseValue' => function ($value) {
+                'parseValue'   => function ($value) {
                     return coerceString($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
@@ -468,18 +468,18 @@ class GraphQL
     {
         $this->shared('GraphQLIncludeDirective', function () {
             return GraphQLDirective([
-                'name' => 'include',
+                'name'        => 'include',
                 'description' =>
                     'Directs the executor to include this field or fragment only when ' .
                     'the `if` argument is true.',
-                'locations' => [
+                'locations'   => [
                     DirectiveLocationEnum::FIELD,
                     DirectiveLocationEnum::FRAGMENT_SPREAD,
                     DirectiveLocationEnum::INLINE_FRAGMENT,
                 ],
-                'args' => [
+                'args'        => [
                     'if ' => [
-                        'type' => GraphQLNonNull(GraphQLBoolean()),
+                        'type'        => GraphQLNonNull(GraphQLBoolean()),
                         'description' => 'Included when true.',
                     ],
                 ],
@@ -488,18 +488,18 @@ class GraphQL
 
         $this->shared('GraphQLSkipDirective', function () {
             return GraphQLDirective([
-                'name' => 'skip',
+                'name'        => 'skip',
                 'description' =>
                     'Directs the executor to skip this field or fragment when the `if` ' .
                     'argument is true.',
-                'locations' => [
+                'locations'   => [
                     DirectiveLocationEnum::FIELD,
                     DirectiveLocationEnum::FRAGMENT_SPREAD,
                     DirectiveLocationEnum::INLINE_FRAGMENT,
                 ],
-                'args' => [
+                'args'        => [
                     'if' => [
-                        'type' => GraphQLNonNull(GraphQLBoolean()),
+                        'type'        => GraphQLNonNull(GraphQLBoolean()),
                         'description' => 'Skipped when true.',
                     ],
                 ],
@@ -508,16 +508,16 @@ class GraphQL
 
         $this->shared('GraphQLDeprecatedDirective', function () {
             return GraphQLDirective([
-                'name' => 'deprecated',
+                'name'        => 'deprecated',
                 'description' => 'Marks an element of a GraphQL schema as no longer supported.',
-                'locations' => [
+                'locations'   => [
                     DirectiveLocationEnum::FIELD_DEFINITION,
                     DirectiveLocationEnum::ENUM_VALUE,
                 ],
-                'args' => [
+                'args'        => [
                     'reason' => [
-                        'type' => GraphQLString(),
-                        'description' =>
+                        'type'         => GraphQLString(),
+                        'description'  =>
                             'Explains why this element was deprecated, usually also including a ' .
                             'suggestion for how to access supported similar data. Formatted ' .
                             'in [Markdown](https://daringfireball.net/projects/markdown/).',

@@ -9,7 +9,7 @@ interface SchemaBuilderInterface
 {
     /**
      * @param DocumentNode $documentNode
-     * @param array $options
+     * @param array        $options
      * @return SchemaInterface
      * @throws \Exception
      * @throws \TypeError

@@ -19,9 +19,10 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
             ? $schema->getMutation()
             : $schema->getQuery();
 
-        $fields = $this->collectFields($objectType, $this->operation->getSelectionSet(), new \ArrayObject(), new \ArrayObject());
+        $fields = $this->collectFields($objectType, $this->operation->getSelectionSet(), new \ArrayObject(),
+            new \ArrayObject());
 
-        $path   = [];
+        $path = [];
 
         try {
             $data = $this->executeFields($objectType, $this->rootValue, $path, $fields);

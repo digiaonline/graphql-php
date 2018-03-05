@@ -24,10 +24,10 @@ trait AcceptVisitorTrait
     protected $isEdited = false;
 
     /**
-     * @param VisitorInterface $visitor
+     * @param VisitorInterface   $visitor
      * @param string|int||null $key
      * @param NodeInterface|null $parent
-     * @param array $path
+     * @param array              $path
      * @return NodeInterface|AcceptVisitorTrait|SerializationInterface|null
      * @throws VisitorBreak
      */
@@ -38,7 +38,7 @@ trait AcceptVisitorTrait
         array $path = []
     ): ?NodeInterface {
         $this->visitor = $visitor;
-        $this->path = $path;
+        $this->path    = $path;
 
         /** @var NodeInterface|AcceptVisitorTrait|null $newNode */
         $newNode = clone $this; // TODO: Benchmark cloning
@@ -104,7 +104,7 @@ trait AcceptVisitorTrait
     }
 
     /**
-     * @param $nodeOrNodes
+     * @param            $nodeOrNodes
      * @param string|int $key
      * @return array|NodeInterface|NodeInterface[]|null
      * @throws VisitorBreak
@@ -118,7 +118,7 @@ trait AcceptVisitorTrait
 
     /**
      * @param NodeInterface[] $nodes
-     * @param string|int $key
+     * @param string|int      $key
      * @return NodeInterface[]
      * @throws VisitorBreak
      */
@@ -126,7 +126,7 @@ trait AcceptVisitorTrait
     {
         $this->addOneToPath($key);
 
-        $index = 0;
+        $index    = 0;
         $newNodes = [];
 
         foreach ($nodes as $node) {
@@ -145,8 +145,8 @@ trait AcceptVisitorTrait
 
     /**
      * @param NodeInterface|AcceptVisitorTrait $node
-     * @param string|int $key
-     * @param NodeInterface|null $parent
+     * @param string|int                       $key
+     * @param NodeInterface|null               $parent
      * @return NodeInterface|null
      * @throws VisitorBreak
      */
@@ -210,21 +210,21 @@ trait AcceptVisitorTrait
     protected static $kindToNodesToVisitMap = [
         'Name' => [],
 
-        'Document' => ['definitions'],
+        'Document'            => ['definitions'],
         'OperationDefinition' => [
             'name',
             'variableDefinitions',
             'directives',
             'selectionSet',
         ],
-        'VariableDefinition' => ['variable', 'type', 'defaultValue'],
-        'Variable' => ['name'],
-        'SelectionSet' => ['selections'],
-        'Field' => ['alias', 'name', 'arguments', 'directives', 'selectionSet'],
-        'Argument' => ['name', 'value'],
+        'VariableDefinition'  => ['variable', 'type', 'defaultValue'],
+        'Variable'            => ['name'],
+        'SelectionSet'        => ['selections'],
+        'Field'               => ['alias', 'name', 'arguments', 'directives', 'selectionSet'],
+        'Argument'            => ['name', 'value'],
 
-        'FragmentSpread' => ['name', 'directives'],
-        'InlineFragment' => ['typeCondition', 'directives', 'selectionSet'],
+        'FragmentSpread'     => ['name', 'directives'],
+        'InlineFragment'     => ['typeCondition', 'directives', 'selectionSet'],
         'FragmentDefinition' => [
             'name',
             // Note: fragment variable definitions are experimental and may be changed or removed in the future.
@@ -234,52 +234,52 @@ trait AcceptVisitorTrait
             'selectionSet',
         ],
 
-        'IntValue' => [],
-        'FloatValue' => [],
-        'StringValue' => [],
+        'IntValue'     => [],
+        'FloatValue'   => [],
+        'StringValue'  => [],
         'BooleanValue' => [],
-        'NullValue' => [],
-        'EnumValue' => [],
-        'ListValue' => ['values'],
-        'ObjectValue' => ['fields'],
-        'ObjectField' => ['name', 'value'],
+        'NullValue'    => [],
+        'EnumValue'    => [],
+        'ListValue'    => ['values'],
+        'ObjectValue'  => ['fields'],
+        'ObjectField'  => ['name', 'value'],
 
         'Directive' => ['name', 'arguments'],
 
-        'NamedType' => ['name'],
-        'ListType' => ['type'],
+        'NamedType'   => ['name'],
+        'ListType'    => ['type'],
         'NonNullType' => ['type'],
 
-        'SchemaDefinition' => ['directives', 'operationTypes'],
+        'SchemaDefinition'        => ['directives', 'operationTypes'],
         'OperationTypeDefinition' => ['type'],
 
-        'ScalarTypeDefinition' => ['description', 'name', 'directives'],
-        'ObjectTypeDefinition' => [
+        'ScalarTypeDefinition'      => ['description', 'name', 'directives'],
+        'ObjectTypeDefinition'      => [
             'description',
             'name',
             'interfaces',
             'directives',
             'fields',
         ],
-        'FieldDefinition' => ['description', 'name', 'arguments', 'type', 'directives'],
-        'InputValueDefinition' => [
+        'FieldDefinition'           => ['description', 'name', 'arguments', 'type', 'directives'],
+        'InputValueDefinition'      => [
             'description',
             'name',
             'type',
             'defaultValue',
             'directives',
         ],
-        'InterfaceTypeDefinition' => ['description', 'name', 'directives', 'fields'],
-        'UnionTypeDefinition' => ['description', 'name', 'directives', 'types'],
-        'EnumTypeDefinition' => ['description', 'name', 'directives', 'values'],
-        'EnumValueDefinition' => ['description', 'name', 'directives'],
+        'InterfaceTypeDefinition'   => ['description', 'name', 'directives', 'fields'],
+        'UnionTypeDefinition'       => ['description', 'name', 'directives', 'types'],
+        'EnumTypeDefinition'        => ['description', 'name', 'directives', 'values'],
+        'EnumValueDefinition'       => ['description', 'name', 'directives'],
         'InputObjectTypeDefinition' => ['description', 'name', 'directives', 'fields'],
 
-        'ScalarTypeExtension' => ['name', 'directives'],
-        'ObjectTypeExtension' => ['name', 'interfaces', 'directives', 'fields'],
-        'InterfaceTypeExtension' => ['name', 'directives', 'fields'],
-        'UnionTypeExtension' => ['name', 'directives', 'types'],
-        'EnumTypeExtension' => ['name', 'directives', 'values'],
+        'ScalarTypeExtension'      => ['name', 'directives'],
+        'ObjectTypeExtension'      => ['name', 'interfaces', 'directives', 'fields'],
+        'InterfaceTypeExtension'   => ['name', 'directives', 'fields'],
+        'UnionTypeExtension'       => ['name', 'directives', 'types'],
+        'EnumTypeExtension'        => ['name', 'directives', 'values'],
         'InputObjectTypeExtension' => ['name', 'directives', 'fields'],
 
         'DirectiveDefinition' => ['description', 'name', 'arguments', 'locations'],

@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 
 interface ParserInterface

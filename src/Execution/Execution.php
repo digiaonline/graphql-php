@@ -28,12 +28,12 @@ class Execution
     }
 
     /**
-     * @param Schema $schema
-     * @param DocumentNode $documentNode
-     * @param null $rootValue
-     * @param null $contextValue
-     * @param null $variableValues
-     * @param null $operationName
+     * @param Schema        $schema
+     * @param DocumentNode  $documentNode
+     * @param null          $rootValue
+     * @param null          $contextValue
+     * @param null          $variableValues
+     * @param null          $operationName
      * @param callable|null $fieldResolver
      * @return ExecutionResult
      */
@@ -67,12 +67,12 @@ class Execution
 
     /**
      * @TODO: Consider to create a ExecutionContextBuilder
-     * @param Schema $schema
-     * @param DocumentNode $documentNode
-     * @param $rootValue
-     * @param $contextValue
-     * @param $rawVariableValues
-     * @param null $operationName
+     * @param Schema        $schema
+     * @param DocumentNode  $documentNode
+     * @param               $rootValue
+     * @param               $contextValue
+     * @param               $rawVariableValues
+     * @param null          $operationName
      * @param callable|null $fieldResolver
      * @throws GraphQLError
      * @return ExecutionContext

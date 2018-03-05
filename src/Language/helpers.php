@@ -2,9 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Language\AST\Node\ValueNodeInterface;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
-
 /**
  * @param int $cp
  * @return string

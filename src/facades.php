@@ -17,7 +17,7 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 /**
  * @param string|Source $source
- * @param array $options
+ * @param array         $options
  * @return NodeInterface|DocumentNode|SerializationInterface
  * @throws GraphQLError
  * @throws \Exception
@@ -33,7 +33,7 @@ function parse($source, array $options = []): NodeInterface
 
 /**
  * @param string|Source $source
- * @param array $options
+ * @param array         $options
  * @return NodeInterface|SerializationInterface
  * @throws GraphQLError
  * @throws \Exception
@@ -49,7 +49,7 @@ function parseValue($source, array $options = []): NodeInterface
 
 /**
  * @param string|Source $source
- * @param array $options
+ * @param array         $options
  * @return NodeInterface|SerializationInterface
  * @throws GraphQLError
  * @throws \Exception
@@ -65,7 +65,7 @@ function parseType($source, array $options = []): NodeInterface
 
 /**
  * @param string $source
- * @param array $options
+ * @param array  $options
  * @return SchemaInterface
  * @throws \Digia\GraphQL\Error\GraphQLError
  * @throws \Exception
@@ -86,12 +86,12 @@ function printNode(NodeInterface $node): string
 
 /**
  * @param SchemaInterface $schema
- * @param string $source
- * @param null $rootValue
- * @param null $contextValue
- * @param null $variableValues
- * @param null $operationName
- * @param callable|null $fieldResolver
+ * @param string          $source
+ * @param null            $rootValue
+ * @param null            $contextValue
+ * @param null            $variableValues
+ * @param null            $operationName
+ * @param callable|null   $fieldResolver
  * @return ExecutionResult
  * @throws Error\GraphQLError
  * @throws \Exception

@@ -111,7 +111,7 @@ class Parser implements ParserInterface, DirectorInterface
      * Determines if the next token is of a given kind.
      *
      * @param LexerInterface $lexer
-     * @param string $kind
+     * @param string         $kind
      * @return bool
      */
     protected function peek(LexerInterface $lexer, string $kind): bool
@@ -124,7 +124,7 @@ class Parser implements ParserInterface, DirectorInterface
      * the lexer. Otherwise, do not change the parser state and return false.
      *
      * @param LexerInterface $lexer
-     * @param string $kind
+     * @param string         $kind
      * @return bool
      * @throws GraphQLError
      */
@@ -142,7 +142,7 @@ class Parser implements ParserInterface, DirectorInterface
      * the lexer. Otherwise, do not change the parser state and throw an error.
      *
      * @param LexerInterface $lexer
-     * @param string $kind
+     * @param string         $kind
      * @return Token
      * @throws GraphQLError
      */
@@ -160,7 +160,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param string $value
+     * @param string         $value
      * @return Token
      * @throws GraphQLError
      */
@@ -181,7 +181,7 @@ class Parser implements ParserInterface, DirectorInterface
      * is encountered.
      *
      * @param LexerInterface $lexer
-     * @param Token|null $atToken
+     * @param Token|null     $atToken
      * @return GraphQLError
      */
     protected function unexpected(LexerInterface $lexer, ?Token $atToken = null): GraphQLError
@@ -193,14 +193,14 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param Token $startToken
+     * @param Token          $startToken
      * @return array|null
      */
     protected function createLocation(LexerInterface $lexer, Token $startToken): ?array
     {
         return !$lexer->getOption('noLocation', false) ? [
             'start' => $startToken->getStart(),
-            'end' => $lexer->getLastToken()->getEnd(),
+            'end'   => $lexer->getLastToken()->getEnd(),
         ] : null;
     }
 
@@ -211,9 +211,9 @@ class Parser implements ParserInterface, DirectorInterface
      * to the next lex token after the closing token.
      *
      * @param LexerInterface $lexer
-     * @param string $openKind
-     * @param callable $parseFunction
-     * @param string $closeKind
+     * @param string         $openKind
+     * @param callable       $parseFunction
+     * @param string         $closeKind
      * @return array
      * @throws GraphQLError
      */
@@ -237,9 +237,9 @@ class Parser implements ParserInterface, DirectorInterface
      * to the next lex token after the closing token.
      *
      * @param LexerInterface $lexer
-     * @param string $openKind
-     * @param callable $parseFunction
-     * @param string $closeKind
+     * @param string         $openKind
+     * @param callable       $parseFunction
+     * @param string         $closeKind
      * @return array
      * @throws GraphQLError
      */
@@ -266,9 +266,9 @@ class Parser implements ParserInterface, DirectorInterface
         $token = $this->expect($lexer, TokenKindEnum::NAME);
 
         return [
-            'kind' => NodeKindEnum::NAME,
+            'kind'  => NodeKindEnum::NAME,
             'value' => $token->getValue(),
-            'loc' => $this->createLocation($lexer, $token),
+            'loc'   => $this->createLocation($lexer, $token),
         ];
     }
 
@@ -290,9 +290,9 @@ class Parser implements ParserInterface, DirectorInterface
         } while (!$this->skip($lexer, TokenKindEnum::EOF));
 
         return [
-            'kind' => NodeKindEnum::DOCUMENT,
+            'kind'        => NodeKindEnum::DOCUMENT,
             'definitions' => $definitions,
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -369,13 +369,13 @@ class Parser implements ParserInterface, DirectorInterface
 
         if ($this->peek($lexer, TokenKindEnum::BRACE_L)) {
             return [
-                'kind' => NodeKindEnum::OPERATION_DEFINITION,
-                'operation' => 'query',
-                'name' => null,
+                'kind'                => NodeKindEnum::OPERATION_DEFINITION,
+                'operation'           => 'query',
+                'name'                => null,
                 'variableDefinitions' => [],
-                'directives' => [],
-                'selectionSet' => $this->parseSelectionSet($lexer),
-                'loc' => $this->createLocation($lexer, $start),
+                'directives'          => [],
+                'selectionSet'        => $this->parseSelectionSet($lexer),
+                'loc'                 => $this->createLocation($lexer, $start),
             ];
         }
 
@@ -386,13 +386,13 @@ class Parser implements ParserInterface, DirectorInterface
         }
 
         return [
-            'kind' => NodeKindEnum::OPERATION_DEFINITION,
-            'operation' => $operation,
-            'name' => $name ?? null,
+            'kind'                => NodeKindEnum::OPERATION_DEFINITION,
+            'operation'           => $operation,
+            'name'                => $name ?? null,
             'variableDefinitions' => $this->parseVariableDefinitions($lexer),
-            'directives' => $this->parseDirectives($lexer, false),
-            'selectionSet' => $this->parseSelectionSet($lexer),
-            'loc' => $this->createLocation($lexer, $start),
+            'directives'          => $this->parseDirectives($lexer, false),
+            'selectionSet'        => $this->parseSelectionSet($lexer),
+            'loc'                 => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -445,13 +445,13 @@ class Parser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind' => NodeKindEnum::VARIABLE_DEFINITION,
-            'variable' => $this->parseVariable($lexer),
-            'type' => $parseType($lexer),
+            'kind'         => NodeKindEnum::VARIABLE_DEFINITION,
+            'variable'     => $this->parseVariable($lexer),
+            'type'         => $parseType($lexer),
             'defaultValue' => $this->skip($lexer, TokenKindEnum::EQUALS)
                 ? $this->parseValueLiteral($lexer, true)
                 : null,
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'          => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -469,7 +469,7 @@ class Parser implements ParserInterface, DirectorInterface
         return [
             'kind' => NodeKindEnum::VARIABLE,
             'name' => $this->parseName($lexer),
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'  => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -483,14 +483,14 @@ class Parser implements ParserInterface, DirectorInterface
         $start = $lexer->getToken();
 
         return [
-            'kind' => NodeKindEnum::SELECTION_SET,
+            'kind'       => NodeKindEnum::SELECTION_SET,
             'selections' => $this->many(
                 $lexer,
                 TokenKindEnum::BRACE_L,
                 [$this, 'parseSelection'],
                 TokenKindEnum::BRACE_R
             ),
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'        => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -519,27 +519,27 @@ class Parser implements ParserInterface, DirectorInterface
 
         if ($this->skip($lexer, TokenKindEnum::COLON)) {
             $alias = $nameOrAlias;
-            $name = $this->parseName($lexer);
+            $name  = $this->parseName($lexer);
         } else {
             $name = $nameOrAlias;
         }
 
         return [
-            'kind' => NodeKindEnum::FIELD,
-            'alias' => $alias ?? null,
-            'name' => $name,
-            'arguments' => $this->parseArguments($lexer, false),
-            'directives' => $this->parseDirectives($lexer, false),
+            'kind'         => NodeKindEnum::FIELD,
+            'alias'        => $alias ?? null,
+            'name'         => $name,
+            'arguments'    => $this->parseArguments($lexer, false),
+            'directives'   => $this->parseDirectives($lexer, false),
             'selectionSet' => $this->peek($lexer, TokenKindEnum::BRACE_L)
                 ? $this->parseSelectionSet($lexer)
                 : null,
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'          => $this->createLocation($lexer, $start),
         ];
     }
 
     /**
      * @param LexerInterface $lexer
-     * @param bool $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -575,10 +575,10 @@ class Parser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind' => NodeKindEnum::ARGUMENT,
-            'name' => $this->parseName($lexer),
+            'kind'  => NodeKindEnum::ARGUMENT,
+            'name'  => $this->parseName($lexer),
             'value' => $parseValue($lexer),
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'   => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -602,10 +602,10 @@ class Parser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind' => NodeKindEnum::ARGUMENT,
-            'name' => $this->parseName($lexer),
+            'kind'  => NodeKindEnum::ARGUMENT,
+            'name'  => $this->parseName($lexer),
             'value' => $parseValue($lexer),
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'   => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -624,10 +624,10 @@ class Parser implements ParserInterface, DirectorInterface
 
         if ($this->peek($lexer, TokenKindEnum::NAME) && $tokenValue !== 'on') {
             return [
-                'kind' => NodeKindEnum::FRAGMENT_SPREAD,
-                'name' => $this->parseFragmentName($lexer),
+                'kind'       => NodeKindEnum::FRAGMENT_SPREAD,
+                'name'       => $this->parseFragmentName($lexer),
                 'directives' => $this->parseDirectives($lexer, false),
-                'loc' => $this->createLocation($lexer, $start),
+                'loc'        => $this->createLocation($lexer, $start),
             ];
         }
 
@@ -638,11 +638,11 @@ class Parser implements ParserInterface, DirectorInterface
         }
 
         return [
-            'kind' => NodeKindEnum::INLINE_FRAGMENT,
+            'kind'          => NodeKindEnum::INLINE_FRAGMENT,
             'typeCondition' => $typeCondition ?? null,
-            'directives' => $this->parseDirectives($lexer, false),
-            'selectionSet' => $this->parseSelectionSet($lexer),
-            'loc' => $this->createLocation($lexer, $start),
+            'directives'    => $this->parseDirectives($lexer, false),
+            'selectionSet'  => $this->parseSelectionSet($lexer),
+            'loc'           => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -663,13 +663,13 @@ class Parser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind' => NodeKindEnum::FRAGMENT_DEFINITION,
-            'name' => $this->parseFragmentName($lexer),
+            'kind'                => NodeKindEnum::FRAGMENT_DEFINITION,
+            'name'                => $this->parseFragmentName($lexer),
             'variableDefinitions' => $this->parseVariableDefinitions($lexer),
-            'typeCondition' => $parseTypeCondition($lexer),
-            'directives' => $this->parseDirectives($lexer, false),
-            'selectionSet' => $this->parseSelectionSet($lexer),
-            'loc' => $this->createLocation($lexer, $start),
+            'typeCondition'       => $parseTypeCondition($lexer),
+            'directives'          => $this->parseDirectives($lexer, false),
+            'selectionSet'        => $this->parseSelectionSet($lexer),
+            'loc'                 => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -689,7 +689,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -706,17 +706,17 @@ class Parser implements ParserInterface, DirectorInterface
                 $lexer->advance();
 
                 return [
-                    'kind' => NodeKindEnum::INT,
+                    'kind'  => NodeKindEnum::INT,
                     'value' => $token->getValue(),
-                    'loc' => $this->createLocation($lexer, $token),
+                    'loc'   => $this->createLocation($lexer, $token),
                 ];
             case TokenKindEnum::FLOAT:
                 $lexer->advance();
 
                 return [
-                    'kind' => NodeKindEnum::FLOAT,
+                    'kind'  => NodeKindEnum::FLOAT,
                     'value' => $token->getValue(),
-                    'loc' => $this->createLocation($lexer, $token),
+                    'loc'   => $this->createLocation($lexer, $token),
                 ];
             case TokenKindEnum::STRING:
             case TokenKindEnum::BLOCK_STRING:
@@ -728,25 +728,25 @@ class Parser implements ParserInterface, DirectorInterface
                     $lexer->advance();
 
                     return [
-                        'kind' => NodeKindEnum::BOOLEAN,
+                        'kind'  => NodeKindEnum::BOOLEAN,
                         'value' => $value === 'true',
-                        'loc' => $this->createLocation($lexer, $token),
+                        'loc'   => $this->createLocation($lexer, $token),
                     ];
                 } elseif ($value === 'null') {
                     $lexer->advance();
 
                     return [
                         'kind' => NodeKindEnum::NULL,
-                        'loc' => $this->createLocation($lexer, $token),
+                        'loc'  => $this->createLocation($lexer, $token),
                     ];
                 }
 
                 $lexer->advance();
 
                 return [
-                    'kind' => NodeKindEnum::ENUM,
+                    'kind'  => NodeKindEnum::ENUM,
                     'value' => $token->getValue(),
-                    'loc' => $this->createLocation($lexer, $token),
+                    'loc'   => $this->createLocation($lexer, $token),
                 ];
             case TokenKindEnum::DOLLAR:
                 if (!$isConst) {
@@ -770,10 +770,10 @@ class Parser implements ParserInterface, DirectorInterface
         $lexer->advance();
 
         return [
-            'kind' => NodeKindEnum::STRING,
+            'kind'  => NodeKindEnum::STRING,
             'value' => $token->getValue(),
             'block' => $token->getKind() === TokenKindEnum::BLOCK_STRING,
-            'loc' => $this->createLocation($lexer, $token),
+            'loc'   => $this->createLocation($lexer, $token),
         ];
     }
 
@@ -799,7 +799,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -808,20 +808,20 @@ class Parser implements ParserInterface, DirectorInterface
         $start = $lexer->getToken();
 
         return [
-            'kind' => NodeKindEnum::LIST,
+            'kind'   => NodeKindEnum::LIST,
             'values' => $this->any(
                 $lexer,
                 TokenKindEnum::BRACKET_L,
                 [$this, $isConst ? 'parseConstValue' : 'parseValueValue'],
                 TokenKindEnum::BRACKET_R
             ),
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'    => $this->createLocation($lexer, $start),
         ];
     }
 
     /**
      * @param LexerInterface $lexer
-     * @param bool $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -838,15 +838,15 @@ class Parser implements ParserInterface, DirectorInterface
         }
 
         return [
-            'kind' => NodeKindEnum::OBJECT,
+            'kind'   => NodeKindEnum::OBJECT,
             'fields' => $fields,
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'    => $this->createLocation($lexer, $start),
         ];
     }
 
     /**
      * @param LexerInterface $lexer
-     * @param bool $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -860,16 +860,16 @@ class Parser implements ParserInterface, DirectorInterface
         };
 
         return [
-            'kind' => NodeKindEnum::OBJECT_FIELD,
-            'name' => $this->parseName($lexer),
+            'kind'  => NodeKindEnum::OBJECT_FIELD,
+            'name'  => $this->parseName($lexer),
             'value' => $parseValue($lexer, $isConst),
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'   => $this->createLocation($lexer, $start),
         ];
     }
 
     /**
      * @param LexerInterface $lexer
-     * @param bool $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -886,7 +886,7 @@ class Parser implements ParserInterface, DirectorInterface
 
     /**
      * @param LexerInterface $lexer
-     * @param bool $isConst
+     * @param bool           $isConst
      * @return array
      * @throws GraphQLError
      */
@@ -897,10 +897,10 @@ class Parser implements ParserInterface, DirectorInterface
         $this->expect($lexer, TokenKindEnum::AT);
 
         return [
-            'kind' => NodeKindEnum::DIRECTIVE,
-            'name' => $this->parseName($lexer),
+            'kind'      => NodeKindEnum::DIRECTIVE,
+            'name'      => $this->parseName($lexer),
             'arguments' => $this->parseArguments($lexer, $isConst),
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'       => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -921,7 +921,7 @@ class Parser implements ParserInterface, DirectorInterface
             $type = [
                 'kind' => NodeKindEnum::LIST_TYPE,
                 'type' => $type,
-                'loc' => $this->createLocation($lexer, $start),
+                'loc'  => $this->createLocation($lexer, $start),
             ];
         } else {
             $type = $this->parseNamedType($lexer);
@@ -931,7 +931,7 @@ class Parser implements ParserInterface, DirectorInterface
             return [
                 'kind' => NodeKindEnum::NON_NULL_TYPE,
                 'type' => $type,
-                'loc' => $this->createLocation($lexer, $start),
+                'loc'  => $this->createLocation($lexer, $start),
             ];
         }
 
@@ -950,7 +950,7 @@ class Parser implements ParserInterface, DirectorInterface
         return [
             'kind' => NodeKindEnum::NAMED_TYPE,
             'name' => $this->parseName($lexer),
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'  => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1031,10 +1031,10 @@ class Parser implements ParserInterface, DirectorInterface
         );
 
         return [
-            'kind' => NodeKindEnum::SCHEMA_DEFINITION,
-            'directives' => $directives,
+            'kind'           => NodeKindEnum::SCHEMA_DEFINITION,
+            'directives'     => $directives,
             'operationTypes' => $operationTypes,
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'            => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1054,10 +1054,10 @@ class Parser implements ParserInterface, DirectorInterface
         $type = $this->parseNamedType($lexer);
 
         return [
-            'kind' => NodeKindEnum::OPERATION_TYPE_DEFINITION,
+            'kind'      => NodeKindEnum::OPERATION_TYPE_DEFINITION,
             'operation' => $operation,
-            'type' => $type,
-            'loc' => $this->createLocation($lexer, $start),
+            'type'      => $type,
+            'loc'       => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1074,15 +1074,15 @@ class Parser implements ParserInterface, DirectorInterface
 
         $this->expectKeyword($lexer, KeywordEnum::SCALAR);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
 
         return [
-            'kind' => NodeKindEnum::SCALAR_TYPE_DEFINITION,
+            'kind'        => NodeKindEnum::SCALAR_TYPE_DEFINITION,
             'description' => $description,
-            'name' => $name,
-            'directives' => $directives,
-            'loc' => $this->createLocation($lexer, $start),
+            'name'        => $name,
+            'directives'  => $directives,
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1099,19 +1099,19 @@ class Parser implements ParserInterface, DirectorInterface
 
         $this->expectKeyword($lexer, KeywordEnum::TYPE);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $interfaces = $this->parseImplementsInterfaces($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $fields = $this->parseFieldsDefinition($lexer);
+        $fields     = $this->parseFieldsDefinition($lexer);
 
         return [
-            'kind' => NodeKindEnum::OBJECT_TYPE_DEFINITION,
+            'kind'        => NodeKindEnum::OBJECT_TYPE_DEFINITION,
             'description' => $description,
-            'name' => $name,
-            'interfaces' => $interfaces,
-            'directives' => $directives,
-            'fields' => $fields,
-            'loc' => $this->createLocation($lexer, $start),
+            'name'        => $name,
+            'interfaces'  => $interfaces,
+            'directives'  => $directives,
+            'fields'      => $fields,
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1160,22 +1160,22 @@ class Parser implements ParserInterface, DirectorInterface
         $start = $lexer->getToken();
 
         $description = $this->parseDescription($lexer);
-        $name = $this->parseName($lexer);
-        $arguments = $this->parseArgumentsDefinition($lexer);
+        $name        = $this->parseName($lexer);
+        $arguments   = $this->parseArgumentsDefinition($lexer);
 
         $this->expect($lexer, TokenKindEnum::COLON);
 
-        $type = $this->parseTypeReference($lexer);
+        $type       = $this->parseTypeReference($lexer);
         $directives = $this->parseDirectives($lexer, true);
 
         return [
-            'kind' => NodeKindEnum::FIELD_DEFINITION,
+            'kind'        => NodeKindEnum::FIELD_DEFINITION,
             'description' => $description,
-            'name' => $name,
-            'arguments' => $arguments,
-            'type' => $type,
-            'directives' => $directives,
-            'loc' => $this->createLocation($lexer, $start),
+            'name'        => $name,
+            'arguments'   => $arguments,
+            'type'        => $type,
+            'directives'  => $directives,
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1201,22 +1201,22 @@ class Parser implements ParserInterface, DirectorInterface
         $start = $lexer->getToken();
 
         $description = $this->parseDescription($lexer);
-        $name = $this->parseName($lexer);
+        $name        = $this->parseName($lexer);
 
         $this->expect($lexer, TokenKindEnum::COLON);
 
-        $type = $this->parseTypeReference($lexer);
+        $type         = $this->parseTypeReference($lexer);
         $defaultValue = $this->skip($lexer, TokenKindEnum::EQUALS) ? $this->parseConstValue($lexer) : null;
-        $directives = $this->parseDirectives($lexer, true);
+        $directives   = $this->parseDirectives($lexer, true);
 
         return [
-            'kind' => NodeKindEnum::INPUT_VALUE_DEFINITION,
-            'description' => $description,
-            'name' => $name,
-            'type' => $type,
+            'kind'         => NodeKindEnum::INPUT_VALUE_DEFINITION,
+            'description'  => $description,
+            'name'         => $name,
+            'type'         => $type,
             'defaultValue' => $defaultValue,
-            'directives' => $directives,
-            'loc' => $this->createLocation($lexer, $start),
+            'directives'   => $directives,
+            'loc'          => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1233,17 +1233,17 @@ class Parser implements ParserInterface, DirectorInterface
 
         $this->expectKeyword($lexer, KeywordEnum::INTERFACE);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $fields = $this->parseFieldsDefinition($lexer);
+        $fields     = $this->parseFieldsDefinition($lexer);
 
         return [
-            'kind' => NodeKindEnum::INTERFACE_TYPE_DEFINITION,
+            'kind'        => NodeKindEnum::INTERFACE_TYPE_DEFINITION,
             'description' => $description,
-            'name' => $name,
-            'directives' => $directives,
-            'fields' => $fields,
-            'loc' => $this->createLocation($lexer, $start),
+            'name'        => $name,
+            'directives'  => $directives,
+            'fields'      => $fields,
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1260,17 +1260,17 @@ class Parser implements ParserInterface, DirectorInterface
 
         $this->expectKeyword($lexer, KeywordEnum::UNION);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $types = $this->parseUnionMemberTypes($lexer);
+        $types      = $this->parseUnionMemberTypes($lexer);
 
         return [
-            'kind' => NodeKindEnum::UNION_TYPE_DEFINITION,
+            'kind'        => NodeKindEnum::UNION_TYPE_DEFINITION,
             'description' => $description,
-            'name' => $name,
-            'directives' => $directives,
-            'types' => $types,
-            'loc' => $this->createLocation($lexer, $start),
+            'name'        => $name,
+            'directives'  => $directives,
+            'types'       => $types,
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1308,17 +1308,17 @@ class Parser implements ParserInterface, DirectorInterface
 
         $this->expectKeyword($lexer, KeywordEnum::ENUM);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $values = $this->parseEnumValuesDefinition($lexer);
+        $values     = $this->parseEnumValuesDefinition($lexer);
 
         return [
-            'kind' => NodeKindEnum::ENUM_TYPE_DEFINITION,
+            'kind'        => NodeKindEnum::ENUM_TYPE_DEFINITION,
             'description' => $description,
-            'name' => $name,
-            'directives' => $directives,
-            'values' => $values,
-            'loc' => $this->createLocation($lexer, $start),
+            'name'        => $name,
+            'directives'  => $directives,
+            'values'      => $values,
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1344,15 +1344,15 @@ class Parser implements ParserInterface, DirectorInterface
         $start = $lexer->getToken();
 
         $description = $this->parseDescription($lexer);
-        $name = $this->parseName($lexer);
-        $directives = $this->parseDirectives($lexer, true);
+        $name        = $this->parseName($lexer);
+        $directives  = $this->parseDirectives($lexer, true);
 
         return [
-            'kind' => NodeKindEnum::ENUM_VALUE_DEFINITION,
+            'kind'        => NodeKindEnum::ENUM_VALUE_DEFINITION,
             'description' => $description,
-            'name' => $name,
-            'directives' => $directives,
-            'loc' => $this->createLocation($lexer, $start),
+            'name'        => $name,
+            'directives'  => $directives,
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1369,17 +1369,17 @@ class Parser implements ParserInterface, DirectorInterface
 
         $this->expectKeyword($lexer, KeywordEnum::INPUT);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $fields = $this->parseInputFieldsDefinition($lexer);
+        $fields     = $this->parseInputFieldsDefinition($lexer);
 
         return [
-            'kind' => NodeKindEnum::INPUT_OBJECT_TYPE_DEFINITION,
+            'kind'        => NodeKindEnum::INPUT_OBJECT_TYPE_DEFINITION,
             'description' => $description,
-            'name' => $name,
-            'directives' => $directives,
-            'fields' => $fields,
-            'loc' => $this->createLocation($lexer, $start),
+            'name'        => $name,
+            'directives'  => $directives,
+            'fields'      => $fields,
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1436,7 +1436,7 @@ class Parser implements ParserInterface, DirectorInterface
         $this->expectKeyword($lexer, KeywordEnum::EXTEND);
         $this->expectKeyword($lexer, KeywordEnum::SCALAR);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
 
         if (count($directives) === 0) {
@@ -1444,10 +1444,10 @@ class Parser implements ParserInterface, DirectorInterface
         }
 
         return [
-            'kind' => NodeKindEnum::SCALAR_TYPE_EXTENSION,
-            'name' => $name,
+            'kind'       => NodeKindEnum::SCALAR_TYPE_EXTENSION,
+            'name'       => $name,
             'directives' => $directives,
-            'loc' => $this->createLocation($lexer, $start),
+            'loc'        => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1463,22 +1463,22 @@ class Parser implements ParserInterface, DirectorInterface
         $this->expectKeyword($lexer, KeywordEnum::EXTEND);
         $this->expectKeyword($lexer, KeywordEnum::TYPE);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $interfaces = $this->parseImplementsInterfaces($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $fields = $this->parseFieldsDefinition($lexer);
+        $fields     = $this->parseFieldsDefinition($lexer);
 
         if (count($interfaces) === 0 && count($directives) === 0 && count($fields) === 0) {
             throw $this->unexpected($lexer);
         }
 
         return [
-            'kind' => NodeKindEnum::OBJECT_TYPE_EXTENSION,
-            'name' => $name,
+            'kind'       => NodeKindEnum::OBJECT_TYPE_EXTENSION,
+            'name'       => $name,
             'interfaces' => $interfaces,
             'directives' => $directives,
-            'fields' => $fields,
-            'loc' => $this->createLocation($lexer, $start),
+            'fields'     => $fields,
+            'loc'        => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1494,20 +1494,20 @@ class Parser implements ParserInterface, DirectorInterface
         $this->expectKeyword($lexer, KeywordEnum::EXTEND);
         $this->expectKeyword($lexer, KeywordEnum::INTERFACE);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $fields = $this->parseFieldsDefinition($lexer);
+        $fields     = $this->parseFieldsDefinition($lexer);
 
         if (count($directives) === 0 && count($fields) === 0) {
             throw $this->unexpected($lexer);
         }
 
         return [
-            'kind' => NodeKindEnum::INTERFACE_TYPE_EXTENSION,
-            'name' => $name,
+            'kind'       => NodeKindEnum::INTERFACE_TYPE_EXTENSION,
+            'name'       => $name,
             'directives' => $directives,
-            'fields' => $fields,
-            'loc' => $this->createLocation($lexer, $start),
+            'fields'     => $fields,
+            'loc'        => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1523,20 +1523,20 @@ class Parser implements ParserInterface, DirectorInterface
         $this->expectKeyword($lexer, KeywordEnum::EXTEND);
         $this->expectKeyword($lexer, KeywordEnum::UNION);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $types = $this->parseUnionMemberTypes($lexer);
+        $types      = $this->parseUnionMemberTypes($lexer);
 
         if (count($directives) === 0 && count($types) === 0) {
             throw $this->unexpected($lexer);
         }
 
         return [
-            'kind' => NodeKindEnum::UNION_TYPE_EXTENSION,
-            'name' => $name,
+            'kind'       => NodeKindEnum::UNION_TYPE_EXTENSION,
+            'name'       => $name,
             'directives' => $directives,
-            'types' => $types,
-            'loc' => $this->createLocation($lexer, $start),
+            'types'      => $types,
+            'loc'        => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1552,20 +1552,20 @@ class Parser implements ParserInterface, DirectorInterface
         $this->expectKeyword($lexer, KeywordEnum::EXTEND);
         $this->expectKeyword($lexer, KeywordEnum::ENUM);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $values = $this->parseEnumValuesDefinition($lexer);
+        $values     = $this->parseEnumValuesDefinition($lexer);
 
         if (count($directives) === 0 && count($values) === 0) {
             throw $this->unexpected($lexer);
         }
 
         return [
-            'kind' => NodeKindEnum::ENUM_TYPE_EXTENSION,
-            'name' => $name,
+            'kind'       => NodeKindEnum::ENUM_TYPE_EXTENSION,
+            'name'       => $name,
             'directives' => $directives,
-            'values' => $values,
-            'loc' => $this->createLocation($lexer, $start),
+            'values'     => $values,
+            'loc'        => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1581,20 +1581,20 @@ class Parser implements ParserInterface, DirectorInterface
         $this->expectKeyword($lexer, KeywordEnum::EXTEND);
         $this->expectKeyword($lexer, KeywordEnum::INPUT);
 
-        $name = $this->parseName($lexer);
+        $name       = $this->parseName($lexer);
         $directives = $this->parseDirectives($lexer, true);
-        $fields = $this->parseInputFieldsDefinition($lexer);
+        $fields     = $this->parseInputFieldsDefinition($lexer);
 
         if (count($directives) === 0 && count($fields) === 0) {
             throw $this->unexpected($lexer);
         }
 
         return [
-            'kind' => NodeKindEnum::INPUT_OBJECT_TYPE_EXTENSION,
-            'name' => $name,
+            'kind'       => NodeKindEnum::INPUT_OBJECT_TYPE_EXTENSION,
+            'name'       => $name,
             'directives' => $directives,
-            'fields' => $fields,
-            'loc' => $this->createLocation($lexer, $start),
+            'fields'     => $fields,
+            'loc'        => $this->createLocation($lexer, $start),
         ];
     }
 
@@ -1613,7 +1613,7 @@ class Parser implements ParserInterface, DirectorInterface
         $this->expectKeyword($lexer, KeywordEnum::DIRECTIVE);
         $this->expect($lexer, TokenKindEnum::AT);
 
-        $name = $this->parseName($lexer);
+        $name      = $this->parseName($lexer);
         $arguments = $this->parseArgumentsDefinition($lexer);
 
         $this->expectKeyword($lexer, KeywordEnum::ON);
@@ -1621,12 +1621,12 @@ class Parser implements ParserInterface, DirectorInterface
         $locations = $this->parseDirectiveLocations($lexer);
 
         return [
-            'kind' => NodeKindEnum::DIRECTIVE_DEFINITION,
+            'kind'        => NodeKindEnum::DIRECTIVE_DEFINITION,
             'description' => $description,
-            'name' => $name,
-            'arguments' => $arguments,
-            'locations' => $locations,
-            'loc' => $this->createLocation($lexer, $start),
+            'name'        => $name,
+            'arguments'   => $arguments,
+            'locations'   => $locations,
+            'loc'         => $this->createLocation($lexer, $start),
         ];
     }
 

@@ -439,28 +439,28 @@ function __TypeKind(): EnumType
             'isIntrospection' => true,
             'description'     => 'An enum describing what kind of type a given `__Type` is.',
             'values'          => [
-                TypeKindEnum::SCALAR => [
+                TypeKindEnum::SCALAR       => [
                     'description' => 'Indicates this type is a scalar.',
                 ],
-                TypeKindEnum::OBJECT => [
+                TypeKindEnum::OBJECT       => [
                     'description' => 'Indicates this type is an object. `fields` and `interfaces` are valid fields.',
                 ],
-                TypeKindEnum::INTERFACE => [
+                TypeKindEnum::INTERFACE    => [
                     'description' => 'Indicates this type is an interface. `fields` and `possibleTypes` are valid fields.',
                 ],
-                TypeKindEnum::UNION => [
+                TypeKindEnum::UNION        => [
                     'description' => 'Indicates this type is a union. `possibleTypes` is a valid field.',
                 ],
-                TypeKindEnum::ENUM => [
+                TypeKindEnum::ENUM         => [
                     'description' => 'Indicates this type is an enum. `enumValues` is a valid field.',
                 ],
                 TypeKindEnum::INPUT_OBJECT => [
                     'description' => 'Indicates this type is an input object. `inputFields` is a valid field.',
                 ],
-                TypeKindEnum::LIST => [
+                TypeKindEnum::LIST         => [
                     'description' => 'Indicates this type is a list. `ofType` is a valid field.',
                 ],
-                TypeKindEnum::NON_NULL => [
+                TypeKindEnum::NON_NULL     => [
                     'description' => 'Indicates this type is a non-null. `ofType` is a valid field.',
                 ],
             ],
@@ -477,10 +477,10 @@ function __TypeKind(): EnumType
 function SchemaMetaFieldDefinition(): Field
 {
     return new Field([
-        'name' => '__schema',
-        'type' => GraphQLNonNull(__Schema()),
+        'name'        => '__schema',
+        'type'        => GraphQLNonNull(__Schema()),
         'description' => 'Access the current type schema of this server.',
-        'resolve' => function ($source, $args, $context, $info): SchemaInterface {
+        'resolve'     => function ($source, $args, $context, $info): SchemaInterface {
             list ($schema) = $info;
             return $schema;
         }
@@ -494,13 +494,13 @@ function SchemaMetaFieldDefinition(): Field
 function TypeMetaFieldDefinition(): Field
 {
     return new Field([
-        'name' => '__type',
-        'type' => __Type(),
+        'name'        => '__type',
+        'type'        => __Type(),
         'description' => 'Request the type information of a single type.',
-        'args' => [
+        'args'        => [
             'name' => ['type' => GraphQLNonNull(GraphQLString())],
         ],
-        'resolve' => function ($source, $args, $context, $info): TypeInterface {
+        'resolve'     => function ($source, $args, $context, $info): TypeInterface {
             /** @var SchemaInterface $schema */
             list ($name) = $args;
             list ($schema) = $info;
@@ -516,10 +516,10 @@ function TypeMetaFieldDefinition(): Field
 function TypeNameMetaFieldDefinition(): Field
 {
     return new Field([
-        'name' => '__typename',
-        'type' => GraphQLNonNull(GraphQLString()),
+        'name'        => '__typename',
+        'type'        => GraphQLNonNull(GraphQLString()),
         'description' => 'The name of the current Object type at runtime.',
-        'resolve' => function ($source, $args, $context, $info): string {
+        'resolve'     => function ($source, $args, $context, $info): string {
             /** @var TypeInterface $parentType */
             list ($parentType) = $info;
             return $parentType->getName();

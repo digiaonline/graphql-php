@@ -51,14 +51,14 @@ class ExecutionContext
 
     /**
      * ExecutionContext constructor.
-     * @param Schema $schema
-     * @param array $fragments
-     * @param $rootValue
-     * @param $contextValue
-     * @param $variableValues
-     * @param $fieldResolver
+     * @param Schema                  $schema
+     * @param array                   $fragments
+     * @param                         $rootValue
+     * @param                         $contextValue
+     * @param                         $variableValues
+     * @param                         $fieldResolver
      * @param OperationDefinitionNode $operatgion
-     * @param array $errors
+     * @param array                   $errors
      */
     public function __construct(
         Schema $schema,
@@ -68,8 +68,8 @@ class ExecutionContext
         $variableValues,
         $fieldResolver,
         OperationDefinitionNode $operation,
-        array $errors)
-    {
+        array $errors
+    ) {
         $this->schema         = $schema;
         $this->fragments      = $fragments;
         $this->rootValue      = $rootValue;

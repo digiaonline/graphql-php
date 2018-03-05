@@ -11,8 +11,8 @@ interface VisitorInterface
     /**
      * @param NodeInterface|AcceptVisitorTrait $node
      * @param string|int||null $key
-     * @param NodeInterface|null $parent
-     * @param array $path
+     * @param NodeInterface|null               $parent
+     * @param array                            $path
      * @return NodeInterface|SerializationInterface|null
      */
     public function enterNode(
@@ -24,9 +24,9 @@ interface VisitorInterface
 
     /**
      * @param NodeInterface|AcceptVisitorTrait $node
-     * @param string|int|null $key
-     * @param NodeInterface|null $parent
-     * @param array $path
+     * @param string|int|null                  $key
+     * @param NodeInterface|null               $parent
+     * @param array                            $path
      * @return NodeInterface|SerializationInterface|null
      */
     public function leaveNode(

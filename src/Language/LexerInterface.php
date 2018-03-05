@@ -30,7 +30,7 @@ interface LexerInterface
     public function getBody(): string;
 
     /**
-     * @param string $name
+     * @param string     $name
      * @param mixed|null $default
      * @return mixed
      */

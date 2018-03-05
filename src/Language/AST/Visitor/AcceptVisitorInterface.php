@@ -8,10 +8,10 @@ interface AcceptVisitorInterface
 {
 
     /**
-     * @param VisitorInterface $visitor
-     * @param string|int|null $key
+     * @param VisitorInterface   $visitor
+     * @param string|int|null    $key
      * @param NodeInterface|null $parent
-     * @param array $path
+     * @param array              $path
      * @return NodeInterface|null
      */
     public function accept(

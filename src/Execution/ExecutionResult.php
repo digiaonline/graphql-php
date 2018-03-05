@@ -21,13 +21,13 @@ class ExecutionResult implements SerializationInterface
 
     /**
      * ExecutionResult constructor.
-     * @param mixed[] $data
+     * @param mixed[]        $data
      * @param GraphQLError[] $errors
      */
     public function __construct(array $data, array $errors)
     {
         $this->errors = $errors;
-        $this->data = $data;
+        $this->data   = $data;
     }
 
     /**
@@ -62,7 +62,7 @@ class ExecutionResult implements SerializationInterface
     public function toArray(): array
     {
         return [
-            'data' => $this->getData(),
+            'data'   => $this->getData(),
             'errors' => $this->getErrors(),
         ];
     }

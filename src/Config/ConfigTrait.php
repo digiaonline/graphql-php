@@ -23,7 +23,7 @@ trait ConfigTrait
     }
 
     /**
-     * @param string $key
+     * @param string     $key
      * @param mixed|null $default
      * @return mixed|null
      */
@@ -34,7 +34,7 @@ trait ConfigTrait
 
     /**
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      * @return $this
      */
     public function setConfigValue(string $key, $value)

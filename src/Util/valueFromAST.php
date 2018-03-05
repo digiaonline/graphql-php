@@ -2,21 +2,21 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Language\AST\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\AST\Node\EnumValueNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\ListValueNode;
 use Digia\GraphQL\Language\AST\Node\NullValueNode;
 use Digia\GraphQL\Language\AST\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\AST\Node\ObjectValueNode;
+use Digia\GraphQL\Language\AST\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\AST\Node\VariableNode;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
+use Digia\GraphQL\Type\Definition\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\keyMap;
 
 /**

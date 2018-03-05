@@ -28,6 +28,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
+use Psr\SimpleCache\CacheInterface;
 use function Digia\GraphQL\Execution\getDirectiveValues;
 use function Digia\GraphQL\Language\valueFromAST;
 use function Digia\GraphQL\Type\assertNullableType;
@@ -43,7 +44,6 @@ use function Digia\GraphQL\Type\GraphQLUnionType;
 use function Digia\GraphQL\Type\specifiedScalarTypes;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\keyValMap;
-use Psr\SimpleCache\CacheInterface;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {

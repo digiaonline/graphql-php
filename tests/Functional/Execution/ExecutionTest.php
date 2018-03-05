@@ -6,7 +6,6 @@ use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NameNode;
@@ -15,12 +14,12 @@ use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\Location;
-use function Digia\GraphQL\parse;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema;
+use function Digia\GraphQL\parse;
 use function Digia\GraphQL\parser;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
@@ -353,19 +352,19 @@ class ExecutionTest extends TestCase
             'name'   => 'Type',
             'fields' => function () use (&$Type) {
                 return [
-                    'a' => [
+                    'a'    => [
                         'type'    => GraphQLString(),
                         'resolve' => function () {
                             return 'Apple';
                         }
                     ],
-                    'b' => [
+                    'b'    => [
                         'type'    => GraphQLString(),
                         'resolve' => function () {
                             return 'Banana';
                         }
                     ],
-                    'c' => [
+                    'c'    => [
                         'type'    => GraphQLString(),
                         'resolve' => function () {
                             return 'Cherry';

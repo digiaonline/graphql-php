@@ -15,12 +15,12 @@ class FragmentDefinitionBuilder extends AbstractBuilder
     public function build(array $ast): NodeInterface
     {
         return new FragmentDefinitionNode([
-            'name' => $this->buildOne($ast, 'name'),
+            'name'                => $this->buildOne($ast, 'name'),
             'variableDefinitions' => $this->buildMany($ast, 'variableDefinitions'),
-            'typeCondition' => $this->buildOne($ast, 'typeCondition'),
-            'directives' => $this->buildMany($ast, 'directives'),
-            'selectionSet' => $this->buildOne($ast, 'selectionSet'),
-            'location' => $this->createLocation($ast),
+            'typeCondition'       => $this->buildOne($ast, 'typeCondition'),
+            'directives'          => $this->buildMany($ast, 'directives'),
+            'selectionSet'        => $this->buildOne($ast, 'selectionSet'),
+            'location'            => $this->createLocation($ast),
         ]);
     }
 
