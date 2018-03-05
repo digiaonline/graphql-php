@@ -33,6 +33,12 @@ abstract class ExecutionStrategy
      */
     protected $rootValue;
 
+
+    /**
+     * @var array
+     */
+    protected $finalResult;
+
     /**
      * AbstractStrategy constructor.
      * @param ExecutionContext $context
@@ -113,7 +119,9 @@ abstract class ExecutionStrategy
      */
     private function getFieldNameKey(FieldNode $node)
     {
-        return $node->getAlias() ? $node->getAlias()->getValue() : $node->getNameValue();
+        return $node->getAlias()
+            ? $node->getAlias()->getValue()
+            : $node->getNameValue();
     }
 
     /**
@@ -141,7 +149,7 @@ abstract class ExecutionStrategy
             $fieldPath[] = $fieldName;
 
             $result = $this->resolveField($parentType,
-                $source,
+                [],
                 $fieldNodes,
                 $fieldPath
             );
@@ -168,40 +176,43 @@ abstract class ExecutionStrategy
         $fieldNodes,
         $path)
     {
+        $result = [];
         /** @var FieldNode $fieldNode */
-        $fieldNode = $fieldNodes[0];
+        foreach ($fieldNodes as $fieldNode) {
+            $field       = $parentType->getFields()[$fieldNode->getNameValue()];
+            $inputValues = $fieldNode->getArguments() ?? [];
+            $args        = [];
+            $subResult   = [];
 
-        $field = $parentType->getFields()[$fieldNode->getNameValue()];
-
-        $inputValues = $fieldNode->getArguments() ?? [];
-
-        $args = [];
-
-        foreach ($inputValues as $value) {
-            if ($value instanceof ArgumentNode) {
-                $args[] = $value->getValue()->getValue();
-            } elseif ($value instanceof InputValueDefinitionNode) {
-                $args[] = $value->getDefaultValue()->getValue();
+            foreach ($inputValues as $value) {
+                if ($value instanceof ArgumentNode) {
+                    $args[] = $value->getValue()->getValue();
+                } elseif ($value instanceof InputValueDefinitionNode) {
+                    $args[] = $value->getDefaultValue()->getValue();
+                }
             }
-        }
 
-        $result = $field->resolve(...$args);
+            $subResult = $field->resolve(...$args);
 
-        if (!empty($fieldNode->getSelectionSet())) {
-            $fields = $this->collectFields(
-                $parentType,
-                $fieldNode->getSelectionSet(),
-                new \ArrayObject(),
-                new \ArrayObject()
-            );
+            if (!empty($fieldNode->getSelectionSet())) {
+                $fields = $this->collectFields(
+                    $parentType,
+                    $fieldNode->getSelectionSet(),
+                    new \ArrayObject(),
+                    new \ArrayObject()
+                );
 
-            $data = $this->executeFields(
-                $parentType,
-                $this->rootValue,
-                [],
-                $fields
-            );
-            $result = array_merge($result, $data);
+                $data = $this->executeFields(
+                    $parentType,
+                    $source,
+                    $path,
+                    $fields
+                );
+
+                $subResult = array_merge_recursive($result, $data);
+            }
+
+            $result = $subResult;
         }
 
         return $result;
