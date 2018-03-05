@@ -20,6 +20,7 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
             : $schema->getQuery();
 
         $fields = $this->collectFields($objectType, $this->operation->getSelectionSet(), new \ArrayObject(), new \ArrayObject());
+
         $path   = [];
 
         try {
@@ -28,7 +29,7 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
             $this->context->addError(
                 new GraphQLError($ex->getMessage())
             );
-            return null;
+            return [$ex->getMessage()];
         }
 
         return $data;

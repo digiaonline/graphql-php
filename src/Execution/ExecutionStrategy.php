@@ -33,6 +33,12 @@ abstract class ExecutionStrategy
      */
     protected $rootValue;
 
+
+    /**
+     * @var array
+     */
+    protected $finalResult;
+
     /**
      * AbstractStrategy constructor.
      * @param ExecutionContext $context
@@ -71,7 +77,10 @@ abstract class ExecutionStrategy
             /** @var FieldNode $selection */
             switch ($selection->getKind()) {
                 case NodeKindEnum::FIELD:
-                    $name = $selection->getNameValue();
+                    $name = $this->getFieldNameKey($selection);
+                    if(!isset($runtimeType->getFields()[$selection->getNameValue()])){
+                        continue;
+                    }
                     if (!isset($fields[$name])) {
                         $fields[$name] = new \ArrayObject();
                     }
@@ -108,6 +117,17 @@ abstract class ExecutionStrategy
     }
 
     /**
+     * @param FieldNode $node
+     * @return string
+     */
+    private function getFieldNameKey(FieldNode $node)
+    {
+        return $node->getAlias()
+            ? $node->getAlias()->getValue()
+            : $node->getNameValue();
+    }
+
+    /**
      * Implements the "Evaluating selection sets" section of the spec
      * for "read" mode.
      * @param ObjectType $parentType
@@ -130,12 +150,9 @@ abstract class ExecutionStrategy
         foreach ($fields as $fieldName => $fieldNodes) {
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
-            if (!$this->isDefinedField($parentType, $fieldName)) {
-                continue;
-            }
 
             $result = $this->resolveField($parentType,
-                $source,
+                [],
                 $fieldNodes,
                 $fieldPath
             );
@@ -144,17 +161,6 @@ abstract class ExecutionStrategy
         }
 
         return $finalResults;
-    }
-
-    /**
-     * @param ObjectType $parentType
-     * @param string $fieldName
-     * @return bool
-     * @throws \Exception
-     */
-    protected function isDefinedField(ObjectType $parentType, string $fieldName)
-    {
-       return isset($parentType->getFields()[$fieldName]);
     }
 
     /**
@@ -173,38 +179,48 @@ abstract class ExecutionStrategy
         $fieldNodes,
         $path)
     {
+        $result = [];
         /** @var FieldNode $fieldNode */
-        $fieldNode = $fieldNodes[0];
+        foreach ($fieldNodes as $fieldNode) {
+            $field       = $parentType->getFields()[$fieldNode->getNameValue()];
+            $inputValues = $fieldNode->getArguments() ?? [];
+            $args        = [];
 
-        $field = $parentType->getFields()[$fieldNode->getNameValue()];
-
-        $inputValues = $fieldNode->getArguments() ?? [];
-
-        $args = [];
-
-        foreach ($inputValues as $value) {
-            if ($value instanceof ArgumentNode) {
-                $args[] = $value->getValue()->getValue();
-            } elseif ($value instanceof InputValueDefinitionNode) {
-                $args[] = $value->getDefaultValue()->getValue();
+            foreach ($inputValues as $value) {
+                if ($value instanceof ArgumentNode) {
+                    $args[] = $value->getValue()->getValue();
+                } elseif ($value instanceof InputValueDefinitionNode) {
+                    $args[] = $value->getDefaultValue()->getValue();
+                }
             }
+
+            $subResult = $field->resolve(...$args);
+
+            if (!empty($fieldNode->getSelectionSet())) {
+                $fields = $this->collectFields(
+                    $parentType,
+                    $fieldNode->getSelectionSet(),
+                    new \ArrayObject(),
+                    new \ArrayObject()
+                );
+
+                $data = $this->executeFields(
+                    $parentType,
+                    $source,
+                    $path,
+                    $fields
+                );
+                //@TODO Find better way to implement this
+                // For testSimpleMutation test message is resolve already in $subResult above
+                $subResult = array_merge_recursive(
+                    $result,
+                    array_merge_recursive($data, $subResult)
+                );
+            }
+
+            $result = $subResult;
         }
 
-        $result = $field->resolve(...$args);
-
-        //TODO Resolve sub fields
-
         return $result;
-    }
-
-    private function completeValue(
-        $returnType,
-        $fieldNodes,
-        $info,
-        $path,
-        &$result)
-    {
-
-
     }
 }
