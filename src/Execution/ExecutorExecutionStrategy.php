@@ -29,7 +29,7 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
             $this->context->addError(
                 new GraphQLError($ex->getMessage())
             );
-            return null;
+            return [null];
         }
 
         return $data;
