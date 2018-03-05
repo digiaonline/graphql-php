@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Type;
+namespace Digia\GraphQL\Test\Functional\Type;
 
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\EnumType;
@@ -13,6 +13,20 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use Digia\GraphQL\Type\Definition\UnionType;
+use function Digia\GraphQL\Type\GraphQLBoolean;
+use function Digia\GraphQL\Type\GraphQLEnumType;
+use function Digia\GraphQL\Type\GraphQLInputObjectType;
+use function Digia\GraphQL\Type\GraphQLInt;
+use function Digia\GraphQL\Type\GraphQLInterfaceType;
+use function Digia\GraphQL\Type\GraphQLList;
+use function Digia\GraphQL\Type\GraphQLNonNull;
+use function Digia\GraphQL\Type\GraphQLObjectType;
+use function Digia\GraphQL\Type\GraphQLScalarType;
+use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\GraphQLUnionType;
+use function Digia\GraphQL\Type\isOutputType;
+use Digia\GraphQL\Type\Schema;
 
 class DefinitionTest extends TestCase
 {

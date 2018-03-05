@@ -6,6 +6,7 @@ use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
+use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;

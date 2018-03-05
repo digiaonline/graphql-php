@@ -3,9 +3,12 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Util\SerializationInterface;
+use function Digia\GraphQL\Util\jsonEncode;
 
-class ExecutionResult
+class ExecutionResult implements SerializationInterface
 {
+
     /**
      * @var GraphQLError[]
      */
@@ -24,7 +27,7 @@ class ExecutionResult
     public function __construct(array $data, array $errors)
     {
         $this->errors = $errors;
-        $this->data   = $data;
+        $this->data = $data;
     }
 
     /**
@@ -54,13 +57,21 @@ class ExecutionResult
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
-            'data'   => $this->getData(),
+            'data' => $this->getData(),
             'errors' => $this->getErrors(),
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toJSON(): string
+    {
+        return jsonEncode($this->toArray());
     }
 }

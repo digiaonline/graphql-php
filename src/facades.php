@@ -3,6 +3,8 @@
 namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Execution\Execution;
+use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Schema\SchemaBuilderInterface;
@@ -80,4 +82,37 @@ function buildSchema(string $source, array $options = []): SchemaInterface
 function printNode(NodeInterface $node): string
 {
     return GraphQL::getInstance()->get(PrinterInterface::class)->print($node);
+}
+
+/**
+ * @param SchemaInterface $schema
+ * @param string $source
+ * @param null $rootValue
+ * @param null $contextValue
+ * @param null $variableValues
+ * @param null $operationName
+ * @param callable|null $fieldResolver
+ * @return ExecutionResult
+ * @throws Error\GraphQLError
+ * @throws \Exception
+ */
+function graphql(
+    SchemaInterface $schema,
+    string $source,
+    $rootValue = null,
+    $contextValue = null,
+    $variableValues = null,
+    $operationName = null,
+    callable $fieldResolver = null
+): ExecutionResult {
+    /** @noinspection PhpParamsInspection */
+    return Execution::execute(
+        $schema,
+        parse($source),
+        $rootValue,
+        $contextValue,
+        $variableValues,
+        $operationName,
+        $fieldResolver
+    );
 }

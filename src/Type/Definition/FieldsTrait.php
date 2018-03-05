@@ -27,32 +27,6 @@ trait FieldsTrait
     private $_isFieldMapDefined = false;
 
     /**
-     * @param Field $field
-     * @return $this
-     * @throws \Exception
-     */
-    public function addField(Field $field)
-    {
-        $this->_fieldMap[$field->getName()] = $field;
-
-        return $this;
-    }
-
-    /**
-     * @param array $fields
-     * @return $this
-     * @throws \Exception
-     */
-    public function addFields(array $fields)
-    {
-        foreach ($fields as $field) {
-            $this->addField($field);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Field[]
      * @throws \Exception
      */
