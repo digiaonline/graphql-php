@@ -16,7 +16,7 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
     protected $kind = NodeKindEnum::SCHEMA_DEFINITION;
 
     /**
-     * @var OperationTypeDefinitionNode[]
+     * @var array|OperationTypeDefinitionNode[]
      */
     protected $operationTypes;
 
@@ -28,11 +28,24 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
         return $this->operationTypes;
     }
 
+    /**
+     * @return array
+     */
     public function getOperationTypesAsArray(): array
     {
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->operationTypes);
+    }
+
+    /**
+     * @param array|OperationTypeDefinitionNode[] $operationTypes
+     * @return $this
+     */
+    public function setOperationTypes(array $operationTypes)
+    {
+        $this->operationTypes = $operationTypes;
+        return $this;
     }
 
     /**

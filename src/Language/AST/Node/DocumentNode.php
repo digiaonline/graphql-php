@@ -37,14 +37,24 @@ class DocumentNode extends AbstractNode implements NodeInterface
     }
 
     /**
+     * @param array|DefinitionNodeInterface[] $definitions
+     * @return DocumentNode
+     */
+    public function setDefinitions($definitions)
+    {
+        $this->definitions = $definitions;
+        return $this;
+    }
+
+    /**
      * @inheritdoc
      */
     public function toArray(): array
     {
         return [
-            'kind'        => $this->kind,
+            'kind' => $this->kind,
             'definitions' => $this->getDefinitionsAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

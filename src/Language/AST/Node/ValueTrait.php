@@ -17,4 +17,14 @@ trait ValueTrait
     {
         return $this->value;
     }
+
+    /**
+     * @param mixed|null $value
+     * @return $this
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+        return $this;
+    }
 }

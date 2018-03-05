@@ -34,4 +34,14 @@ trait DirectivesTrait
         // TODO: Implement this method.
         return [];
     }
+
+    /**
+     * @param array|DirectiveNode[] $directives
+     * @return $this
+     */
+    public function setDirectives(array $directives)
+    {
+        $this->directives = $directives;
+        return $this;
+    }
 }

@@ -37,4 +37,14 @@ trait FieldsTrait
             return $node->toArray();
         }, $this->fields);
     }
+
+    /**
+     * @param array|FieldDefinitionNode[] $fields
+     * @return $this
+     */
+    public function setFields(array $fields)
+    {
+        $this->fields = $fields;
+        return $this;
+    }
 }

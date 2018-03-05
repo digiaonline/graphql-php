@@ -10,7 +10,7 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
 
     use DescriptionTrait;
     use NameTrait;
-    use ArgumentsTrait;
+    use InputArgumentsTrait;
 
     /**
      * @var string
@@ -38,6 +38,16 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->locations);
+    }
+
+    /**
+     * @param array|NameNode[] $locations
+     * @return $this
+     */
+    public function setLocations(array $locations)
+    {
+        $this->locations = $locations;
+        return $this;
     }
 
     /**

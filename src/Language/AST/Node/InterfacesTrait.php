@@ -37,4 +37,14 @@ trait InterfacesTrait
             return $node->toArray();
         }, $this->interfaces);
     }
+
+    /**
+     * @param array|NamedTypeNode[] $interfaces
+     * @return $this
+     */
+    public function setInterfaces(array $interfaces)
+    {
+        $this->interfaces = $interfaces;
+        return $this;
+    }
 }

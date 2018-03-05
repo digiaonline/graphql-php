@@ -6,15 +6,25 @@ trait TypeConditionTrait
 {
 
     /**
-     * @var NamedTypeNode
+     * @var NamedTypeNode|null
      */
     protected $typeCondition;
 
     /**
-     * @return NamedTypeNode
+     * @return NamedTypeNode|null
      */
-    public function getTypeCondition(): NamedTypeNode
+    public function getTypeCondition(): ?NamedTypeNode
     {
         return $this->typeCondition;
+    }
+
+    /**
+     * @param NamedTypeNode|null $typeCondition
+     * @return $this
+     */
+    public function setTypeCondition(?NamedTypeNode $typeCondition)
+    {
+        $this->typeCondition = $typeCondition;
+        return $this;
     }
 }

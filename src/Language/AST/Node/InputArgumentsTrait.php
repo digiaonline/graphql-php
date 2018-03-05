@@ -4,13 +4,13 @@ namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Util\SerializationInterface;
 
-trait ArgumentsTrait
+trait InputArgumentsTrait
 {
 
     /**
-     * @var array|ArgumentNode[]
+     * @var InputValueDefinitionNode[]
      */
-    protected $arguments = [];
+    protected $arguments;
 
     /**
      * @return bool
@@ -21,7 +21,7 @@ trait ArgumentsTrait
     }
 
     /**
-     * @return array|ArgumentNode[]
+     * @return InputValueDefinitionNode[]
      */
     public function getArguments(): array
     {
@@ -35,11 +35,11 @@ trait ArgumentsTrait
     {
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
-        }, $this->getArguments());
+        }, $this->arguments);
     }
 
     /**
-     * @param array|ArgumentNode[] $arguments
+     * @param array|InputValueDefinitionNode[] $arguments
      * @return $this
      */
     public function setArguments(array $arguments)

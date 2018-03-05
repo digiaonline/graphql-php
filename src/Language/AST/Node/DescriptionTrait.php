@@ -33,4 +33,14 @@ trait DescriptionTrait
     {
         return null !== $this->description ? $this->description->toArray() : null;
     }
+
+    /**
+     * @param StringValueNode|null $description
+     * @return $this
+     */
+    public function setDescription(?StringValueNode $description)
+    {
+        $this->description = $description;
+        return $this;
+    }
 }

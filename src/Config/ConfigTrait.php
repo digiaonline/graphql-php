@@ -23,6 +23,35 @@ trait ConfigTrait
     }
 
     /**
+     * @param string $key
+     * @param mixed|null $default
+     * @return mixed|null
+     */
+    public function getConfigValue(string $key, $default = null)
+    {
+        return $this->config[$key] ?? $default;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @return $this
+     */
+    public function setConfigValue(string $key, $value)
+    {
+        $this->config[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
      * Override this method to perform logic BEFORE configuration is applied.
      * This method is useful for setting default values for properties
      * that need to use new -keyword.
