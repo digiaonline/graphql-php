@@ -78,6 +78,9 @@ abstract class ExecutionStrategy
             switch ($selection->getKind()) {
                 case NodeKindEnum::FIELD:
                     $name = $this->getFieldNameKey($selection);
+                    if(!isset($runtimeType->getFields()[$selection->getNameValue()])){
+                        continue;
+                    }
                     if (!isset($fields[$name])) {
                         $fields[$name] = new \ArrayObject();
                     }
@@ -182,7 +185,6 @@ abstract class ExecutionStrategy
             $field       = $parentType->getFields()[$fieldNode->getNameValue()];
             $inputValues = $fieldNode->getArguments() ?? [];
             $args        = [];
-            $subResult   = [];
 
             foreach ($inputValues as $value) {
                 if ($value instanceof ArgumentNode) {
@@ -208,8 +210,12 @@ abstract class ExecutionStrategy
                     $path,
                     $fields
                 );
-
-                $subResult = array_merge_recursive($result, $data);
+                //@TODO Find better way to implement this
+                // For testSimpleMutation test message is resolve already in $subResult above
+                $subResult = array_merge_recursive(
+                    $result,
+                    array_merge_recursive($data, $subResult)
+                );
             }
 
             $result = $subResult;
