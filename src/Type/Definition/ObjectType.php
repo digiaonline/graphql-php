@@ -58,7 +58,7 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
     /**
      * @var callable
      */
-    private $isTypeOf;
+    private $isTypeOfFunction;
 
     /**
      * @var array|callable
@@ -88,7 +88,7 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
 
         if ($this->getIsTypeOf() !== null) {
             invariant(
-                is_callable($this->getIsTypeOf()),
+                \is_callable($this->getIsTypeOf()),
                 sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
             );
         }
@@ -97,12 +97,14 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
     /**
      * @param mixed $value
      * @param mixed context
-     * @param       $info
+     * @param mixed $info
      * @return bool
      */
     public function isTypeOf($value, $context, $info): bool
     {
-        return $this->getIsTypeOf()($value, $context, $info);
+        return null !== $this->isTypeOfFunction
+            ? \call_user_func($this->isTypeOfFunction, $value, $context, $info)
+            : false;
     }
 
     /**
@@ -121,7 +123,7 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
      */
     public function getIsTypeOf(): ?callable
     {
-        return $this->isTypeOf;
+        return $this->isTypeOfFunction;
     }
 
     /**
@@ -136,12 +138,12 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
     }
 
     /**
-     * @param null|callable $isTypeOf
+     * @param null|callable $isTypeOfFunction
      * @return $this
      */
-    protected function setIsTypeOf(?callable $isTypeOf)
+    protected function setIsTypeOf(?callable $isTypeOfFunction)
     {
-        $this->isTypeOf = $isTypeOf;
+        $this->isTypeOfFunction = $isTypeOfFunction;
 
         return $this;
     }
@@ -160,7 +162,6 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
     }
 
     /**
-     * @param ObjectType     $type
      * @param array|callable $interfacesThunk
      * @return array
      * @throws \Exception

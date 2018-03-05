@@ -5,22 +5,22 @@ namespace Digia\GraphQL\Language;
 class KeywordEnum
 {
 
-    const SCHEMA       = 'schema';
-    const SCALAR       = 'scalar';
-    const TYPE         = 'type';
-    const INTERFACE    = 'interface';
-    const UNION        = 'union';
-    const ENUM         = 'enum';
-    const INPUT        = 'input';
-    const EXTEND       = 'extend';
-    const DIRECTIVE    = 'directive';
-    const ON           = 'on';
-    const FRAGMENT     = 'fragment';
-    const QUERY        = 'query';
-    const MUTATION     = 'mutation';
-    const SUBSCRIPTION = 'subscription';
-    const TRUE         = 'true';
-    const FALSE        = 'false';
+    public const SCHEMA       = 'schema';
+    public const SCALAR       = 'scalar';
+    public const TYPE         = 'type';
+    public const INTERFACE    = 'interface';
+    public const UNION        = 'union';
+    public const ENUM         = 'enum';
+    public const INPUT        = 'input';
+    public const EXTEND       = 'extend';
+    public const DIRECTIVE    = 'directive';
+    public const ON           = 'on';
+    public const FRAGMENT     = 'fragment';
+    public const QUERY        = 'query';
+    public const MUTATION     = 'mutation';
+    public const SUBSCRIPTION = 'subscription';
+    public const TRUE         = 'true';
+    public const FALSE        = 'false';
 
     /**
      * @return array

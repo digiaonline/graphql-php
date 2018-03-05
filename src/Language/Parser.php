@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Error\SyntaxError;
-use Digia\GraphQL\Language\AST\Builder\BuilderInterface;
 use Digia\GraphQL\Language\AST\Builder\DirectorInterface;
 use Digia\GraphQL\Language\AST\Builder\NodeBuilderInterface;
 use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
@@ -22,7 +21,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * Parser constructor.
      *
-     * @param BuilderInterface[] $builders
+     * @param NodeBuilderInterface $builder
      */
     public function __construct(NodeBuilderInterface $builder)
     {
@@ -32,6 +31,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @inheritdoc
      * @return NodeInterface
+     * @throws \ReflectionException
      * @throws GraphQLError
      */
     public function parse(LexerInterface $lexer): NodeInterface
@@ -63,6 +63,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
+     * @throws \ReflectionException
      */
     protected function parseAST(LexerInterface $lexer): array
     {
@@ -100,7 +101,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param array $ast
      * @return NodeInterface
-     * @throws GraphQLError
      */
     public function build(array $ast): NodeInterface
     {
@@ -276,6 +276,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @return array
      * @throws GraphQLError
+     * @throws \ReflectionException
      */
     protected function parseDocument(LexerInterface $lexer): array
     {
@@ -622,7 +623,7 @@ class Parser implements ParserInterface, DirectorInterface
 
         $tokenValue = $lexer->getTokenValue();
 
-        if ($this->peek($lexer, TokenKindEnum::NAME) && $tokenValue !== 'on') {
+        if ($tokenValue !== 'on' && $this->peek($lexer, TokenKindEnum::NAME)) {
             return [
                 'kind'       => NodeKindEnum::FRAGMENT_SPREAD,
                 'name'       => $this->parseFragmentName($lexer),

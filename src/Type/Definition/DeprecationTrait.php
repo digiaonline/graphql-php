@@ -49,6 +49,7 @@ trait DeprecationTrait
     /**
      * @param bool $isDeprecated
      * @throws \TypeError
+     * @noinspection PhpUnusedParameterInspection
      */
     public function setIsDeprecated(bool $isDeprecated): void
     {

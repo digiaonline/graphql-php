@@ -173,9 +173,6 @@ class Token implements SerializationInterface
     }
 
     /**
-     * A helper function to describe a token as a string for debugging.
-     *
-     * @param Token $token
      * @return string
      */
     public function __toString(): string

@@ -24,6 +24,7 @@ class NumberReader extends AbstractReader
 
     /**
      * @inheritdoc
+     * @throws SyntaxError
      */
     public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
     {

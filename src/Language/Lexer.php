@@ -101,9 +101,7 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @param string $name
-     * @param null   $default
-     * @return mixed|null
+     * @inheritdoc
      */
     public function getOption(string $name, $default = null)
     {
@@ -112,6 +110,7 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
+     * @throws \Exception
      */
     public function getBody(): string
     {
@@ -144,6 +143,7 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
+     * @throws \Exception
      */
     public function getSource(): Source
     {
@@ -163,8 +163,7 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @param Source $source
-     * @return Lexer
+     * @inheritdoc
      */
     public function setSource(Source $source)
     {
@@ -173,8 +172,7 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @param array $options
-     * @return
+     * @inheritdoc
      */
     public function setOptions(array $options)
     {

@@ -66,7 +66,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * DefinitionBuilder constructor.
      *
-     * @param callable $resolveTypeFunction
+     * @param callable       $resolveTypeFunction
+     * @param CacheInterface $cache
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function __construct(callable $resolveTypeFunction, CacheInterface $cache)
@@ -100,6 +101,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param NamedTypeNode|TypeDefinitionNodeInterface $node
      * @inheritdoc
+     * @throws \Exception
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function buildType(NodeInterface $node): TypeInterface
     {
@@ -169,6 +172,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param array $nodes
      * @return array
+     * @throws \TypeError
+     * @throws \Exception
      */
     protected function buildArguments(array $nodes): array
     {
@@ -240,12 +245,15 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param ObjectTypeDefinitionNode|InterfaceTypeDefinitionNode|InputObjectTypeDefinitionNode $node
      * @return array
+     * @throws \TypeError
+     * @throws \Exception
      */
     protected function buildFields($node): array
     {
         return $node->hasFields() ? keyValMap(
             $node->getFields(),
             function ($value) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 return $value->getNameValue();
             },
             function ($value) {
@@ -327,6 +335,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param InputObjectTypeDefinitionNode $node
      * @return InputObjectType
+     * @throws \TypeError
+     * @throws \Exception
      */
     protected function buildInputObjectType(InputObjectTypeDefinitionNode $node): InputObjectType
     {
@@ -356,7 +366,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function resolveType(NodeInterface $node): TypeInterface
     {
-        return call_user_func($this->resolveTypeFunction, $node);
+        return \call_user_func($this->resolveTypeFunction, $node);
     }
 
     /**
@@ -405,7 +415,7 @@ function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputType
 }
 
 /**
- * @param EnumValueDefinitionNode|FieldDefinitionNode $node
+ * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
  * @return null|string
  * @throws \TypeError
  * @throws \Exception

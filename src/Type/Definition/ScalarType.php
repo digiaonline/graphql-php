@@ -44,7 +44,7 @@ class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterfa
     protected function afterConfig(): void
     {
         invariant(
-            is_callable($this->_serializeFunction),
+            \is_callable($this->_serializeFunction),
             sprintf(
                 '%s must provide "serialize" function. If this custom Scalar ' .
                 'is also used as an input type, ensure "parseValue" and "parseLiteral" ' .
@@ -55,7 +55,7 @@ class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterfa
 
         if ($this->_parseValueFunction !== null || $this->_parseLiteralFunction !== null) {
             invariant(
-                is_callable($this->_parseValueFunction) && is_callable($this->_parseLiteralFunction),
+                \is_callable($this->_parseValueFunction) && \is_callable($this->_parseLiteralFunction),
                 sprintf('%s must provide both "parseValue" and "parseLiteral" functions.', $this->getName())
             );
         }
@@ -67,7 +67,7 @@ class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterfa
      */
     public function serialize(...$args)
     {
-        return call_user_func_array($this->_serializeFunction, $args);
+        return \call_user_func_array($this->_serializeFunction, $args);
     }
 
     /**
@@ -76,7 +76,7 @@ class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterfa
      */
     public function parseValue(...$args)
     {
-        return $this->_parseValueFunction !== null ? call_user_func_array($this->_parseValueFunction, $args) : null;
+        return $this->_parseValueFunction !== null ? \call_user_func_array($this->_parseValueFunction, $args) : null;
     }
 
     /**
@@ -85,7 +85,7 @@ class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterfa
      */
     public function parseLiteral(...$args)
     {
-        return $this->_parseLiteralFunction !== null ? call_user_func_array($this->_parseLiteralFunction, $args) : null;
+        return $this->_parseLiteralFunction !== null ? \call_user_func_array($this->_parseLiteralFunction, $args) : null;
     }
 
     /**

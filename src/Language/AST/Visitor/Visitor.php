@@ -38,7 +38,7 @@ class Visitor extends AbstractVisitor
         array $path = []
     ): ?NodeInterface {
         return null !== $this->enterFunction
-            ? call_user_func($this->enterFunction, $node, $key, $parent, $path)
+            ? \call_user_func($this->enterFunction, $node, $key, $parent, $path)
             : $node;
     }
 
@@ -52,7 +52,7 @@ class Visitor extends AbstractVisitor
         array $path = []
     ): ?NodeInterface {
         return null !== $this->leaveFunction
-            ? call_user_func($this->leaveFunction, $node, $key, $parent, $path)
+            ? \call_user_func($this->leaveFunction, $node, $key, $parent, $path)
             : $node;
     }
 }

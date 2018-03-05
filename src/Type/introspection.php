@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
-use Digia\GraphQL\Type\Contract\SchemaInterface;
 use Digia\GraphQL\Type\Definition\AbstractType;
-use Digia\GraphQL\Type\Definition\Contract\DirectiveInterface;
-use Digia\GraphQL\Type\Definition\Contract\TypeInterface;
+use Digia\GraphQL\Type\Definition\DirectiveInterface;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -110,7 +110,7 @@ function __Directive(): ObjectType
                     'args'        => [
                         'type'    => GraphQLNonNull(GraphQLList(GraphQLNonNull(__InputValue()))),
                         'resolve' => function (DirectiveInterface $directive): array {
-                            return $directive->getArgs() ?: [];
+                            return $directive->getArguments() ?: [];
                         },
                     ],
                 ];
@@ -258,7 +258,7 @@ function __Type(): ObjectType
                             'includeDeprecated' => ['type' => GraphQLBoolean(), 'defaultValue' => false],
                         ],
                         'resolve' => function (TypeInterface $type, array $args): ?array {
-                            list ($includeDeprecated) = $args;
+                            [$includeDeprecated] = $args;
 
                             if ($type instanceof ObjectType || $type instanceof InterfaceType) {
                                 $fields = array_values($type->getFields());
@@ -285,7 +285,8 @@ function __Type(): ObjectType
                         'type'    => GraphQLList(GraphQLNonNull(__Type())),
                         'resolve' => function (TypeInterface $type, $args, $context, $info): ?array {
                             /** @var SchemaInterface $schema */
-                            list ($schema) = $info;
+                            [$schema] = $info;
+                            /** @noinspection PhpParamsInspection */
                             return $type instanceof AbstractType ? $schema->getPossibleTypes($type) : null;
                         },
                     ],
@@ -295,7 +296,7 @@ function __Type(): ObjectType
                             'includeDeprecated' => ['type' => GraphQLBoolean(), 'defaultValue' => false],
                         ],
                         'resolve' => function (TypeInterface $type, array $args): ?array {
-                            list ($includeDeprecated) = $args;
+                            [$includeDeprecated] = $args;
 
                             if ($type instanceof EnumType) {
                                 $values = array_values($type->getValues());
@@ -348,7 +349,7 @@ function __Field(): ObjectType
                     'args'              => [
                         'type'    => GraphQLNonNull(GraphQLList(GraphQLNonNull(__InputValue()))),
                         'resolve' => function (DirectiveInterface $directive): array {
-                            return $directive->getArgs() ?: [];
+                            return $directive->getArguments() ?: [];
                         },
                     ],
                     'type'              => ['type' => GraphQLNonNull(__Type())],
@@ -481,7 +482,7 @@ function SchemaMetaFieldDefinition(): Field
         'type'        => GraphQLNonNull(__Schema()),
         'description' => 'Access the current type schema of this server.',
         'resolve'     => function ($source, $args, $context, $info): SchemaInterface {
-            list ($schema) = $info;
+            [$schema] = $info;
             return $schema;
         }
     ]);
@@ -502,8 +503,8 @@ function TypeMetaFieldDefinition(): Field
         ],
         'resolve'     => function ($source, $args, $context, $info): TypeInterface {
             /** @var SchemaInterface $schema */
-            list ($name) = $args;
-            list ($schema) = $info;
+            [$name] = $args;
+            [$schema] = $info;
             return $schema->getType($name);
         }
     ]);
@@ -520,8 +521,8 @@ function TypeNameMetaFieldDefinition(): Field
         'type'        => GraphQLNonNull(GraphQLString()),
         'description' => 'The name of the current Object type at runtime.',
         'resolve'     => function ($source, $args, $context, $info): string {
-            /** @var TypeInterface $parentType */
-            list ($parentType) = $info;
+            /** @var NamedTypeInterface $parentType */
+            [$parentType] = $info;
             return $parentType->getName();
         }
     ]);
@@ -553,6 +554,7 @@ function isIntrospectionType(TypeInterface $type): bool
     return arraySome(
         introspectionTypes(),
         function (TypeInterface $introspectionType) use ($type) {
+            /** @noinspection PhpUndefinedMethodInspection */
             return $type->getName() === $introspectionType->getName();
         }
     );

@@ -21,7 +21,7 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
     protected $operationTypes;
 
     /**
-     * @return OperationTypeDefinitionNode[]
+     * @return array|OperationTypeDefinitionNode[]
      */
     public function getOperationTypes(): array
     {
