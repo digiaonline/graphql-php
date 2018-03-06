@@ -17,7 +17,7 @@ function chrUTF8(int $cp)
  */
 function ordUTF8(string $string)
 {
-    list(, $ord) = unpack('N', mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
+    [, $ord] = unpack('N', mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
 
     return $ord;
 }

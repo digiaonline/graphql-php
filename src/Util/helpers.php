@@ -63,16 +63,16 @@ function keyValMap(array $array, callable $keyFn, callable $valFn): array
  */
 function toString($value): string
 {
-    if (is_object($value) && method_exists($value, '__toString')) {
+    if (\is_object($value) && method_exists($value, '__toString')) {
         return $value;
     }
-    if (is_object($value)) {
+    if (\is_object($value)) {
         return 'Object';
     }
-    if (is_array($value)) {
+    if (\is_array($value)) {
         return 'Array';
     }
-    if (is_callable($value)) {
+    if (\is_callable($value)) {
         return 'Function';
     }
     if ($value === '') {
@@ -87,13 +87,13 @@ function toString($value): string
     if ($value === false) {
         return 'false';
     }
-    if (is_string($value)) {
+    if (\is_string($value)) {
         return "\"{$value}\"";
     }
     if (is_scalar($value)) {
         return (string)$value;
     }
-    return gettype($value);
+    return \gettype($value);
 }
 
 /**

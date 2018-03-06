@@ -19,7 +19,6 @@ use Digia\GraphQL\Util\SerializationInterface;
  * @param string|Source $source
  * @param array         $options
  * @return NodeInterface|DocumentNode|SerializationInterface
- * @throws GraphQLError
  * @throws \Exception
  */
 function parse($source, array $options = []): NodeInterface
@@ -35,7 +34,6 @@ function parse($source, array $options = []): NodeInterface
  * @param string|Source $source
  * @param array         $options
  * @return NodeInterface|SerializationInterface
- * @throws GraphQLError
  * @throws \Exception
  */
 function parseValue($source, array $options = []): NodeInterface
@@ -51,7 +49,6 @@ function parseValue($source, array $options = []): NodeInterface
  * @param string|Source $source
  * @param array         $options
  * @return NodeInterface|SerializationInterface
- * @throws GraphQLError
  * @throws \Exception
  */
 function parseType($source, array $options = []): NodeInterface

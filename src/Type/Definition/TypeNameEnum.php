@@ -5,16 +5,16 @@ namespace Digia\GraphQL\Type\Definition;
 class TypeNameEnum
 {
 
-    const INT       = 'Int';
-    const FLOAT     = 'Float';
-    const STRING    = 'String';
-    const BOOLEAN   = 'Boolean';
-    const ID        = 'ID';
-    const INTERFACE = 'Interface';
-    const ENUM      = 'Enum';
-    const UNION     = 'Union';
-    const LIST      = 'List';
-    const NULL      = 'Null';
+    public const INT       = 'Int';
+    public const FLOAT     = 'Float';
+    public const STRING    = 'String';
+    public const BOOLEAN   = 'Boolean';
+    public const ID        = 'ID';
+    public const INTERFACE = 'Interface';
+    public const ENUM      = 'Enum';
+    public const UNION     = 'Union';
+    public const LIST      = 'List';
+    public const NULL      = 'Null';
 
     /**
      * @return array

@@ -50,7 +50,6 @@ function specifiedDirectives(): array
 /**
  * @param DirectiveInterface $directive
  * @return bool
- * @throws ReflectionException
  * @throws TypeError
  */
 function isSpecifiedDirective(DirectiveInterface $directive): bool

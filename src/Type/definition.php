@@ -28,7 +28,7 @@ use function Digia\GraphQL\Util\toString;
  */
 function resolveThunk($thunk): ?array
 {
-    return is_callable($thunk) ? $thunk() : $thunk;
+    return \is_callable($thunk) ? $thunk() : $thunk;
 }
 
 /**
@@ -53,7 +53,7 @@ function isAssocArray($value): bool
  */
 function isValidResolver($resolver): bool
 {
-    return $resolver === null || is_callable($resolver);
+    return $resolver === null || \is_callable($resolver);
 }
 
 /**
@@ -64,7 +64,7 @@ function assertType($type)
 {
     invariant(
         $type instanceof TypeInterface,
-        sprintf(sprintf('Expected %s to be a GraphQL type.', $type)), toString($type)
+        sprintf(sprintf('Expected %s to be a GraphQL type.', $type), toString($type))
     );
 }
 

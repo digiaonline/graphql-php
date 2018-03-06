@@ -5,9 +5,9 @@ namespace Digia\GraphQL\Type\Definition;
 class SpecifiedDirectiveEnum
 {
 
-    const INCLUDE    = 'include';
-    const SKIP       = 'skip';
-    const DEPRECATED = 'deprecated';
+    public const INCLUDE    = 'include';
+    public const SKIP       = 'skip';
+    public const DEPRECATED = 'deprecated';
 
     /**
      * @return array

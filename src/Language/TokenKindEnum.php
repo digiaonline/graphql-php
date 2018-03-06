@@ -5,28 +5,28 @@ namespace Digia\GraphQL\Language;
 class TokenKindEnum
 {
 
-    const SOF          = '<SOF>';
-    const EOF          = '<EOF>';
-    const BANG         = '!';
-    const DOLLAR       = '$';
-    const AMP          = '&';
-    const PAREN_L      = '(';
-    const PAREN_R      = ')';
-    const SPREAD       = '...';
-    const COLON        = ':';
-    const EQUALS       = '=';
-    const AT           = '@';
-    const BRACKET_L    = '[';
-    const BRACKET_R    = ']';
-    const BRACE_L      = '{';
-    const PIPE         = '|';
-    const BRACE_R      = '}';
-    const NAME         = 'Name';
-    const INT          = 'Int';
-    const FLOAT        = 'Float';
-    const STRING       = 'String';
-    const BLOCK_STRING = 'BlockString';
-    const COMMENT      = 'Comment';
+    public const SOF          = '<SOF>';
+    public const EOF          = '<EOF>';
+    public const BANG         = '!';
+    public const DOLLAR       = '$';
+    public const AMP          = '&';
+    public const PAREN_L      = '(';
+    public const PAREN_R      = ')';
+    public const SPREAD       = '...';
+    public const COLON        = ':';
+    public const EQUALS       = '=';
+    public const AT           = '@';
+    public const BRACKET_L    = '[';
+    public const BRACKET_R    = ']';
+    public const BRACE_L      = '{';
+    public const PIPE         = '|';
+    public const BRACE_R      = '}';
+    public const NAME         = 'Name';
+    public const INT          = 'Int';
+    public const FLOAT        = 'Float';
+    public const STRING       = 'String';
+    public const BLOCK_STRING = 'BlockString';
+    public const COMMENT      = 'Comment';
 
     /**
      * @return array

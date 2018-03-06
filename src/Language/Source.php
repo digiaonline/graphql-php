@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Error\GraphQLError;
 use function Digia\GraphQL\Util\invariant;
 
 /**
@@ -71,7 +72,7 @@ class Source
     }
 
     /**
-     * @return int
+     * @return SourceLocation|null
      */
     public function getLocationOffset(): ?SourceLocation
     {
@@ -99,9 +100,9 @@ class Source
     }
 
     /**
-     * @param int $line
+     * @param SourceLocation|null $locationOffset
      * @return Source
-     * @throws \Exception
+     * @throws GraphQLError
      */
     protected function setLocationOffset(?SourceLocation $locationOffset): Source
     {

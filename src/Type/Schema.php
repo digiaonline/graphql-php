@@ -147,7 +147,9 @@ class Schema extends ConfigObject implements SchemaInterface
      */
     public function isPossibleType(AbstractTypeInterface $abstractType, TypeInterface $possibleType): bool
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $abstractTypeName = $abstractType->getName();
+        /** @noinspection PhpUndefinedMethodInspection */
         $possibleTypeName = $possibleType->getName();
 
         if (!isset($this->_possibleTypeMap[$abstractTypeName])) {

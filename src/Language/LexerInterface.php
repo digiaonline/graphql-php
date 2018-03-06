@@ -62,12 +62,14 @@ interface LexerInterface
     public function getLastToken(): Token;
 
     /**
-     * @return mixed
+     * @param Source $source
+     * @return $this
      */
     public function setSource(Source $source);
 
     /**
-     * @return mixed
+     * @param array $options
+     * @return $this
      */
     public function setOptions(array $options);
 }

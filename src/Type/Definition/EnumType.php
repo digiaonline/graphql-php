@@ -35,7 +35,7 @@ use function Digia\GraphQL\Util\toString;
  * @package Digia\GraphQL\Type\Definition\Enum
  * @property EnumTypeDefinitionNode $astNode
  */
-class EnumType extends ConfigObject implements TypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface
+class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface
 {
 
     use NameTrait;
@@ -110,6 +110,7 @@ class EnumType extends ConfigObject implements TypeInterface, InputTypeInterface
     {
         if ($astNode->getKind() === NodeKindEnum::ENUM) {
             /** @var EnumValue $enumValue */
+            /** @noinspection PhpUndefinedMethodInspection */
             $enumValue = $this->getValueByName($astNode->getValue());
 
             if ($enumValue !== null) {

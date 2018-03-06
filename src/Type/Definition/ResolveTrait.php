@@ -16,7 +16,7 @@ trait ResolveTrait
      */
     public function resolve(...$args)
     {
-        return $this->_resolveFunction !== null ? call_user_func_array($this->_resolveFunction, $args) : null;
+        return $this->_resolveFunction !== null ? \call_user_func_array($this->_resolveFunction, $args) : null;
     }
 
     /**

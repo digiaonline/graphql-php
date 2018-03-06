@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
-use Digia\GraphQL\Language\AST\Node\Behavior\DirectivesTrait;
+use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
 use Digia\GraphQL\Language\AST\Node\DirectiveNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;

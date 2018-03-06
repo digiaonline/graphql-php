@@ -2,19 +2,18 @@
 
 namespace Digia\GraphQL\Language\Reader;
 
-use Digia\GraphQL\Language\Lexer;
 use Digia\GraphQL\Language\LexerInterface;
 
 abstract class AbstractReader implements ReaderInterface
 {
 
     /**
-     * @var Lexer
+     * @var LexerInterface
      */
     protected $lexer;
 
     /**
-     * @param Lexer $lexer
+     * @param LexerInterface $lexer
      */
     public function setLexer(LexerInterface $lexer): void
     {

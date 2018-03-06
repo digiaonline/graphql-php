@@ -171,6 +171,7 @@ class GraphQL
     /**
      * @param string $id
      * @return mixed
+     * @throws \Psr\Container\ContainerExceptionInterface
      */
     public static function get(string $id)
     {
@@ -251,6 +252,9 @@ class GraphQL
         $this->shared(PrinterInterface::class, Printer::class);
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function registerSchemaBuilder()
     {
         $this->shared(DefinitionBuilderInterface::class, DefinitionBuilder::class)
@@ -267,6 +271,7 @@ class GraphQL
 
     /**
      * Registers the GraphQL scalar types with the container.
+     * @throws \TypeError
      */
     protected function registerScalarTypes()
     {

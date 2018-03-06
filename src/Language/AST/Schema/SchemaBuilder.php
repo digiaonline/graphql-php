@@ -4,8 +4,10 @@ namespace Digia\GraphQL\Language\AST\Schema;
 
 use Digia\GraphQL\Language\AST\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\TypeDefinitionNodeInterface;
+use Digia\GraphQL\Language\AST\Node\TypeNodeInterface;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 use function Digia\GraphQL\Type\GraphQLSchema;
@@ -131,9 +133,10 @@ function getOperationTypes(SchemaDefinitionNode $schemaDefinition, array $nodeMa
     $operationTypes = [];
 
     foreach ($schemaDefinition->getOperationTypes() as $operationTypeDefinition) {
+        /** @var TypeNodeInterface|NamedTypeNode $operationType */
         $operationType = $operationTypeDefinition->getType();
-        $typeName      = $operationType->getNameValue();
-        $operation     = $operationTypeDefinition->getOperation();
+        $typeName  = $operationType->getNameValue();
+        $operation = $operationTypeDefinition->getOperation();
 
         if (isset($operationTypes[$typeName])) {
             throw new \Exception(sprintf('Must provide only one %s type in schema.', $operation));

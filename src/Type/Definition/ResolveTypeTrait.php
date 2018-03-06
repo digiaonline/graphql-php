@@ -16,7 +16,7 @@ trait ResolveTypeTrait
      */
     public function resolveType(...$args): ?TypeInterface
     {
-        return call_user_func_array($this->resolveTypeFunction, $args);
+        return \call_user_func_array($this->resolveTypeFunction, $args);
     }
 
     /**
