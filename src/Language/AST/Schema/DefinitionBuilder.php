@@ -28,6 +28,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
+use function Digia\GraphQL\Type\introspectionTypes;
 use Psr\SimpleCache\CacheInterface;
 use function Digia\GraphQL\Execution\getDirectiveValues;
 use function Digia\GraphQL\Language\valueFromAST;
@@ -76,7 +77,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         $this->resolveTypeFunction = $resolveTypeFunction;
 
         $builtInTypes = keyMap(
-            array_merge(specifiedScalarTypes()/*, introspectionTypes()*/),
+            array_merge(specifiedScalarTypes(), introspectionTypes()),
             function (NamedTypeInterface $type) {
                 return $type->getName();
             }

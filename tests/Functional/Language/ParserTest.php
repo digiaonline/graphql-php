@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\Language\AST;
+namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Error\SyntaxError;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;

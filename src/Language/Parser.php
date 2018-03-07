@@ -173,7 +173,7 @@ class Parser implements ParserInterface, DirectorInterface
             return $token;
         }
 
-        throw new SyntaxError(sprintf('Expected %s, found ${getTokenDesc(token)}', $value, $token));
+        throw new SyntaxError(sprintf('Expected %s, found %s', $value, $token));
     }
 
     /**

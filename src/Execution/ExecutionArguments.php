@@ -29,7 +29,7 @@ class ExecutionArguments
     protected $contextValue;
 
     /**
-     * @var []
+     * @var array
      */
     protected $variableValues;
 
@@ -49,18 +49,18 @@ class ExecutionArguments
      * @param DocumentNode            $document
      * @param mixed                   $rootValue
      * @param mixed                   $contextValue
-     * @param                         $variableValues
+     * @param array                   $variableValues
      * @param OperationDefinitionNode $operation
      * @param mixed                   $fieldResolver
      */
     public function __construct(
         Schema $schema,
         DocumentNode $document,
-        mixed $rootValue,
-        mixed $contextValue,
-        $variableValues,
+        $rootValue,
+        $contextValue,
+        array $variableValues,
         OperationDefinitionNode $operation,
-        mixed $fieldResolver
+        $fieldResolver
     ) {
         $this->schema         = $schema;
         $this->document       = $document;

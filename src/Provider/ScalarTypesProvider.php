@@ -10,10 +10,12 @@ use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\StringValueNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
-use const Digia\GraphQL\Type\MAX_INT;
-use const Digia\GraphQL\Type\MIN_INT;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use function Digia\GraphQL\Type\GraphQLScalarType;
+use function Digia\GraphQL\Util\coerceBoolean;
+use function Digia\GraphQL\Util\coerceFloat;
+use function Digia\GraphQL\Util\coerceInt;
+use function Digia\GraphQL\Util\coerceString;
 
 class ScalarTypesProvider extends AbstractServiceProvider
 {
@@ -34,20 +36,6 @@ class ScalarTypesProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        /**
-         * @param $value
-         * @return bool
-         * @throws \TypeError
-         */
-        function coerceBoolean($value): bool
-        {
-            if (!is_scalar($value)) {
-                throw new \TypeError(sprintf('Boolean cannot represent a non-scalar value: %s', $value));
-            }
-
-            return (bool)$value;
-        }
-
         $this->container->add(GraphQL::BOOLEAN, function () {
             return GraphQLScalarType([
                 'name'        => TypeNameEnum::BOOLEAN,
@@ -65,24 +53,6 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 },
             ]);
         }, true/* $shared */);
-
-        /**
-         * @param $value
-         * @return float
-         * @throws \TypeError
-         */
-        function coerceFloat($value): float
-        {
-            if ($value === '') {
-                throw new \TypeError('Float cannot represent non numeric value: (empty string)');
-            }
-
-            if (is_numeric($value) || \is_bool($value)) {
-                return (float)$value;
-            }
-
-            throw new \TypeError(sprintf('Float cannot represent non numeric value: %s', $value));
-        }
 
         $this->container->add(GraphQL::FLOAT, function () {
             return GraphQLScalarType([
@@ -106,35 +76,6 @@ class ScalarTypesProvider extends AbstractServiceProvider
             ]);
         }, true/* $shared */);
 
-        /**
-         * @param $value
-         * @return int
-         * @throws \TypeError
-         */
-        function coerceInt($value)
-        {
-            if ($value === '') {
-                throw new \TypeError('Int cannot represent non 32-bit signed integer value: (empty string)');
-            }
-
-            if (\is_bool($value)) {
-                $value = (int)$value;
-            }
-
-            if (!\is_int($value) || $value > MAX_INT || $value < MIN_INT) {
-                throw new \TypeError(sprintf('Int cannot represent non 32-bit signed integer value: %s', $value));
-            }
-
-            $intValue   = (int)$value;
-            $floatValue = (float)$value;
-
-            if ($floatValue != $intValue || floor($floatValue) !== $floatValue) {
-                throw new \TypeError(sprintf('Int cannot represent non-integer value: %s', $value));
-            }
-
-            return $intValue;
-        }
-
         $this->container->add(GraphQL::INT, function () {
             return GraphQLScalarType([
                 'name'         => TypeNameEnum::INT,
@@ -153,32 +94,6 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 },
             ]);
         }, true/* $shared */);
-
-        /**
-         * @param $value
-         * @return string
-         * @throws \TypeError
-         */
-        function coerceString($value): string
-        {
-            if ($value === null) {
-                return 'null';
-            }
-
-            if ($value === true) {
-                return 'true';
-            }
-
-            if ($value === false) {
-                return 'false';
-            }
-
-            if (!is_scalar($value)) {
-                throw new \TypeError('String cannot represent a non-scalar value');
-            }
-
-            return (string)$value;
-        }
 
         $this->container->add(GraphQL::ID, function () {
             return GraphQLScalarType([
