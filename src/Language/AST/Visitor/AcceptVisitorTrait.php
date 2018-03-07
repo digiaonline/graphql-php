@@ -25,7 +25,7 @@ trait AcceptVisitorTrait
 
     /**
      * @param VisitorInterface   $visitor
-     * @param string|int||null $key
+     * @param string|int|null    $key
      * @param NodeInterface|null $parent
      * @param array              $path
      * @return NodeInterface|AcceptVisitorTrait|SerializationInterface|null
@@ -104,8 +104,8 @@ trait AcceptVisitorTrait
     }
 
     /**
-     * @param            $nodeOrNodes
-     * @param string|int $key
+     * @param NodeInterface|NodeInterface[] $nodeOrNodes
+     * @param string|int                    $key
      * @return array|NodeInterface|NodeInterface[]|null
      * @throws VisitorBreak
      */

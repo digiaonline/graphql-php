@@ -12,8 +12,8 @@ class SerializationTest extends TestCase
 {
 
     /**
-     * @param $value
-     * @param $answer
+     * @param mixed $value
+     * @param mixed $answer
      * @throws \Exception
      * @dataProvider valuesIntCanRepresentDataProvider
      */
@@ -37,7 +37,7 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @dataProvider valuesIntCannotRepresentDataProvider
      * @expectedException \TypeError
      */
@@ -84,8 +84,8 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @param $value
-     * @param $answer
+     * @param mixed $value
+     * @param mixed $answer
      * @throws \Exception
      * @dataProvider valuesFloatCanRepresentDataProvider
      */
@@ -114,7 +114,7 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @dataProvider valuesFloatCannotRepresentDataProvider
      * @expectedException \TypeError
      */
@@ -133,8 +133,8 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @param $value
-     * @param $answer
+     * @param mixed $value
+     * @param mixed $answer
      * @throws \Exception
      * @dataProvider valuesStringCanRepresentDataProvider
      */

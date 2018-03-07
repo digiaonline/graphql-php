@@ -23,7 +23,7 @@ use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
 /**
- * @param $thunk
+ * @param mixed $thunk
  * @return null|array
  */
 function resolveThunk($thunk): ?array
@@ -48,7 +48,7 @@ function isAssocArray($value): bool
 }
 
 /**
- * @param $resolver
+ * @param mixed $resolver
  * @return bool
  */
 function isValidResolver($resolver): bool
@@ -57,7 +57,7 @@ function isValidResolver($resolver): bool
 }
 
 /**
- * @param $type
+ * @param mixed $type
  * @throws \Exception
  */
 function assertType($type)

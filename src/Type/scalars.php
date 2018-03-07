@@ -63,18 +63,3 @@ function specifiedScalarTypes(): array
         GraphQLID(),
     ];
 }
-
-/**
- * @param TypeInterface $type
- * @return bool
- */
-function isSpecifiedScalarType(TypeInterface $type): bool
-{
-    return arraySome(
-        specifiedScalarTypes(),
-        function (ScalarType $specifiedScalarType) use ($type) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            return $type->getName() === $specifiedScalarType->getName();
-        }
-    );
-}

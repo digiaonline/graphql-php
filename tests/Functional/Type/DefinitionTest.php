@@ -201,7 +201,7 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @param $resolveValue
+     * @param mixed $resolveValue
      * @return Schema
      * @throws \Exception
      */
@@ -448,8 +448,8 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @param $type
-     * @param $answer
+     * @param mixed $type
+     * @param mixed $answer
      * @throws \Exception
      * @throws \TypeError
      * @dataProvider identifiesInputTypesDataProvider

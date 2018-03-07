@@ -402,7 +402,7 @@ function getNamedTypeNode(TypeNodeInterface $typeNode): NamedTypeNode
  * @throws \TypeError
  * @throws \Exception
  */
-function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputTypeNode): TypeInterface
+function buildWrappedType(TypeInterface $innerType, $inputTypeNode): TypeInterface
 {
     if ($inputTypeNode instanceof ListTypeNode) {
         return GraphQLList(buildWrappedType($innerType, $inputTypeNode->getType()));

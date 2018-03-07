@@ -96,7 +96,7 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
 
     /**
      * @param mixed $value
-     * @param mixed context
+     * @param mixed $context
      * @param mixed $info
      * @return bool
      */

@@ -26,7 +26,7 @@ use function Digia\GraphQL\Util\keyMap;
  * @return mixed|null
  * @throws \Exception
  */
-function valueFromAST(?ValueNodeInterface $node, TypeInterface $type, array $variables = [])
+function valueFromAST(?ValueNodeInterface $node, $type, array $variables = [])
 {
     // TODO: Refactor this method, maybe into a more OOP approach.
 

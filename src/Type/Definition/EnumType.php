@@ -66,7 +66,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @return null|string
      * @throws \Exception
      */
@@ -83,7 +83,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @return mixed|null
      * @throws \Exception
      */

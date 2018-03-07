@@ -8,7 +8,6 @@ use Digia\GraphQL\Language\AST\Node\FloatValueNode;
 use Digia\GraphQL\Language\AST\Node\IntValueNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\StringValueNode;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use function Digia\GraphQL\Type\GraphQLScalarType;
@@ -48,8 +47,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 },
 
                 'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var BooleanValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::BOOLEAN ? $astNode->getValue() : null;
+                    return $astNode instanceof BooleanValueNode ? $astNode->getValue() : null;
                 },
             ]);
         }, true/* $shared */);
@@ -68,10 +66,11 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return coerceFloat($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var FloatValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::FLOAT || $astNode->getKind() === NodeKindEnum::INT
-                        ? $astNode->getValue()
-                        : null;
+                    if ($astNode instanceof FloatValueNode || $astNode instanceof IntValueNode) {
+                        return $astNode->getValue();
+                    }
+
+                    return null;
                 },
             ]);
         }, true/* $shared */);
@@ -89,8 +88,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return coerceInt($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var IntValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::INT ? $astNode->getValue() : null;
+                    return $astNode instanceof IntValueNode ? $astNode->getValue() : null;
                 },
             ]);
         }, true/* $shared */);
@@ -111,10 +109,11 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return coerceString($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var StringValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::STRING || $astNode->getKind() === NodeKindEnum::INT
-                        ? $astNode->getValue()
-                        : null;
+                    if ($astNode instanceof StringValueNode || $astNode instanceof IntValueNode) {
+                        return $astNode->getValue();
+                    }
+
+                    return null;
                 },
             ]);
         }, true/* $shared */);
@@ -133,8 +132,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return coerceString($value);
                 },
                 'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var StringValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::STRING ? $astNode->getValue() : null;
+                    return $astNode instanceof StringValueNode ? $astNode->getValue() : null;
                 },
             ]);
         }, true/* $shared */);
