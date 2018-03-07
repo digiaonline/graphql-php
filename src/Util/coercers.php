@@ -6,7 +6,7 @@ use const Digia\GraphQL\Type\MAX_INT;
 use const Digia\GraphQL\Type\MIN_INT;
 
 /**
- * @param $value
+ * @param mixed $value
  * @return bool
  * @throws \TypeError
  */
@@ -20,7 +20,7 @@ function coerceBoolean($value): bool
 }
 
 /**
- * @param $value
+ * @param mixed $value
  * @return float
  * @throws \TypeError
  */
@@ -38,7 +38,7 @@ function coerceFloat($value): float
 }
 
 /**
- * @param $value
+ * @param mixed $value
  * @return int
  * @throws \TypeError
  */
@@ -67,7 +67,7 @@ function coerceInt($value)
 }
 
 /**
- * @param $value
+ * @param mixed $value
  * @return string
  * @throws \TypeError
  */

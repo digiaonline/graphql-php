@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Language\AST\Schema;
 use Digia\GraphQL\Language\AST\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
+use Digia\GraphQL\Language\AST\Node\NameTrait;
 use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\TypeNodeInterface;
@@ -133,7 +134,7 @@ function getOperationTypes(SchemaDefinitionNode $schemaDefinition, array $nodeMa
     $operationTypes = [];
 
     foreach ($schemaDefinition->getOperationTypes() as $operationTypeDefinition) {
-        /** @var TypeNodeInterface|NamedTypeNode $operationType */
+        /** @var TypeNodeInterface|NamedTypeNode|NameTrait $operationType */
         $operationType = $operationTypeDefinition->getType();
         $typeName  = $operationType->getNameValue();
         $operation = $operationTypeDefinition->getOperation();

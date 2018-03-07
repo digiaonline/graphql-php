@@ -58,7 +58,7 @@ function keyValMap(array $array, callable $keyFn, callable $valFn): array
 }
 
 /**
- * @param $value
+ * @param mixed $value
  * @return string
  */
 function toString($value): string
@@ -97,7 +97,7 @@ function toString($value): string
 }
 
 /**
- * @param $value
+ * @param mixed $value
  * @return string
  */
 function jsonEncode($value): string

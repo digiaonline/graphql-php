@@ -69,9 +69,9 @@ class Execution
      * @TODO: Consider to create a ExecutionContextBuilder
      * @param Schema        $schema
      * @param DocumentNode  $documentNode
-     * @param               $rootValue
-     * @param               $contextValue
-     * @param               $rawVariableValues
+     * @param mixed         $rootValue
+     * @param mixed         $contextValue
+     * @param mixed         $rawVariableValues
      * @param null          $operationName
      * @param callable|null $fieldResolver
      * @throws GraphQLError

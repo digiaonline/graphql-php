@@ -10,6 +10,7 @@ use Digia\GraphQL\Language\AST\Node\NameNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\AST\Visitor\AcceptVisitorTrait;
 use Digia\GraphQL\Language\AST\Visitor\KindVisitor;
 use Digia\GraphQL\Language\AST\Visitor\Visitor;
 use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
@@ -43,6 +44,7 @@ class VisitorTest extends TestCase
             }
         );
 
+        /** @var AcceptVisitorTrait $ast */
         $ast->accept($visitor);
 
         $this->assertEquals([

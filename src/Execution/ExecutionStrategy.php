@@ -63,15 +63,16 @@ abstract class ExecutionStrategy
     /**
      * @param ObjectType       $runtimeType
      * @param SelectionSetNode $selectionSet
-     * @param                  $fields
-     * @param                  $visitedFragmentNames
+     * @param iterable         $fields
+     * @param iterable         $visitedFragmentNames
      * @return \ArrayObject
+     * @throws \Exception
      */
     protected function collectFields(
         ObjectType $runtimeType,
         SelectionSetNode $selectionSet,
-        $fields,
-        $visitedFragmentNames
+        iterable $fields,
+        iterable $visitedFragmentNames
     ) {
         foreach ($selectionSet->getSelections() as $selection) {
             /** @var FieldNode $selection */

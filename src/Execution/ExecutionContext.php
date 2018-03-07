@@ -30,7 +30,7 @@ class ExecutionContext
     protected $contextValue;
 
     /**
-     * @var []
+     * @var array
      */
     protected $variableValues;
 
@@ -53,11 +53,11 @@ class ExecutionContext
      * ExecutionContext constructor.
      * @param Schema                  $schema
      * @param array                   $fragments
-     * @param                         $rootValue
-     * @param                         $contextValue
-     * @param                         $variableValues
-     * @param                         $fieldResolver
-     * @param OperationDefinitionNode $operatgion
+     * @param mixed                   $rootValue
+     * @param mixed                   $contextValue
+     * @param mixed                   $variableValues
+     * @param mixed                   $fieldResolver
+     * @param OperationDefinitionNode $operation
      * @param array                   $errors
      */
     public function __construct(
