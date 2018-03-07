@@ -8,7 +8,6 @@ use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\parser;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
