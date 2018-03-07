@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Language\AST\Visitor;
 
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 
-class Visitor extends AbstractVisitor
+class Visitor implements VisitorInterface
 {
 
     /**

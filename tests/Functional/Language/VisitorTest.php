@@ -10,7 +10,8 @@ use Digia\GraphQL\Language\AST\Node\NameNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\AST\Visitor\KindVisitor;
+use Digia\GraphQL\Language\AST\Visitor\ParallelVisitor;
+use Digia\GraphQL\Language\AST\Visitor\SpecificKindVisitor;
 use Digia\GraphQL\Language\AST\Visitor\Visitor;
 use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
 use Digia\GraphQL\Test\TestCase;
@@ -262,8 +263,8 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
-            ): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
@@ -272,8 +273,8 @@ class VisitorTest extends TestCase
 
                 return $node;
             },
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
-            ): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 return $node;
@@ -312,8 +313,8 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
-            ): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 if ($node instanceof NameNode && $node->getValue() === 'x') {
@@ -322,8 +323,8 @@ class VisitorTest extends TestCase
 
                 return $node;
             },
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
-            ): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 return $node;
@@ -365,14 +366,14 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
-            ): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 return $node;
             },
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
-            ): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 if ($node instanceof NameNode && $node->getValue() === 'x') {
@@ -418,17 +419,17 @@ class VisitorTest extends TestCase
 
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
-        $visitor = new KindVisitor(
+        $visitor = new SpecificKindVisitor(
             [NodeKindEnum::NAME, NodeKindEnum::SELECTION_SET],
             [NodeKindEnum::SELECTION_SET],
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
-            ): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 return $node;
             },
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = []) use (&$visited
-            ): ?NodeInterface {
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited): ?NodeInterface {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 return $node;
@@ -847,6 +848,332 @@ class VisitorTest extends TestCase
             ['leave', 'SelectionSet', 'selectionSet', 'OperationDefinition'],
             ['leave', 'OperationDefinition', 4, null],
             ['leave', 'Document', null, null],
+        ], $visited);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testVisitInParallel()
+    {
+        $visited = [];
+
+        $ast = parse('{ a, b { x }, c }');
+
+        $visitor = new ParallelVisitor([
+            new Visitor(
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
+                        return null;
+                    }
+
+                    return $node;
+                },
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    return $node;
+                }
+            ),
+        ]);
+
+        $ast->accept($visitor);
+
+        $this->assertEquals([
+            ['enter', 'Document', null],
+            ['enter', 'OperationDefinition', null],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'a'],
+            ['leave', 'Name', 'a'],
+            ['leave', 'Field', null],
+            ['enter', 'Field', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'c'],
+            ['leave', 'Name', 'c'],
+            ['leave', 'Field', null],
+            ['leave', 'SelectionSet', null],
+            ['leave', 'OperationDefinition', null],
+            ['leave', 'Document', null],
+        ], $visited);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAllowsSkippingSubTreeWhenVisitingInParallel()
+    {
+        $visited = [];
+
+        $ast = parse('{ a { x }, b { y } }', ['noLocation' => true]);
+
+        $visitor = new ParallelVisitor([
+            new Visitor(
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['no-a', 'enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    if ($node instanceof FieldNode && $node->getNameValue() === 'a') {
+                        return null;
+                    }
+
+                    return $node;
+                },
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['no-a', 'leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    return $node;
+                }
+            ),
+            new Visitor(
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['no-b', 'enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
+                        return null;
+                    }
+
+                    return $node;
+                },
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['no-b', 'leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    return $node;
+                }
+            ),
+        ]);
+
+        $ast->accept($visitor);
+
+        $this->assertEquals([
+            ['no-a', 'enter', 'Document', null],
+            ['no-b', 'enter', 'Document', null],
+            ['no-a', 'enter', 'OperationDefinition', null],
+            ['no-b', 'enter', 'OperationDefinition', null],
+            ['no-a', 'enter', 'SelectionSet', null],
+            ['no-b', 'enter', 'SelectionSet', null],
+            ['no-a', 'enter', 'Field', null],
+            ['no-b', 'enter', 'Field', null],
+            ['no-b', 'enter', 'Name', 'a'],
+            ['no-b', 'leave', 'Name', 'a'],
+            ['no-b', 'enter', 'SelectionSet', null],
+            ['no-b', 'enter', 'Field', null],
+            ['no-b', 'enter', 'Name', 'x'],
+            ['no-b', 'leave', 'Name', 'x'],
+            ['no-b', 'leave', 'Field', null],
+            ['no-b', 'leave', 'SelectionSet', null],
+            ['no-b', 'leave', 'Field', null],
+            ['no-a', 'enter', 'Field', null],
+            ['no-b', 'enter', 'Field', null],
+            ['no-a', 'enter', 'Name', 'b'],
+            ['no-a', 'leave', 'Name', 'b'],
+            ['no-a', 'enter', 'SelectionSet', null],
+            ['no-a', 'enter', 'Field', null],
+            ['no-a', 'enter', 'Name', 'y'],
+            ['no-a', 'leave', 'Name', 'y'],
+            ['no-a', 'leave', 'Field', null],
+            ['no-a', 'leave', 'SelectionSet', null],
+            ['no-a', 'leave', 'Field', null],
+            ['no-a', 'leave', 'SelectionSet', null],
+            ['no-b', 'leave', 'SelectionSet', null],
+            ['no-a', 'leave', 'OperationDefinition', null],
+            ['no-b', 'leave', 'OperationDefinition', null],
+            ['no-a', 'leave', 'Document', null],
+            ['no-b', 'leave', 'Document', null],
+        ], $visited);
+    }
+
+    /**
+     * @throws VisitorBreak
+     * @throws \Exception
+     */
+    public function testAllowsEarlyExitWhileEnteringWhenVisitingInParallel()
+    {
+        $visited = [];
+
+        $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
+
+        $visitor = new ParallelVisitor([
+            new Visitor(
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    if ($node instanceof NameNode && $node->getValue() === 'x') {
+                        throw new VisitorBreak();
+                    }
+
+                    return $node;
+                },
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    return $node;
+                }
+            ),
+        ]);
+
+        try {
+            $ast->accept($visitor);
+        } catch (VisitorBreak $break) {
+
+        }
+
+        $this->assertEquals([
+            ['enter', 'Document', null],
+            ['enter', 'OperationDefinition', null],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'a'],
+            ['leave', 'Name', 'a'],
+            ['leave', 'Field', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'b'],
+            ['leave', 'Name', 'b'],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'x'],
+        ], $visited);
+    }
+
+    /**
+     * @throws VisitorBreak
+     * @throws \Exception
+     */
+    public function testAllowsEarlyExitWhileLeavingWhenVisitingInParallel()
+    {
+        $visited = [];
+
+        $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
+
+        $visitor = new ParallelVisitor([
+            new Visitor(
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    return $node;
+                },
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    if ($node instanceof NameNode && $node->getValue() === 'x') {
+                        throw new VisitorBreak();
+                    }
+
+                    return $node;
+                }
+            ),
+        ]);
+
+        try {
+            $ast->accept($visitor);
+        } catch (VisitorBreak $break) {
+
+        }
+
+        $this->assertEquals([
+            ['enter', 'Document', null],
+            ['enter', 'OperationDefinition', null],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'a'],
+            ['leave', 'Name', 'a'],
+            ['leave', 'Field', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'b'],
+            ['leave', 'Name', 'b'],
+            ['enter', 'SelectionSet', null],
+            ['enter', 'Field', null],
+            ['enter', 'Name', 'x'],
+            ['leave', 'Name', 'x'],
+        ], $visited);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testAllowsEarlyExitFromDifferentPointsWhenVisitingInParallel()
+    {
+        $visited = [];
+
+        $ast = parse('{ a { y }, b { x } }', ['noLocation' => true]);
+
+        $visitor = new ParallelVisitor([
+            new Visitor(
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['break-a', 'enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    if ($node instanceof NameNode && $node->getValue() === 'a') {
+                        throw new VisitorBreak();
+                    }
+
+                    return $node;
+                },
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['break-a', 'leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    return $node;
+                }
+            ),
+            new Visitor(
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['break-b', 'enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    if ($node instanceof NameNode && $node->getValue() === 'b') {
+                        throw new VisitorBreak();
+                    }
+
+                    return $node;
+                },
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited): ?NodeInterface {
+                    $visited[] = ['break-b', 'leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+
+                    return $node;
+                }
+            ),
+        ]);
+
+        try {
+            $ast->accept($visitor);
+        } catch (VisitorBreak $break) {
+
+        }
+
+        $this->assertEquals([
+            ['break-a', 'enter', 'Document', null],
+            ['break-b', 'enter', 'Document', null],
+            ['break-a', 'enter', 'OperationDefinition', null],
+            ['break-b', 'enter', 'OperationDefinition', null],
+            ['break-a', 'enter', 'SelectionSet', null],
+            ['break-b', 'enter', 'SelectionSet', null],
+            ['break-a', 'enter', 'Field', null],
+            ['break-b', 'enter', 'Field', null],
+            ['break-a', 'enter', 'Name', 'a'],
+            ['break-b', 'enter', 'Name', 'a'],
+            ['break-b', 'leave', 'Name', 'a'],
+            ['break-b', 'enter', 'SelectionSet', null],
+            ['break-b', 'enter', 'Field', null],
+            ['break-b', 'enter', 'Name', 'y'],
+            ['break-b', 'leave', 'Name', 'y'],
+            ['break-b', 'leave', 'Field', null],
+            ['break-b', 'leave', 'SelectionSet', null],
+            ['break-b', 'leave', 'Field', null],
+            ['break-b', 'enter', 'Field', null],
+            ['break-b', 'enter', 'Name', 'b'],
         ], $visited);
     }
 }

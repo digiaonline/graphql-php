@@ -43,6 +43,7 @@ trait AcceptVisitorTrait
         /** @var NodeInterface|AcceptVisitorTrait|null $newNode */
         $newNode = clone $this; // TODO: Benchmark cloning
 
+        // If the result was null, it means that we should not traverse this branch.
         if (null === ($newNode = $visitor->enterNode($newNode, $key, $parent, $this->path))) {
             return null;
         }
