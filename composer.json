@@ -24,6 +24,7 @@
             "./src/Language/helpers.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
+            "./src/Type/introspection.php",
             "./src/Type/scalars.php",
             "./src/Util/helpers.php",
             "./src/Util/invariant.php",
