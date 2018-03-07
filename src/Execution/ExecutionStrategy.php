@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
@@ -186,6 +187,21 @@ abstract class ExecutionStrategy
             $inputValues = $fieldNode->getArguments() ?? [];
             $args        = [];
 
+            $returnType = null;
+
+//            $info = new ResolveInfo([
+//                'fieldName'      => $fieldNode->getNameValue(),
+//                'fieldNodes'     => $fieldNodes,
+//                'returnType'     => $returnType,
+//                'parentType'     => $parentType,
+//                'path'           => $path,
+//                'schema'         => $this->context->getSchema(),
+//                'fragments'      => $this->context->getFragments(),
+//                'rootValue'      => $this->context->getRootValue(),
+//                'operation'      => $this->context->getOperation(),
+//                'variableValues' => $this->context->getVariableValues(),
+//            ]);
+
             foreach ($inputValues as $value) {
                 if ($value instanceof ArgumentNode) {
                     $args[] = $value->getValue()->getValue();
@@ -196,7 +212,7 @@ abstract class ExecutionStrategy
 
             $subResult = $field->resolve(...$args);
 
-            if (!empty($fieldNode->getSelectionSet())) {
+            if ($fieldNode->getSelectionSet() !== null) {
                 $fields = $this->collectFields(
                     $parentType,
                     $fieldNode->getSelectionSet(),
