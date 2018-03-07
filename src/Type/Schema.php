@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -14,6 +15,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\invariant;
 
 /**
@@ -115,6 +117,16 @@ class Schema extends ConfigObject implements SchemaInterface
     public function getSubscription(): ObjectType
     {
         return $this->subscription;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDirective(string $name): ?Directive
+    {
+        return find($this->directives, function (Directive $directive) use ($name) {
+            return $directive->getName() === $name;
+        });
     }
 
     /**

@@ -17,6 +17,7 @@ use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Util\readFile;
+use Digia\GraphQL\Util\TypeInfo;
 
 class VisitorTest extends TestCase
 {

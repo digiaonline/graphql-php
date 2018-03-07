@@ -2,15 +2,20 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputTypeInterface;
+use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\SchemaInterface;
+use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
+use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
+use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
 
 class TypeInfo
 {
@@ -66,11 +71,15 @@ class TypeInfo
      */
     public function __construct(
         SchemaInterface $schema,
-        ?callable $getFieldDefinitionFunction,
+        ?callable $getFieldDefinitionFunction = null,
         ?TypeInterface $initialType = null
     ) {
-        $this->schema                     = $schema;
-        $this->getFieldDefinitionFunction = $getFieldDefinitionFunction;
+        $this->schema = $schema;
+        $this->getFieldDefinitionFunction = null !== $getFieldDefinitionFunction
+            ? $getFieldDefinitionFunction
+            : function (SchemaInterface $schema, TypeInterface $parentType, FieldNode $fieldNode) {
+                return getFieldDefinition($schema, $parentType, $fieldNode);
+            };
 
         if ($initialType instanceof InputTypeInterface) {
             $this->inputTypeStack[] = $initialType;
@@ -82,7 +91,37 @@ class TypeInfo
     }
 
     /**
-     * @return OutputTypeInterface|null
+     * @param SchemaInterface $schema
+     * @param TypeInterface   $parentType
+     * @param FieldNode       $fieldNode
+     * @return Field|null
+     */
+    public function resolveFieldDefinition(
+        SchemaInterface $schema,
+        TypeInterface $parentType,
+        FieldNode $fieldNode
+    ): ?Field {
+        return $this->{$this->getFieldDefinitionFunction}($schema, $parentType, $fieldNode);
+    }
+
+    /**
+     * @param OutputTypeInterface|null $type
+     */
+    public function pushType(?OutputTypeInterface $type): void
+    {
+        $this->typeStack[] = $type;
+    }
+
+    /**
+     *
+     */
+    public function popType()
+    {
+        array_pop($this->typeStack);
+    }
+
+    /**
+     * @return TypeInterface|OutputTypeInterface|null
      */
     public function getType(): ?OutputTypeInterface
     {
@@ -90,7 +129,23 @@ class TypeInfo
     }
 
     /**
-     * @return CompositeTypeInterface|null
+     * @param CompositeTypeInterface|null $type
+     */
+    public function pushParentType(?CompositeTypeInterface $type): void
+    {
+        $this->parentTypeStack[] = $type;
+    }
+
+    /**
+     *
+     */
+    public function popParentType()
+    {
+        array_pop($this->parentTypeStack);
+    }
+
+    /**
+     * @return TypeInterface|CompositeTypeInterface|null
      */
     public function getParentType(): ?CompositeTypeInterface
     {
@@ -98,7 +153,23 @@ class TypeInfo
     }
 
     /**
-     * @return InputTypeInterface|null
+     * @param InputTypeInterface|null $type
+     */
+    public function pushInputType(?InputTypeInterface $type): void
+    {
+        $this->inputTypeStack[] = $type;
+    }
+
+    /**
+     *
+     */
+    public function popInputType()
+    {
+        array_pop($this->inputTypeStack);
+    }
+
+    /**
+     * @return TypeInterface|InputTypeInterface|null
      */
     public function getInputType(): ?InputTypeInterface
     {
@@ -106,11 +177,27 @@ class TypeInfo
     }
 
     /**
-     * @return InputTypeInterface|null
+     * @return TypeInterface|InputTypeInterface|null
      */
     public function getParentInputType(): ?InputTypeInterface
     {
         return $this->getFromStack($this->inputTypeStack, 2);
+    }
+
+    /**
+     * @param Field|null $fieldDefinition
+     */
+    public function pushFieldDefinition(?Field $fieldDefinition): void
+    {
+        $this->fieldDefinitionStack[] = $fieldDefinition;
+    }
+
+    /**
+     *
+     */
+    public function popFieldDefinition()
+    {
+        array_pop($this->fieldDefinitionStack);
     }
 
     /**
@@ -122,11 +209,27 @@ class TypeInfo
     }
 
     /**
+     * @return SchemaInterface
+     */
+    public function getSchema(): SchemaInterface
+    {
+        return $this->schema;
+    }
+
+    /**
      * @return Directive|null
      */
     public function getDirective(): ?Directive
     {
         return $this->directive;
+    }
+
+    /**
+     * @param Directive|null $directive
+     */
+    public function setDirective(?Directive $directive): void
+    {
+        $this->directive = $directive;
     }
 
     /**
@@ -138,11 +241,27 @@ class TypeInfo
     }
 
     /**
+     * @param Argument|null $argument
+     */
+    public function setArgument(?Argument $argument): void
+    {
+        $this->argument = $argument;
+    }
+
+    /**
      * @return EnumValue|null
      */
     public function getEnumValue(): ?EnumValue
     {
         return $this->enumValue;
+    }
+
+    /**
+     * @param EnumValue|null $enumValue
+     */
+    public function setEnumValue(?EnumValue $enumValue): void
+    {
+        $this->enumValue = $enumValue;
     }
 
     /**
@@ -158,4 +277,38 @@ class TypeInfo
         }
         return null;
     }
+}
+
+/**
+ * @param SchemaInterface $schema
+ * @param TypeInterface   $parentType
+ * @param FieldNode       $fieldNode
+ * @return Field|null
+ * @throws \TypeError
+ * @throws \Exception
+ */
+function getFieldDefinition(SchemaInterface $schema, TypeInterface $parentType, FieldNode $fieldNode): ?Field
+{
+    $name = $fieldNode->getNameValue();
+
+    $schemaDefinition = SchemaMetaFieldDefinition();
+    if ($name === $schemaDefinition->getName() && $schema->getQuery() === $parentType) {
+        return $schemaDefinition;
+    }
+
+    $typeDefinition = TypeMetaFieldDefinition();
+    if ($name === $typeDefinition->getName() && $schema->getQuery() === $parentType) {
+        return $typeDefinition;
+    }
+
+    $typeNameDefinition = TypeNameMetaFieldDefinition();
+    if ($name === $typeNameDefinition->getName() && $parentType instanceof CompositeTypeInterface) {
+        return $typeNameDefinition;
+    }
+
+    if ($parentType instanceof ObjectType || $parentType instanceof InputTypeInterface) {
+        return $parentType->getFields()[$name];
+    }
+
+    return null;
 }
