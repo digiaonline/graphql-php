@@ -111,7 +111,7 @@ function Dog(): ObjectType
                             'dogCommand' => ['type' => DogCommand()],
                         ],
                     ],
-                    'isHouseTrained'  => [
+                    'isHousetrained'  => [
                         'type' => GraphQLBoolean(),
                         'args' => [
                             'atOtherHomes' => [
