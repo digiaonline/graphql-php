@@ -4,14 +4,17 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
-use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Schema;
+use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
+use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
+use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
 
 /**
  * Class AbstractStrategy
@@ -67,6 +70,7 @@ abstract class ExecutionStrategy
      * @param                  $fields
      * @param                  $visitedFragmentNames
      * @return \ArrayObject
+     * @throws \Exception
      */
     protected function collectFields(
         ObjectType $runtimeType,
@@ -80,7 +84,7 @@ abstract class ExecutionStrategy
                 case NodeKindEnum::FIELD:
                     $name = $this->getFieldNameKey($selection);
                     if (!isset($runtimeType->getFields()[$selection->getNameValue()])) {
-                        continue;
+                        continue 2;
                     }
                     if (!isset($fields[$name])) {
                         $fields[$name] = new \ArrayObject();
@@ -99,7 +103,7 @@ abstract class ExecutionStrategy
                 case NodeKindEnum::FRAGMENT_SPREAD:
                     //TODO check if should include this node
                     if (!empty($visitedFragmentNames[$selection->getNameValue()])) {
-                        continue;
+                        continue 2;
                     }
                     $visitedFragmentNames[$selection->getNameValue()] = true;
                     /** @var FragmentDefinitionNode $fragment */
@@ -118,14 +122,13 @@ abstract class ExecutionStrategy
     }
 
     /**
+     * @TODO: consider to move this to FieldNode
      * @param FieldNode $node
      * @return string
      */
     private function getFieldNameKey(FieldNode $node)
     {
-        return $node->getAlias()
-            ? $node->getAlias()->getValue()
-            : $node->getNameValue();
+        return $node->getAlias() ? $node->getAlias()->getValue() : $node->getNameValue();
     }
 
     /**
@@ -139,6 +142,7 @@ abstract class ExecutionStrategy
      * @return array
      *
      * @throws GraphQLError|\Exception
+     * @throws \TypeError
      */
     protected function executeFields(
         ObjectType $parentType,
@@ -153,7 +157,7 @@ abstract class ExecutionStrategy
             $fieldPath[] = $fieldName;
 
             $result = $this->resolveField($parentType,
-                [],
+                $source,
                 $fieldNodes,
                 $fieldPath
             );
@@ -165,6 +169,34 @@ abstract class ExecutionStrategy
     }
 
     /**
+     * @param Schema     $schema
+     * @param ObjectType $parentType
+     * @param string     $fieldName
+     * @return \Digia\GraphQL\Type\Definition\Field|null
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public function getFieldDefinition(Schema $schema, ObjectType $parentType, string $fieldName)
+    {
+        if ($fieldName === SchemaMetaFieldDefinition()->getName() && $schema->getQuery() === $parentType) {
+            return SchemaMetaFieldDefinition();
+        }
+
+        if ($fieldName === TypeMetaFieldDefinition()->getName() && $schema->getQuery() === $parentType) {
+            return TypeNameMetaFieldDefinition();
+        }
+
+        if ($fieldName === TypeNameMetaFieldDefinition()->getName()) {
+            return TypeNameMetaFieldDefinition();
+        }
+
+        $fields = $parentType->getFields();
+
+        return isset($fields[$fieldName]) ? $fields[$fieldName] : null;
+    }
+
+
+    /**
      * @param ObjectType $parentType
      * @param            $source
      * @param            $fieldNodes
@@ -173,6 +205,7 @@ abstract class ExecutionStrategy
      * @return mixed
      *
      * @throws GraphQLError|\Exception
+     * @throws \TypeError
      */
     protected function resolveField(
         ObjectType $parentType,
@@ -180,61 +213,145 @@ abstract class ExecutionStrategy
         $fieldNodes,
         $path
     ) {
-        $result = [];
         /** @var FieldNode $fieldNode */
+        $fieldNode = $fieldNodes[0];
+
+        $field = $this->getFieldDefinition($this->context->getSchema(), $parentType, $fieldNode->getNameValue());
+
+        if (!$field) {
+            return null;
+        }
+
+        $info = $this->buildResolveInfo($fieldNodes, $fieldNode, $field, $parentType, $path, $this->context);
+
+        $resolveFunction = $this->determineResolveFunction($field, $parentType, $this->context);
+
+        $result = $this->resolveOrError(
+            $field,
+            $fieldNode,
+            $resolveFunction,
+            $source,
+            $this->context,
+            $info
+        );
+
+        $result = $this->collectAndExecuteSubfields(
+            $parentType,
+            $fieldNodes,
+            $info,
+            $path,
+            $result// $result is passed as $source
+        );
+
+        return $result;
+    }
+
+    /**
+     * @param array            $fieldNodes
+     * @param FieldNode        $fieldNode
+     * @param Field            $field
+     * @param ObjectType       $parentType
+     * @param                  $path
+     * @param ExecutionContext $context
+     * @return ResolveInfo
+     */
+    private function buildResolveInfo(\ArrayAccess $fieldNodes, FieldNode $fieldNode, Field $field, ObjectType $parentType, $path, ExecutionContext $context)
+    {
+        return new ResolveInfo([
+            'fieldName'      => $fieldNode->getNameValue(),
+            'fieldNodes'     => $fieldNodes,
+            'returnType'     => $field->getType(),
+            'parentType'     => $parentType,
+            'path'           => $path,
+            'schema'         => $context->getSchema(),
+            'fragments'      => $context->getFragments(),
+            'rootValue'      => $context->getRootValue(),
+            'operation'      => $context->getOperation(),
+            'variableValues' => $context->getVariableValues(),
+        ]);
+    }
+
+    /**
+     * @param Field            $field
+     * @param ObjectType       $parentType
+     * @param ExecutionContext $context
+     * @return callable|mixed|null
+     */
+    private function determineResolveFunction(Field $field, ObjectType $parentType, ExecutionContext $context)
+    {
+        if ($field->hasResolve()) {
+            return $field->getResolve();
+        }
+
+        if ($parentType->hasResolve()) {
+            return $parentType->getResolve();
+        }
+
+        return $this->context->getFieldResolver();
+    }
+
+
+    /**
+     * @param Field            $field
+     * @param FieldNode        $fieldNode
+     * @param callable         $resolveFunction
+     * @param                  $source
+     * @param ExecutionContext $context
+     * @param ResolveInfo      $info
+     * @return array|\Exception|\Throwable
+     */
+    private function resolveOrError(
+        Field $field,
+        FieldNode $fieldNode,
+        callable $resolveFunction,
+        $source,
+        ExecutionContext $context,
+        ResolveInfo $info
+    ) {
+        try {
+            $args = getArgumentValues($field, $fieldNode, $context->getVariableValues());
+
+            return $resolveFunction($source, $args, $context, $info);
+        } catch (\Exception $error) {
+            return $error;
+        } catch (\Throwable $error) {
+            return $error;
+        }
+    }
+
+    /**
+     * @param ObjectType  $returnType
+     * @param FieldNode[] $fieldNodes
+     * @param ResolveInfo $info
+     * @param array       $path
+     * @return array|\stdClass
+     * @throws GraphQLError
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    private function collectAndExecuteSubFields(
+        ObjectType $returnType,
+        $fieldNodes,
+        ResolveInfo $info,
+        $path,
+        &$result
+    )
+    {
+        $subFields = new \ArrayObject();
+
         foreach ($fieldNodes as $fieldNode) {
-            $field       = $parentType->getFields()[$fieldNode->getNameValue()];
-            $inputValues = $fieldNode->getArguments() ?? [];
-            $args        = [];
-
-            $returnType = null;
-
-//            $info = new ResolveInfo([
-//                'fieldName'      => $fieldNode->getNameValue(),
-//                'fieldNodes'     => $fieldNodes,
-//                'returnType'     => $returnType,
-//                'parentType'     => $parentType,
-//                'path'           => $path,
-//                'schema'         => $this->context->getSchema(),
-//                'fragments'      => $this->context->getFragments(),
-//                'rootValue'      => $this->context->getRootValue(),
-//                'operation'      => $this->context->getOperation(),
-//                'variableValues' => $this->context->getVariableValues(),
-//            ]);
-
-            foreach ($inputValues as $value) {
-                if ($value instanceof ArgumentNode) {
-                    $args[] = $value->getValue()->getValue();
-                } elseif ($value instanceof InputValueDefinitionNode) {
-                    $args[] = $value->getDefaultValue()->getValue();
-                }
-            }
-
-            $subResult = $field->resolve(...$args);
-
             if ($fieldNode->getSelectionSet() !== null) {
-                $fields = $this->collectFields(
-                    $parentType,
+                $subFields = $this->collectFields(
+                    $returnType,
                     $fieldNode->getSelectionSet(),
-                    new \ArrayObject(),
+                    $subFields,
                     new \ArrayObject()
                 );
-
-                $data = $this->executeFields(
-                    $parentType,
-                    $source,
-                    $path,
-                    $fields
-                );
-                //@TODO Find better way to implement this
-                // For testSimpleMutation test message is resolve already in $subResult above
-                $subResult = array_merge_recursive(
-                    $result,
-                    array_merge_recursive($data, $subResult)
-                );
             }
+        }
 
-            $result = $subResult;
+        if($subFields->count()) {
+            return $this->executeFields($returnType, $result, $path, $subFields);
         }
 
         return $result;

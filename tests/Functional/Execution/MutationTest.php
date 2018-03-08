@@ -25,30 +25,21 @@ class MutationTest extends TestCase
                     'name'   => 'M',
                     'fields' => [
                         'greeting' => [
-                            'type'    => new ObjectType([
-                                'name'   => 'GreetingType',
-                                'fields' => [
-                                    'message' => [
-                                        'type' => GraphQLString(),
-                                    ]
-                                ],
-                            ]),
-                            'resolve' => function ($name) {
-                                return [
-                                    'message' => sprintf('Hello %s.', $name)
-                                ];
-                            }
+                            'type'    => GraphQLString(),
+                            'resolve' => function ($source, $args, $context, $info) {
+                                return sprintf('Hello %s.', 'Han Solo');
+                            },
                         ]
                     ]
                 ])
         ]);
 
+        //@TODO Get proper $name variable
+
         /** @var DocumentNode $documentNode */
         $documentNode = parse('
-        mutation M{
-            greeting(name:"Han Solo") {
-               message   
-            }
+        mutation M($name: String) {
+            greeting(name:$name)
         }
         ');
 
@@ -70,9 +61,7 @@ class MutationTest extends TestCase
         );
 
         $expected = new ExecutionResult([
-            'greeting' => [
-                'message' => 'Hello Han Solo.'
-            ]
+            'greeting' => 'Hello Han Solo.'
         ], []);
 
         $this->assertEquals($expected, $executionResult);

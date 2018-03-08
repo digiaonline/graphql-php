@@ -4,9 +4,9 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
+use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NameNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
@@ -18,6 +18,8 @@ use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use function Digia\GraphQL\Type\GraphQLObjectType;
+use function Digia\GraphQL\Type\GraphQLSchema;
 use Digia\GraphQL\Type\Schema;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLInt;
@@ -103,16 +105,21 @@ class ExecutionTest extends TestCase
      */
     public function testExecuteQueryHelloWithArgs()
     {
-        $schema = new Schema([
+        $schema = GraphQLSchema([
             'query' =>
-                new ObjectType([
+                GraphQLObjectType([
                     'name'   => 'Greeting',
                     'fields' => [
                         'greeting' => [
                             'type'    => GraphQLString(),
-                            'resolve' => function ($name) {
-                                return sprintf('Hello %s', $name);
-                            }
+                            'resolve' => function ($source, $args, $context, $info) {
+                                return sprintf('Hello %s', $args['name']);
+                            },
+                            'args' => [
+                                'name' => [
+                                    'type' => GraphQLString(),
+                                ]
+                            ]
                         ]
                     ]
                 ])
@@ -138,18 +145,18 @@ class ExecutionTest extends TestCase
                                     )
                                 ]),
                                 'arguments' => [
-                                    new InputValueDefinitionNode([
-                                        'name'         => new NameNode([
+                                    new ArgumentNode([
+                                        'name' => new NameNode([
                                             'value' => 'name',
                                         ]),
-                                        'type'         => new NamedTypeNode([
+                                        'type' => new NamedTypeNode([
                                             'name' => new NameNode([
                                                 'value' => 'String',
                                             ]),
                                         ]),
-                                        'defaultValue' => new StringValueNode([
-                                            'value' => 'Han Solo',
-                                        ]),
+                                        'value' => new StringValueNode([
+                                            'value' => 'Han Solo'
+                                        ])
                                     ])
                                 ]
                             ])

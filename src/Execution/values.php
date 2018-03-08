@@ -90,7 +90,11 @@ function getArgumentValues($definition, NodeInterface $node, array $variableValu
                     [$argumentNode->getValue()]
                 );
             }
+
+            $coercedValues[$name] = $coercedValue;
         }
+
+        return $coercedValues;
     }
 }
 
