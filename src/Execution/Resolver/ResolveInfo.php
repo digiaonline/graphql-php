@@ -83,7 +83,7 @@ class ResolveInfo
         ResponsePath $path,
         SchemaInterface $schema,
         array $fragments,
-        mixed $rootValue,
+        $rootValue,
         OperationDefinitionNode $operation,
         array $variableValues
     ) {
