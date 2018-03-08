@@ -165,13 +165,12 @@ function assertNonNullType(TypeInterface $type)
 }
 
 /**
- * @param TypeInterface $type
+ * @param TypeInterface|null $type
  * @return bool
  */
-function isInputType(TypeInterface $type): bool
+function isInputType(?TypeInterface $type): bool
 {
-    return $type instanceof InputTypeInterface
-        || ($type instanceof WrappingTypeInterface && isInputType($type->getOfType()));
+    return null !== $type && ($type instanceof InputTypeInterface || ($type instanceof WrappingTypeInterface && isInputType($type->getOfType())));
 }
 
 /**
@@ -187,13 +186,12 @@ function assertInputType(TypeInterface $type)
 }
 
 /**
- * @param TypeInterface $type
+ * @param TypeInterface|null $type
  * @return bool
  */
-function isOutputType(TypeInterface $type): bool
+function isOutputType(?TypeInterface $type): bool
 {
-    return $type instanceof OutputTypeInterface
-        || ($type instanceof WrappingTypeInterface && isOutputType($type->getOfType()));
+    return null !== $type && ($type instanceof OutputTypeInterface || ($type instanceof WrappingTypeInterface && isOutputType($type->getOfType())));
 }
 
 /**
@@ -281,6 +279,19 @@ function assertNullableType(TypeInterface $type): TypeInterface
 }
 
 /**
+ * @param TypeInterface|null $type
+ * @return TypeInterface|null
+ */
+function getNullableType(?TypeInterface $type): ?TypeInterface
+{
+    if (null !== $type) {
+        return null;
+    }
+
+    return $type instanceof NonNullType ? $type->getOfType() : $type;
+}
+
+/**
  * @param TypeInterface $type
  * @throws \Exception
  */
@@ -290,6 +301,25 @@ function assertNamedType(TypeInterface $type)
         $type instanceof NamedTypeInterface,
         sprintf('Expected %s to be a GraphQL named type.', $type)
     );
+}
+
+/**
+ * @param TypeInterface|null $type
+ * @return NamedTypeInterface|null
+ */
+function getNamedType(?TypeInterface $type): ?NamedTypeInterface
+{
+    if (!$type) {
+        return null;
+    }
+
+    $unwrappedType = $type;
+
+    while ($unwrappedType instanceof WrappingTypeInterface) {
+        $unwrappedType = $unwrappedType->getOfType();
+    }
+
+    return $unwrappedType;
 }
 
 /**

@@ -30,6 +30,7 @@
             "./src/Util/coercers.php",
             "./src/Util/helpers.php",
             "./src/Util/invariant.php",
+            "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
             "./src/facades.php"
         ],
@@ -45,7 +46,8 @@
     },
     "autoload-dev": {
         "files": [
-            "./tests/Functional/Language/SchemaParserTest.php"  
+            "./tests/Functional/Language/SchemaParserTest.php",
+            "./tests/Functional/Language/testSchema.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\Test\\": "./tests"
