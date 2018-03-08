@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Execution;
 
+use Digia\GraphQL\Execution\Resolver\ResolveInfo;
+
 class ExecutionEnvironment
 {
     /**
