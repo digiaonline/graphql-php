@@ -28,7 +28,7 @@ use function Digia\GraphQL\Type\isOutputType;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\typeFromAST;
 
-class TypeInfoVisitor extends Visitor
+class TypeInfoVisitor implements VisitorInterface
 {
     /**
      * @var TypeInfo
@@ -36,16 +36,20 @@ class TypeInfoVisitor extends Visitor
     protected $typeInfo;
 
     /**
+     * @var VisitorInterface
+     */
+    protected $visitor;
+
+    /**
      * TypeInfoVisitor constructor.
      * @param TypeInfo      $typeInfo
      * @param callable|null $enterFunction
      * @param callable|null $leaveFunction
      */
-    public function __construct(TypeInfo $typeInfo, ?callable $enterFunction = null, ?callable $leaveFunction = null)
+    public function __construct(TypeInfo $typeInfo, VisitorInterface $visitor)
     {
-        parent::__construct($enterFunction, $leaveFunction);
-
         $this->typeInfo = $typeInfo;
+        $this->visitor  = $visitor;
     }
 
     /**
@@ -139,7 +143,7 @@ class TypeInfoVisitor extends Visitor
             $this->typeInfo->setEnumValue($enumValue);
         }
 
-        return parent::enterNode($node, $key, $parent, $path);
+        return $this->visitor->enterNode($node, $key, $parent, $path);
     }
 
     /**
@@ -151,7 +155,7 @@ class TypeInfoVisitor extends Visitor
         ?NodeInterface $parent = null,
         array $path = []
     ): ?NodeInterface {
-        $newNode = parent::leaveNode($node, $key, $parent, $path);
+        $newNode = $this->visitor->leaveNode($node, $key, $parent, $path);
 
         if (null === $newNode) {
             return null;

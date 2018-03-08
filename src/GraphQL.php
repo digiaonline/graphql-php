@@ -8,8 +8,10 @@ use Digia\GraphQL\Provider\ExecutionProvider;
 use Digia\GraphQL\Provider\IntrospectionTypesProvider;
 use Digia\GraphQL\Provider\ParserProvider;
 use Digia\GraphQL\Provider\PrinterProvider;
+use Digia\GraphQL\Provider\RulesProvider;
 use Digia\GraphQL\Provider\ScalarTypesProvider;
 use Digia\GraphQL\Provider\SchemaBuilderProvider;
+use Digia\GraphQL\Provider\ValidationProvider;
 use League\Container\Container;
 use League\Container\ContainerInterface;
 
@@ -46,6 +48,8 @@ class GraphQL
         IntrospectionTypesProvider::class,
         ScalarTypesProvider::class,
         DirectivesProvider::class,
+        ValidationProvider::class,
+        RulesProvider::class,
         ExecutionProvider::class,
     ];
 

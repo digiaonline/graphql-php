@@ -20,6 +20,7 @@ use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use function Digia\GraphQL\parse;
+use function Digia\GraphQL\Test\Functional\Validation\testSchema;
 use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Util\readFile;
 
@@ -1165,38 +1166,40 @@ class VisitorTest extends TestCase
         $typeInfo = new TypeInfo(testSchema());
         $visitor  = new TypeInfoVisitor(
             $typeInfo,
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
-            use (&$visited, $typeInfo): ?NodeInterface {
-                $parentType = $typeInfo->getParentType();
-                $type       = $typeInfo->getType();
-                $inputType  = $typeInfo->getInputType();
-                $visited[]  = [
-                    'enter',
-                    $node->getKind(),
-                    $node instanceof NameNode ? $node->getValue() : null,
-                    $parentType ? (string)$parentType : null,
-                    $type ? (string)$type : null,
-                    $inputType ? (string)$inputType : null,
-                ];
+            new Visitor(
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited, $typeInfo): ?NodeInterface {
+                    $parentType = $typeInfo->getParentType();
+                    $type       = $typeInfo->getType();
+                    $inputType  = $typeInfo->getInputType();
+                    $visited[]  = [
+                        'enter',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null,
+                        $parentType ? (string)$parentType : null,
+                        $type ? (string)$type : null,
+                        $inputType ? (string)$inputType : null,
+                    ];
 
-                return $node;
-            },
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
-            use (&$visited, $typeInfo): ?NodeInterface {
-                $parentType = $typeInfo->getParentType();
-                $type       = $typeInfo->getType();
-                $inputType  = $typeInfo->getInputType();
-                $visited[]  = [
-                    'leave',
-                    $node->getKind(),
-                    $node instanceof NameNode ? $node->getValue() : null,
-                    $parentType ? (string)$parentType : null,
-                    $type ? (string)$type : null,
-                    $inputType ? (string)$inputType : null,
-                ];
+                    return $node;
+                },
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited, $typeInfo): ?NodeInterface {
+                    $parentType = $typeInfo->getParentType();
+                    $type       = $typeInfo->getType();
+                    $inputType  = $typeInfo->getInputType();
+                    $visited[]  = [
+                        'leave',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null,
+                        $parentType ? (string)$parentType : null,
+                        $type ? (string)$type : null,
+                        $inputType ? (string)$inputType : null,
+                    ];
 
-                return $node;
-            }
+                    return $node;
+                }
+            )
         );
 
         $ast->accept($visitor);
@@ -1254,61 +1257,63 @@ class VisitorTest extends TestCase
         $typeInfo = new TypeInfo(testSchema());
         $visitor  = new TypeInfoVisitor(
             $typeInfo,
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
-            use (&$visited, $typeInfo): ?NodeInterface {
-                $parentType = $typeInfo->getParentType();
-                $type       = $typeInfo->getType();
-                $inputType  = $typeInfo->getInputType();
+            new Visitor(
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited, $typeInfo): ?NodeInterface {
+                    $parentType = $typeInfo->getParentType();
+                    $type       = $typeInfo->getType();
+                    $inputType  = $typeInfo->getInputType();
 
-                $visited[] = [
-                    'enter',
-                    $node->getKind(),
-                    $node instanceof NameNode ? $node->getValue() : null,
-                    $parentType ? (string)$parentType : null,
-                    $type ? (string)$type : null,
-                    $inputType ? (string)$inputType : null,
-                ];
+                    $visited[] = [
+                        'enter',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null,
+                        $parentType ? (string)$parentType : null,
+                        $type ? (string)$type : null,
+                        $inputType ? (string)$inputType : null,
+                    ];
 
-                if ($node instanceof FieldNode
-                    && null === $node->getSelectionSet()
-                    && getNamedType($type) instanceof CompositeTypeInterface
-                ) {
-                    return new FieldNode([
-                        'alias'        => $node->getAlias(),
-                        'name'         => $node->getName(),
-                        'arguments'    => $node->getArguments(),
-                        'directives'   => $node->getDirectives(),
-                        'selectionSet' => new SelectionSetNode([
-                            'selections' => [
-                                new FieldNode([
-                                    'name' => new NameNode([
-                                        'value' => '__typename',
+                    if ($node instanceof FieldNode
+                        && null === $node->getSelectionSet()
+                        && getNamedType($type) instanceof CompositeTypeInterface
+                    ) {
+                        return new FieldNode([
+                            'alias'        => $node->getAlias(),
+                            'name'         => $node->getName(),
+                            'arguments'    => $node->getArguments(),
+                            'directives'   => $node->getDirectives(),
+                            'selectionSet' => new SelectionSetNode([
+                                'selections' => [
+                                    new FieldNode([
+                                        'name' => new NameNode([
+                                            'value' => '__typename',
+                                        ]),
                                     ]),
-                                ]),
-                            ],
-                        ]),
-                    ]);
+                                ],
+                            ]),
+                        ]);
+                    }
+
+                    return $node;
+                },
+                function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+                use (&$visited, $typeInfo): ?NodeInterface {
+                    $parentType = $typeInfo->getParentType();
+                    $type       = $typeInfo->getType();
+                    $inputType  = $typeInfo->getInputType();
+
+                    $visited[] = [
+                        'leave',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null,
+                        $parentType ? (string)$parentType : null,
+                        $type ? (string)$type : null,
+                        $inputType ? (string)$inputType : null,
+                    ];
+
+                    return $node;
                 }
-
-                return $node;
-            },
-            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
-            use (&$visited, $typeInfo): ?NodeInterface {
-                $parentType = $typeInfo->getParentType();
-                $type       = $typeInfo->getType();
-                $inputType  = $typeInfo->getInputType();
-
-                $visited[] = [
-                    'leave',
-                    $node->getKind(),
-                    $node instanceof NameNode ? $node->getValue() : null,
-                    $parentType ? (string)$parentType : null,
-                    $type ? (string)$type : null,
-                    $inputType ? (string)$inputType : null,
-                ];
-
-                return $node;
-            }
+            )
         );
 
         $ast->accept($visitor);
