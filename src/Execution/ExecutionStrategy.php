@@ -235,7 +235,7 @@ abstract class ExecutionStrategy
             $info
         );
 
-        $result = $this->collectAndExecuteSubfields(
+        $result = $this->collectAndExecuteSubFields(
             $parentType,
             $fieldNodes,
             $info,
