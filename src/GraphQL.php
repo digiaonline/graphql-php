@@ -4,6 +4,7 @@ namespace Digia\GraphQL;
 
 use Digia\GraphQL\Provider\CacheProvider;
 use Digia\GraphQL\Provider\DirectivesProvider;
+use Digia\GraphQL\Provider\IntrospectionTypesProvider;
 use Digia\GraphQL\Provider\ParserProvider;
 use Digia\GraphQL\Provider\PrinterProvider;
 use Digia\GraphQL\Provider\ScalarTypesProvider;
@@ -24,6 +25,15 @@ class GraphQL
     public const INCLUDE_DIRECTIVE    = 'GraphQLIncludeDirective';
     public const SKIP_DIRECTIVE       = 'GraphQLSkipDirective';
 
+    public const INTROSPECTION_SCHEMA             = '__Schema';
+    public const INTROSPECTION_DIRECTIVE          = '__Directive';
+    public const INTROSPECTION_DIRECTIVE_LOCATION = '__DirectiveLocation';
+    public const INTROSPECTION_TYPE               = '__Type';
+    public const INTROSPECTION_FIELD              = '__Field';
+    public const INTROSPECTION_INPUT_VALUE        = '__InputValue';
+    public const INTROSPECTION_ENUM_VALUE         = '__EnumValue';
+    public const INTROSPECTION_TYPE_KIND          = '__TypeKind';
+
     /**
      * @var array
      */
@@ -32,6 +42,7 @@ class GraphQL
         ParserProvider::class,
         PrinterProvider::class,
         SchemaBuilderProvider::class,
+        IntrospectionTypesProvider::class,
         ScalarTypesProvider::class,
         DirectivesProvider::class,
     ];
