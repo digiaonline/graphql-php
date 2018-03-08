@@ -9,15 +9,19 @@ use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\NameNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Language\AST\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\AST\Visitor\SpecificKindVisitor;
+use Digia\GraphQL\Language\AST\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\AST\Visitor\Visitor;
 use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
 use Digia\GraphQL\Test\TestCase;
-use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Util\readFile;
+use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Util\TypeInfo;
+use function Digia\GraphQL\parse;
+use function Digia\GraphQL\Type\getNamedType;
+use function Digia\GraphQL\Util\readFile;
 
 class VisitorTest extends TestCase
 {
@@ -916,7 +920,12 @@ class VisitorTest extends TestCase
             new Visitor(
                 function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
                 use (&$visited): ?NodeInterface {
-                    $visited[] = ['no-a', 'enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+                    $visited[] = [
+                        'no-a',
+                        'enter',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null
+                    ];
 
                     if ($node instanceof FieldNode && $node->getNameValue() === 'a') {
                         return null;
@@ -926,7 +935,12 @@ class VisitorTest extends TestCase
                 },
                 function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
                 use (&$visited): ?NodeInterface {
-                    $visited[] = ['no-a', 'leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+                    $visited[] = [
+                        'no-a',
+                        'leave',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null
+                    ];
 
                     return $node;
                 }
@@ -934,7 +948,12 @@ class VisitorTest extends TestCase
             new Visitor(
                 function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
                 use (&$visited): ?NodeInterface {
-                    $visited[] = ['no-b', 'enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+                    $visited[] = [
+                        'no-b',
+                        'enter',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null
+                    ];
 
                     if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
                         return null;
@@ -944,7 +963,12 @@ class VisitorTest extends TestCase
                 },
                 function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
                 use (&$visited): ?NodeInterface {
-                    $visited[] = ['no-b', 'leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+                    $visited[] = [
+                        'no-b',
+                        'leave',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null
+                    ];
 
                     return $node;
                 }
@@ -1113,7 +1137,12 @@ class VisitorTest extends TestCase
             new Visitor(
                 function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
                 use (&$visited): ?NodeInterface {
-                    $visited[] = ['break-a', 'enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+                    $visited[] = [
+                        'break-a',
+                        'enter',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null
+                    ];
 
                     if ($node instanceof NameNode && $node->getValue() === 'a') {
                         throw new VisitorBreak();
@@ -1123,7 +1152,12 @@ class VisitorTest extends TestCase
                 },
                 function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
                 use (&$visited): ?NodeInterface {
-                    $visited[] = ['break-a', 'leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+                    $visited[] = [
+                        'break-a',
+                        'leave',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null
+                    ];
 
                     return $node;
                 }
@@ -1131,7 +1165,12 @@ class VisitorTest extends TestCase
             new Visitor(
                 function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
                 use (&$visited): ?NodeInterface {
-                    $visited[] = ['break-b', 'enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+                    $visited[] = [
+                        'break-b',
+                        'enter',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null
+                    ];
 
                     if ($node instanceof NameNode && $node->getValue() === 'b') {
                         throw new VisitorBreak();
@@ -1141,7 +1180,12 @@ class VisitorTest extends TestCase
                 },
                 function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
                 use (&$visited): ?NodeInterface {
-                    $visited[] = ['break-b', 'leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
+                    $visited[] = [
+                        'break-b',
+                        'leave',
+                        $node->getKind(),
+                        $node instanceof NameNode ? $node->getValue() : null
+                    ];
 
                     return $node;
                 }
@@ -1175,6 +1219,222 @@ class VisitorTest extends TestCase
             ['break-b', 'leave', 'Field', null],
             ['break-b', 'enter', 'Field', null],
             ['break-b', 'enter', 'Name', 'b'],
+        ], $visited);
+    }
+
+    /**
+     * @throws \TypeError
+     * @throws \Exception
+     */
+    public function testMaintainsTypeInfoDuringVisit()
+    {
+        $visited = [];
+
+        $ast = parse('{ human(id: 4) { name, pets { ... { name } }, unknown } }');
+
+        $typeInfo = new TypeInfo(testSchema());
+        $visitor  = new TypeInfoVisitor(
+            $typeInfo,
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited, $typeInfo): ?NodeInterface {
+                $parentType = $typeInfo->getParentType();
+                $type       = $typeInfo->getType();
+                $inputType  = $typeInfo->getInputType();
+                $visited[]  = [
+                    'enter',
+                    $node->getKind(),
+                    $node instanceof NameNode ? $node->getValue() : null,
+                    $parentType ? (string)$parentType : null,
+                    $type ? (string)$type : null,
+                    $inputType ? (string)$inputType : null,
+                ];
+
+                return $node;
+            },
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited, $typeInfo): ?NodeInterface {
+                $parentType = $typeInfo->getParentType();
+                $type       = $typeInfo->getType();
+                $inputType  = $typeInfo->getInputType();
+                $visited[]  = [
+                    'leave',
+                    $node->getKind(),
+                    $node instanceof NameNode ? $node->getValue() : null,
+                    $parentType ? (string)$parentType : null,
+                    $type ? (string)$type : null,
+                    $inputType ? (string)$inputType : null,
+                ];
+
+                return $node;
+            }
+        );
+
+        $ast->accept($visitor);
+
+        $this->assertEquals([
+            ['enter', 'Document', null, null, null, null],
+            ['enter', 'OperationDefinition', null, null, 'QueryRoot', null],
+            ['enter', 'SelectionSet', null, 'QueryRoot', 'QueryRoot', null],
+            ['enter', 'Field', null, 'QueryRoot', 'Human', null],
+            ['enter', 'Name', 'human', 'QueryRoot', 'Human', null],
+            ['leave', 'Name', 'human', 'QueryRoot', 'Human', null],
+            ['enter', 'Argument', null, 'QueryRoot', 'Human', 'ID'],
+            ['enter', 'Name', 'id', 'QueryRoot', 'Human', 'ID'],
+            ['leave', 'Name', 'id', 'QueryRoot', 'Human', 'ID'],
+            ['enter', 'IntValue', null, 'QueryRoot', 'Human', 'ID'],
+            ['leave', 'IntValue', null, 'QueryRoot', 'Human', 'ID'],
+            ['leave', 'Argument', null, 'QueryRoot', 'Human', 'ID'],
+            ['enter', 'SelectionSet', null, 'Human', 'Human', null],
+            ['enter', 'Field', null, 'Human', 'String', null],
+            ['enter', 'Name', 'name', 'Human', 'String', null],
+            ['leave', 'Name', 'name', 'Human', 'String', null],
+            ['leave', 'Field', null, 'Human', 'String', null],
+            ['enter', 'Field', null, 'Human', '[Pet]', null],
+            ['enter', 'Name', 'pets', 'Human', '[Pet]', null],
+            ['leave', 'Name', 'pets', 'Human', '[Pet]', null],
+            ['enter', 'SelectionSet', null, 'Pet', '[Pet]', null],
+            ['enter', 'InlineFragment', null, 'Pet', 'Pet', null],
+            ['enter', 'SelectionSet', null, 'Pet', 'Pet', null],
+            ['enter', 'Field', null, 'Pet', 'String', null],
+            ['enter', 'Name', 'name', 'Pet', 'String', null],
+            ['leave', 'Name', 'name', 'Pet', 'String', null],
+            ['leave', 'Field', null, 'Pet', 'String', null],
+            ['leave', 'SelectionSet', null, 'Pet', 'Pet', null],
+            ['leave', 'InlineFragment', null, 'Pet', 'Pet', null],
+            ['leave', 'SelectionSet', null, 'Pet', '[Pet]', null],
+            ['leave', 'Field', null, 'Human', '[Pet]', null],
+            ['enter', 'Field', null, 'Human', null, null],
+            ['enter', 'Name', 'unknown', 'Human', null, null],
+            ['leave', 'Name', 'unknown', 'Human', null, null],
+            ['leave', 'Field', null, 'Human', null, null],
+            ['leave', 'SelectionSet', null, 'Human', 'Human', null],
+            ['leave', 'Field', null, 'QueryRoot', 'Human', null],
+            ['leave', 'SelectionSet', null, 'QueryRoot', 'QueryRoot', null],
+            ['leave', 'OperationDefinition', null, null, 'QueryRoot', null],
+            ['leave', 'Document', null, null, null, null],
+        ], $visited);
+    }
+
+    /**
+     * @throws VisitorBreak
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public function testMaintainsTypeInfoDuringEdit()
+    {
+        $visited = [];
+
+        $ast = parse('{ human(id: 4) { name, pets }, alien }');
+
+        $typeInfo = new TypeInfo(testSchema());
+        $visitor  = new TypeInfoVisitor(
+            $typeInfo,
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited, $typeInfo): ?NodeInterface {
+                $parentType = $typeInfo->getParentType();
+                $type       = $typeInfo->getType();
+                $inputType  = $typeInfo->getInputType();
+
+                $visited[] = [
+                    'enter',
+                    $node->getKind(),
+                    $node instanceof NameNode ? $node->getValue() : null,
+                    $parentType ? (string)$parentType : null,
+                    $type ? (string)$type : null,
+                    $inputType ? (string)$inputType : null,
+                ];
+
+                if ($node instanceof FieldNode
+                    && null === $node->getSelectionSet()
+                    && getNamedType($type) instanceof CompositeTypeInterface
+                ) {
+                    return new FieldNode([
+                        'alias'        => $node->getAlias(),
+                        'name'         => $node->getName(),
+                        'arguments'    => $node->getArguments(),
+                        'directives'   => $node->getDirectives(),
+                        'selectionSet' => new SelectionSetNode([
+                            'selections' => [
+                                new FieldNode([
+                                    'name' => new NameNode([
+                                        'value' => '__typename',
+                                    ]),
+                                ]),
+                            ],
+                        ]),
+                    ]);
+                }
+
+                return $node;
+            },
+            function (NodeInterface $node, $key, ?NodeInterface $parent = null, array $path = [])
+            use (&$visited, $typeInfo): ?NodeInterface {
+                $parentType = $typeInfo->getParentType();
+                $type       = $typeInfo->getType();
+                $inputType  = $typeInfo->getInputType();
+
+                $visited[] = [
+                    'leave',
+                    $node->getKind(),
+                    $node instanceof NameNode ? $node->getValue() : null,
+                    $parentType ? (string)$parentType : null,
+                    $type ? (string)$type : null,
+                    $inputType ? (string)$inputType : null,
+                ];
+
+                return $node;
+            }
+        );
+
+        $ast->accept($visitor);
+
+        // TODO: Add asserts for print once the printer is implemented
+
+        $this->markTestIncomplete('This test is currently failing, should be fixed later.');
+
+        $this->assertEquals([
+            ['enter', 'Document', null, null, null, null],
+            ['enter', 'OperationDefinition', null, null, 'QueryRoot', null],
+            ['enter', 'SelectionSet', null, 'QueryRoot', 'QueryRoot', null],
+            ['enter', 'Field', null, 'QueryRoot', 'Human', null],
+            ['enter', 'Name', 'human', 'QueryRoot', 'Human', null],
+            ['leave', 'Name', 'human', 'QueryRoot', 'Human', null],
+            ['enter', 'Argument', null, 'QueryRoot', 'Human', 'ID'],
+            ['enter', 'Name', 'id', 'QueryRoot', 'Human', 'ID'],
+            ['leave', 'Name', 'id', 'QueryRoot', 'Human', 'ID'],
+            ['enter', 'IntValue', null, 'QueryRoot', 'Human', 'ID'],
+            ['leave', 'IntValue', null, 'QueryRoot', 'Human', 'ID'],
+            ['leave', 'Argument', null, 'QueryRoot', 'Human', 'ID'],
+            ['enter', 'SelectionSet', null, 'Human', 'Human', null],
+            ['enter', 'Field', null, 'Human', 'String', null],
+            ['enter', 'Name', 'name', 'Human', 'String', null],
+            ['leave', 'Name', 'name', 'Human', 'String', null],
+            ['leave', 'Field', null, 'Human', 'String', null],
+            ['enter', 'Field', null, 'Human', '[Pet]', null],
+            ['enter', 'Name', 'pets', 'Human', '[Pet]', null],
+            ['leave', 'Name', 'pets', 'Human', '[Pet]', null],
+            ['enter', 'SelectionSet', null, 'Pet', '[Pet]', null],
+            ['enter', 'Field', null, 'Pet', 'String!', null],
+            ['enter', 'Name', '__typename', 'Pet', 'String!', null],
+            ['leave', 'Name', '__typename', 'Pet', 'String!', null],
+            ['leave', 'Field', null, 'Pet', 'String!', null],
+            ['leave', 'SelectionSet', null, 'Pet', '[Pet]', null],
+            ['leave', 'Field', null, 'Human', '[Pet]', null],
+            ['leave', 'SelectionSet', null, 'Human', 'Human', null],
+            ['leave', 'Field', null, 'QueryRoot', 'Human', null],
+            ['enter', 'Field', null, 'QueryRoot', 'Alien', null],
+            ['enter', 'Name', 'alien', 'QueryRoot', 'Alien', null],
+            ['leave', 'Name', 'alien', 'QueryRoot', 'Alien', null],
+            ['enter', 'SelectionSet', null, 'Alien', 'Alien', null],
+            ['enter', 'Field', null, 'Alien', 'String!', null],
+            ['enter', 'Name', '__typename', 'Alien', 'String!', null],
+            ['leave', 'Name', '__typename', 'Alien', 'String!', null],
+            ['leave', 'Field', null, 'Alien', 'String!', null],
+            ['leave', 'SelectionSet', null, 'Alien', 'Alien', null],
+            ['leave', 'Field', null, 'QueryRoot', 'Alien', null],
+            ['leave', 'SelectionSet', null, 'QueryRoot', 'QueryRoot', null],
+            ['leave', 'OperationDefinition', null, null, 'QueryRoot', null],
+            ['leave', 'Document', null, null, null, null],
         ], $visited);
     }
 }

@@ -9,6 +9,7 @@ use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputTypeInterface;
+use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
@@ -74,7 +75,7 @@ class TypeInfo
         ?callable $getFieldDefinitionFunction = null,
         ?TypeInterface $initialType = null
     ) {
-        $this->schema = $schema;
+        $this->schema                     = $schema;
         $this->getFieldDefinitionFunction = null !== $getFieldDefinitionFunction
             ? $getFieldDefinitionFunction
             : function (SchemaInterface $schema, TypeInterface $parentType, FieldNode $fieldNode) {
@@ -101,13 +102,13 @@ class TypeInfo
         TypeInterface $parentType,
         FieldNode $fieldNode
     ): ?Field {
-        return $this->{$this->getFieldDefinitionFunction}($schema, $parentType, $fieldNode);
+        return \call_user_func($this->getFieldDefinitionFunction, $schema, $parentType, $fieldNode);
     }
 
     /**
-     * @param OutputTypeInterface|null $type
+     * @param TypeInterface|null $type
      */
-    public function pushType(?OutputTypeInterface $type): void
+    public function pushType(?TypeInterface $type): void
     {
         $this->typeStack[] = $type;
     }
@@ -121,9 +122,9 @@ class TypeInfo
     }
 
     /**
-     * @return TypeInterface|OutputTypeInterface|null
+     * @return TypeInterface|TypeInterface|null
      */
-    public function getType(): ?OutputTypeInterface
+    public function getType(): ?TypeInterface
     {
         return $this->getFromStack($this->typeStack, 1);
     }
@@ -169,17 +170,17 @@ class TypeInfo
     }
 
     /**
-     * @return TypeInterface|InputTypeInterface|null
+     * @return TypeInterface|null
      */
-    public function getInputType(): ?InputTypeInterface
+    public function getInputType(): ?TypeInterface
     {
         return $this->getFromStack($this->inputTypeStack, 1);
     }
 
     /**
-     * @return TypeInterface|InputTypeInterface|null
+     * @return TypeInterface|null
      */
-    public function getParentInputType(): ?InputTypeInterface
+    public function getParentInputType(): ?TypeInterface
     {
         return $this->getFromStack($this->inputTypeStack, 2);
     }
@@ -205,7 +206,7 @@ class TypeInfo
      */
     public function getFieldDefinition(): ?Field
     {
-        return $this->getFromStack($this->fieldDefinitionStack, 2);
+        return $this->getFromStack($this->fieldDefinitionStack, 1);
     }
 
     /**
@@ -272,10 +273,7 @@ class TypeInfo
     protected function getFromStack(array $stack, int $depth)
     {
         $count = count($stack);
-        if ($count > 0) {
-            return $stack[$count - $depth];
-        }
-        return null;
+        return $count >= $depth ? $stack[$count - $depth] : null;
     }
 }
 
@@ -306,8 +304,11 @@ function getFieldDefinition(SchemaInterface $schema, TypeInterface $parentType, 
         return $typeNameDefinition;
     }
 
-    if ($parentType instanceof ObjectType || $parentType instanceof InputTypeInterface) {
-        return $parentType->getFields()[$name];
+    if ($parentType instanceof ObjectType || $parentType instanceof InterfaceType) {
+        $fields = $parentType->getFields();
+        if (isset($fields[$name])) {
+            return $fields[$name];
+        }
     }
 
     return null;

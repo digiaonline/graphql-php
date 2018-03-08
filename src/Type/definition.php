@@ -165,13 +165,12 @@ function assertNonNullType(TypeInterface $type)
 }
 
 /**
- * @param TypeInterface $type
+ * @param TypeInterface|null $type
  * @return bool
  */
-function isInputType(TypeInterface $type): bool
+function isInputType(?TypeInterface $type): bool
 {
-    return $type instanceof InputTypeInterface
-        || ($type instanceof WrappingTypeInterface && isInputType($type->getOfType()));
+    return null !== $type && ($type instanceof InputTypeInterface || ($type instanceof WrappingTypeInterface && isInputType($type->getOfType())));
 }
 
 /**
@@ -187,13 +186,12 @@ function assertInputType(TypeInterface $type)
 }
 
 /**
- * @param TypeInterface $type
+ * @param TypeInterface|null $type
  * @return bool
  */
-function isOutputType(TypeInterface $type): bool
+function isOutputType(?TypeInterface $type): bool
 {
-    return $type instanceof OutputTypeInterface
-        || ($type instanceof WrappingTypeInterface && isOutputType($type->getOfType()));
+    return null !== $type && ($type instanceof OutputTypeInterface || ($type instanceof WrappingTypeInterface && isOutputType($type->getOfType())));
 }
 
 /**

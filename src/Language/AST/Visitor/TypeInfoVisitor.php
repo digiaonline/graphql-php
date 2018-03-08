@@ -18,14 +18,13 @@ use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Type\getNullableType;
+use function Digia\GraphQL\Type\isInputType;
+use function Digia\GraphQL\Type\isOutputType;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\typeFromAST;
 
@@ -63,13 +62,12 @@ class TypeInfoVisitor extends Visitor
         $schema = $this->typeInfo->getSchema();
 
         if ($node instanceof SelectionSetNode) {
-            /** @var OutputTypeInterface|TypeInterface $type */
-            $type      = $this->typeInfo->getType();
-            $namedType = getNamedType($type);
+            $namedType = getNamedType($this->typeInfo->getType());
             $this->typeInfo->pushParentType($namedType instanceof CompositeTypeInterface ? $namedType : null);
         } elseif ($node instanceof FieldNode) {
-            $parentType = $this->typeInfo->getParentType();
-            $fieldType  = null;
+            $parentType      = $this->typeInfo->getParentType();
+            $fieldDefinition = null;
+            $fieldType       = null;
             if (null !== $parentType) {
                 $fieldDefinition = $this->typeInfo->resolveFieldDefinition($schema, $parentType, $node);
                 if (null !== $fieldDefinition) {
@@ -77,7 +75,7 @@ class TypeInfoVisitor extends Visitor
                 }
             }
             $this->typeInfo->pushFieldDefinition($fieldDefinition);
-            $this->typeInfo->pushType($fieldType instanceof OutputTypeInterface ? $fieldType : null);
+            $this->typeInfo->pushType(isOutputType($fieldType) ? $fieldType : null);
         } elseif ($node instanceof DirectiveNode) {
             $this->typeInfo->setDirective($schema->getDirective($node->getNameValue()));
         } elseif ($node instanceof OperationDefinitionNode) {
@@ -96,13 +94,15 @@ class TypeInfoVisitor extends Visitor
             $outputType    = null !== $typeCondition
                 ? typeFromAST($schema, $typeCondition)
                 : getNamedType($this->typeInfo->getType());
-            $this->typeInfo->pushType($outputType instanceof OutputTypeInterface ? $outputType : null);
+            $this->typeInfo->pushType(isOutputType($outputType) ? $outputType : null);
         } elseif ($node instanceof VariableDefinitionNode) {
             $inputType = typeFromAST($schema, $node->getType());
-            $this->typeInfo->pushInputType($inputType instanceof InputTypeInterface ? $inputType : null);
+            /** @noinspection PhpParamsInspection */
+            $this->typeInfo->pushInputType(isInputType($inputType) ? $inputType : null);
         } elseif ($node instanceof ArgumentNode) {
-            $argumentType     = null;
-            $fieldOrDirective = $this->typeInfo->getDirective() ?? $this->typeInfo->getFieldDefinition();
+            $argumentType       = null;
+            $argumentDefinition = null;
+            $fieldOrDirective   = $this->typeInfo->getDirective() ?: $this->typeInfo->getFieldDefinition();
             if (null !== $fieldOrDirective) {
                 $argumentDefinition = find(
                     $fieldOrDirective->getArguments(),
@@ -115,21 +115,23 @@ class TypeInfoVisitor extends Visitor
                 }
             }
             $this->typeInfo->setArgument($argumentDefinition);
-            $this->typeInfo->pushInputType($argumentType instanceof InputTypeInterface ? $argumentType : null);
+            $this->typeInfo->pushInputType(isInputType($argumentType) ? $argumentType : null);
         } elseif ($node instanceof ListValueNode) {
             $listType = getNullableType($this->typeInfo->getInputType());
             $itemType = $listType instanceof ListType ? $listType->getOfType() : $listType;
-            $this->typeInfo->pushInputType($itemType instanceof InputTypeInterface ? $itemType : null);
+            $this->typeInfo->pushInputType(isInputType($itemType) ? $itemType : null);
         } elseif ($node instanceof ObjectFieldNode) {
             $objectType     = getNamedType($this->typeInfo->getInputType());
             $inputFieldType = null;
             if ($objectType instanceof InputObjectType) {
-                $inputField = $objectType->getFields()[$node->getNameValue()];
+                $fields     = $objectType->getFields();
+                $inputField = $fields[$node->getNameValue()] ?? null;
                 if (null !== $inputField) {
                     $inputFieldType = $inputField->getType();
                 }
             }
-            $this->typeInfo->pushInputType($inputFieldType instanceof InputTypeInterface ? $inputFieldType : null);
+            /** @noinspection PhpParamsInspection */
+            $this->typeInfo->pushInputType(isInputType($inputFieldType) ? $inputFieldType : null);
         } elseif ($node instanceof EnumValueNode) {
             $enumType  = getNamedType($this->typeInfo->getInputType());
             $enumValue = null;
@@ -139,7 +141,7 @@ class TypeInfoVisitor extends Visitor
             $this->typeInfo->setEnumValue($enumValue);
         }
 
-        return $node;
+        return parent::enterNode($node, $key, $parent, $path);
     }
 
     /**
@@ -151,30 +153,36 @@ class TypeInfoVisitor extends Visitor
         ?NodeInterface $parent = null,
         array $path = []
     ): ?NodeInterface {
-        if ($node instanceof SelectionSetNode) {
+        $newNode = parent::leaveNode($node, $key, $parent, $path);
+
+        if (null === $newNode) {
+            return null;
+        }
+
+        if ($newNode instanceof SelectionSetNode) {
             $this->typeInfo->popParentType();
-        } elseif ($node instanceof FieldNode) {
+        } elseif ($newNode instanceof FieldNode) {
             $this->typeInfo->popFieldDefinition();
             $this->typeInfo->popType();
-        } elseif ($node instanceof DirectiveNode) {
+        } elseif ($newNode instanceof DirectiveNode) {
             $this->typeInfo->setDirective(null);
-        } elseif ($node instanceof OperationDefinitionNode) {
+        } elseif ($newNode instanceof OperationDefinitionNode) {
             $this->typeInfo->popType();
-        } elseif ($node instanceof InlineFragmentNode || $node instanceof FragmentDefinitionNode) {
+        } elseif ($newNode instanceof InlineFragmentNode || $newNode instanceof FragmentDefinitionNode) {
             $this->typeInfo->popType();
-        } elseif ($node instanceof VariableDefinitionNode) {
+        } elseif ($newNode instanceof VariableDefinitionNode) {
             $this->typeInfo->popInputType();
-        } elseif ($node instanceof ArgumentNode) {
+        } elseif ($newNode instanceof ArgumentNode) {
             $this->typeInfo->setArgument(null);
             $this->typeInfo->popInputType();
-        } elseif ($node instanceof ListValueNode) {
+        } elseif ($newNode instanceof ListValueNode) {
             $this->typeInfo->popInputType();
-        } elseif ($node instanceof ObjectFieldNode) {
+        } elseif ($newNode instanceof ObjectFieldNode) {
             $this->typeInfo->popInputType();
-        } elseif ($node instanceof EnumValueNode) {
+        } elseif ($newNode instanceof EnumValueNode) {
             $this->typeInfo->setEnumValue(null);
         }
 
-        return $node;
+        return $newNode;
     }
 }
