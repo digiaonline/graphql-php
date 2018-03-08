@@ -20,6 +20,24 @@ trait ResolveTrait
     }
 
     /**
+     * @return callable|null
+     */
+    public function getResolve(): ?callable
+    {
+        return $this->_resolveFunction;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasResolve()
+    {
+        return $this->_resolveFunction !== null;
+    }
+
+    /**
+     * Because of the use of ConfigTrait, setter name must match with attribute in $config array
+     *
      * @param callable $resolveFunction
      * @return $this
      */

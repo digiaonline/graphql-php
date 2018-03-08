@@ -80,6 +80,78 @@ class ExecutionContext
         $this->errors         = $errors;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getRootValue()
+    {
+        return $this->rootValue;
+    }
+
+    /**
+     * @param mixed $rootValue
+     * @return ExecutionContext
+     */
+    public function setRootValue($rootValue)
+    {
+        $this->rootValue = $rootValue;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContextValue()
+    {
+        return $this->contextValue;
+    }
+
+    /**
+     * @param mixed $contextValue
+     * @return ExecutionContext
+     */
+    public function setContextValue($contextValue)
+    {
+        $this->contextValue = $contextValue;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVariableValues()
+    {
+        return $this->variableValues;
+    }
+
+    /**
+     * @param mixed $variableValues
+     * @return ExecutionContext
+     */
+    public function setVariableValues($variableValues)
+    {
+        $this->variableValues = $variableValues;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFieldResolver()
+    {
+        return $this->fieldResolver;
+    }
+
+    /**
+     * @param mixed $fieldResolver
+     * @return ExecutionContext
+     */
+    public function setFieldResolver($fieldResolver)
+    {
+        $this->fieldResolver = $fieldResolver;
+        return $this;
+    }
+
 
     /**
      * @return OperationDefinitionNode

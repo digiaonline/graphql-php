@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Execution\Resolver;
 
+use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Execution\ResponsePath;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
@@ -9,7 +10,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 
-class ResolveInfo
+class ResolveInfo extends ConfigObject
 {
     /**
      * @var string
@@ -60,44 +61,6 @@ class ResolveInfo
      * @var array
      */
     protected $variableValues;
-
-    /**
-     * ResolveInfo constructor.
-     *
-     * @param string                  $fieldName
-     * @param FieldNode[]             $fieldNodes
-     * @param OutputTypeInterface     $returnType
-     * @param ObjectType              $parentType
-     * @param ResponsePath            $path
-     * @param SchemaInterface         $schema
-     * @param array                   $fragments
-     * @param mixed                   $rootValue
-     * @param OperationDefinitionNode $operation
-     * @param array                   $variableValues
-     */
-    public function __construct(
-        string $fieldName,
-        array $fieldNodes,
-        OutputTypeInterface $returnType,
-        ObjectType $parentType,
-        ResponsePath $path,
-        SchemaInterface $schema,
-        array $fragments,
-        $rootValue,
-        OperationDefinitionNode $operation,
-        array $variableValues
-    ) {
-        $this->fieldName      = $fieldName;
-        $this->fieldNodes     = $fieldNodes;
-        $this->returnType     = $returnType;
-        $this->parentType     = $parentType;
-        $this->path           = $path;
-        $this->schema         = $schema;
-        $this->fragments      = $fragments;
-        $this->rootValue      = $rootValue;
-        $this->operation      = $operation;
-        $this->variableValues = $variableValues;
-    }
 
     /**
      * @return string
