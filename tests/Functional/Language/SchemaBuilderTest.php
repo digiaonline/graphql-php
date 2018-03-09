@@ -10,11 +10,6 @@ use function Digia\GraphQL\Util\readFile;
 class SchemaBuilderTest extends TestCase
 {
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testBuildsSchema()
     {
         $introspectionQuery = readFile(__DIR__ . '/schema-user-vote.graphqls');

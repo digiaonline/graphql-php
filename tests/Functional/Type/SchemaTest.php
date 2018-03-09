@@ -50,7 +50,7 @@ class SchemaTest extends TestCase
     protected $schema;
 
     /**
-     * @throws \TypeError
+     * @inheritdoc
      */
     public function setUp()
     {
@@ -140,9 +140,6 @@ class SchemaTest extends TestCase
         $this->schema->isPossibleType($this->interfaceType, $this->implementingType);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testIncludesInputTypesOnlyUsedInDirectives()
     {
         $typeMap = $this->schema->getTypeMap();

@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Provider;
 
+use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Schema\DefinitionBuilder;
 use Digia\GraphQL\Language\AST\Schema\DefinitionBuilderInterface;
@@ -29,7 +30,7 @@ class SchemaBuilderProvider extends AbstractServiceProvider
         $this->container->add(DefinitionBuilderInterface::class, DefinitionBuilder::class, true/* $shared */)
             ->withArguments([
                 function (NamedTypeNode $node) {
-                    throw new \Exception(sprintf('Type "%s" not found in document.', $node->getNameValue()));
+                    throw new InvalidTypeException(sprintf('Type "%s" not found in document.', $node->getNameValue()));
                 },
                 CacheInterface::class,
             ]);

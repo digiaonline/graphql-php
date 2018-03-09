@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Schema;
@@ -60,7 +60,7 @@ class Execution
                 $operationName,
                 $fieldResolver
             );
-        } catch (GraphQLError $error) {
+        } catch (ExecutionException $error) {
             return new ExecutionResult(['data' => null], [$error]);
         }
 

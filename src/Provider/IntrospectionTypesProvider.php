@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Provider;
 
+use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
 use Digia\GraphQL\Type\Definition\AbstractType;
@@ -247,7 +248,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                                     return TypeKindEnum::NON_NULL;
                                 }
 
-                                throw new \Exception(sprintf('Unknown kind of type: %s', $type));
+                                throw new InvalidTypeException(sprintf('Unknown kind of type: %s', $type));
                             },
                         ],
                         'name'          => ['type' => GraphQLString()],

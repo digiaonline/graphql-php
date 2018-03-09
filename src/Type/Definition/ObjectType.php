@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use function Digia\GraphQL\Type\resolveThunk;
@@ -77,7 +78,6 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     protected function afterConfig(): void
     {
@@ -109,7 +109,7 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
 
     /**
      * @return InterfaceType[]
-     * @throws \Exception
+     * @throws InvariantException
      */
     public function getInterfaces(): array
     {
@@ -149,7 +149,7 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
     }
 
     /**
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function defineInterfacesIfNecessary()
     {
@@ -164,7 +164,7 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
     /**
      * @param array|callable $interfacesThunk
      * @return array
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function defineInterfaces($interfacesThunk): array
     {

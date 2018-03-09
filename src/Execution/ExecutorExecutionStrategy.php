@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ExecutionException;
 
 class ExecutorExecutionStrategy extends ExecutionStrategy
 {
@@ -29,12 +29,7 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
 
         } catch (\Exception $ex) {
             $this->context->addError(
-                new GraphQLError($ex->getMessage())
-            );
-            return [$ex->getMessage()];
-        } catch (\TypeError $ex) {
-            $this->context->addError(
-                new GraphQLError($ex->getMessage())
+                new ExecutionException($ex->getMessage())
             );
             return [$ex->getMessage()];
         }

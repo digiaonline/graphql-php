@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
@@ -70,7 +70,6 @@ abstract class ExecutionStrategy
      * @param                  $fields
      * @param                  $visitedFragmentNames
      * @return \ArrayObject
-     * @throws \Exception
      */
     protected function collectFields(
         ObjectType $runtimeType,
@@ -140,9 +139,7 @@ abstract class ExecutionStrategy
      * @param            $fields
      *
      * @return array
-     *
-     * @throws GraphQLError|\Exception
-     * @throws \TypeError
+     * @throws InvalidTypeException
      */
     protected function executeFields(
         ObjectType $parentType,
@@ -172,9 +169,8 @@ abstract class ExecutionStrategy
      * @param Schema     $schema
      * @param ObjectType $parentType
      * @param string     $fieldName
-     * @return Field|null
-     * @throws \Exception
-     * @throws \TypeError
+     * @return \Digia\GraphQL\Type\Definition\Field|null
+     * @throws InvalidTypeException
      */
     public function getFieldDefinition(Schema $schema, ObjectType $parentType, string $fieldName)
     {
@@ -207,9 +203,7 @@ abstract class ExecutionStrategy
      * @param            $path
      *
      * @return mixed
-     *
-     * @throws GraphQLError|\Exception
-     * @throws \TypeError
+     * @throws InvalidTypeException
      */
     protected function resolveField(
         ObjectType $parentType,
@@ -308,7 +302,7 @@ abstract class ExecutionStrategy
      * @param                  $source
      * @param ExecutionContext $context
      * @param ResolveInfo      $info
-     * @return array|\Exception|\Throwable
+     * @return array|\Throwable
      */
     private function resolveOrError(
         Field $field,
@@ -322,8 +316,6 @@ abstract class ExecutionStrategy
             $args = getArgumentValues($field, $fieldNode, $context->getVariableValues());
 
             return $resolveFunction($source, $args, $context, $info);
-        } catch (\Exception $error) {
-            return $error;
         } catch (\Throwable $error) {
             return $error;
         }
@@ -334,10 +326,9 @@ abstract class ExecutionStrategy
      * @param FieldNode[] $fieldNodes
      * @param ResolveInfo $info
      * @param array       $path
+     * @param             $result
      * @return array|\stdClass
-     * @throws GraphQLError
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws InvalidTypeException
      */
     private function collectAndExecuteSubFields(
         ObjectType $returnType,

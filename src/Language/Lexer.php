@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\GraphQLError;
-use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Error\LanguageException;
+use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\Reader\ReaderInterface;
 
 class Lexer implements LexerInterface
@@ -110,7 +110,6 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function getBody(): string
     {
@@ -143,7 +142,6 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function getSource(): Source
     {
@@ -151,7 +149,7 @@ class Lexer implements LexerInterface
             return $this->source;
         }
 
-        throw new \Exception('No source has been set.');
+        throw new LanguageException('No source has been set.');
     }
 
     /**
@@ -187,7 +185,7 @@ class Lexer implements LexerInterface
      * @param int   $col
      * @param Token $prev
      * @return Token
-     * @throws SyntaxError
+     * @throws SyntaxErrorException
      */
     public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
     {
@@ -195,13 +193,13 @@ class Lexer implements LexerInterface
             return $reader->read($code, $pos, $line, $col, $prev);
         }
 
-        throw new SyntaxError($this->unexpectedCharacterMessage($code));
+        throw new SyntaxErrorException($this->unexpectedCharacterMessage($code));
     }
 
     /**
      * @param Token $prev
      * @return Token
-     * @throws GraphQLError
+     * @throws SyntaxErrorException
      */
     protected function readToken(Token $prev): Token
     {
@@ -219,7 +217,7 @@ class Lexer implements LexerInterface
         $code = charCodeAt($body, $pos);
 
         if (isSourceCharacter($code)) {
-            throw new SyntaxError(sprintf('Cannot contain the invalid character %s', printCharCode($code)));
+            throw new SyntaxErrorException(sprintf('Cannot contain the invalid character %s', printCharCode($code)));
         }
 
         return $this->read($code, $pos, $line, $col, $prev);

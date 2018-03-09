@@ -19,6 +19,7 @@ namespace Digia\GraphQL\Type\Definition;
  */
 
 use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use function Digia\GraphQL\Type\isAssocArray;
@@ -55,7 +56,7 @@ class InputObjectType extends ConfigObject implements TypeInterface, NamedTypeIn
 
     /**
      * @return InputField[]
-     * @throws \Exception
+     * @throws InvariantException
      */
     public function getFields(): array
     {
@@ -76,7 +77,7 @@ class InputObjectType extends ConfigObject implements TypeInterface, NamedTypeIn
     }
 
     /**
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function buildFieldMapIfNecessary()
     {
@@ -90,7 +91,7 @@ class InputObjectType extends ConfigObject implements TypeInterface, NamedTypeIn
     /**
      * @param array|callable $fieldsThunk
      * @return array
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function defineFieldMap($fieldsThunk): array
     {

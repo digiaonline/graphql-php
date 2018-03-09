@@ -22,10 +22,6 @@ class IntrospectionTest extends TestCase
         $this->introspectionQuery = readFile(__DIR__ . '/../../../Resources/introspection.graphql');
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testExecutesAnIntrospectionQuery()
     {
         $emptySchema = GraphQLSchema([

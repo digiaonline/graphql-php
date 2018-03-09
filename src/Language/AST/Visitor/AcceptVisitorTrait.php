@@ -29,7 +29,6 @@ trait AcceptVisitorTrait
      * @param NodeInterface|null $parent
      * @param array              $path
      * @return NodeInterface|AcceptVisitorTrait|SerializationInterface|null
-     * @throws VisitorBreak
      */
     public function accept(
         VisitorInterface $visitor,
@@ -108,7 +107,6 @@ trait AcceptVisitorTrait
      * @param            $nodeOrNodes
      * @param string|int $key
      * @return array|NodeInterface|NodeInterface[]|null
-     * @throws VisitorBreak
      */
     protected function visitNodeOrNodes($nodeOrNodes, $key)
     {
@@ -121,7 +119,6 @@ trait AcceptVisitorTrait
      * @param NodeInterface[] $nodes
      * @param string|int      $key
      * @return NodeInterface[]
-     * @throws VisitorBreak
      */
     protected function visitNodes(array $nodes, $key): array
     {
@@ -149,7 +146,6 @@ trait AcceptVisitorTrait
      * @param string|int                       $key
      * @param NodeInterface|null               $parent
      * @return NodeInterface|null
-     * @throws VisitorBreak
      */
     protected function visitNode(NodeInterface $node, $key, ?NodeInterface $parent): ?NodeInterface
     {

@@ -2,11 +2,11 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\DirectiveNode;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\VariableNode;
@@ -22,8 +22,9 @@ use function Digia\GraphQL\Util\keyMap;
  * @param FieldNode|DirectiveNode|NodeInterface $node
  * @param array                                 $variableValues
  * @return array
- * @throws GraphQLError
- * @throws \Exception
+ * @throws ExecutionException
+ * @throws InvalidTypeException
+ * @throws InvariantException
  */
 function getArgumentValues($definition, NodeInterface $node, array $variableValues = []): array
 {
@@ -50,7 +51,7 @@ function getArgumentValues($definition, NodeInterface $node, array $variableValu
             if (null === $defaultValue) {
                 $coercedValues[$name] = $defaultValue;
             } elseif (!$argumentType instanceof NonNullType) {
-                throw new GraphQLError(
+                throw new ExecutionException(
                     sprintf('Argument "%s" of required type "%s" was not provided.', $name, $argumentType),
                     [$node]
                 );
@@ -66,7 +67,7 @@ function getArgumentValues($definition, NodeInterface $node, array $variableValu
             } elseif (null !== $defaultValue) {
                 $coercedValues[$name] = $defaultValue;
             } elseif ($argumentType instanceof NonNullType) {
-                throw new GraphQLError(
+                throw new ExecutionException(
                     sprintf(
                         'Argument "%s" of required type "%s" was provided the variable "%s" which was not provided a runtime value.',
                         $name,
@@ -85,7 +86,7 @@ function getArgumentValues($definition, NodeInterface $node, array $variableValu
                 // Note: ValuesOfCorrectType validation should catch this before
                 // execution. This is a runtime check to ensure execution does not
                 // continue with an invalid argument value.
-                throw new GraphQLError(
+                throw new ExecutionException(
                     sprintf('Argument "%s" has invalid value %s.', $name, $valueNode),
                     [$argumentNode->getValue()]
                 );
@@ -103,8 +104,9 @@ function getArgumentValues($definition, NodeInterface $node, array $variableValu
  * @param NodeInterface|DirectivesTrait $node
  * @param array                         $variableValues
  * @return array|null
- * @throws GraphQLError
- * @throws \Exception
+ * @throws ExecutionException
+ * @throws InvalidTypeException
+ * @throws InvariantException
  */
 function getDirectiveValues(DirectiveInterface $directive, NodeInterface $node, array $variableValues = []): ?array
 {

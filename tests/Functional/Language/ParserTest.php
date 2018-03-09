@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
-use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
@@ -22,71 +22,47 @@ use function Digia\GraphQL\parseValue;
 class ParserTest extends TestCase
 {
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParseProvidesUsefulErrors()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
         parse('{');
 
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected {, found <EOF>');
         parse('query', 'MyQuery.graphql');
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesVariableInlineValues()
     {
         parse('{ field(complex: { a: { b: [ $var ] } }) }');
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesConstantDefaultValues()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected $');
         parse('query Foo($x: Complex = { a: { b: [ $var ] } }) { field }');
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testDoesNotAcceptFragmentsNamedOn()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected Name "on"');
         parse('fragment on on on { on }');
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testDoesNotAcceptFragmentSpreadOfOn()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found }');
         parse('{ ...on }');
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesMultiByteCharacters()
     {
         /** @var DocumentNode $node */
@@ -119,8 +95,6 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
      * @skipTest
      */
     public function testMultipleFragments()
@@ -361,10 +335,6 @@ class ParserTest extends TestCase
         $this->assertEquals($expected, $node);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesKitchenSink()
     {
         $kitchenSink = mb_convert_encoding(file_get_contents(__DIR__ . '/kitchen-sink.graphql'), 'UTF-8');
@@ -373,10 +343,6 @@ class ParserTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testAllowsNonKeywordsAnywhereANameIsAllowed()
     {
         $nonKeywords = [
@@ -411,10 +377,6 @@ fragment $fragmentName on Type {
         }
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesAnonMutationOperations()
     {
         parse(new Source('
@@ -425,10 +387,6 @@ fragment $fragmentName on Type {
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesAnonSubscriptionOperations()
     {
         parse(new Source('
@@ -439,10 +397,6 @@ fragment $fragmentName on Type {
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesNamedMutationOperations()
     {
         parse(new Source('
@@ -453,10 +407,6 @@ fragment $fragmentName on Type {
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesNamedSubscriptionOperations()
     {
         parse(new Source('
@@ -467,10 +417,6 @@ fragment $fragmentName on Type {
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testCreatesAST()
     {
         /** @var DocumentNode $actual */
@@ -563,10 +509,6 @@ fragment $fragmentName on Type {
         ], $actual->toArray());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testCreatesAstFromNamelessQueryWithoutVariables()
     {
         /** @var DocumentNode $actual */
@@ -640,10 +582,6 @@ fragment $fragmentName on Type {
 
     // Skip 'contains references to start and end tokens' (not provided by cpp parser)
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesNullValue()
     {
         /** @var NullValueNode $node */
@@ -655,10 +593,6 @@ fragment $fragmentName on Type {
         ]);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesListValue()
     {
         /** @var NullValueNode $node */
@@ -683,10 +617,6 @@ fragment $fragmentName on Type {
         ]);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesBlockStrings()
     {
         /** @var NullValueNode $node */
@@ -713,10 +643,6 @@ fragment $fragmentName on Type {
         ]);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesWellKnownTypes()
     {
         /** @var NamedTypeNode $node */
@@ -733,10 +659,6 @@ fragment $fragmentName on Type {
         ]);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesCustomTypes()
     {
         /** @var NamedTypeNode $node */
@@ -753,10 +675,6 @@ fragment $fragmentName on Type {
         ]);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesListTypes()
     {
         /** @var NamedTypeNode $node */
@@ -777,10 +695,6 @@ fragment $fragmentName on Type {
         ]);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesNonNullTypes()
     {
         /** @var NamedTypeNode $node */
@@ -801,10 +715,6 @@ fragment $fragmentName on Type {
         ]);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesNestedTypes()
     {
         /** @var NamedTypeNode $node */

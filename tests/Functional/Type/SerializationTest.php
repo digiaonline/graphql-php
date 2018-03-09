@@ -14,7 +14,6 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @param $answer
-     * @throws \Exception
      * @dataProvider valuesIntCanRepresentDataProvider
      */
     public function testValuesIntCanRepresent($value, $answer)
@@ -39,7 +38,7 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @dataProvider valuesIntCannotRepresentDataProvider
-     * @expectedException \TypeError
+     * @expectedException \@expectedException \Digia\GraphQL\Error\InvalidTypeException
      */
     public function testValuesIntCannotRepresent($value)
     {
@@ -65,9 +64,6 @@ class SerializationTest extends TestCase
         ];
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testSerializeBooleanToInt()
     {
         $this->assertEquals(0, GraphQLInt()->serialize(false));
@@ -75,7 +71,7 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @expectedException \TypeError
+     * @expectedException \@expectedException \Digia\GraphQL\Error\InvalidTypeException
      */
     public function testSerializeEmptyStringToInt()
     {
@@ -86,7 +82,6 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @param $answer
-     * @throws \Exception
      * @dataProvider valuesFloatCanRepresentDataProvider
      */
     public function testValuesFloatCanRepresent($value, $answer)
@@ -116,7 +111,7 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @dataProvider valuesFloatCannotRepresentDataProvider
-     * @expectedException \TypeError
+     * @expectedException \Digia\GraphQL\Error\InvalidTypeException
      */
     public function testValuesFloatCannotRepresent($value)
     {
@@ -135,7 +130,6 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @param $answer
-     * @throws \Exception
      * @dataProvider valuesStringCanRepresentDataProvider
      */
     public function testValuesStringCanRepresent($value, $answer)
@@ -158,7 +152,6 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @throws \Exception
      * @dataProvider valuesBooleanCanRepresentDataProvider
      */
     public function testValuesBooleanCanRepresent($value, $answer)

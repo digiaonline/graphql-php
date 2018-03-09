@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\InvariantException;
 use function Digia\GraphQL\Util\invariant;
 
 /**
@@ -37,7 +37,7 @@ class Source
      * @param string              $body
      * @param null|string         $name
      * @param SourceLocation|null $locationOffset
-     * @throws \Exception
+     * @throws InvariantException
      */
     public function __construct(string $body, ?string $name = 'GraphQL request', ?SourceLocation $locationOffset = null)
     {
@@ -102,7 +102,7 @@ class Source
     /**
      * @param SourceLocation|null $locationOffset
      * @return Source
-     * @throws GraphQLError
+     * @throws InvariantException
      */
     protected function setLocationOffset(?SourceLocation $locationOffset): Source
     {

@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Util\SerializationInterface;
 use function Digia\GraphQL\Util\jsonEncode;
 
@@ -10,7 +10,7 @@ class ExecutionResult implements SerializationInterface
 {
 
     /**
-     * @var GraphQLError[]
+     * @var ExecutionException[]
      */
     protected $errors;
 
@@ -21,8 +21,8 @@ class ExecutionResult implements SerializationInterface
 
     /**
      * ExecutionResult constructor.
-     * @param mixed[]        $data
-     * @param GraphQLError[] $errors
+     * @param mixed[]              $data
+     * @param ExecutionException[] $errors
      */
     public function __construct(array $data, array $errors)
     {
@@ -39,7 +39,7 @@ class ExecutionResult implements SerializationInterface
     }
 
     /**
-     * @return array|GraphQLError[]
+     * @return array|ExecutionException[]
      */
     public function getErrors(): array
     {
@@ -47,10 +47,10 @@ class ExecutionResult implements SerializationInterface
     }
 
     /**
-     * @param GraphQLError $error
+     * @param ExecutionException $error
      * @return ExecutionResult
      */
-    public function addError(GraphQLError $error): ExecutionResult
+    public function addError(ExecutionException $error): ExecutionResult
     {
         $this->errors[] = $error;
         return $this;

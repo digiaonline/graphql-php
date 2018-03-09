@@ -2,6 +2,10 @@
 
 namespace Digia\GraphQL\Language\AST\Schema;
 
+use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Language\AST\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\EnumValueDefinitionNode;
@@ -28,7 +32,6 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use function Digia\GraphQL\Type\introspectionTypes;
 use Psr\SimpleCache\CacheInterface;
 use function Digia\GraphQL\Execution\getDirectiveValues;
 use function Digia\GraphQL\Language\valueFromAST;
@@ -42,6 +45,7 @@ use function Digia\GraphQL\Type\GraphQLNonNull;
 use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLScalarType;
 use function Digia\GraphQL\Type\GraphQLUnionType;
+use function Digia\GraphQL\Type\introspectionTypes;
 use function Digia\GraphQL\Type\specifiedScalarTypes;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\keyValMap;
@@ -102,8 +106,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param NamedTypeNode|TypeDefinitionNodeInterface $node
      * @inheritdoc
-     * @throws \Exception
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function buildType(NodeInterface $node): TypeInterface
     {
@@ -144,8 +146,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param TypeNodeInterface $typeNode
      * @return TypeInterface
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws InvariantException
+     * @throws InvalidTypeException
      */
     protected function buildWrappedType(TypeNodeInterface $typeNode): TypeInterface
     {
@@ -156,8 +158,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param FieldDefinitionNode|InputValueDefinitionNode $node
      * @return array
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws ExecutionException
+     * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function buildField($node): array
     {
@@ -173,8 +176,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param array $nodes
      * @return array
-     * @throws \TypeError
-     * @throws \Exception
      */
     protected function buildArguments(array $nodes): array
     {
@@ -197,7 +198,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param TypeDefinitionNodeInterface $node
      * @return NamedTypeInterface
-     * @throws \Exception
+     * @throws LanguageException
      */
     protected function buildNamedType(TypeDefinitionNodeInterface $node): NamedTypeInterface
     {
@@ -220,7 +221,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             return $this->buildInputObjectType($node);
         }
 
-        throw new \Exception(sprintf('Type kind "%s" not supported.', $node->getKind()));
+        throw new LanguageException(sprintf('Type kind "%s" not supported.', $node->getKind()));
     }
 
     /**
@@ -246,8 +247,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param ObjectTypeDefinitionNode|InterfaceTypeDefinitionNode|InputObjectTypeDefinitionNode $node
      * @return array
-     * @throws \TypeError
-     * @throws \Exception
      */
     protected function buildFields($node): array
     {
@@ -336,8 +335,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param InputObjectTypeDefinitionNode $node
      * @return InputObjectType
-     * @throws \TypeError
-     * @throws \Exception
      */
     protected function buildInputObjectType(InputObjectTypeDefinitionNode $node): InputObjectType
     {
@@ -399,8 +396,8 @@ function getNamedTypeNode(TypeNodeInterface $typeNode): NamedTypeNode
  * @param TypeInterface                        $innerType
  * @param NamedTypeInterface|TypeNodeInterface $inputTypeNode
  * @return TypeInterface
- * @throws \TypeError
- * @throws \Exception
+ * @throws InvariantException
+ * @throws InvalidTypeException
  */
 function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputTypeNode): TypeInterface
 {
@@ -418,8 +415,9 @@ function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputType
 /**
  * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
  * @return null|string
- * @throws \TypeError
- * @throws \Exception
+ * @throws InvariantException
+ * @throws ExecutionException
+ * @throws InvalidTypeException
  */
 function getDeprecationReason(NodeInterface $node): ?string
 {

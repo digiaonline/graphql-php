@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
@@ -282,8 +283,7 @@ class TypeInfo
  * @param TypeInterface   $parentType
  * @param FieldNode       $fieldNode
  * @return Field|null
- * @throws \TypeError
- * @throws \Exception
+ * @throws InvalidTypeException
  */
 function getFieldDefinition(SchemaInterface $schema, TypeInterface $parentType, FieldNode $fieldNode): ?Field
 {

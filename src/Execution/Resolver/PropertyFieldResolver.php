@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Execution\Resolver;
 
+use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Execution\ExecutionEnvironment;
 
 class PropertyFieldResolver implements ResolverInterface
@@ -30,6 +31,6 @@ class PropertyFieldResolver implements ResolverInterface
             }
         }
 
-        throw new \Exception(sprintf('Could not resolve value for field "%s".', $fieldName));
+        throw new ExecutionException(sprintf('Could not resolve value for field "%s".', $fieldName));
     }
 }

@@ -50,8 +50,6 @@ class TypeInfoVisitor extends Visitor
 
     /**
      * @inheritdoc
-     * @throws \Exception
-     * @throws \TypeError
      */
     public function enterNode(
         NodeInterface $node,

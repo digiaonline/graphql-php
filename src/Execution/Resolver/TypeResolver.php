@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Execution\Resolver;
 
+use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Execution\ExecutionEnvironment;
 
 class TypeResolver implements ResolverInterface
@@ -11,7 +12,7 @@ class TypeResolver implements ResolverInterface
      */
     public function resolve(ExecutionEnvironment $environment)
     {
-        $schema    = $environment->getInfo()->getSchema();
+        $schema = $environment->getInfo()->getSchema();
         // TODO: Benchmark
         $className = (new \ReflectionClass($environment->getValue()))->getShortName();
 
@@ -19,6 +20,6 @@ class TypeResolver implements ResolverInterface
             return $type;
         }
 
-        throw new \Exception(sprintf('Could not resolve type for class "%s".', $className));
+        throw new ExecutionException(sprintf('Could not resolve type for class "%s".', $className));
     }
 }

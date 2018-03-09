@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use Digia\GraphQL\Error\InvalidTypeException;
+
 class NonNullType implements TypeInterface, WrappingTypeInterface
 {
 
@@ -13,7 +15,7 @@ class NonNullType implements TypeInterface, WrappingTypeInterface
      * NonNullType constructor.
      *
      * @param TypeInterface $ofType
-     * @throws \TypeError
+     * @throws InvalidTypeException
      */
     public function __construct(TypeInterface $ofType)
     {
@@ -31,12 +33,12 @@ class NonNullType implements TypeInterface, WrappingTypeInterface
     /**
      * @param TypeInterface $ofType
      * @return $this
-     * @throws \TypeError
+     * @throws InvalidTypeException
      */
     public function setOfType(TypeInterface $ofType)
     {
         if ($ofType instanceof NonNullType) {
-            throw new \TypeError(sprintf('Expected %s to be a GraphQL nullable type.', $ofType));
+            throw new InvalidTypeException(sprintf('Expected %s to be a GraphQL nullable type.', $ofType));
         }
 
         $this->ofType = $ofType;

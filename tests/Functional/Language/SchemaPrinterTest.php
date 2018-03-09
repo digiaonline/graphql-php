@@ -11,10 +11,6 @@ use function Digia\GraphQL\Util\readFile;
 class SchemaPrinterTest extends TestCase
 {
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testDoesNotAlterAST()
     {
         // This test seems kind of dumb test, but it makes sure that our parser

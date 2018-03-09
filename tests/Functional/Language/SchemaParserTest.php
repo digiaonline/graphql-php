@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
-use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Test\TestCase;
@@ -73,10 +73,6 @@ function inputValueNode($name, $type, $defaultValue, $loc)
 class SchemaParserTest extends TestCase
 {
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleType()
     {
         /** @var DocumentNode $node */
@@ -108,10 +104,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesWithDescriptionString()
     {
         /** @var DocumentNode $node */
@@ -138,10 +130,6 @@ type Hello {
         ], $node->toArray());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testParsesWithDescriptionMultiLineString()
     {
         /** @var DocumentNode $node */
@@ -171,10 +159,6 @@ type Hello {
         ], $node->toArray());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleExtension()
     {
         /** @var DocumentNode $node */
@@ -205,10 +189,6 @@ extend type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testExtensionWithoutFields()
     {
         /** @var DocumentNode $node */
@@ -232,10 +212,6 @@ extend type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testExtensionWithoutFieldsFollowedByExtension()
     {
         /** @var DocumentNode $node */
@@ -273,24 +249,16 @@ extend type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testExtensionWithoutAnythingThrows()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected <EOF>');
         parse('extend type Hello');
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testExtensionsDoNotIncludeDescriptions()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected Name "extend"');
         parse('
 "Description"
@@ -298,7 +266,7 @@ extend type Hello {
   world: String
 }');
 
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected String "Description"');
         parse('
 extend "Description" type Hello {
@@ -306,10 +274,6 @@ extend "Description" type Hello {
 }');
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleNonNullType()
     {
         /** @var DocumentNode $node */
@@ -345,10 +309,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleTypeInheritingInterface()
     {
         /** @var DocumentNode $node */
@@ -379,10 +339,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleTypeInheritingMultipleInterface()
     {
         /** @var DocumentNode $node */
@@ -414,10 +370,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleTypeInheritingMultipleInterfaceWithLeadingAmpersand()
     {
         /** @var DocumentNode $node */
@@ -449,10 +401,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSingleValueEnum()
     {
         /** @var DocumentNode $node */
@@ -476,10 +424,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testDoubleValueEnum()
     {
         /** @var DocumentNode $node */
@@ -504,10 +448,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleInterface()
     {
         /** @var DocumentNode $node */
@@ -538,10 +478,6 @@ interface Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function parseSimpleFieldWithArgument()
     {
         /** @var DocumentNode $node */
@@ -581,10 +517,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleFieldWithArgumentWithDefaultValue()
     {
         /** @var DocumentNode $node */
@@ -628,10 +560,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleFieldWithListArgument()
     {
         /** @var DocumentNode $node */
@@ -675,10 +603,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function parseSimpleFieldWithTwoArguments()
     {
         /** @var DocumentNode $node */
@@ -724,10 +648,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleUnion()
     {
         /** @var DocumentNode $node */
@@ -751,10 +671,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleUnionWithTypes()
     {
         /** @var DocumentNode $node */
@@ -779,10 +695,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleUnionWithTypesAndLeadingPipe()
     {
         /** @var DocumentNode $node */
@@ -807,43 +719,27 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testUnionFailsWithNoTypes()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
         parse('union Hello = |');
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testUnionFailsWithLeadingDoublePipe()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found |');
         parse('union Hello = || Wo | Rld');
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testUnionFailsWithTrailingPipe()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
         parse('union Hello = | Wo | Rld |');
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleScalar()
     {
         /** @var DocumentNode $node */
@@ -864,10 +760,6 @@ type Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleInputObject()
     {
         /** @var DocumentNode $node */
@@ -899,13 +791,9 @@ input Hello {
         ]), $node->toJSON());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testSimpleInputObjectWithArgumentsShouldFail()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected :, found (');
         parse('
 input Hello {
@@ -913,13 +801,9 @@ input Hello {
 }');
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
-     * @throws \Exception
-     */
     public function testDirectiveWithIncorrectLocations()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected Name "INCORRECT_LOCATION"');
         parse('
 directive @foo on FIELD | INCORRECT_LOCATION');

@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
@@ -68,7 +69,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     /**
      * @param $value
      * @return null|string
-     * @throws \Exception
+     * @throws InvariantException
      */
     public function serialize($value)
     {
@@ -85,7 +86,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     /**
      * @param $value
      * @return mixed|null
-     * @throws \Exception
+     * @throws InvariantException
      */
     public function parseValue($value)
     {
@@ -104,7 +105,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     /**
      * @param NodeInterface $astNode
      * @return mixed|null
-     * @throws \Exception
+     * @throws InvariantException
      */
     public function parseLiteral(NodeInterface $astNode)
     {
@@ -124,7 +125,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     /**
      * @param string $name
      * @return EnumValue
-     * @throws \Exception
+     * @throws InvariantException
      */
     public function getValue(string $name): EnumValue
     {
@@ -133,7 +134,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
 
     /**
      * @return EnumValue[]
-     * @throws \Exception
+     * @throws InvariantException
      */
     public function getValues(): array
     {
@@ -145,7 +146,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     /**
      * @param string $name
      * @return EnumValue|null
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function getValueByName(string $name): ?EnumValue
     {
@@ -161,7 +162,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     /**
      * @param mixed $value
      * @return EnumValue|null
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function getValueByValue($value): ?EnumValue
     {
@@ -186,7 +187,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     }
 
     /**
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function defineEnumValuesIfNecessary(): void
     {
@@ -200,7 +201,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     /**
      * @param array $valueMap
      * @return array
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function defineEnumValues(array $valueMap): array
     {

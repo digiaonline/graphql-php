@@ -71,9 +71,6 @@ class PredicateTest extends TestCase
         ]);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAssertType()
     {
         assertType(GraphQLString());
@@ -82,10 +79,6 @@ class PredicateTest extends TestCase
         $this->addToAssertionCount(2);
     }
 
-    /**
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testAssertScalarTypeWithValidTypes()
     {
         assertScalarType(GraphQLString());
@@ -95,7 +88,6 @@ class PredicateTest extends TestCase
     }
 
     /**
-     * @throws \TypeError
      * @expectedException \Exception
      */
     public function testAssertScalarTypeWithInvalidTypes()
