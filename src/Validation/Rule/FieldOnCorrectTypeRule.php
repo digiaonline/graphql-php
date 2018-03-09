@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\InterfacesTrait;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
@@ -26,7 +26,7 @@ class FieldOnCorrectTypeRule extends AbstractRule
         if ($node instanceof FieldNode) {
             $type = $this->context->getParentType();
 
-            if (null !== $type) {
+            if (null !== $type && $type instanceof OutputTypeInterface) {
                 $fieldDefinition = $this->context->getFieldDefinition();
 
                 if (null === $fieldDefinition) {
@@ -38,10 +38,10 @@ class FieldOnCorrectTypeRule extends AbstractRule
                         : getSuggestedFieldNames($type, $fieldName);
 
                     $this->context->reportError(
-                        new GraphQLError(
+                        new ValidationException(
                             undefinedFieldMessage(
                                 $fieldName,
-                                $type->getName(),
+                                (string)$type,
                                 $suggestedTypeNames,
                                 $suggestedFieldNames
                             ),

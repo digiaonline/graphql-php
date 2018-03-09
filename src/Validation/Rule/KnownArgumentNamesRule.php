@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\DirectiveNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
@@ -28,11 +28,11 @@ class KnownArgumentNamesRule extends AbstractRule
 
                     if (null !== $fieldDefinition && null !== $parentType) {
                         $this->context->reportError(
-                            new GraphQLError(
+                            new ValidationException(
                                 unknownArgumentMessage(
-                                    $node->getNameValue(),
-                                    $fieldDefinition->getName(),
-                                    $parentType->getName(),
+                                    (string)$node,
+                                    (string)$fieldDefinition,
+                                    (string)$parentType,
                                     suggestionList(
                                         $node->getNameValue(),
                                         array_map(function (Argument $argument) {
@@ -49,12 +49,12 @@ class KnownArgumentNamesRule extends AbstractRule
 
                     if (null !== $directive) {
                         $this->context->reportError(
-                            new GraphQLError(
+                            new ValidationException(
                                 unknownDirectiveArgumentMessage(
-                                    $node->getNameValue(),
-                                    $directive->getName(),
+                                    (string)$node,
+                                    (string)$directive,
                                     suggestionList(
-                                        $node->getNameValue(),
+                                        (string)$node,
                                         array_map(function (Argument $argument) {
                                             return $argument->getName();
                                         }, $directive->getArguments())

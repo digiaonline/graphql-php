@@ -5,11 +5,11 @@ namespace Digia\GraphQL\Error;
 use function Digia\GraphQL\Util\invariant;
 
 /**
- * @param GraphQLError $error
+ * @param GraphQLException $error
  * @return array
- * @throws GraphQLError
+ * @throws InvariantException
  */
-function formatError(GraphQLError $error): array
+function formatError(GraphQLException $error): array
 {
     invariant(null !== $error, 'Received null error.');
 

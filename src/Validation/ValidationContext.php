@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -29,7 +29,7 @@ class ValidationContext
     protected $typeInfo;
 
     /**
-     * @var array|GraphQLError[]
+     * @var array|ValidationException[]
      */
     protected $errors = [];
 
@@ -47,15 +47,15 @@ class ValidationContext
     }
 
     /**
-     * @param GraphQLError $error
+     * @param ValidationException $error
      */
-    public function reportError(GraphQLError $error): void
+    public function reportError(ValidationException $error): void
     {
         $this->errors[] = $error;
     }
 
     /**
-     * @return array|GraphQLError[]
+     * @return array|ValidationException[]
      */
     public function getErrors(): array
     {

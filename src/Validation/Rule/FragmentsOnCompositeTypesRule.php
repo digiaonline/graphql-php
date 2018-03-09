@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
@@ -19,14 +19,14 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
         if ($node instanceof InlineFragmentNode) {
             $this->validateFragementNode($node, function (NodeInterface $node) {
                 /** @noinspection PhpUndefinedMethodInspection */
-                return inlineFragmentOnNonCompositeMessage($node->getTypeCondition()->getNameValue());
+                return inlineFragmentOnNonCompositeMessage((string)$node->getTypeCondition());
             });
         }
 
         if ($node instanceof FragmentDefinitionNode) {
             $this->validateFragementNode($node, function (NodeInterface $node) {
                 /** @noinspection PhpUndefinedMethodInspection */
-                return fragmentOnNonCompositeMessage($node->getNameValue(), $node->getTypeCondition()->getNameValue());
+                return fragmentOnNonCompositeMessage((string)$node, (string)$node->getTypeCondition());
             });
         }
 
@@ -47,7 +47,7 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
             $type = typeFromAST($this->context->getSchema(), $typeCondition);
 
             if (null !== $type && !($type instanceof CompositeTypeInterface)) {
-                $this->context->reportError(new GraphQLError($errorMessageFunction($node), [$typeCondition]));
+                $this->context->reportError(new ValidationException($errorMessageFunction($node), [$typeCondition]));
             }
         }
     }

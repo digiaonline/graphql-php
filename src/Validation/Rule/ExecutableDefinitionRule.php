@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\ExecutableDefinitionNodeInterface;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
@@ -21,7 +21,7 @@ class ExecutableDefinitionRule extends AbstractRule
             foreach ($node->getDefinitions() as $definition) {
                 if (!$definition instanceof ExecutableDefinitionNodeInterface) {
                     $this->context->reportError(
-                        new GraphQLError(
+                        new ValidationException(
                             nonExecutableDefinitionMessage(
                                 $definition instanceof SchemaDefinitionNode ? 'schema' : $definition->getNameValue()
                             ),
