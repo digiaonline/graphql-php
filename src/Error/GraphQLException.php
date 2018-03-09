@@ -247,7 +247,9 @@ class GraphQLException extends AbstractException
             }, []);
         }
 
-        $this->locations = $locations;
+        if (isset($locations)) {
+            $this->locations = $locations;
+        }
 
         return $this;
     }
