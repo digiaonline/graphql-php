@@ -4,30 +4,14 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Schema;
-use function Digia\GraphQL\Util\invariant;
 
 /**
  * Class Execution
  * @package Digia\GraphQL\Execution
  */
-class Execution
+class Execution implements ExecutionInterface
 {
-    /**
-     * @var ExecutionContext
-     */
-    protected $context;
-
-    /**
-     * Execution constructor.
-     * @param ExecutionContext $context
-     */
-    public function __construct(ExecutionContext $context)
-    {
-        $this->context = $context;
-    }
-
     /**
      * @param Schema        $schema
      * @param DocumentNode  $documentNode
@@ -38,7 +22,7 @@ class Execution
      * @param callable|null $fieldResolver
      * @return ExecutionResult
      */
-    public static function execute(
+    public function execute(
         Schema $schema,
         DocumentNode $documentNode,
         $rootValue = null,
@@ -46,7 +30,7 @@ class Execution
         $variableValues = [],
         $operationName = null,
         callable $fieldResolver = null
-    ) {
+    ) : ExecutionResult {
         try {
             //@TODO Get context builder from container?
             $contextBuilder = new ExecutionContextBuilder();

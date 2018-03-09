@@ -4,6 +4,7 @@ namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Execution\Execution;
+use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
@@ -101,7 +102,7 @@ function graphql(
     callable $fieldResolver = null
 ): ExecutionResult {
     /** @noinspection PhpParamsInspection */
-    return Execution::execute(
+    return executor()->execute(
         $schema,
         parse($source),
         $rootValue,
@@ -110,4 +111,12 @@ function graphql(
         $operationName,
         $fieldResolver
     );
+}
+
+/**
+ * @return ExecutionInterface
+ */
+function executor(): ExecutionInterface
+{
+    return GraphQL::getInstance()->get(ExecutionInterface::class);
 }
