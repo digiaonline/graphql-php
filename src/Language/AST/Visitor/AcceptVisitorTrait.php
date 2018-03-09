@@ -62,10 +62,6 @@ trait AcceptVisitorTrait
         /** @var NodeInterface|AcceptVisitorTrait|null $newNode */
         $newNode = clone $this; // TODO: Benchmark cloning
 
-        if (null !== $parent) {
-            $this->addAncestor($parent);
-        }
-
         // If the result was null, it means that we should not traverse this branch.
         if (null === ($newNode = $visitor->enterNode($newNode))) {
             return null;
@@ -170,14 +166,21 @@ trait AcceptVisitorTrait
      */
     protected function visitNodeOrNodes($nodeOrNodes, $key)
     {
-        return \is_array($nodeOrNodes)
+        $this->addAncestor($this);
+
+        $newNodeOrNodes = \is_array($nodeOrNodes)
             ? $this->visitNodes($nodeOrNodes, $key)
             : $this->visitNode($nodeOrNodes, $key, $this);
+
+        $this->removeAncestor();
+
+        return $newNodeOrNodes;
     }
 
     /**
-     * @param NodeInterface[] $nodes
-     * @param string|int      $key
+     * @param NodeInterface[]    $nodes
+     * @param string|int         $key
+     * @param NodeInterface|null $parent
      * @return NodeInterface[]
      */
     protected function visitNodes(array $nodes, $key): array
