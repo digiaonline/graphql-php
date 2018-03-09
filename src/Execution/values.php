@@ -18,9 +18,9 @@ use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\keyMap;
 
 /**
- * @param Field|DirectiveInterface $definition
- * @param FieldNode|DirectiveNode  $node
- * @param array                    $variableValues
+ * @param Field|DirectiveInterface              $definition
+ * @param FieldNode|DirectiveNode|NodeInterface $node
+ * @param array                                 $variableValues
  * @return array
  * @throws GraphQLError
  * @throws \Exception
@@ -93,9 +93,9 @@ function getArgumentValues($definition, NodeInterface $node, array $variableValu
 
             $coercedValues[$name] = $coercedValue;
         }
-
-        return $coercedValues;
     }
+
+    return $coercedValues;
 }
 
 /**

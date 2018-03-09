@@ -255,8 +255,14 @@ abstract class ExecutionStrategy
      * @param ExecutionContext $context
      * @return ResolveInfo
      */
-    private function buildResolveInfo(\ArrayAccess $fieldNodes, FieldNode $fieldNode, Field $field, ObjectType $parentType, $path, ExecutionContext $context)
-    {
+    private function buildResolveInfo(
+        \ArrayAccess $fieldNodes,
+        FieldNode $fieldNode,
+        Field $field,
+        ObjectType $parentType,
+        $path,
+        ExecutionContext $context
+    ) {
         return new ResolveInfo([
             'fieldName'      => $fieldNode->getNameValue(),
             'fieldNodes'     => $fieldNodes,
@@ -335,8 +341,7 @@ abstract class ExecutionStrategy
         ResolveInfo $info,
         $path,
         &$result
-    )
-    {
+    ) {
         $subFields = new \ArrayObject();
 
         foreach ($fieldNodes as $fieldNode) {
@@ -350,7 +355,7 @@ abstract class ExecutionStrategy
             }
         }
 
-        if($subFields->count()) {
+        if ($subFields->count()) {
             return $this->executeFields($returnType, $result, $path, $subFields);
         }
 
