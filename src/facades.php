@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
@@ -64,7 +64,7 @@ function parseType($source, array $options = []): NodeInterface
  * @param string $source
  * @param array  $options
  * @return SchemaInterface
- * @throws \Digia\GraphQL\Error\GraphQLError
+ * @throws \Digia\GraphQL\Error\ExecutionException
  * @throws \Exception
  */
 function buildSchema(string $source, array $options = []): SchemaInterface
@@ -90,7 +90,7 @@ function printNode(NodeInterface $node): string
  * @param null            $operationName
  * @param callable|null   $fieldResolver
  * @return ExecutionResult
- * @throws Error\GraphQLError
+ * @throws Error\ExecutionException
  * @throws \Exception
  */
 function graphql(

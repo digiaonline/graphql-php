@@ -23,7 +23,7 @@ class ParserTest extends TestCase
 {
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParseProvidesUsefulErrors()
@@ -38,7 +38,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesVariableInlineValues()
@@ -48,7 +48,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesConstantDefaultValues()
@@ -60,7 +60,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testDoesNotAcceptFragmentsNamedOn()
@@ -72,7 +72,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testDoesNotAcceptFragmentSpreadOfOn()
@@ -84,7 +84,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesMultiByteCharacters()
@@ -119,7 +119,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      * @skipTest
      */
@@ -362,7 +362,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesKitchenSink()
@@ -374,7 +374,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testAllowsNonKeywordsAnywhereANameIsAllowed()
@@ -412,7 +412,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesAnonMutationOperations()
@@ -426,7 +426,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesAnonSubscriptionOperations()
@@ -440,7 +440,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesNamedMutationOperations()
@@ -454,7 +454,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesNamedSubscriptionOperations()
@@ -468,7 +468,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testCreatesAST()
@@ -564,7 +564,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testCreatesAstFromNamelessQueryWithoutVariables()
@@ -641,7 +641,7 @@ fragment $fragmentName on Type {
     // Skip 'contains references to start and end tokens' (not provided by cpp parser)
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesNullValue()
@@ -656,7 +656,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesListValue()
@@ -684,7 +684,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesBlockStrings()
@@ -714,7 +714,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesWellKnownTypes()
@@ -734,7 +734,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesCustomTypes()
@@ -754,7 +754,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesListTypes()
@@ -778,7 +778,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesNonNullTypes()
@@ -802,7 +802,7 @@ fragment $fragmentName on Type {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testParsesNestedTypes()

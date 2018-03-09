@@ -6,12 +6,12 @@ use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\Source;
 
 /**
- * A GraphQLError describes an Error found during the parse, validate, or
- * execute phases of performing a GraphQL operation. In addition to a message
+ * An ExecutionException describes an exception thrown during the execute
+ * phase of performing a GraphQL operation. In addition to a message
  * and stack trace, it also includes information about the locations in a
  * GraphQL document and/or execution result that correspond to the Error.
  */
-class GraphQLError extends \Exception
+class ExecutionException extends BaseException
 {
 
     /**
@@ -45,7 +45,7 @@ class GraphQLError extends \Exception
     protected $extensions;
 
     /**
-     * GraphQLError constructor.
+     * ExecutionException constructor.
      *
      * @param string      $message
      * @param array|null  $nodes

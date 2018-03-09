@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Type\Schema;
@@ -21,8 +21,8 @@ class ExecutionContextBuilder
      * @param               $rawVariableValues
      * @param null          $operationName
      * @param callable|null $fieldResolver
-     * @throws GraphQLError
      * @return ExecutionContext
+     * @throws ExecutionException
      */
     public function buildContext(
         Schema $schema,
@@ -43,7 +43,7 @@ class ExecutionContextBuilder
             switch ($definition->getKind()) {
                 case NodeKindEnum::OPERATION_DEFINITION:
                     if (!$operationName && $operation) {
-                        throw new GraphQLError(
+                        throw new ExecutionException(
                             'Must provide operation name if query contains multiple operations.'
                         );
                     }
@@ -57,7 +57,7 @@ class ExecutionContextBuilder
                     $fragments[$definition->getName()->getValue()] = $definition;
                     break;
                 default:
-                    throw new GraphQLError(
+                    throw new ExecutionException(
                         "GraphQL cannot execute a request containing a {$definition->getKind()}."
                     );
             }

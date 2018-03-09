@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
@@ -141,7 +141,7 @@ abstract class ExecutionStrategy
      *
      * @return array
      *
-     * @throws GraphQLError|\Exception
+     * @throws ExecutionException|\Exception
      */
     protected function executeFields(
         ObjectType $parentType,
@@ -206,7 +206,7 @@ abstract class ExecutionStrategy
      *
      * @return mixed
      *
-     * @throws GraphQLError|\Exception
+     * @throws ExecutionException|\Exception
      */
     protected function resolveField(
         ObjectType $parentType,
@@ -332,7 +332,7 @@ abstract class ExecutionStrategy
      * @param ResolveInfo $info
      * @param array       $path
      * @return array|\stdClass
-     * @throws GraphQLError
+     * @throws ExecutionException
      * @throws \Exception
      */
     private function collectAndExecuteSubFields(

@@ -11,7 +11,6 @@ class SchemaBuilderTest extends TestCase
 {
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testBuildsSchema()

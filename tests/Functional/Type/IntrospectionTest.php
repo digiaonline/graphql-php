@@ -23,7 +23,6 @@ class IntrospectionTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testExecutesAnIntrospectionQuery()

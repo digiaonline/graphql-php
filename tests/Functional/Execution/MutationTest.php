@@ -68,7 +68,7 @@ class MutationTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
+     * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Exception
      */
     public function testDoesNotIncludeIllegalFieldsInOutput()

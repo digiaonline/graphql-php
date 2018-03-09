@@ -74,7 +74,6 @@ class SchemaParserTest extends TestCase
 {
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleType()
@@ -109,7 +108,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testParsesWithDescriptionString()
@@ -139,7 +137,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testParsesWithDescriptionMultiLineString()
@@ -172,7 +169,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleExtension()
@@ -206,7 +202,6 @@ extend type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testExtensionWithoutFields()
@@ -233,7 +228,6 @@ extend type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testExtensionWithoutFieldsFollowedByExtension()
@@ -274,7 +268,6 @@ extend type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testExtensionWithoutAnythingThrows()
@@ -285,7 +278,6 @@ extend type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testExtensionsDoNotIncludeDescriptions()
@@ -307,7 +299,6 @@ extend "Description" type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleNonNullType()
@@ -346,7 +337,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleTypeInheritingInterface()
@@ -380,7 +370,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleTypeInheritingMultipleInterface()
@@ -415,7 +404,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleTypeInheritingMultipleInterfaceWithLeadingAmpersand()
@@ -450,7 +438,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSingleValueEnum()
@@ -477,7 +464,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testDoubleValueEnum()
@@ -505,7 +491,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleInterface()
@@ -539,7 +524,6 @@ interface Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function parseSimpleFieldWithArgument()
@@ -582,7 +566,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleFieldWithArgumentWithDefaultValue()
@@ -629,7 +612,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleFieldWithListArgument()
@@ -676,7 +658,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function parseSimpleFieldWithTwoArguments()
@@ -725,7 +706,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleUnion()
@@ -752,7 +732,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleUnionWithTypes()
@@ -780,7 +759,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleUnionWithTypesAndLeadingPipe()
@@ -808,7 +786,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testUnionFailsWithNoTypes()
@@ -819,7 +796,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testUnionFailsWithLeadingDoublePipe()
@@ -830,7 +806,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testUnionFailsWithTrailingPipe()
@@ -841,7 +816,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleScalar()
@@ -865,7 +839,6 @@ type Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleInputObject()
@@ -900,7 +873,6 @@ input Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testSimpleInputObjectWithArgumentsShouldFail()
@@ -914,7 +886,6 @@ input Hello {
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testDirectiveWithIncorrectLocations()
