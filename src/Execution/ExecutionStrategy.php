@@ -172,27 +172,31 @@ abstract class ExecutionStrategy
      * @param Schema     $schema
      * @param ObjectType $parentType
      * @param string     $fieldName
-     * @return \Digia\GraphQL\Type\Definition\Field|null
+     * @return Field|null
      * @throws \Exception
      * @throws \TypeError
      */
     public function getFieldDefinition(Schema $schema, ObjectType $parentType, string $fieldName)
     {
-        if ($fieldName === SchemaMetaFieldDefinition()->getName() && $schema->getQuery() === $parentType) {
-            return SchemaMetaFieldDefinition();
+        $schemaMetaFieldDifinition   = SchemaMetaFieldDefinition();
+        $typeMetaFieldDefinition     = TypeMetaFieldDefinition();
+        $typeNameMetaFieldDefinition = TypeNameMetaFieldDefinition();
+
+        if ($fieldName === $schemaMetaFieldDifinition->getName() && $schema->getQuery() === $parentType) {
+            return $schemaMetaFieldDifinition;
         }
 
-        if ($fieldName === TypeMetaFieldDefinition()->getName() && $schema->getQuery() === $parentType) {
-            return TypeNameMetaFieldDefinition();
+        if ($fieldName === $typeMetaFieldDefinition->getName() && $schema->getQuery() === $parentType) {
+            return $typeMetaFieldDefinition;
         }
 
-        if ($fieldName === TypeNameMetaFieldDefinition()->getName()) {
-            return TypeNameMetaFieldDefinition();
+        if ($fieldName === $typeNameMetaFieldDefinition->getName()) {
+            return $typeNameMetaFieldDefinition;
         }
 
         $fields = $parentType->getFields();
 
-        return isset($fields[$fieldName]) ? $fields[$fieldName] : null;
+        return $fields[$fieldName] ?? null;
     }
 
 
