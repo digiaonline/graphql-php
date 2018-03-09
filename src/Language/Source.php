@@ -118,7 +118,7 @@ class Source
             );
         }
 
-        $this->locationOffset = $locationOffset;
+        $this->locationOffset = $locationOffset ?? new SourceLocation();
 
         return $this;
     }

@@ -93,5 +93,5 @@ function whitespace(int $length): string
  */
 function leftPad(int $length, string $str): string
 {
-    return whitespace($length) . $str;
+    return whitespace($length - mb_strlen($str)) . $str;
 }
