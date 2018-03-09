@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Test\Functional\Execution;
 
-use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
@@ -18,10 +17,11 @@ use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Schema;
+use function Digia\GraphQL\graphql;
+use function Digia\GraphQL\execute;
 use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
-use Digia\GraphQL\Type\Schema;
-use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLString;
@@ -30,12 +30,13 @@ class ExecutionTest extends TestCase
 {
     /**
      * throws if no document is provided
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function testNoDocumentIsProvided()
     {
         $this->expectException(\TypeError::class);
 
-        $schema = new Schema([
+        $schema = GraphQLSchema([
             'query' =>
                 new ObjectType([
                     'name'   => 'Type',
@@ -47,8 +48,7 @@ class ExecutionTest extends TestCase
                 ])
         ]);
 
-        /** @var ExecutionResult $executionResult */
-        Execution::execute($schema, null);
+        graphql($schema, null);
     }
 
     /**
@@ -60,12 +60,12 @@ class ExecutionTest extends TestCase
     {
         $this->expectException(\TypeError::class);
 
-        /** @var ExecutionResult $executionResult */
-        Execution::execute(null, parse('{field}'));
+        graphql(null, '{field}');
     }
 
     /**
      * Test accepts an object with named properties as arguments
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function testAcceptAnObjectWithNamedPropertiesAsArguments()
     {
@@ -84,17 +84,20 @@ class ExecutionTest extends TestCase
                 ])
         ]);
 
-        $rootValue    = 'rootValue';
-        $documentNode = parse('query Example { a }');
+        $rootValue = 'rootValue';
+        $source  = 'query Example { a }';
 
         /** @var ExecutionResult $executionResult */
-        $result = Execution::execute($schema, $documentNode, $rootValue);
+        $result = graphql($schema, $source, $rootValue);
 
         $expected = new ExecutionResult(['a' => $rootValue], []);
 
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testExecuteHelloQuery()
     {
         $schema = new Schema([
@@ -141,28 +144,17 @@ class ExecutionTest extends TestCase
             ],
         ]);
 
-        $rootValue      = [];
-        $contextValue   = '';
-        $variableValues = [];
-        $operationName  = 'query';
-        $fieldResolver  = null;
-
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
-            $schema,
-            $documentNode,
-            $rootValue,
-            $contextValue,
-            $variableValues,
-            $operationName,
-            $fieldResolver
-        );
+        $executionResult = execute($schema, $documentNode);
 
         $expected = new ExecutionResult(['hello' => 'world'], []);
 
         $this->assertEquals($expected, $executionResult);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testExecuteQueryHelloWithArgs()
     {
         $schema = GraphQLSchema([
@@ -229,28 +221,17 @@ class ExecutionTest extends TestCase
             ],
         ]);
 
-        $rootValue      = [];
-        $contextValue   = '';
-        $variableValues = [];
-        $operationName  = 'query';
-        $fieldResolver  = null;
-
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
-            $schema,
-            $documentNode,
-            $rootValue,
-            $contextValue,
-            $variableValues,
-            $operationName,
-            $fieldResolver
-        );
+        $executionResult = execute($schema, $documentNode);
 
         $expected = new ExecutionResult(['greeting' => 'Hello Han Solo'], []);
 
         $this->assertEquals($expected, $executionResult);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testExecuteQueryWithMultipleFields()
     {
         $schema = new Schema([
@@ -292,95 +273,8 @@ class ExecutionTest extends TestCase
                 ])
         ]);
 
-        $documentNode = new DocumentNode([
-            'definitions' => [
-                new OperationDefinitionNode([
-                    'kind'                => NodeKindEnum::OPERATION_DEFINITION,
-                    'name'                => new NameNode([
-                        'value' => 'query'
-                    ]),
-                    'selectionSet'        => new SelectionSetNode([
-                        'selections' => [
-                            new FieldNode([
-                                'name' => new NameNode([
-                                    'value'    => 'id',
-                                    'location' => new Location(
-                                        15,
-                                        20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
-                                            new SourceLocation())
-                                    )
-                                ]),
-                            ]),
-                            new FieldNode([
-                                'name' => new NameNode([
-                                    'value'    => 'type',
-                                    'location' => new Location(
-                                        15,
-                                        20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
-                                            new SourceLocation())
-                                    )
-                                ]),
-                            ]),
-                            new FieldNode([
-                                'name' => new NameNode([
-                                    'value'    => 'friends',
-                                    'location' => new Location(
-                                        15,
-                                        20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
-                                            new SourceLocation())
-                                    )
-                                ]),
-                            ]),
-                            new FieldNode([
-                                'name' => new NameNode([
-                                    'value'    => 'appearsIn',
-                                    'location' => new Location(
-                                        15,
-                                        20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
-                                            new SourceLocation())
-                                    )
-                                ]),
-                            ]),
-                            new FieldNode([
-                                'name' => new NameNode([
-                                    'value'    => 'homePlanet',
-                                    'location' => new Location(
-                                        15,
-                                        20,
-                                        new Source('query Human {id, type, friends, appearsIn, homePlanet}', 'GraphQL',
-                                            new SourceLocation())
-                                    )
-                                ]),
-                            ])
-                        ]
-                    ]),
-                    'operation'           => 'query',
-                    'directives'          => [],
-                    'variableDefinitions' => []
-                ])
-            ],
-        ]);
-
-        $rootValue      = [];
-        $contextValue   = '';
-        $variableValues = [];
-        $operationName  = 'query';
-        $fieldResolver  = null;
-
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
-            $schema,
-            $documentNode,
-            $rootValue,
-            $contextValue,
-            $variableValues,
-            $operationName,
-            $fieldResolver
-        );
+        $executionResult = graphql($schema, 'query Human {id, type, friends, appearsIn, homePlanet}');
 
         $expected = new ExecutionResult([
             'id'         => 1000,
@@ -393,18 +287,22 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testHandleFragments()
     {
-        $documentNode = parse('
-      { a, ...FragOne, ...FragTwo }
-      fragment FragOne on Type {
-        b
-        deep { b, deeper: deep { b } }
-      }
-      fragment FragTwo on Type {
-        c
-        deep { c, deeper: deep { c } }
-      }');
+        $source = <<<SRC
+{ a, ...FragOne, ...FragTwo }
+fragment FragOne on Type {
+    b
+    deep { b, deeper: deep { b } }
+}
+fragment FragTwo on Type {
+    c
+    deep { c, deeper: deep { c } }
+}
+SRC;
 
         $Type = new ObjectType([
             'name'   => 'Type',
@@ -442,22 +340,8 @@ class ExecutionTest extends TestCase
             'query' => $Type
         ]);
 
-        $rootValue      = [];
-        $contextValue   = '';
-        $variableValues = [];
-        $operationName  = '';
-        $fieldResolver  = null;
-
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
-            $schema,
-            $documentNode,
-            $rootValue,
-            $contextValue,
-            $variableValues,
-            $operationName,
-            $fieldResolver
-        );
+        $executionResult = graphql($schema, $source);
 
         $expected = new ExecutionResult([
             'a'    => 'Apple',

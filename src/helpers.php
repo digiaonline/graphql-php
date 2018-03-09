@@ -4,6 +4,7 @@ namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Execution\Execution;
+use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
@@ -96,18 +97,54 @@ function graphql(
     string $source,
     $rootValue = null,
     $contextValue = null,
-    $variableValues = null,
+    $variableValues = [],
     $operationName = null,
     callable $fieldResolver = null
 ): ExecutionResult {
     /** @noinspection PhpParamsInspection */
-    return Execution::execute(
-        $schema,
-        parse($source),
-        $rootValue,
-        $contextValue,
-        $variableValues,
-        $operationName,
-        $fieldResolver
-    );
+    return GraphQL::get(ExecutionInterface::class)
+        ->execute(
+            $schema,
+            parse($source),
+            $rootValue,
+            $contextValue,
+            $variableValues,
+            $operationName,
+            $fieldResolver
+        );
+}
+
+/**
+ * Note that this is temporary needed
+ * We can remove this later
+ *
+ * @param SchemaInterface $schema
+ * @param DocumentNode    $documentNode
+ * @param null            $rootValue
+ * @param null            $contextValue
+ * @param null            $variableValues
+ * @param null            $operationName
+ * @param callable|null   $fieldResolver
+ * @return ExecutionResult
+ */
+function execute(
+    SchemaInterface $schema,
+    DocumentNode $documentNode,
+    $rootValue = null,
+    $contextValue = null,
+    $variableValues = [],
+    $operationName = null,
+    callable $fieldResolver = null
+): ExecutionResult
+{
+    return GraphQL::get(ExecutionInterface::class)
+        ->execute(
+            $schema,
+            $documentNode,
+            $rootValue,
+            $contextValue,
+            $variableValues,
+            $operationName,
+            $fieldResolver
+        );
 }

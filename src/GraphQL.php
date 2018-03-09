@@ -4,6 +4,7 @@ namespace Digia\GraphQL;
 
 use Digia\GraphQL\Provider\CacheProvider;
 use Digia\GraphQL\Provider\DirectivesProvider;
+use Digia\GraphQL\Provider\ExecutionProvider;
 use Digia\GraphQL\Provider\IntrospectionTypesProvider;
 use Digia\GraphQL\Provider\ParserProvider;
 use Digia\GraphQL\Provider\PrinterProvider;
@@ -45,6 +46,7 @@ class GraphQL
         IntrospectionTypesProvider::class,
         ScalarTypesProvider::class,
         DirectivesProvider::class,
+        ExecutionProvider::class,
     ];
 
     /**

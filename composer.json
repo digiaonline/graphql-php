@@ -32,7 +32,7 @@
             "./src/Util/invariant.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
-            "./src/facades.php"
+            "./src/helpers.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\": "./src"
