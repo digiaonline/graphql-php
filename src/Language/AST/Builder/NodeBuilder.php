@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Builder;
 
-use Digia\GraphQL\Error\GraphQLError;
+use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 
 class NodeBuilder implements NodeBuilderInterface, DirectorInterface
@@ -30,12 +30,12 @@ class NodeBuilder implements NodeBuilderInterface, DirectorInterface
     /**
      * @param array $ast
      * @return NodeInterface
-     * @throws GraphQLError
+     * @throws LanguageException
      */
     public function build(array $ast): NodeInterface
     {
         if (!isset($ast['kind'])) {
-            throw new GraphQLError(sprintf('Nodes must specify a kind, got %s', json_encode($ast)));
+            throw new LanguageException(sprintf('Nodes must specify a kind, got %s', json_encode($ast)));
         }
 
         $builder = $this->getBuilder($ast['kind']);
@@ -44,7 +44,7 @@ class NodeBuilder implements NodeBuilderInterface, DirectorInterface
             return $builder->build($ast);
         }
 
-        throw new GraphQLError(sprintf('Node of kind "%s" not supported.', $ast['kind']));
+        throw new LanguageException(sprintf('Node of kind "%s" not supported.', $ast['kind']));
     }
 
     /**

@@ -27,7 +27,6 @@ class VisitorTest extends TestCase
 {
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testValidatesPathArgument()
@@ -66,7 +65,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testAllowsEditingANodeBothOnEnterAndOnLeave()
@@ -109,7 +107,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testAllowsEditingTheRootNodeOnEnterAndOnLeave()
@@ -149,7 +146,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testAllowsForEditingOnEnter()
@@ -184,7 +180,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testAllowsForEditingOnLeave()
@@ -220,7 +215,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testVisitsEditedNode()
@@ -258,7 +252,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testAllowsSkippingSubTree()
@@ -308,7 +301,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testAllowsEarlyExitWhileVisiting()
@@ -361,7 +353,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testAllowsEarlyExitWhileLeaving()
@@ -415,7 +406,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testAllowsAKindVisitor()
@@ -457,7 +447,6 @@ class VisitorTest extends TestCase
 
     /**
      * @throws VisitorBreak
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testVisitsVariablesDefinedInFragments()
@@ -516,7 +505,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testVisitsKitchenSink()
@@ -1016,7 +1004,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws VisitorBreak
      * @throws \Exception
      */
     public function testAllowsEarlyExitWhileEnteringWhenVisitingInParallel()
@@ -1070,7 +1057,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws VisitorBreak
      * @throws \Exception
      */
     public function testAllowsEarlyExitWhileLeavingWhenVisitingInParallel()

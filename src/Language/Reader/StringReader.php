@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Reader;
 
-use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\Token;
 use Digia\GraphQL\Language\TokenKindEnum;
 use function Digia\GraphQL\Language\charCodeAt;
@@ -22,7 +22,7 @@ class StringReader extends AbstractReader
 
     /**
      * @inheritdoc
-     * @throws SyntaxError
+     * @throws SyntaxErrorException
      */
     public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
     {
@@ -42,7 +42,7 @@ class StringReader extends AbstractReader
             }
 
             if ($this->isSourceCharacter($code)) {
-                throw new SyntaxError(sprintf('Invalid character within String: %s', printCharCode($code)));
+                throw new SyntaxErrorException(sprintf('Invalid character within String: %s', printCharCode($code)));
             }
 
             ++$pos;
@@ -86,7 +86,7 @@ class StringReader extends AbstractReader
                             charCodeAt($body, $pos + 4)
                         );
                         if ($charCode < 0) {
-                            throw new SyntaxError(
+                            throw new SyntaxErrorException(
                                 sprintf(
                                     'Invalid character escape sequence: \\u%s',
                                     sliceString($body, $pos + 1, $pos + 5)
@@ -97,7 +97,7 @@ class StringReader extends AbstractReader
                         $pos   += 4;
                         break;
                     default:
-                        throw new SyntaxError(sprintf('Invalid character escape sequence: \\%s', chr($code)));
+                        throw new SyntaxErrorException(sprintf('Invalid character escape sequence: \\%s', chr($code)));
                 }
 
                 ++$pos;
@@ -105,7 +105,7 @@ class StringReader extends AbstractReader
             }
         }
 
-        throw new SyntaxError('Unterminated string.');
+        throw new SyntaxErrorException('Unterminated string.');
     }
 
     /**

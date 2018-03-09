@@ -12,7 +12,6 @@ class SchemaPrinterTest extends TestCase
 {
 
     /**
-     * @throws \Digia\GraphQL\Error\GraphQLError
      * @throws \Exception
      */
     public function testDoesNotAlterAST()

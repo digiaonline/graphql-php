@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Reader;
 
-use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\Token;
 use Digia\GraphQL\Language\TokenKindEnum;
 use function Digia\GraphQL\Language\charCodeAt;
@@ -24,7 +24,7 @@ class NumberReader extends AbstractReader
 
     /**
      * @inheritdoc
-     * @throws SyntaxError
+     * @throws SyntaxErrorException
      */
     public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
     {
@@ -41,7 +41,7 @@ class NumberReader extends AbstractReader
             // 0
             $code = charCodeAt($body, ++$pos);
             if (isNumber($code)) {
-                throw new SyntaxError(sprintf('Invalid number, unexpected digit after 0: %s.', printCharCode($code)));
+                throw new SyntaxErrorException(sprintf('Invalid number, unexpected digit after 0: %s.', printCharCode($code)));
             }
         } else {
             $pos  = $this->readDigits($code, $pos);
@@ -92,7 +92,7 @@ class NumberReader extends AbstractReader
      * @param int $pos
      * @param int $code
      * @return int
-     * @throws SyntaxError
+     * @throws SyntaxErrorException
      */
     protected function readDigits(int $code, int $pos): int
     {
@@ -106,6 +106,6 @@ class NumberReader extends AbstractReader
             return $pos;
         }
 
-        throw new SyntaxError(sprintf('Invalid number, expected digit but got: %s', printCharCode($code)));
+        throw new SyntaxErrorException(sprintf('Invalid number, expected digit but got: %s', printCharCode($code)));
     }
 }

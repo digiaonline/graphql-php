@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Reader;
 
-use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\Token;
 use Digia\GraphQL\Language\TokenKindEnum;
 use function Digia\GraphQL\Language\blockStringValue;
@@ -23,7 +23,7 @@ class BlockStringReader extends AbstractReader
 
     /**
      * @inheritdoc
-     * @throws SyntaxError
+     * @throws SyntaxErrorException
      */
     public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
     {
@@ -51,7 +51,7 @@ class BlockStringReader extends AbstractReader
             }
 
             if (isSourceCharacter($code)) {
-                throw new SyntaxError(sprintf('Invalid character within String: %s', printCharCode($code)));
+                throw new SyntaxErrorException(sprintf('Invalid character within String: %s', printCharCode($code)));
             }
 
             if ($this->isEscapedTripleQuote($body, $code, $pos)) {
@@ -63,7 +63,7 @@ class BlockStringReader extends AbstractReader
             }
         }
 
-        throw new SyntaxError('Unterminated string.');
+        throw new SyntaxErrorException('Unterminated string.');
     }
 
     /**
