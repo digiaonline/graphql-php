@@ -5,6 +5,8 @@ namespace Digia\GraphQL\Provider;
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionRule;
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
+use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
+use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class RulesProvider extends AbstractServiceProvider
@@ -16,6 +18,8 @@ class RulesProvider extends AbstractServiceProvider
         ExecutableDefinitionRule::class,
         FieldOnCorrectTypeRule::class,
         FragmentsOnCompositeTypesRule::class,
+        KnownArgumentNamesRule::class,
+        KnownDirectivesRule::class,
     ];
 
     /**
@@ -30,5 +34,8 @@ class RulesProvider extends AbstractServiceProvider
             FragmentsOnCompositeTypesRule::class,
             true/* $shared */
         );
+        $this->container->add(KnownArgumentNamesRule::class, KnownArgumentNamesRule::class, true/* $shared */);
+        $this->container->add(KnownDirectivesRule::class, KnownDirectivesRule::class, true/* $shared */);
+
     }
 }

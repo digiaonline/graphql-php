@@ -119,11 +119,20 @@ trait AcceptVisitorTrait
     }
 
     /**
+     * @param int $depth
      * @return NodeInterface|null
      */
-    public function getClosestAncestor(): ?NodeInterface
+    public function getAncestor(int $depth = 1): ?NodeInterface
     {
-        return !empty($this->ancestors) ? $this->ancestors[\count($this->ancestors) - 1] : null;
+        return !empty($this->ancestors) ? $this->ancestors[\count($this->ancestors) - $depth] : null;
+    }
+
+    /**
+     * @return NodeInterface[]
+     */
+    public function getAncestors(): array
+    {
+        return $this->ancestors;
     }
 
     /**

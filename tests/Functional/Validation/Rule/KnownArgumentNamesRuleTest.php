@@ -6,14 +6,8 @@ use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
 use function Digia\GraphQL\Validation\Rule\unknownArgumentMessage;
 use function Digia\GraphQL\Validation\Rule\unknownDirectiveArgumentMessage;
 
-function unknownArgument(
-    string $argumentName,
-    string $fieldName,
-    string $typeName,
-    array $suggestedArguments,
-    int $line,
-    int $column
-) {
+function unknownArgument($argumentName, $fieldName, $typeName, $suggestedArguments, $line, $column)
+{
     return [
         'message'   => unknownArgumentMessage($argumentName, $fieldName, $typeName, $suggestedArguments),
         // TODO: Add locations when support has been added to GraphQLError.
@@ -22,13 +16,8 @@ function unknownArgument(
     ];
 }
 
-function unknownDirectiveArgument(
-    string $argumentName,
-    string $directiveName,
-    array $suggestedArguments,
-    int $line,
-    int $column
-) {
+function unknownDirectiveArgument($argumentName, $directiveName, $suggestedArguments, $line, $column)
+{
     return [
         'message'   => unknownDirectiveArgumentMessage($argumentName, $directiveName, $suggestedArguments),
         // TODO: Add locations when support has been added to GraphQLError.

@@ -21,7 +21,7 @@ class KnownArgumentNamesRule extends AbstractRule
             $argumentDefinition = $this->context->getArgument();
 
             if (null === $argumentDefinition) {
-                $argumentOf = $node->getClosestAncestor();
+                $argumentOf = $node->getAncestor();
                 if ($argumentOf instanceof FieldNode) {
                     $fieldDefinition = $this->context->getFieldDefinition();
                     $parentType      = $this->context->getParentType();

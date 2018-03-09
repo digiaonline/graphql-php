@@ -28,13 +28,13 @@ function undefinedFieldMessage(
     array $suggestedFieldNames
 ): string {
     $message = sprintf('Cannot query field "%s" on type "%s".', $fieldName, $type);
-    if (count($suggestedTypeNames) !== 0) {
+    if (!empty($suggestedTypeNames)) {
         return $message . ' ' . sprintf(
                 'Did you mean to use an inline fragment on %s?',
                 quotedOrList($suggestedTypeNames)
             );
     }
-    if (count($suggestedFieldNames) !== 0) {
+    if (!empty($suggestedFieldNames)) {
         return $message . ' ' . sprintf('Did you mean %s?', quotedOrList($suggestedFieldNames));
     }
     return $message;
@@ -73,7 +73,7 @@ function unknownArgumentMessage(
     array $suggestedArguments
 ): string {
     $message = sprintf('Unknown argument "%s" on field "%s" of type "%s".', $argumentName, $fieldName, $typeName);
-    if (count($suggestedArguments) !== 0) {
+    if (!empty($suggestedArguments)) {
         return $message . ' ' . sprintf('Did you mean %s', quotedOrList($suggestedArguments));
     }
     return $message;
@@ -88,8 +88,27 @@ function unknownArgumentMessage(
 function unknownDirectiveArgumentMessage(string $argumentName, string $directiveName, array $suggestedArguments): string
 {
     $message = sprintf('Unknown argument "%s" on directive "@%s".', $argumentName, $directiveName);
-    if (count($suggestedArguments) !== 0) {
+    if (!empty($suggestedArguments)) {
         return $message . ' ' . sprintf('Did you mean %s', quotedOrList($suggestedArguments));
     }
     return $message;
+}
+
+/**
+ * @param string $directiveName
+ * @return string
+ */
+function unknownDirectiveMessage(string $directiveName): string
+{
+    return sprintf('Unknown directive "%s".', $directiveName);
+}
+
+/**
+ * @param string $directiveName
+ * @param string $location
+ * @return string
+ */
+function misplacedDirectiveMessage(string $directiveName, string $location): string
+{
+    return sprintf('Directive "%s" may not be used on %s.', $directiveName, $location);
 }

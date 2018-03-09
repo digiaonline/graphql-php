@@ -17,14 +17,14 @@ interface SchemaInterface
     public function getQuery(): ObjectType;
 
     /**
-     * @return ObjectType
+     * @return ObjectType|null
      */
-    public function getMutation(): ObjectType;
+    public function getMutation(): ?ObjectType;
 
     /**
-     * @return ObjectType
+     * @return ObjectType|null
      */
-    public function getSubscription(): ObjectType;
+    public function getSubscription(): ?ObjectType;
 
     /**
      * @param string $name

@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
 use function Digia\GraphQL\Validation\Rule\undefinedFieldMessage;
 
-function undefinedField($field, $type, $suggestedTypes, $suggestsFields, $line, $column): array
+function undefinedField($field, $type, $suggestedTypes, $suggestsFields, $line, $column)
 {
     return [
         'message'   => undefinedFieldMessage($field, $type, $suggestedTypes, $suggestsFields),

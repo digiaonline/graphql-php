@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionRule;
 use function Digia\GraphQL\Validation\Rule\nonExecutableDefinitionMessage;
 
-function nonExecutableDefinition(string $definitionName, int $line, int $column)
+function nonExecutableDefinition($definitionName, $line, $column)
 {
     return [
         'message'   => nonExecutableDefinitionMessage($definitionName),

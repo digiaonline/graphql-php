@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
 use function Digia\GraphQL\Validation\Rule\fragmentOnNonCompositeMessage;
 
-function fragmentOnNonComposite(string $fragmentName, string $typeName, int $line, int $column): array
+function fragmentOnNonComposite($fragmentName, $typeName, $line, $column)
 {
     return [
         'message'   => fragmentOnNonCompositeMessage($fragmentName, $typeName),
