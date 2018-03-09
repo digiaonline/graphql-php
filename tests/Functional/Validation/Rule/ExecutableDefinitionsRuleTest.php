@@ -1,12 +1,28 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\Validation;
+namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionRule;
+use function Digia\GraphQL\Validation\Rule\nonExecutableDefinitionMessage;
 
-class ExecutableDefinitionsTest extends RuleTestCase
+/**
+ * @param string $definitionName
+ * @param int    $line
+ * @param int    $column
+ * @return array
+ */
+function nonExecutableDefinition(string $definitionName, int $line, int $column)
+{
+    return [
+        'message'   => nonExecutableDefinitionMessage($definitionName),
+        // TODO: Add locations when support has been added to GraphQLError.
+        'locations' => null, //[['line' => $line, 'column' => $column]],
+        'path'      => null,
+    ];
+}
+
+class ExecutableDefinitionsRuleTest extends RuleTestCase
 {
     /**
      * @throws VisitorBreak
@@ -16,7 +32,7 @@ class ExecutableDefinitionsTest extends RuleTestCase
     public function testWithOnlyOperation()
     {
         $this->expectPassesRule(
-            GraphQL::get(ExecutableDefinitionRule::class),
+            new ExecutableDefinitionRule(),
             '
             query Foo {
               dog {
@@ -35,7 +51,7 @@ class ExecutableDefinitionsTest extends RuleTestCase
     public function testWithOperationAndFragment()
     {
         $this->expectPassesRule(
-            GraphQL::get(ExecutableDefinitionRule::class),
+            new ExecutableDefinitionRule(),
             '
             query Foo {
               dog {
@@ -58,8 +74,9 @@ class ExecutableDefinitionsTest extends RuleTestCase
      */
     public function testWithTypeDefinition()
     {
+        // TODO: Add expectedErrors
         $this->expectFailsRule(
-            GraphQL::get(ExecutableDefinitionRule::class),
+            new ExecutableDefinitionRule(),
             '
             query Foo {
               dog {
@@ -74,7 +91,11 @@ class ExecutableDefinitionsTest extends RuleTestCase
             extend type Dog {
               color: String
             }
-            '
+            ',
+            [
+                nonExecutableDefinition('Cow', 8, 7),
+                nonExecutableDefinition('Dog', 12, 7),
+            ]
         );
     }
 
@@ -85,8 +106,9 @@ class ExecutableDefinitionsTest extends RuleTestCase
      */
     public function testWithSchemaDefinition()
     {
+        // TODO: Add expectedErrors
         $this->expectFailsRule(
-            GraphQL::get(ExecutableDefinitionRule::class),
+            new ExecutableDefinitionRule(),
             '
             schema {
               query: Query
@@ -95,7 +117,11 @@ class ExecutableDefinitionsTest extends RuleTestCase
             type Query {
               test: String
             }
-            '
+            ',
+            [
+                nonExecutableDefinition('schema', 2, 7),
+                nonExecutableDefinition('Query', 6, 7),
+            ]
         );
     }
 }

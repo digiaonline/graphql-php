@@ -20,6 +20,7 @@
     },
     "autoload": {
         "files": [
+            "./src/Error/formatError.php",
             "./src/Execution/values.php",
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
@@ -30,8 +31,11 @@
             "./src/Util/coercers.php",
             "./src/Util/helpers.php",
             "./src/Util/invariant.php",
+            "./src/Util/orList.php",
+            "./src/Util/suggestionList.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
+            "./src/Validation/Rule/messages.php",
             "./src/helpers.php"
         ],
         "psr-4": {

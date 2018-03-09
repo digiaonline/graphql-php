@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
@@ -65,5 +66,21 @@ class ValidationContext
     public function getParentType(): ?TypeInterface
     {
         return $this->typeInfo->getParentType();
+    }
+
+    /**
+     * @return Field|null
+     */
+    public function getFieldDefinition(): ?Field
+    {
+        return $this->typeInfo->getFieldDefinition();
+    }
+
+    /**
+     * @return SchemaInterface
+     */
+    public function getSchema(): SchemaInterface
+    {
+        return $this->schema;
     }
 }

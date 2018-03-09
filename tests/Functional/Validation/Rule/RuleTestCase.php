@@ -1,10 +1,12 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\Validation;
+namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use function Digia\GraphQL\Error\formatError;
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
+use function Digia\GraphQL\Test\Functional\Validation\testSchema;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Validation\ValidatorInterface;
 use function Digia\GraphQL\parse;
@@ -76,7 +78,7 @@ abstract class RuleTestCase extends TestCase
     {
         $errors = $this->validator->validate($schema, parse($query), $rules);
         $this->assertTrue(count($errors) >= 1, 'Should not validate');
-        // TODO: Assert expected errors
+        $this->assertEquals(array_map('Digia\GraphQL\Error\formatError', $errors), $expectedErrors);
         return $errors;
     }
 }

@@ -11,8 +11,6 @@ use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
 
 class ExecutableDefinitionRule extends AbstractRule
 {
-    use ContextAwareTrait;
-
     /**
      * @inheritdoc
      */
@@ -28,8 +26,7 @@ class ExecutableDefinitionRule extends AbstractRule
                 if (!$definition instanceof ExecutableDefinitionNodeInterface) {
                     $this->context->reportError(
                         new GraphQLError(
-                            sprintf(
-                                'The %s definition is not executable.',
+                            nonExecutableDefinitionMessage(
                                 $definition instanceof SchemaDefinitionNode ? 'schema' : $definition->getNameValue()
                             ),
                             [$definition]
