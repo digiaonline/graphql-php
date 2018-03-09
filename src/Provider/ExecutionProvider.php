@@ -26,6 +26,6 @@ class ExecutionProvider extends AbstractServiceProvider
     {
         $this->container->add(ExecutionInterface::class, function () {
             return new Execution();
-        });
+        }, true/* $shared */);
     }
 }
