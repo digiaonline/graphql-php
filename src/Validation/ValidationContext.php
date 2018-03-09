@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Field;
@@ -32,6 +33,11 @@ class ValidationContext
      * @var array|ValidationException[]
      */
     protected $errors = [];
+
+    /**
+     * @var array|FragmentDefinitionNode[]
+     */
+    protected $fragments = [];
 
     /**
      * ValidationContext constructor.
@@ -100,5 +106,23 @@ class ValidationContext
     public function getDirective(): ?Directive
     {
         return $this->typeInfo->getDirective();
+    }
+
+    /**
+     * @param string $name
+     * @return FragmentDefinitionNode|null
+     */
+    public function getFragment(string $name): ?FragmentDefinitionNode
+    {
+        if (empty($this->fragments)) {
+            $this->fragments = array_reduce($this->documentNode->getDefinitions(), function ($fragments, $definition) {
+                if ($definition instanceof FragmentDefinitionNode) {
+                    $fragments[$definition->getNameValue()] = $definition;
+                }
+                return $fragments;
+            }, []);
+        }
+
+        return $this->fragments[$name] ?? null;
     }
 }

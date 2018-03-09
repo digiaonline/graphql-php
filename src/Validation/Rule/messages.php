@@ -112,3 +112,12 @@ function misplacedDirectiveMessage(string $directiveName, string $location): str
 {
     return sprintf('Directive "%s" may not be used on %s.', $directiveName, $location);
 }
+
+/**
+ * @param string $fragmentName
+ * @return string
+ */
+function unknownFragmentMessage(string $fragmentName): string
+{
+    return sprintf('Unknown fragment "%s".', $fragmentName);
+}
