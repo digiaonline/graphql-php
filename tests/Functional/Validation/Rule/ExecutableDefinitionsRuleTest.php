@@ -2,16 +2,9 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionRule;
 use function Digia\GraphQL\Validation\Rule\nonExecutableDefinitionMessage;
 
-/**
- * @param string $definitionName
- * @param int    $line
- * @param int    $column
- * @return array
- */
 function nonExecutableDefinition(string $definitionName, int $line, int $column)
 {
     return [
@@ -24,11 +17,6 @@ function nonExecutableDefinition(string $definitionName, int $line, int $column)
 
 class ExecutableDefinitionsRuleTest extends RuleTestCase
 {
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testWithOnlyOperation()
     {
         $this->expectPassesRule(
@@ -43,11 +31,6 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testWithOperationAndFragment()
     {
         $this->expectPassesRule(
@@ -67,14 +50,8 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testWithTypeDefinition()
     {
-        // TODO: Add expectedErrors
         $this->expectFailsRule(
             new ExecutableDefinitionRule(),
             '
@@ -99,14 +76,8 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testWithSchemaDefinition()
     {
-        // TODO: Add expectedErrors
         $this->expectFailsRule(
             new ExecutableDefinitionRule(),
             '

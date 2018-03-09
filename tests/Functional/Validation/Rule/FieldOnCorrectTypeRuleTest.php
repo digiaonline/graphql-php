@@ -2,19 +2,9 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
 use function Digia\GraphQL\Validation\Rule\undefinedFieldMessage;
 
-/**
- * @param $field
- * @param $type
- * @param $suggestedTypes
- * @param $suggestsFields
- * @param $line
- * @param $column
- * @return array
- */
 function undefinedField($field, $type, $suggestedTypes, $suggestsFields, $line, $column): array
 {
     return [
@@ -27,11 +17,6 @@ function undefinedField($field, $type, $suggestedTypes, $suggestsFields, $line, 
 
 class FieldOnCorrectTypeRuleTest extends RuleTestCase
 {
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testObjectFieldSelection()
     {
         $this->expectPassesRule(
@@ -45,11 +30,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testAliasedObjectFieldSelection()
     {
         $this->expectPassesRule(
@@ -62,11 +42,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
+
     public function testInterfaceFieldSelection()
     {
         $this->expectPassesRule(
@@ -80,11 +56,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testAliasedInterfaceFieldSelection()
     {
         $this->expectPassesRule(
@@ -97,11 +68,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testLyingAliasSelection()
     {
         $this->expectPassesRule(
@@ -114,11 +80,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testIgnoresFieldOnUnknownType()
     {
         $this->expectPassesRule(
@@ -131,11 +92,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testReportsErrorWhenTypeIsKnownAgain()
     {
         $this->expectFailsRule(
@@ -156,11 +112,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testFieldNotDefinedOnFragment()
     {
         $this->expectFailsRule(
@@ -174,11 +125,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testIgnoresDeeplyUnknownField()
     {
         $this->expectFailsRule(
@@ -194,11 +140,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testSubFieldNotDefined()
     {
         $this->expectFailsRule(
@@ -214,11 +155,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testFieldNotDefinedOnInlineFragment()
     {
         $this->expectFailsRule(
@@ -234,11 +170,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testAliasedFieldTargetNotDefined()
     {
         $this->expectFailsRule(
@@ -252,11 +183,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testAliasedLyingFieldTargetNotDefined()
     {
         // TODO: Add expectedErrors
@@ -271,11 +197,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testNotDefinedOnInterface()
     {
         // TODO: Add expectedErrors
@@ -290,11 +211,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testDefinedOnImplementorsButNotOnInterface()
     {
         // TODO: Add expectedErrors
@@ -309,11 +225,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testMetaFieldSelectionOnUnion()
     {
         $this->expectPassesRule(
@@ -326,11 +237,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testDirectFieldSelectionOnUnion()
     {
         $this->expectFailsRule(
@@ -344,11 +250,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testDefinedOnImplementorsQueriedOnUnion()
     {
         $this->markTestIncomplete(
@@ -375,11 +276,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     * @throws \TypeError
-     */
     public function testValidFieldInInlineFragment()
     {
         $this->expectPassesRule(

@@ -2,20 +2,10 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
 use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
 use function Digia\GraphQL\Validation\Rule\unknownArgumentMessage;
 use function Digia\GraphQL\Validation\Rule\unknownDirectiveArgumentMessage;
 
-/**
- * @param string $argumentName
- * @param string $fieldName
- * @param string $typeName
- * @param array  $suggestedArguments
- * @param int    $line
- * @param int    $column
- * @return array
- */
 function unknownArgument(
     string $argumentName,
     string $fieldName,
