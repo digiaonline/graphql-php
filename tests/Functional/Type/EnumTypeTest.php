@@ -166,9 +166,6 @@ class EnumTypeTest extends TestCase
 
     // TODO: Add missing tests when possible.
 
-    /**
-     * @throws \Exception
-     */
     public function testPresentsAGetValuesAPIForComplexEnums()
     {
         $values = $this->complexEnum->getValues();
@@ -180,9 +177,6 @@ class EnumTypeTest extends TestCase
         $this->assertEquals($this->complex2, $values[1]->getValue());
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testPresentsAGetValueAPIForComplexEnums()
     {
         $oneValue = $this->complexEnum->getValue('ONE');

@@ -32,7 +32,6 @@ class ParallelVisitor implements VisitorInterface
      * @param NodeInterface|null               $parent
      * @param array                            $path
      * @return NodeInterface|SerializationInterface|null
-     * @throws VisitorBreak
      */
     public function enterNode(
         NodeInterface $node,
@@ -68,7 +67,6 @@ class ParallelVisitor implements VisitorInterface
      * @param NodeInterface|null               $parent
      * @param array                            $path
      * @return NodeInterface|SerializationInterface|null
-     * @throws VisitorBreak
      */
     public function leaveNode(
         NodeInterface $node,

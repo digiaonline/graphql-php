@@ -22,7 +22,6 @@ class StringReader extends AbstractReader
 
     /**
      * @inheritdoc
-     * @throws SyntaxErrorException
      */
     public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
     {

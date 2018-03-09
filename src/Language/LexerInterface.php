@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\SyntaxErrorException;
-
 interface LexerInterface
 {
 
@@ -11,7 +9,6 @@ interface LexerInterface
      * Advances the token stream to the next non-ignored token.
      *
      * @return Token
-     * @throws SyntaxErrorException
      */
     public function advance(): Token;
 
@@ -20,7 +17,6 @@ interface LexerInterface
      * the Lexer's state.
      *
      * @return Token
-     * @throws SyntaxErrorException
      */
     public function lookahead(): Token;
 

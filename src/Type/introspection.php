@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Type;
 
+use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
@@ -75,6 +76,7 @@ function __TypeKind(): EnumType
 
 /**
  * @return Field
+ * @throws InvalidTypeException
  */
 function SchemaMetaFieldDefinition(): Field
 {
@@ -91,6 +93,7 @@ function SchemaMetaFieldDefinition(): Field
 
 /**
  * @return Field
+ * @throws InvalidTypeException
  */
 function TypeMetaFieldDefinition(): Field
 {
@@ -112,6 +115,7 @@ function TypeMetaFieldDefinition(): Field
 
 /**
  * @return Field
+ * @throws InvalidTypeException
  */
 function TypeNameMetaFieldDefinition(): Field
 {

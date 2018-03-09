@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Language\AST\Schema;
 
+use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Language\AST\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
@@ -35,7 +36,7 @@ class SchemaBuilder implements SchemaBuilderInterface
      * @param DocumentNode $documentNode
      * @param array        $options
      * @return SchemaInterface
-     * @throws \Exception
+     * @throws LanguageException
      */
     public function build(DocumentNode $documentNode, array $options = []): SchemaInterface
     {
@@ -47,7 +48,7 @@ class SchemaBuilder implements SchemaBuilderInterface
         foreach ($documentNode->getDefinitions() as $definition) {
             if ($definition instanceof SchemaDefinitionNode) {
                 if ($schemaDefinition) {
-                    throw new \Exception('Must provide only one schema definition.');
+                    throw new LanguageException('Must provide only one schema definition.');
                 }
                 $schemaDefinition = $definition;
                 continue;
@@ -56,7 +57,7 @@ class SchemaBuilder implements SchemaBuilderInterface
             if ($definition instanceof TypeDefinitionNodeInterface) {
                 $typeName = $definition->getNameValue();
                 if (isset($nodeMap[$typeName])) {
-                    throw new \Exception(sprintf('Type "%s" was defined more than once.', $typeName));
+                    throw new LanguageException(sprintf('Type "%s" was defined more than once.', $typeName));
                 }
                 $typeDefinitions[]  = $definition;
                 $nodeMap[$typeName] = $definition;
@@ -125,7 +126,7 @@ class SchemaBuilder implements SchemaBuilderInterface
  * @param SchemaDefinitionNode $schemaDefinition
  * @param array                $nodeMap
  * @return array
- * @throws \Exception
+ * @throws LanguageException
  */
 function getOperationTypes(SchemaDefinitionNode $schemaDefinition, array $nodeMap): array
 {
@@ -134,15 +135,15 @@ function getOperationTypes(SchemaDefinitionNode $schemaDefinition, array $nodeMa
     foreach ($schemaDefinition->getOperationTypes() as $operationTypeDefinition) {
         /** @var TypeNodeInterface|NamedTypeNode $operationType */
         $operationType = $operationTypeDefinition->getType();
-        $typeName  = $operationType->getNameValue();
-        $operation = $operationTypeDefinition->getOperation();
+        $typeName      = $operationType->getNameValue();
+        $operation     = $operationTypeDefinition->getOperation();
 
         if (isset($operationTypes[$typeName])) {
-            throw new \Exception(sprintf('Must provide only one %s type in schema.', $operation));
+            throw new LanguageException(sprintf('Must provide only one %s type in schema.', $operation));
         }
 
         if (!isset($nodeMap[$typeName])) {
-            throw new \Exception(sprintf('Specified %s type %s not found in document.', $operation, $typeName));
+            throw new LanguageException(sprintf('Specified %s type %s not found in document.', $operation, $typeName));
         }
 
         $operationTypes[$operation] = $operationType;

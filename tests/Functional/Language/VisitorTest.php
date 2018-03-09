@@ -26,9 +26,6 @@ use function Digia\GraphQL\Util\readFile;
 class VisitorTest extends TestCase
 {
 
-    /**
-     * @throws \Exception
-     */
     public function testValidatesPathArgument()
     {
         $visited = [];
@@ -64,9 +61,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsEditingANodeBothOnEnterAndOnLeave()
     {
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
@@ -106,9 +100,6 @@ class VisitorTest extends TestCase
         $this->assertTrue($editedNode->getConfigValue('didLeave'));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsEditingTheRootNodeOnEnterAndOnLeave()
     {
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
@@ -145,9 +136,6 @@ class VisitorTest extends TestCase
         $this->assertTrue($editedAst->getConfigValue('didLeave'));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsForEditingOnEnter()
     {
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
@@ -179,9 +167,6 @@ class VisitorTest extends TestCase
         );
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsForEditingOnLeave()
     {
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
@@ -214,9 +199,6 @@ class VisitorTest extends TestCase
         );
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testVisitsEditedNode()
     {
         $addedField = (new FieldNode([
@@ -251,9 +233,6 @@ class VisitorTest extends TestCase
         $this->assertTrue($didVisitEditedNode);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsSkippingSubTree()
     {
         $visited = [];
@@ -300,9 +279,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsEarlyExitWhileVisiting()
     {
         $visited = [];
@@ -352,9 +328,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsEarlyExitWhileLeaving()
     {
         $visited = [];
@@ -405,9 +378,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsAKindVisitor()
     {
         $visited = [];
@@ -445,10 +415,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     */
     public function testVisitsVariablesDefinedInFragments()
     {
         $visited = [];
@@ -504,9 +470,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testVisitsKitchenSink()
     {
         $visited = [];
@@ -844,9 +807,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testVisitInParallel()
     {
         $visited = [];
@@ -895,9 +855,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsSkippingSubTreeWhenVisitingInParallel()
     {
         $visited = [];
@@ -1003,9 +960,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsEarlyExitWhileEnteringWhenVisitingInParallel()
     {
         $visited = [];
@@ -1056,9 +1010,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsEarlyExitWhileLeavingWhenVisitingInParallel()
     {
         $visited = [];
@@ -1110,9 +1061,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsEarlyExitFromDifferentPointsWhenVisitingInParallel()
     {
         $visited = [];
@@ -1208,9 +1156,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testMaintainsTypeInfoDuringVisit()
     {
         $visited = [];
@@ -1300,10 +1245,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    /**
-     * @throws VisitorBreak
-     * @throws \Exception
-     */
     public function testMaintainsTypeInfoDuringEdit()
     {
         $visited = [];

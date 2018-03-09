@@ -37,7 +37,7 @@ class Source
      * @param string              $body
      * @param null|string         $name
      * @param SourceLocation|null $locationOffset
-     * @throws \Exception
+     * @throws InvariantException
      */
     public function __construct(string $body, ?string $name = 'GraphQL request', ?SourceLocation $locationOffset = null)
     {

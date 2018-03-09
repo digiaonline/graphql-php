@@ -11,7 +11,6 @@ interface SchemaBuilderInterface
      * @param DocumentNode $documentNode
      * @param array        $options
      * @return SchemaInterface
-     * @throws \Exception
      */
     public function build(DocumentNode $documentNode, array $options = []): SchemaInterface;
 }

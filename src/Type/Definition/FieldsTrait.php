@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use Digia\GraphQL\Error\InvariantException;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\isValidResolver;
 use function Digia\GraphQL\Type\resolveThunk;
@@ -28,7 +29,6 @@ trait FieldsTrait
 
     /**
      * @return Field[]
-     * @throws \Exception
      */
     public function getFields(): array
     {
@@ -38,7 +38,7 @@ trait FieldsTrait
     }
 
     /**
-     * @throws \Exception
+     *
      */
     protected function defineFieldMapIfNecessary(): void
     {
@@ -64,7 +64,7 @@ trait FieldsTrait
     /**
      * @param mixed $fieldsThunk
      * @return array
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function defineFieldMap($fieldsThunk): array
     {

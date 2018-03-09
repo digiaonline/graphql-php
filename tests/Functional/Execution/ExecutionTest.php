@@ -95,9 +95,6 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testExecuteHelloQuery()
     {
         $schema = new Schema([
@@ -166,9 +163,6 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testExecuteQueryHelloWithArgs()
     {
         $schema = GraphQLSchema([
@@ -257,9 +251,6 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testExecuteQueryWithMultipleFields()
     {
         $schema = new Schema([
@@ -402,10 +393,6 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\ExecutionException
-     * @throws \Exception
-     */
     public function testHandleFragments()
     {
         $documentNode = parse('

@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Language\AST\Node\ListTypeNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NonNullTypeNode;
@@ -15,7 +16,7 @@ use function Digia\GraphQL\Type\GraphQLNonNull;
  * @param SchemaInterface   $schema
  * @param TypeNodeInterface $typeNode
  * @return TypeInterface|null
- * @throws \Exception
+ * @throws InvalidTypeException
  */
 function typeFromAST(SchemaInterface $schema, TypeNodeInterface $typeNode): ?TypeInterface
 {
@@ -35,5 +36,5 @@ function typeFromAST(SchemaInterface $schema, TypeNodeInterface $typeNode): ?Typ
         return $schema->getType($typeNode->getNameValue());
     }
 
-    throw new \Exception(sprintf('Unexpected type kind: %s', $typeNode->getKind()));
+    throw new InvalidTypeException(sprintf('Unexpected type kind: %s', $typeNode->getKind()));
 }

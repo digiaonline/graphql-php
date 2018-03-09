@@ -185,7 +185,6 @@ class DefinitionTest extends TestCase
     /**
      * @param TypeInterface $type
      * @return Schema
-     * @throws \Exception
      */
     protected function schemaWithField(TypeInterface $type): Schema
     {
@@ -203,7 +202,6 @@ class DefinitionTest extends TestCase
     /**
      * @param $resolveValue
      * @return Schema
-     * @throws \Exception
      */
     protected function schemaWithObjectWithFieldResolver($resolveValue): Schema
     {
@@ -229,9 +227,6 @@ class DefinitionTest extends TestCase
 
     // Type System: Example
 
-    /**
-     * @throws \Exception
-     */
     public function testQuerySchema()
     {
         $schema = GraphQLSchema([
@@ -271,9 +266,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals('feed', $feedField->getName());
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testMutationSchema()
     {
         $schema = GraphQLSchema([
@@ -289,9 +281,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals('writeArticle', $writeArticleField->getName());
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testSubscriptionSchema()
     {
         $schema = GraphQLSchema([
@@ -307,9 +296,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals('articleSubscribe', $articleSubscribeField->getName());
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testEnumTypeWithDeprecatedValue()
     {
         $enumWithDeprecatedValue = GraphQLEnumType([
@@ -328,9 +314,6 @@ class DefinitionTest extends TestCase
 
     // TODO: Assess if we want to test "defines an enum type with a value of `null` and `undefined`".
 
-    /**
-     * @throws \Exception
-     */
     public function testObjectWithDeprecatedField()
     {
         $typeWithDeprecatedField = GraphQLObjectType([
@@ -352,9 +335,6 @@ class DefinitionTest extends TestCase
         $this->assertEmpty($field->getArguments());
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testIncludesNestedInputObjectsInSchemaTypeMap()
     {
         $nestedInputObject = GraphQLInputObjectType([
@@ -396,9 +376,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals($nestedInputObject, $schema->getTypeMap()[$nestedInputObject->getName()]);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testIncludesInterfacePossibleTypesInSchemaTypeMap()
     {
         $someInterface = GraphQLInterfaceType([
@@ -429,9 +406,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals($someSubtype, $schema->getTypeMap()[$someSubtype->getName()]);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testStringifySimpleTypes()
     {
         $this->assertEquals(TypeNameEnum::INT, (string)GraphQLInt());
@@ -449,7 +423,6 @@ class DefinitionTest extends TestCase
     /**
      * @param $type
      * @param $answer
-     * @throws \Exception
      * @dataProvider identifiesInputTypesDataProvider
      */
     public function testIdentifiesInputTypes($type, $answer)
@@ -482,9 +455,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAllowsAThunkForUnionMemberTypes()
     {
         $union = GraphQLUnionType([
@@ -500,9 +470,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals($this->objectType, $types[0]);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testDoesNotMutatePassedFieldDefinitions()
     {
         $fields = [
@@ -595,9 +562,6 @@ class DefinitionTest extends TestCase
 
     // Field arg config must be object
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnObjectTypeWithFieldArgs()
     {
         $objType = GraphQLObjectType([
@@ -618,7 +582,6 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @throws \Exception
      * @expectedException \Exception
      */
     public function testRejectsAnObjectTypeWithIncorrectlyTypedFieldArgs()
@@ -660,9 +623,6 @@ class DefinitionTest extends TestCase
 
     // Object interfaces must be array
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnObjectTypeWithArrayInterfaces()
     {
         $objType = GraphQLObjectType([
@@ -674,9 +634,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals($this->interfaceType, $objType->getInterfaces()[0]);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnObjectTypeWithInterfacesAsAFunctionReturningAnArray()
     {
         $objType = GraphQLObjectType([
@@ -698,9 +655,6 @@ class DefinitionTest extends TestCase
 
     // Type System: Object fields must have valid resolve values
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsALambdaAsAnObjectFieldResolver()
     {
         $this->schemaWithObjectWithFieldResolver(function () {
@@ -712,7 +666,6 @@ class DefinitionTest extends TestCase
 
     /**
      * @expectedException \Exception
-     * @throws \Exception
      */
     public function testRejectsAnEmptyArrayFieldResolver()
     {
@@ -723,7 +676,6 @@ class DefinitionTest extends TestCase
 
     /**
      * @expectedException \Exception
-     * @throws \Exception
      */
     public function testRejectsAnScalarFieldResolver()
     {
@@ -734,9 +686,6 @@ class DefinitionTest extends TestCase
 
     // Type System: Interface types must be resolvable
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnInterfaceTypeDefiningResolveType()
     {
         $anotherInterfaceType = GraphQLInterfaceType([
@@ -758,9 +707,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnInterfaceTypeWithImplementingTypeDefiningIsTypeOf()
     {
         $anotherInterfaceType = GraphQLInterfaceType([
@@ -782,9 +728,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnInterfaceTypeDefiningResolveTypeWithImplementingTypeDefiningIsTypeOf()
     {
         $anotherInterfaceType = GraphQLInterfaceType([
@@ -811,9 +754,6 @@ class DefinitionTest extends TestCase
 
     // Type System: Union types must be resolvable
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsUnionTypeDefiningResolveType()
     {
         $this->schemaWithField(
@@ -826,9 +766,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAUnionOfObjectTypesDefiningIsTypeOf()
     {
         $objectWithIsTypeOf = GraphQLObjectType([
@@ -848,9 +785,6 @@ class DefinitionTest extends TestCase
 
     // Type System: Scalar types must be serializable
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAScalarTypeDefiningSerialize()
     {
         $this->schemaWithField(
@@ -866,7 +800,6 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @throws \Exception
      * @expectedException \Exception
      */
     public function testRejectsAScalarTypeNotDefiningSerialize()
@@ -880,9 +813,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAScalarTypeDefiningParseValueAndParseLiteral()
     {
         $this->schemaWithField(
@@ -904,7 +834,6 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @throws \Exception
      * @expectedException \Exception
      */
     public function testRejectsAScalarTypeDefiningParseValueButNotParseLiteral()
@@ -925,7 +854,6 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @throws \Exception
      * @expectedException \Exception
      */
     public function testRejectsAScalarTypeDefiningParseLiteralButNotParseValue()
@@ -947,9 +875,6 @@ class DefinitionTest extends TestCase
 
     // Type System: Object types must be assertable
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnObjectTypeWithAnIsTypeOfFunction()
     {
         $this->schemaWithField(
@@ -967,9 +892,6 @@ class DefinitionTest extends TestCase
 
     // Type System: Union types must be array
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnUnionTypeWithArrayTypes()
     {
         $this->schemaWithField(
@@ -982,9 +904,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnUnionTypeWithFunctionReturningAnArrayOfTypes()
     {
         $this->schemaWithField(
@@ -1000,7 +919,6 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @throws \Exception
      * @expectedException \Exception
      */
     public function testRejectsAnUnionWithoutTypes()
@@ -1016,9 +934,6 @@ class DefinitionTest extends TestCase
 
     // Type System: Input Objects must have fields
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnInputObjectTypeWithFields()
     {
         $inputObjectType = GraphQLInputObjectType([
@@ -1030,9 +945,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals(GraphQLString(), $field->getType());
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAnInputObjectTypeWithAFieldFunction()
     {
         $inputObjectType = GraphQLInputObjectType([
@@ -1074,9 +986,6 @@ class DefinitionTest extends TestCase
 
     // Type System: Enum types must be well defined
 
-    /**
-     * @throws \Exception
-     */
     public function testAcceptsAWellDefinedEnumTypeWithEmptyValueDefinition()
     {
         $enumType = GraphQLEnumType([
@@ -1153,9 +1062,6 @@ class DefinitionTest extends TestCase
 
     // Type System: List must accept only types
 
-    /**
-     * @throws \TypeError
-     */
     public function testListMustAcceptOnlyTypes()
     {
         $types = [
@@ -1179,9 +1085,6 @@ class DefinitionTest extends TestCase
 
     // Type System: NonNull must only accept non-nullable types
 
-    /**
-     * @throws \TypeError
-     */
     public function testNonNullMustAcceptOnlyNonNullableTypes()
     {
         $types = [

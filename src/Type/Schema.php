@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\AST\Node\NodeTrait;
 use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
@@ -155,7 +156,6 @@ class Schema extends ConfigObject implements SchemaInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function isPossibleType(AbstractTypeInterface $abstractType, TypeInterface $possibleType): bool
     {
@@ -188,7 +188,6 @@ class Schema extends ConfigObject implements SchemaInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function getPossibleTypes(AbstractTypeInterface $abstractType): ?array
     {
@@ -216,7 +215,7 @@ class Schema extends ConfigObject implements SchemaInterface
     }
 
     /**
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function afterConfig(): void
     {
@@ -253,7 +252,7 @@ class Schema extends ConfigObject implements SchemaInterface
     }
 
     /**
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function buildImplementations()
     {
@@ -348,7 +347,7 @@ class Schema extends ConfigObject implements SchemaInterface
  * @param array              $map
  * @param null|TypeInterface $type
  * @return array
- * @throws \Exception
+ * @throws InvariantException
  */
 function typeMapReducer(array $map, ?TypeInterface $type): array
 {

@@ -14,9 +14,6 @@ use function Digia\GraphQL\Type\GraphQLString;
 class MutationTest extends TestCase
 {
 
-    /**
-     * @throws \Exception
-     */
     public function testSimpleMutation()
     {
         $schema = GraphQLSchema([
@@ -67,10 +64,6 @@ class MutationTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\ExecutionException
-     * @throws \Exception
-     */
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
         /** @var DocumentNode $documentNode */

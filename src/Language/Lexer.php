@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\Reader\ReaderInterface;
 
@@ -109,7 +110,6 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function getBody(): string
     {
@@ -142,7 +142,6 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     public function getSource(): Source
     {
@@ -150,7 +149,7 @@ class Lexer implements LexerInterface
             return $this->source;
         }
 
-        throw new \Exception('No source has been set.');
+        throw new LanguageException('No source has been set.');
     }
 
     /**

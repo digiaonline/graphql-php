@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\AST\Node\EnumValueNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\ListValueNode;
@@ -24,7 +26,8 @@ use function Digia\GraphQL\Util\keyMap;
  * @param TypeInterface|InputTypeInterface $type
  * @param array                            $variables
  * @return mixed|null
- * @throws \Exception
+ * @throws InvalidTypeException
+ * @throws InvariantException
  */
 function valueFromAST(?ValueNodeInterface $node, TypeInterface $type, array $variables = [])
 {
@@ -162,7 +165,7 @@ function valueFromAST(?ValueNodeInterface $node, TypeInterface $type, array $var
         return $result;
     }
 
-    throw new \Exception(sprintf('Unknown type: %s', $type));
+    throw new InvalidTypeException(sprintf('Unknown type: %s', $type));
 }
 
 /**

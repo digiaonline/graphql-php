@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
-use Digia\GraphQL\Language\AST\Node\DirectiveNode;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\VariableNode;
@@ -23,7 +23,8 @@ use function Digia\GraphQL\Util\keyMap;
  * @param array                                 $variableValues
  * @return array
  * @throws ExecutionException
- * @throws \Exception
+ * @throws InvalidTypeException
+ * @throws InvariantException
  */
 function getArgumentValues($definition, NodeInterface $node, array $variableValues = []): array
 {
@@ -104,7 +105,8 @@ function getArgumentValues($definition, NodeInterface $node, array $variableValu
  * @param array                         $variableValues
  * @return array|null
  * @throws ExecutionException
- * @throws \Exception
+ * @throws InvalidTypeException
+ * @throws InvariantException
  */
 function getDirectiveValues(DirectiveInterface $directive, NodeInterface $node, array $variableValues = []): ?array
 {

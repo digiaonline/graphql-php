@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL;
 
-use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
@@ -19,7 +19,7 @@ use Digia\GraphQL\Util\SerializationInterface;
  * @param string|Source $source
  * @param array         $options
  * @return NodeInterface|DocumentNode|SerializationInterface
- * @throws \Exception
+ * @throws InvariantException
  */
 function parse($source, array $options = []): NodeInterface
 {
@@ -34,7 +34,7 @@ function parse($source, array $options = []): NodeInterface
  * @param string|Source $source
  * @param array         $options
  * @return NodeInterface|SerializationInterface
- * @throws \Exception
+ * @throws InvariantException
  */
 function parseValue($source, array $options = []): NodeInterface
 {
@@ -49,7 +49,7 @@ function parseValue($source, array $options = []): NodeInterface
  * @param string|Source $source
  * @param array         $options
  * @return NodeInterface|SerializationInterface
- * @throws \Exception
+ * @throws InvariantException
  */
 function parseType($source, array $options = []): NodeInterface
 {
@@ -64,8 +64,7 @@ function parseType($source, array $options = []): NodeInterface
  * @param string $source
  * @param array  $options
  * @return SchemaInterface
- * @throws \Digia\GraphQL\Error\ExecutionException
- * @throws \Exception
+ * @throws InvariantException
  */
 function buildSchema(string $source, array $options = []): SchemaInterface
 {
@@ -90,8 +89,7 @@ function printNode(NodeInterface $node): string
  * @param null            $operationName
  * @param callable|null   $fieldResolver
  * @return ExecutionResult
- * @throws Error\ExecutionException
- * @throws \Exception
+ * @throws InvariantException
  */
 function graphql(
     SchemaInterface $schema,

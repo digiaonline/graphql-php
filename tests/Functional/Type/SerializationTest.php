@@ -14,7 +14,6 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @param $answer
-     * @throws \Exception
      * @dataProvider valuesIntCanRepresentDataProvider
      */
     public function testValuesIntCanRepresent($value, $answer)
@@ -65,9 +64,6 @@ class SerializationTest extends TestCase
         ];
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testSerializeBooleanToInt()
     {
         $this->assertEquals(0, GraphQLInt()->serialize(false));
@@ -86,7 +82,6 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @param $answer
-     * @throws \Exception
      * @dataProvider valuesFloatCanRepresentDataProvider
      */
     public function testValuesFloatCanRepresent($value, $answer)
@@ -135,7 +130,6 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @param $answer
-     * @throws \Exception
      * @dataProvider valuesStringCanRepresentDataProvider
      */
     public function testValuesStringCanRepresent($value, $answer)
@@ -158,7 +152,6 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @throws \Exception
      * @dataProvider valuesBooleanCanRepresentDataProvider
      */
     public function testValuesBooleanCanRepresent($value, $answer)

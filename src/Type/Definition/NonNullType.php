@@ -15,6 +15,7 @@ class NonNullType implements TypeInterface, WrappingTypeInterface
      * NonNullType constructor.
      *
      * @param TypeInterface $ofType
+     * @throws InvalidTypeException
      */
     public function __construct(TypeInterface $ofType)
     {

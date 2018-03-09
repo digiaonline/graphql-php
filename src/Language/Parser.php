@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\AST\Builder\DirectorInterface;
 use Digia\GraphQL\Language\AST\Builder\NodeBuilderInterface;
@@ -31,7 +30,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @inheritdoc
      * @return NodeInterface
-     * @throws \ReflectionException
      */
     public function parse(LexerInterface $lexer): NodeInterface
     {
@@ -41,7 +39,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @inheritdoc
      * @return NodeInterface
-     * @throws LanguageException
      */
     public function parseValue(LexerInterface $lexer): NodeInterface
     {
@@ -51,7 +48,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @inheritdoc
      * @return NodeInterface
-     * @throws LanguageException
      */
     public function parseType(LexerInterface $lexer): NodeInterface
     {
@@ -61,7 +57,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
     protected function parseAST(LexerInterface $lexer): array
@@ -72,7 +68,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseValueAST(LexerInterface $lexer): array
     {
@@ -86,7 +82,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseTypeAST(LexerInterface $lexer): array
     {
@@ -125,7 +121,6 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param string         $kind
      * @return bool
-     * @throws LanguageException
      */
     protected function skip(LexerInterface $lexer, string $kind): bool
     {
@@ -143,7 +138,6 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param string         $kind
      * @return Token
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function expect(LexerInterface $lexer, string $kind): Token
@@ -162,7 +156,6 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param string         $value
      * @return Token
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function expectKeyword(LexerInterface $lexer, string $value): Token
@@ -216,7 +209,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param callable       $parseFunction
      * @param string         $closeKind
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function any(LexerInterface $lexer, string $openKind, callable $parseFunction, string $closeKind): array
     {
@@ -242,7 +235,6 @@ class Parser implements ParserInterface, DirectorInterface
      * @param callable       $parseFunction
      * @param string         $closeKind
      * @return array
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function many(LexerInterface $lexer, string $openKind, callable $parseFunction, string $closeKind): array
@@ -261,7 +253,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function parseName(LexerInterface $lexer): array
@@ -278,7 +269,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
     protected function parseDocument(LexerInterface $lexer): array
@@ -303,9 +294,8 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
-     * @throws \ReflectionException
      * @throws SyntaxErrorException
+     * @throws \ReflectionException
      */
     protected function parseDefinition(LexerInterface $lexer): array
     {
@@ -343,7 +333,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function parseExecutableDefinition(LexerInterface $lexer): array
@@ -367,7 +356,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function parseOperationDefinition(LexerInterface $lexer): array
@@ -406,7 +394,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return string
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function parseOperationType(LexerInterface $lexer): string
@@ -424,7 +411,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function parseVariableDefinitions(LexerInterface $lexer): array
@@ -437,7 +423,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function parseVariableDefinition(LexerInterface $lexer): array
@@ -447,7 +432,6 @@ class Parser implements ParserInterface, DirectorInterface
         /**
          * @param LexerInterface $lexer
          * @return mixed
-         * @throws LanguageException
          * @throws SyntaxErrorException
          */
         $parseType = function (LexerInterface $lexer) {
@@ -469,7 +453,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function parseVariable(LexerInterface $lexer): array
@@ -488,7 +471,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
      * @throws SyntaxErrorException
      */
     protected function parseSelectionSet(LexerInterface $lexer): array
@@ -510,7 +492,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseSelection(LexerInterface $lexer): array
     {
@@ -522,7 +504,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseField(LexerInterface $lexer): array
     {
@@ -554,7 +536,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param bool           $isConst
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseArguments(LexerInterface $lexer, bool $isConst): array
     {
@@ -571,7 +553,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseArgument(LexerInterface $lexer): array
     {
@@ -580,7 +562,7 @@ class Parser implements ParserInterface, DirectorInterface
         /**
          * @param LexerInterface $lexer
          * @return mixed
-         * @throws LanguageException
+         * @throws SyntaxErrorException
          */
         $parseValue = function (LexerInterface $lexer) {
             $this->expect($lexer, TokenKindEnum::COLON);
@@ -598,7 +580,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseConstArgument(LexerInterface $lexer): array
     {
@@ -607,7 +589,7 @@ class Parser implements ParserInterface, DirectorInterface
         /**
          * @param LexerInterface $lexer
          * @return mixed
-         * @throws LanguageException
+         * @throws SyntaxErrorException
          */
         $parseValue = function (LexerInterface $lexer) {
             $this->expect($lexer, TokenKindEnum::COLON);
@@ -625,7 +607,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseFragment(LexerInterface $lexer): array
     {
@@ -662,7 +644,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseFragmentDefinition(LexerInterface $lexer): array
     {
@@ -689,7 +671,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseFragmentName(LexerInterface $lexer): array
     {
@@ -704,7 +686,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param bool           $isConst
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseValueLiteral(LexerInterface $lexer, bool $isConst): array
     {
@@ -774,7 +756,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
      */
     protected function parseStringLiteral(LexerInterface $lexer): array
     {
@@ -793,7 +774,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseConstValue(LexerInterface $lexer): array
     {
@@ -803,7 +784,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseValueValue(LexerInterface $lexer): array
     {
@@ -814,7 +795,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param bool           $isConst
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseList(LexerInterface $lexer, bool $isConst): array
     {
@@ -836,7 +817,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param bool           $isConst
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseObject(LexerInterface $lexer, bool $isConst): array
     {
@@ -861,7 +842,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param bool           $isConst
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseObjectField(LexerInterface $lexer, bool $isConst): array
     {
@@ -884,7 +865,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param bool           $isConst
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseDirectives(LexerInterface $lexer, bool $isConst): array
     {
@@ -901,7 +882,7 @@ class Parser implements ParserInterface, DirectorInterface
      * @param LexerInterface $lexer
      * @param bool           $isConst
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseDirective(LexerInterface $lexer, bool $isConst): array
     {
@@ -920,7 +901,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseTypeReference(LexerInterface $lexer): array
     {
@@ -954,7 +935,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseNamedType(LexerInterface $lexer): array
     {
@@ -970,7 +951,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
     protected function parseTypeSystemDefinition(LexerInterface $lexer): array
@@ -1016,7 +997,6 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array|null
-     * @throws LanguageException
      */
     protected function parseDescription(LexerInterface $lexer): ?array
     {
@@ -1026,7 +1006,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseSchemaDefinition(LexerInterface $lexer): array
     {
@@ -1054,7 +1034,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseOperationTypeDefinition(LexerInterface $lexer): array
     {
@@ -1077,7 +1057,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseScalarTypeDefinition(LexerInterface $lexer): array
     {
@@ -1102,7 +1082,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseObjectTypeDefinition(LexerInterface $lexer): array
     {
@@ -1131,7 +1111,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseImplementsInterfaces(LexerInterface $lexer): array
     {
@@ -1154,7 +1134,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseFieldsDefinition(LexerInterface $lexer): array
     {
@@ -1166,7 +1146,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseFieldDefinition(LexerInterface $lexer): array
     {
@@ -1195,7 +1175,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseArgumentsDefinition(LexerInterface $lexer): array
     {
@@ -1207,7 +1187,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseInputValueDefinition(LexerInterface $lexer): array
     {
@@ -1236,7 +1216,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseInterfaceTypeDefinition(LexerInterface $lexer): array
     {
@@ -1263,7 +1243,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseUnionTypeDefinition(LexerInterface $lexer): array
     {
@@ -1290,7 +1270,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseUnionMemberTypes(LexerInterface $lexer): array
     {
@@ -1311,7 +1291,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseEnumTypeDefinition(LexerInterface $lexer): array
     {
@@ -1338,7 +1318,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseEnumValuesDefinition(LexerInterface $lexer): array
     {
@@ -1350,7 +1330,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseEnumValueDefinition(LexerInterface $lexer): array
     {
@@ -1372,7 +1352,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseInputObjectTypeDefinition(LexerInterface $lexer): array
     {
@@ -1399,7 +1379,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseInputFieldsDefinition(LexerInterface $lexer): array
     {
@@ -1411,7 +1391,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseTypeExtension(LexerInterface $lexer): array
     {
@@ -1440,7 +1420,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseScalarTypeExtension(LexerInterface $lexer): array
     {
@@ -1467,7 +1447,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseObjectTypeExtension(LexerInterface $lexer): array
     {
@@ -1498,7 +1478,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseInterfaceTypeExtension(LexerInterface $lexer): array
     {
@@ -1527,7 +1507,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseUnionTypeExtension(LexerInterface $lexer): array
     {
@@ -1556,7 +1536,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseEnumTypeExtension(LexerInterface $lexer): array
     {
@@ -1585,7 +1565,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      */
     protected function parseInputObjectTypeExtension(LexerInterface $lexer): array
     {
@@ -1614,7 +1594,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
     protected function parseDirectiveDefinition(LexerInterface $lexer): array
@@ -1646,7 +1626,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
     protected function parseDirectiveLocations(LexerInterface $lexer): array
@@ -1665,7 +1645,7 @@ class Parser implements ParserInterface, DirectorInterface
     /**
      * @param LexerInterface $lexer
      * @return array
-     * @throws LanguageException
+     * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
     protected function parseDirectiveLocation(LexerInterface $lexer): array

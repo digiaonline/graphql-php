@@ -24,7 +24,6 @@ class NumberReader extends AbstractReader
 
     /**
      * @inheritdoc
-     * @throws SyntaxErrorException
      */
     public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
     {
@@ -41,7 +40,8 @@ class NumberReader extends AbstractReader
             // 0
             $code = charCodeAt($body, ++$pos);
             if (isNumber($code)) {
-                throw new SyntaxErrorException(sprintf('Invalid number, unexpected digit after 0: %s.', printCharCode($code)));
+                throw new SyntaxErrorException(sprintf('Invalid number, unexpected digit after 0: %s.',
+                    printCharCode($code)));
             }
         } else {
             $pos  = $this->readDigits($code, $pos);
@@ -89,8 +89,8 @@ class NumberReader extends AbstractReader
     }
 
     /**
-     * @param int $pos
      * @param int $code
+     * @param int $pos
      * @return int
      * @throws SyntaxErrorException
      */

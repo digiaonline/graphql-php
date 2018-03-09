@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Type;
 
+use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -58,7 +60,7 @@ function isValidResolver($resolver): bool
 
 /**
  * @param $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertType($type)
 {
@@ -70,7 +72,7 @@ function assertType($type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertScalarType(TypeInterface $type)
 {
@@ -82,7 +84,7 @@ function assertScalarType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertObjectType(TypeInterface $type)
 {
@@ -94,7 +96,7 @@ function assertObjectType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertInterfaceType(TypeInterface $type)
 {
@@ -106,7 +108,7 @@ function assertInterfaceType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertUnionType(TypeInterface $type)
 {
@@ -118,7 +120,7 @@ function assertUnionType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertEnumType(TypeInterface $type)
 {
@@ -130,7 +132,7 @@ function assertEnumType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertInputObjectType(TypeInterface $type)
 {
@@ -142,7 +144,7 @@ function assertInputObjectType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertListType(TypeInterface $type)
 {
@@ -154,7 +156,7 @@ function assertListType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertNonNullType(TypeInterface $type)
 {
@@ -175,7 +177,7 @@ function isInputType(?TypeInterface $type): bool
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertInputType(TypeInterface $type)
 {
@@ -196,7 +198,7 @@ function isOutputType(?TypeInterface $type): bool
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertOutputType(TypeInterface $type)
 {
@@ -208,7 +210,7 @@ function assertOutputType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertLeafType(TypeInterface $type)
 {
@@ -220,7 +222,7 @@ function assertLeafType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertCompositeType(TypeInterface $type)
 {
@@ -232,7 +234,7 @@ function assertCompositeType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertAbstractType(TypeInterface $type)
 {
@@ -244,7 +246,7 @@ function assertAbstractType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertWrappingType(TypeInterface $type)
 {
@@ -266,7 +268,7 @@ function isNullableType(TypeInterface $type): bool
 /**
  * @param TypeInterface $type
  * @return TypeInterface
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertNullableType(TypeInterface $type): TypeInterface
 {
@@ -293,7 +295,7 @@ function getNullableType(?TypeInterface $type): ?TypeInterface
 
 /**
  * @param TypeInterface $type
- * @throws \Exception
+ * @throws InvariantException
  */
 function assertNamedType(TypeInterface $type)
 {
@@ -406,6 +408,7 @@ function GraphQLList(TypeInterface $ofType): ListType
 /**
  * @param TypeInterface $ofType
  * @return NonNullType
+ * @throws InvalidTypeException
  */
 function GraphQLNonNull(TypeInterface $ofType): NonNullType
 {

@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use Digia\GraphQL\Error\InvariantException;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Util\invariant;
 
@@ -32,7 +33,7 @@ trait ArgumentsTrait
     /**
      * @param Argument[] $arguments
      * @return $this
-     * @throws \Exception
+     * @throws InvariantException
      */
     protected function setArgs(array $arguments)
     {

@@ -39,7 +39,6 @@ class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterfa
 
     /**
      * @inheritdoc
-     * @throws \Exception
      */
     protected function afterConfig(): void
     {
@@ -85,7 +84,8 @@ class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterfa
      */
     public function parseLiteral(...$args)
     {
-        return $this->_parseLiteralFunction !== null ? \call_user_func_array($this->_parseLiteralFunction, $args) : null;
+        return $this->_parseLiteralFunction !== null ? \call_user_func_array($this->_parseLiteralFunction,
+            $args) : null;
     }
 
     /**
