@@ -28,6 +28,72 @@ use function Digia\GraphQL\Type\GraphQLString;
 
 class ExecutionTest extends TestCase
 {
+    /**
+     * throws if no document is provided
+     */
+    public function testNoDocumentIsProvided()
+    {
+        $this->expectException(\TypeError::class);
+
+        $schema = new Schema([
+            'query' =>
+                new ObjectType([
+                    'name'   => 'Type',
+                    'fields' => [
+                        'a' => [
+                            'type' => GraphQLString()
+                        ]
+                    ]
+                ])
+        ]);
+
+        /** @var ExecutionResult $executionResult */
+        Execution::execute($schema, null);
+    }
+
+    /**
+     * throws if no schema is provided
+     *
+     * @throws \Exception
+     */
+    public function testNoSchemaIsProvided()
+    {
+        $this->expectException(\TypeError::class);
+
+        /** @var ExecutionResult $executionResult */
+        Execution::execute(null, parse('{field}'));
+    }
+
+    /**
+     * Test accepts an object with named properties as arguments
+     */
+    public function testAcceptAnObjectWithNamedPropertiesAsArguments()
+    {
+        $schema = new Schema([
+            'query' =>
+                new ObjectType([
+                    'name'   => 'Greeting',
+                    'fields' => [
+                        'a' => [
+                            'type'    => GraphQLString(),
+                            'resolve' => function ($source, $args, $context, $info) {
+                                return $source;
+                            }
+                        ]
+                    ]
+                ])
+        ]);
+
+        $rootValue    = 'rootValue';
+        $documentNode = parse('query Example { a }');
+
+        /** @var ExecutionResult $executionResult */
+        $result = Execution::execute($schema, $documentNode, $rootValue);
+
+        $expected = new ExecutionResult(['a' => $rootValue], []);
+
+        $this->assertEquals($expected, $result);
+    }
 
     /**
      * @throws \Exception
@@ -115,7 +181,7 @@ class ExecutionTest extends TestCase
                             'resolve' => function ($source, $args, $context, $info) {
                                 return sprintf('Hello %s', $args['name']);
                             },
-                            'args' => [
+                            'args'    => [
                                 'name' => [
                                     'type' => GraphQLString(),
                                 ]
@@ -146,10 +212,10 @@ class ExecutionTest extends TestCase
                                 ]),
                                 'arguments' => [
                                     new ArgumentNode([
-                                        'name' => new NameNode([
+                                        'name'  => new NameNode([
                                             'value' => 'name',
                                         ]),
-                                        'type' => new NamedTypeNode([
+                                        'type'  => new NamedTypeNode([
                                             'name' => new NameNode([
                                                 'value' => 'String',
                                             ]),
