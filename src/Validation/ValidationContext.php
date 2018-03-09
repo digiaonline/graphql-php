@@ -4,6 +4,8 @@ namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Type\Definition\Argument;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\SchemaInterface;
@@ -82,5 +84,21 @@ class ValidationContext
     public function getSchema(): SchemaInterface
     {
         return $this->schema;
+    }
+
+    /**
+     * @return Argument|null
+     */
+    public function getArgument(): ?Argument
+    {
+        return $this->typeInfo->getArgument();
+    }
+
+    /**
+     * @return Directive|null
+     */
+    public function getDirective(): ?Directive
+    {
+        return $this->typeInfo->getDirective();
     }
 }

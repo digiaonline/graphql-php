@@ -44,7 +44,7 @@ function undefinedFieldMessage(
  * @param TypeInterface $type
  * @return string
  */
-function inlineFragmentOnNonCompositeErrorMessage(string $typeName): string
+function inlineFragmentOnNonCompositeMessage(string $typeName): string
 {
     return sprintf('Fragment cannot condition on non composite type "%s".', $typeName);
 }
@@ -57,4 +57,39 @@ function inlineFragmentOnNonCompositeErrorMessage(string $typeName): string
 function fragmentOnNonCompositeMessage(string $fragmentName, string $typeName): string
 {
     return sprintf('Fragment "%s" cannot condition on non composite type "%s".', $fragmentName, $typeName);
+}
+
+/**
+ * @param string $argumentName
+ * @param string $fieldName
+ * @param string $typeName
+ * @param array  $suggestedArguments
+ * @return string
+ */
+function unknownArgumentMessage(
+    string $argumentName,
+    string $fieldName,
+    string $typeName,
+    array $suggestedArguments
+): string {
+    $message = sprintf('Unknown argument "%s" on field "%s" of type "%s".', $argumentName, $fieldName, $typeName);
+    if (count($suggestedArguments) !== 0) {
+        return $message . ' ' . sprintf('Did you mean %s', quotedOrList($suggestedArguments));
+    }
+    return $message;
+}
+
+/**
+ * @param string $argumentName
+ * @param string $directiveName
+ * @param array  $suggestedArguments
+ * @return string
+ */
+function unknownDirectiveArgumentMessage(string $argumentName, string $directiveName, array $suggestedArguments): string
+{
+    $message = sprintf('Unknown argument "%s" on directive "@%s".', $argumentName, $directiveName);
+    if (count($suggestedArguments) !== 0) {
+        return $message . ' ' . sprintf('Did you mean %s', quotedOrList($suggestedArguments));
+    }
+    return $message;
 }

@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\AST\Visitor;
 
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Util\SerializationInterface;
 
 class ParallelVisitor implements VisitorInterface
 {
@@ -27,24 +26,16 @@ class ParallelVisitor implements VisitorInterface
     }
 
     /**
-     * @param NodeInterface|AcceptVisitorTrait $node
-     * @param string|int|null                  $key
-     * @param NodeInterface|null               $parent
-     * @param array                            $path
-     * @return NodeInterface|SerializationInterface|null
+     * @inheritdoc
      */
-    public function enterNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
+    public function enterNode(NodeInterface $node): ?NodeInterface
+    {
         $newNode = null;
 
         foreach ($this->visitors as $i => $visitor) {
             if (!isset($this->_skipping[$i])) {
                 try {
-                    $newNode = $visitor->enterNode($node, $key, $parent, $path);
+                    $newNode = $visitor->enterNode($node);
                 } catch (VisitorBreak $break) {
                     $this->_skipping[$i] = $break;
                     continue;
@@ -62,24 +53,16 @@ class ParallelVisitor implements VisitorInterface
     }
 
     /**
-     * @param NodeInterface|AcceptVisitorTrait $node
-     * @param string|int|null                  $key
-     * @param NodeInterface|null               $parent
-     * @param array                            $path
-     * @return NodeInterface|SerializationInterface|null
+     * @inheritdoc
      */
-    public function leaveNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
+    public function leaveNode(NodeInterface $node): ?NodeInterface
+    {
         $newNode = null;
 
         foreach ($this->visitors as $i => $visitor) {
             if (!isset($this->_skipping[$i])) {
                 try {
-                    $newNode = $visitor->leaveNode($node, $key, $parent, $path);
+                    $newNode = $visitor->leaveNode($node);
                 } catch (VisitorBreak $break) {
                     $this->_skipping[$i] = $break;
                     continue;

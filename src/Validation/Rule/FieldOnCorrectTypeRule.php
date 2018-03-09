@@ -21,12 +21,8 @@ class FieldOnCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
+    public function enterNode(NodeInterface $node): ?NodeInterface
+    {
         if ($node instanceof FieldNode) {
             $type = $this->context->getParentType();
 
@@ -109,9 +105,7 @@ function getSuggestedTypeNames(SchemaInterface $schema, TypeInterface $type, str
         return $interfaceUsageCount[$b] - $interfaceUsageCount[$a];
     });
 
-    $result = array_merge($suggestedInterfaceTypes, $suggestedObjectTypes);
-
-    return $result;
+    return array_merge($suggestedInterfaceTypes, $suggestedObjectTypes);
 }
 
 /**

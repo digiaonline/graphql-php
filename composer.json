@@ -35,6 +35,7 @@
             "./src/Util/suggestionList.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
+            "./src/Validation/rules.php",
             "./src/Validation/Rule/messages.php",
             "./src/helpers.php"
         ],
@@ -51,6 +52,10 @@
     "autoload-dev": {
         "files": [
             "./tests/Functional/Language/SchemaParserTest.php",
+            "./tests/Functional/Validation/Rule/ExecutableDefinitionsRuleTest.php",
+            "./tests/Functional/Validation/Rule/FieldOnCorrectTypeRuleTest.php",
+            "./tests/Functional/Validation/Rule/FragmentsOnCompositeTypesRuleTest.php",
+            "./tests/Functional/Validation/Rule/KnownArgumentNamesRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {

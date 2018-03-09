@@ -35,10 +35,11 @@ class Visitor implements VisitorInterface
         NodeInterface $node,
         $key = null,
         ?NodeInterface $parent = null,
-        array $path = []
+        array $path = [],
+        array $ancestors = []
     ): ?NodeInterface {
         return null !== $this->enterFunction
-            ? \call_user_func($this->enterFunction, $node, $key, $parent, $path)
+            ? \call_user_func($this->enterFunction, $node, $key, $parent, $path, $ancestors)
             : $node;
     }
 
@@ -49,10 +50,11 @@ class Visitor implements VisitorInterface
         NodeInterface $node,
         $key = null,
         ?NodeInterface $parent = null,
-        array $path = []
+        array $path = [],
+        array $ancestors = []
     ): ?NodeInterface {
         return null !== $this->leaveFunction
-            ? \call_user_func($this->leaveFunction, $node, $key, $parent, $path)
+            ? \call_user_func($this->leaveFunction, $node, $key, $parent, $path, $ancestors)
             : $node;
     }
 }

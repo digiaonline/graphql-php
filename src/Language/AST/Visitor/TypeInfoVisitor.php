@@ -55,12 +55,7 @@ class TypeInfoVisitor implements VisitorInterface
     /**
      * @inheritdoc
      */
-    public function enterNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
+    public function enterNode(NodeInterface $node): ?NodeInterface {
         $schema = $this->typeInfo->getSchema();
 
         if ($node instanceof SelectionSetNode) {
@@ -143,19 +138,14 @@ class TypeInfoVisitor implements VisitorInterface
             $this->typeInfo->setEnumValue($enumValue);
         }
 
-        return $this->visitor->enterNode($node, $key, $parent, $path);
+        return $this->visitor->enterNode($node);
     }
 
     /**
      * @inheritdoc
      */
-    public function leaveNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
-        $newNode = $this->visitor->leaveNode($node, $key, $parent, $path);
+    public function leaveNode(NodeInterface $node): ?NodeInterface {
+        $newNode = $this->visitor->leaveNode($node);
 
         if (null === $newNode) {
             return null;

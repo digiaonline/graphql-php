@@ -14,16 +14,12 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
+    public function enterNode(NodeInterface $node): ?NodeInterface
+    {
         if ($node instanceof InlineFragmentNode) {
             $this->validateFragementNode($node, function (NodeInterface $node) {
                 /** @noinspection PhpUndefinedMethodInspection */
-                return inlineFragmentOnNonCompositeErrorMessage($node->getTypeCondition()->getNameValue());
+                return inlineFragmentOnNonCompositeMessage($node->getTypeCondition()->getNameValue());
             });
         }
 

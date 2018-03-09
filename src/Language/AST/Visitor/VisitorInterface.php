@@ -10,29 +10,13 @@ interface VisitorInterface
 
     /**
      * @param NodeInterface|AcceptVisitorTrait $node
-     * @param string|int|null                  $key
-     * @param NodeInterface|null               $parent
-     * @param array                            $path
      * @return NodeInterface|SerializationInterface|null
      */
-    public function enterNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface;
+    public function enterNode(NodeInterface $node): ?NodeInterface;
 
     /**
      * @param NodeInterface|AcceptVisitorTrait $node
-     * @param string|int|null                  $key
-     * @param NodeInterface|null               $parent
-     * @param array                            $path
      * @return NodeInterface|SerializationInterface|null
      */
-    public function leaveNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface;
+    public function leaveNode(NodeInterface $node): ?NodeInterface;
 }

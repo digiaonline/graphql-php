@@ -14,12 +14,8 @@ class ExecutableDefinitionRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
+    public function enterNode(NodeInterface $node): ?NodeInterface
+    {
         if ($node instanceof DocumentNode) {
             /** @var NamedTypeNode $definition */
             foreach ($node->getDefinitions() as $definition) {
@@ -34,8 +30,6 @@ class ExecutableDefinitionRule extends AbstractRule
                     );
                 }
             }
-
-            return null;
         }
 
         return $node;
