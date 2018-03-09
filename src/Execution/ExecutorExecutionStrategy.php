@@ -32,11 +32,6 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
                 new GraphQLError($ex->getMessage())
             );
             return [$ex->getMessage()];
-        } catch (\TypeError $ex) {
-            $this->context->addError(
-                new GraphQLError($ex->getMessage())
-            );
-            return [$ex->getMessage()];
         }
 
         return $data;

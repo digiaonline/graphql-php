@@ -50,7 +50,7 @@ class SchemaTest extends TestCase
     protected $schema;
 
     /**
-     * @throws \TypeError
+     * @inheritdoc
      */
     public function setUp()
     {

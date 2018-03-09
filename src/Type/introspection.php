@@ -75,7 +75,6 @@ function __TypeKind(): EnumType
 
 /**
  * @return Field
- * @throws \TypeError
  */
 function SchemaMetaFieldDefinition(): Field
 {
@@ -92,7 +91,6 @@ function SchemaMetaFieldDefinition(): Field
 
 /**
  * @return Field
- * @throws \TypeError
  */
 function TypeMetaFieldDefinition(): Field
 {
@@ -114,7 +112,6 @@ function TypeMetaFieldDefinition(): Field
 
 /**
  * @return Field
- * @throws \TypeError
  */
 function TypeNameMetaFieldDefinition(): Field
 {

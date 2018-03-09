@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
-use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\NodeKindEnum;
 use Digia\GraphQL\Test\TestCase;
@@ -279,7 +279,7 @@ extend type Hello {
      */
     public function testExtensionWithoutAnythingThrows()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected <EOF>');
         parse('extend type Hello');
     }
@@ -290,7 +290,7 @@ extend type Hello {
      */
     public function testExtensionsDoNotIncludeDescriptions()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected Name "extend"');
         parse('
 "Description"
@@ -298,7 +298,7 @@ extend type Hello {
   world: String
 }');
 
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected String "Description"');
         parse('
 extend "Description" type Hello {
@@ -813,7 +813,7 @@ type Hello {
      */
     public function testUnionFailsWithNoTypes()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
         parse('union Hello = |');
     }
@@ -824,7 +824,7 @@ type Hello {
      */
     public function testUnionFailsWithLeadingDoublePipe()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found |');
         parse('union Hello = || Wo | Rld');
     }
@@ -835,7 +835,7 @@ type Hello {
      */
     public function testUnionFailsWithTrailingPipe()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
         parse('union Hello = | Wo | Rld |');
     }
@@ -905,7 +905,7 @@ input Hello {
      */
     public function testSimpleInputObjectWithArgumentsShouldFail()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected :, found (');
         parse('
 input Hello {
@@ -919,7 +919,7 @@ input Hello {
      */
     public function testDirectiveWithIncorrectLocations()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected Name "INCORRECT_LOCATION"');
         parse('
 directive @foo on FIELD | INCORRECT_LOCATION');

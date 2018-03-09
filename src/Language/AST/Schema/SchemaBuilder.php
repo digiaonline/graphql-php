@@ -36,7 +36,6 @@ class SchemaBuilder implements SchemaBuilderInterface
      * @param array        $options
      * @return SchemaInterface
      * @throws \Exception
-     * @throws \TypeError
      */
     public function build(DocumentNode $documentNode, array $options = []): SchemaInterface
     {

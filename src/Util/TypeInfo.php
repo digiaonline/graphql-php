@@ -282,7 +282,6 @@ class TypeInfo
  * @param TypeInterface   $parentType
  * @param FieldNode       $fieldNode
  * @return Field|null
- * @throws \TypeError
  * @throws \Exception
  */
 function getFieldDefinition(SchemaInterface $schema, TypeInterface $parentType, FieldNode $fieldNode): ?Field

@@ -142,7 +142,6 @@ abstract class ExecutionStrategy
      * @return array
      *
      * @throws GraphQLError|\Exception
-     * @throws \TypeError
      */
     protected function executeFields(
         ObjectType $parentType,
@@ -174,7 +173,6 @@ abstract class ExecutionStrategy
      * @param string     $fieldName
      * @return Field|null
      * @throws \Exception
-     * @throws \TypeError
      */
     public function getFieldDefinition(Schema $schema, ObjectType $parentType, string $fieldName)
     {
@@ -209,7 +207,6 @@ abstract class ExecutionStrategy
      * @return mixed
      *
      * @throws GraphQLError|\Exception
-     * @throws \TypeError
      */
     protected function resolveField(
         ObjectType $parentType,
@@ -337,7 +334,6 @@ abstract class ExecutionStrategy
      * @return array|\stdClass
      * @throws GraphQLError
      * @throws \Exception
-     * @throws \TypeError
      */
     private function collectAndExecuteSubFields(
         ObjectType $returnType,

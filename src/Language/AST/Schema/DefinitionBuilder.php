@@ -145,7 +145,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @param TypeNodeInterface $typeNode
      * @return TypeInterface
      * @throws \Exception
-     * @throws \TypeError
      */
     protected function buildWrappedType(TypeNodeInterface $typeNode): TypeInterface
     {
@@ -157,7 +156,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @param FieldDefinitionNode|InputValueDefinitionNode $node
      * @return array
      * @throws \Exception
-     * @throws \TypeError
      */
     protected function buildField($node): array
     {
@@ -173,7 +171,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param array $nodes
      * @return array
-     * @throws \TypeError
      * @throws \Exception
      */
     protected function buildArguments(array $nodes): array
@@ -246,7 +243,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param ObjectTypeDefinitionNode|InterfaceTypeDefinitionNode|InputObjectTypeDefinitionNode $node
      * @return array
-     * @throws \TypeError
      * @throws \Exception
      */
     protected function buildFields($node): array
@@ -336,7 +332,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param InputObjectTypeDefinitionNode $node
      * @return InputObjectType
-     * @throws \TypeError
      * @throws \Exception
      */
     protected function buildInputObjectType(InputObjectTypeDefinitionNode $node): InputObjectType
@@ -399,7 +394,6 @@ function getNamedTypeNode(TypeNodeInterface $typeNode): NamedTypeNode
  * @param TypeInterface                        $innerType
  * @param NamedTypeInterface|TypeNodeInterface $inputTypeNode
  * @return TypeInterface
- * @throws \TypeError
  * @throws \Exception
  */
 function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputTypeNode): TypeInterface
@@ -418,7 +412,6 @@ function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputType
 /**
  * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
  * @return null|string
- * @throws \TypeError
  * @throws \Exception
  */
 function getDeprecationReason(NodeInterface $node): ?string

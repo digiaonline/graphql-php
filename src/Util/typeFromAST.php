@@ -15,7 +15,6 @@ use function Digia\GraphQL\Type\GraphQLNonNull;
  * @param SchemaInterface   $schema
  * @param TypeNodeInterface $typeNode
  * @return TypeInterface|null
- * @throws \TypeError
  * @throws \Exception
  */
 function typeFromAST(SchemaInterface $schema, TypeNodeInterface $typeNode): ?TypeInterface

@@ -21,7 +21,6 @@ trait OfTypeTrait
     /**
      * @param TypeInterface $ofType
      * @return $this
-     * @throws \TypeError
      */
     protected function setOfType(TypeInterface $ofType)
     {

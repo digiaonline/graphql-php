@@ -39,7 +39,7 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @dataProvider valuesIntCannotRepresentDataProvider
-     * @expectedException \TypeError
+     * @expectedException \@expectedException \Digia\GraphQL\Error\InvalidTypeException
      */
     public function testValuesIntCannotRepresent($value)
     {
@@ -75,7 +75,7 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @expectedException \TypeError
+     * @expectedException \@expectedException \Digia\GraphQL\Error\InvalidTypeException
      */
     public function testSerializeEmptyStringToInt()
     {
@@ -116,7 +116,7 @@ class SerializationTest extends TestCase
     /**
      * @param $value
      * @dataProvider valuesFloatCannotRepresentDataProvider
-     * @expectedException \TypeError
+     * @expectedException \Digia\GraphQL\Error\InvalidTypeException
      */
     public function testValuesFloatCannotRepresent($value)
     {

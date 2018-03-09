@@ -84,7 +84,6 @@ class PredicateTest extends TestCase
 
     /**
      * @throws \Exception
-     * @throws \TypeError
      */
     public function testAssertScalarTypeWithValidTypes()
     {
@@ -95,7 +94,6 @@ class PredicateTest extends TestCase
     }
 
     /**
-     * @throws \TypeError
      * @expectedException \Exception
      */
     public function testAssertScalarTypeWithInvalidTypes()

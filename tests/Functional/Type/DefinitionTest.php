@@ -92,7 +92,7 @@ class DefinitionTest extends TestCase
     protected $scalarType;
 
     /**
-     * @throws \TypeError
+     * @inheritdoc
      */
     public function setUp()
     {
@@ -431,7 +431,6 @@ class DefinitionTest extends TestCase
 
     /**
      * @throws \Exception
-     * @throws \TypeError
      */
     public function testStringifySimpleTypes()
     {
@@ -451,7 +450,6 @@ class DefinitionTest extends TestCase
      * @param $type
      * @param $answer
      * @throws \Exception
-     * @throws \TypeError
      * @dataProvider identifiesInputTypesDataProvider
      */
     public function testIdentifiesInputTypes($type, $answer)
@@ -475,7 +473,7 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @expectedException \TypeError
+     * @expectedException \Digia\Graphql\Error\InvalidTypeException
      */
     public function testProhibitsNestingNonNullInsideNonNull()
     {
@@ -1205,7 +1203,7 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @expectedException \TypeError
+     * @expectedException \Digia\Graphql\Error\InvalidTypeException
      */
     public function testNonNullMustNotAcceptNonTypes()
     {

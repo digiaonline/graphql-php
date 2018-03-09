@@ -397,7 +397,6 @@ function GraphQLDirective(array $config = []): Directive
 /**
  * @param TypeInterface $ofType
  * @return ListType
- * @throws \TypeError
  */
 function GraphQLList(TypeInterface $ofType): ListType
 {
@@ -407,7 +406,6 @@ function GraphQLList(TypeInterface $ofType): ListType
 /**
  * @param TypeInterface $ofType
  * @return NonNullType
- * @throws \TypeError
  */
 function GraphQLNonNull(TypeInterface $ofType): NonNullType
 {

@@ -258,7 +258,6 @@ class ExecutionTest extends TestCase
     }
 
     /**
-     * @throws \TypeError
      * @throws \Exception
      */
     public function testExecuteQueryWithMultipleFields()

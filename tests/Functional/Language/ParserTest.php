@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
-use Digia\GraphQL\Error\SyntaxError;
+use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
@@ -28,11 +28,11 @@ class ParserTest extends TestCase
      */
     public function testParseProvidesUsefulErrors()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
         parse('{');
 
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected {, found <EOF>');
         parse('query', 'MyQuery.graphql');
     }
@@ -53,7 +53,7 @@ class ParserTest extends TestCase
      */
     public function testParsesConstantDefaultValues()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected $');
         parse('query Foo($x: Complex = { a: { b: [ $var ] } }) { field }');
         $this->addToAssertionCount(1);
@@ -65,7 +65,7 @@ class ParserTest extends TestCase
      */
     public function testDoesNotAcceptFragmentsNamedOn()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected Name "on"');
         parse('fragment on on on { on }');
         $this->addToAssertionCount(1);
@@ -77,7 +77,7 @@ class ParserTest extends TestCase
      */
     public function testDoesNotAcceptFragmentSpreadOfOn()
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found }');
         parse('{ ...on }');
         $this->addToAssertionCount(1);

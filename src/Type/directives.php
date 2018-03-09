@@ -7,7 +7,6 @@ use function Digia\GraphQL\Util\arraySome;
 
 /**
  * @return Directive
- * @throws TypeError
  */
 function GraphQLIncludeDirective(): Directive
 {
@@ -16,7 +15,6 @@ function GraphQLIncludeDirective(): Directive
 
 /**
  * @return Directive
- * @throws TypeError
  */
 function GraphQLSkipDirective(): Directive
 {
@@ -27,7 +25,6 @@ const DEFAULT_DEPRECATION_REASON = 'No longer supported';
 
 /**
  * @return Directive
- * @throws TypeError
  */
 function GraphQLDeprecatedDirective(): Directive
 {
@@ -36,7 +33,6 @@ function GraphQLDeprecatedDirective(): Directive
 
 /**
  * @return array
- * @throws TypeError
  */
 function specifiedDirectives(): array
 {
@@ -50,7 +46,6 @@ function specifiedDirectives(): array
 /**
  * @param DirectiveInterface $directive
  * @return bool
- * @throws TypeError
  */
 function isSpecifiedDirective(DirectiveInterface $directive): bool
 {

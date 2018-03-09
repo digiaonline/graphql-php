@@ -254,7 +254,6 @@ function FurColor(): EnumType
 
 /**
  * @return InputObjectType
- * @throws \TypeError
  */
 function ComplexInput(): InputObjectType
 {
@@ -422,7 +421,6 @@ function QueryRoot(): ObjectType
 
 /**
  * @return SchemaInterface
- * @throws \TypeError
  */
 function testSchema(): SchemaInterface
 {

@@ -1223,7 +1223,6 @@ class VisitorTest extends TestCase
     }
 
     /**
-     * @throws \TypeError
      * @throws \Exception
      */
     public function testMaintainsTypeInfoDuringVisit()
@@ -1318,7 +1317,6 @@ class VisitorTest extends TestCase
     /**
      * @throws VisitorBreak
      * @throws \Exception
-     * @throws \TypeError
      */
     public function testMaintainsTypeInfoDuringEdit()
     {
