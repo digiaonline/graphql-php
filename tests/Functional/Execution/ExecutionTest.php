@@ -4,6 +4,8 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
+use function Digia\GraphQL\executor;
+use function Digia\GraphQL\graphql;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
@@ -30,12 +32,13 @@ class ExecutionTest extends TestCase
 {
     /**
      * throws if no document is provided
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function testNoDocumentIsProvided()
     {
         $this->expectException(\TypeError::class);
 
-        $schema = new Schema([
+        $schema = GraphQLSchema([
             'query' =>
                 new ObjectType([
                     'name'   => 'Type',
@@ -47,8 +50,7 @@ class ExecutionTest extends TestCase
                 ])
         ]);
 
-        /** @var ExecutionResult $executionResult */
-        Execution::execute($schema, null);
+        graphql($schema, null);
     }
 
     /**
@@ -60,12 +62,12 @@ class ExecutionTest extends TestCase
     {
         $this->expectException(\TypeError::class);
 
-        /** @var ExecutionResult $executionResult */
-        Execution::execute(null, parse('{field}'));
+        graphql(null, parse('{field}'));
     }
 
     /**
      * Test accepts an object with named properties as arguments
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function testAcceptAnObjectWithNamedPropertiesAsArguments()
     {
@@ -84,17 +86,20 @@ class ExecutionTest extends TestCase
                 ])
         ]);
 
-        $rootValue    = 'rootValue';
-        $documentNode = parse('query Example { a }');
+        $rootValue = 'rootValue';
+        $document  = parse('query Example { a }');
 
         /** @var ExecutionResult $executionResult */
-        $result = Execution::execute($schema, $documentNode, $rootValue);
+        $result = executor()->execute($schema, $document, $rootValue);
 
         $expected = new ExecutionResult(['a' => $rootValue], []);
 
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testExecuteHelloQuery()
     {
         $schema = new Schema([
@@ -148,7 +153,7 @@ class ExecutionTest extends TestCase
         $fieldResolver  = null;
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
+        $executionResult = executor()->execute(
             $schema,
             $documentNode,
             $rootValue,
@@ -163,6 +168,9 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testExecuteQueryHelloWithArgs()
     {
         $schema = GraphQLSchema([
@@ -236,7 +244,7 @@ class ExecutionTest extends TestCase
         $fieldResolver  = null;
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
+        $executionResult = executor()->execute(
             $schema,
             $documentNode,
             $rootValue,
@@ -251,6 +259,9 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testExecuteQueryWithMultipleFields()
     {
         $schema = new Schema([
@@ -372,7 +383,7 @@ class ExecutionTest extends TestCase
         $fieldResolver  = null;
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
+        $executionResult = executor()->execute(
             $schema,
             $documentNode,
             $rootValue,
@@ -393,6 +404,9 @@ class ExecutionTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testHandleFragments()
     {
         $documentNode = parse('
@@ -449,7 +463,7 @@ class ExecutionTest extends TestCase
         $fieldResolver  = null;
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
+        $executionResult = executor()->execute(
             $schema,
             $documentNode,
             $rootValue,

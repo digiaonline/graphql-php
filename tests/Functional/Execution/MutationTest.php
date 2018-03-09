@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
+use function Digia\GraphQL\executor;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
@@ -14,6 +15,9 @@ use function Digia\GraphQL\Type\GraphQLString;
 class MutationTest extends TestCase
 {
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testSimpleMutation()
     {
         $schema = GraphQLSchema([
@@ -47,7 +51,7 @@ class MutationTest extends TestCase
         $fieldResolver  = null;
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
+        $executionResult = executor()->execute(
             $schema,
             $documentNode,
             $rootValue,
@@ -64,6 +68,9 @@ class MutationTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
         /** @var DocumentNode $documentNode */
@@ -110,7 +117,7 @@ class MutationTest extends TestCase
         $fieldResolver  = null;
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = Execution::execute(
+        $executionResult = executor()->execute(
             $schema,
             $documentNode,
             $rootValue,
