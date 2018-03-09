@@ -11,7 +11,7 @@ use Digia\GraphQL\Language\Source;
  * and stack trace, it also includes information about the locations in a
  * GraphQL document and/or execution result that correspond to the Error.
  */
-class ExecutionException extends BaseException
+class ExecutionException extends AbstractException
 {
 
     /**

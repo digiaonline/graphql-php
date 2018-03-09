@@ -6,7 +6,7 @@ namespace Digia\GraphQL\Error;
  * Class InvalidTypeException
  * @package Digia\GraphQL\Error
  */
-class InvalidTypeException extends BaseException
+class InvalidTypeException extends AbstractException
 {
 
 }

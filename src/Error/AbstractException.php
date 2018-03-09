@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Error;
 
 /**
- * Class BaseException
+ * Class AbstractException
  * @package Digia\GraphQL\Error
  */
-class BaseException extends \Exception
+abstract class AbstractException extends \Exception
 {
 
 }
