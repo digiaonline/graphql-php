@@ -811,18 +811,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @expectedException \TypeError
-     */
-    public function testRejectsAnInterfaceTypeWithAnIncorrectTypeForResolveType1()
-    {
-        GraphQLInterfaceType([
-            'name'        => 'AnotherInterface',
-            'resolveType' => [],
-            'fields'      => ['f' => ['type' => GraphQLString()]],
-        ]);
-    }
-
     // Type System: Union types must be resolvable
 
     /**
@@ -860,30 +848,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    // TODO: Assess if we want to test "accepts a Union type defining resolveType of Object types defining isTypeOf".
-
-    /**
-     * @throws \Exception
-     * @expectedException \TypeError
-     */
-    public function testRejectsAnInterfaceTypeWithAnIncorrectTypeForResolveType2()
-    {
-        $objectWithIsTypeOf = GraphQLObjectType([
-            'name'   => 'ObjectWithIsTypeOf',
-            'fields' => ['f' => ['type' => GraphQLString()]],
-        ]);
-
-        $this->schemaWithField(
-            GraphQLUnionType([
-                'name'        => 'SomeUnion',
-                'resolveType' => [],
-                'types'       => [$objectWithIsTypeOf],
-            ])
-        );
-
-        $this->addToAssertionCount(1);
-    }
-
     // Type System: Scalar types must be serializable
 
     /**
@@ -912,22 +876,6 @@ class DefinitionTest extends TestCase
         $this->schemaWithField(
             GraphQLScalarType([
                 'name' => 'SomeScalar',
-            ])
-        );
-
-        $this->addToAssertionCount(1);
-    }
-
-    /**
-     * @throws \Exception
-     * @expectedException \TypeError
-     */
-    public function testRejectsAScalarTypeDefiningSerializeWithAnIncorrectType()
-    {
-        $this->schemaWithField(
-            GraphQLScalarType([
-                'name'      => 'SomeScalar',
-                'serialize' => [],
             ])
         );
 
@@ -999,26 +947,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Exception
-     * @expectedException \TypeError
-     */
-    public function testRejectsAScalarTypeDefiningParseValueAndParseLiteralWithAnIncorrectType()
-    {
-        $this->schemaWithField(
-            GraphQLScalarType([
-                'name'         => 'SomeScalar',
-                'serialize'    => function () {
-                    return null;
-                },
-                'parseValue'   => [],
-                'parseLiteral' => [],
-            ])
-        );
-
-        $this->addToAssertionCount(1);
-    }
-
     // Type System: Object types must be assertable
 
     /**
@@ -1033,23 +961,6 @@ class DefinitionTest extends TestCase
                 'isTypeOf' => function () {
                     return true;
                 },
-            ])
-        );
-
-        $this->addToAssertionCount(1);
-    }
-
-    /**
-     * @throws \Exception
-     * @expectedException \TypeError
-     */
-    public function testRejectsAnObjectWithAnIncorrectTypeForIsTypeOf()
-    {
-        $this->schemaWithField(
-            GraphQLObjectType([
-                'name'     => 'AnotherObject',
-                'fields'   => ['f' => ['type' => GraphQLString()]],
-                'isTypeOf' => [],
             ])
         );
 
@@ -1105,22 +1016,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @throws \Exception
-     * @expectedException \TypeError
-     */
-    public function testRejectsAnUnionTypeWithIncorrectlyTypedTypes()
-    {
-        $this->schemaWithField(
-            GraphQLUnionType([
-                'name'  => 'AnotherObject',
-                'types' => 1,
-            ])
-        );
-
-        $this->addToAssertionCount(1);
-    }
-
     // Type System: Input Objects must have fields
 
     /**
@@ -1151,40 +1046,6 @@ class DefinitionTest extends TestCase
 
         $field = $inputObjectType->getFields()['f'];
         $this->assertEquals(GraphQLString(), $field->getType());
-    }
-
-    /**
-     * @throws \Exception
-     * @expectedException \TypeError
-     */
-    public function testRejectsAnInputObjectTypeWithIncorrectFields()
-    {
-        $inputObjectType = GraphQLInputObjectType([
-            'name'   => 'SomeInputObject',
-            'fields' => 1,
-        ]);
-
-        $inputObjectType->getFields();
-
-        $this->addToAssertionCount(1);
-    }
-
-    /**
-     * @throws \Exception
-     * @expectedException \TypeError
-     */
-    public function testRejectsAnInputObjectTypeWithFieldsFunctionThatReturnsIncorrectType()
-    {
-        $inputObjectType = GraphQLInputObjectType([
-            'name'   => 'SomeInputObject',
-            'fields' => function () {
-                return 1;
-            },
-        ]);
-
-        $inputObjectType->getFields();
-
-        $this->addToAssertionCount(1);
     }
 
     // Type System: Input Object fields must not have resolvers
@@ -1316,20 +1177,6 @@ class DefinitionTest extends TestCase
         }
 
         $this->addToAssertionCount(9);
-    }
-
-    /**
-     * @expectedException \TypeError
-     */
-    public function testListMustNotAcceptNonTypes()
-    {
-        $nonTypes = [[], '', null];
-
-        foreach ($nonTypes as $nonType) {
-            GraphQLList($nonType);
-        }
-
-        $this->addToAssertionCount(3);
     }
 
     // Type System: NonNull must only accept non-nullable types

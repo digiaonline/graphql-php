@@ -191,15 +191,6 @@ class EnumTypeTest extends TestCase
         $this->assertEquals($this->complex1, $oneValue->getValue());
     }
 
-    /**
-     * @throws \Exception
-     * @expectedException \TypeError
-     */
-    public function testBadUsageOfGetValueAPI()
-    {
-        $this->complexEnum->getValue($this->complex1);
-    }
-
     // TODO: Add test for 'may be internally represented with complex values'.
 
     // TODO: Add test for 'can be introspected without error'.
