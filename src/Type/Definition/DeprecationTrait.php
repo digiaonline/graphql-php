@@ -45,14 +45,4 @@ trait DeprecationTrait
 
         return $this;
     }
-
-    /**
-     * @param bool $isDeprecated
-     * @throws \TypeError
-     * @noinspection PhpUnusedParameterInspection
-     */
-    public function setIsDeprecated(bool $isDeprecated): void
-    {
-        throw new \TypeError('You should provide "deprecationReason" instead of "isDeprecated".');
-    }
 }
