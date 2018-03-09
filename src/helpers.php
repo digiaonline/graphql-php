@@ -97,26 +97,56 @@ function graphql(
     string $source,
     $rootValue = null,
     $contextValue = null,
-    $variableValues = null,
+    $variableValues = [],
     $operationName = null,
     callable $fieldResolver = null
 ): ExecutionResult {
     /** @noinspection PhpParamsInspection */
-    return executor()->execute(
-        $schema,
-        parse($source),
-        $rootValue,
-        $contextValue,
-        $variableValues,
-        $operationName,
-        $fieldResolver
-    );
+    return GraphQL::getInstance()
+        ->get(ExecutionInterface::class)
+        ->execute(
+            $schema,
+            parse($source),
+            $rootValue,
+            $contextValue,
+            $variableValues,
+            $operationName,
+            $fieldResolver
+        );
 }
 
 /**
- * @return ExecutionInterface
+ * Note that this is temporary needed
+ * We can remove this later
+ *
+ * @param SchemaInterface $schema
+ * @param DocumentNode    $documentNode
+ * @param null            $rootValue
+ * @param null            $contextValue
+ * @param null            $variableValues
+ * @param null            $operationName
+ * @param callable|null   $fieldResolver
+ * @return ExecutionResult
  */
-function executor(): ExecutionInterface
+function execute(
+    SchemaInterface $schema,
+    DocumentNode $documentNode,
+    $rootValue = null,
+    $contextValue = null,
+    $variableValues = [],
+    $operationName = null,
+    callable $fieldResolver = null
+): ExecutionResult
 {
-    return GraphQL::getInstance()->get(ExecutionInterface::class);
+    return GraphQL::getInstance()
+        ->get(ExecutionInterface::class)
+        ->execute(
+            $schema,
+            $documentNode,
+            $rootValue,
+            $contextValue,
+            $variableValues,
+            $operationName,
+            $fieldResolver
+        );
 }
