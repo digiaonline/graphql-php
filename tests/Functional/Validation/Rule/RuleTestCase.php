@@ -41,7 +41,7 @@ abstract class RuleTestCase extends TestCase
     {
         $errors = $this->validator->validate($schema, parse($query), $rules);
         $this->assertTrue(count($errors) >= 1, 'Should not validate');
-        $this->assertEquals(array_map('Digia\GraphQL\Error\formatError', $errors), $expectedErrors);
+        $this->assertEquals($expectedErrors, array_map('Digia\GraphQL\Error\formatError', $errors));
         return $errors;
     }
 }

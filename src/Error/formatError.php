@@ -15,7 +15,7 @@ function formatError(GraphQLException $error): array
 
     return array_merge($error->getExtensions() ?? [], [
         'message'   => $error->getMessage(),
-        'locations' => $error->getLocations(),
+        'locations' => $error->getLocationsAsArray(),
         'path'      => $error->getPath(),
     ]);
 }

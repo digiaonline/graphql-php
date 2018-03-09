@@ -9,8 +9,7 @@ function fragmentOnNonComposite($fragmentName, $typeName, $line, $column)
 {
     return [
         'message'   => fragmentOnNonCompositeMessage($fragmentName, $typeName),
-        // TODO: Add locations when support has been added to GraphQLError.
-        'locations' => null, //[['line' => $line, 'column' => $column]],
+        'locations' => [['line' => $line, 'column' => $column]],
         'path'      => null,
     ];
 }
@@ -22,10 +21,10 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
             '
-            fragment validFragment on Dog {
-              barks
-            }
-            '
+fragment validFragment on Dog {
+  barks
+}
+'
         );
     }
 
@@ -34,10 +33,10 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
             '
-            fragment validFragment on Pet {
-              name
-            }
-            '
+fragment validFragment on Pet {
+  name
+}
+'
         );
     }
 
@@ -46,12 +45,12 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
             '
-            fragment validFragment on Pet {
-              ... on Dog {
-                barks
-              }
-            }
-            '
+fragment validFragment on Pet {
+  ... on Dog {
+    barks
+  }
+}
+'
         );
     }
 
@@ -60,12 +59,12 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
             '
-            fragment validFragment on Pet {
-              ... {
-                name
-              }
-            }
-            '
+fragment validFragment on Pet {
+  ... {
+    name
+  }
+}
+'
         );
     }
 
@@ -74,10 +73,10 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
             '
-            fragment validFragment on CatOrDog {
-              __typename
-            }
-            '
+fragment validFragment on CatOrDog {
+  __typename
+}
+'
         );
     }
 
@@ -86,11 +85,11 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
         $this->expectFailsRule(
             new FragmentsOnCompositeTypesRule(),
             '
-            fragment scalarFragment on Boolean {
-              bad
-            }
-            ',
-            [fragmentOnNonComposite('scalarFragment', 'Boolean', 2, 34)]
+fragment scalarFragment on Boolean {
+  bad
+}
+',
+            [fragmentOnNonComposite('scalarFragment', 'Boolean', 2, 28)]
         );
     }
 }

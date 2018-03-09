@@ -9,8 +9,7 @@ function nonExecutableDefinition($definitionName, $line, $column)
 {
     return [
         'message'   => nonExecutableDefinitionMessage($definitionName),
-        // TODO: Add locations when support has been added to GraphQLError.
-        'locations' => null, //[['line' => $line, 'column' => $column]],
+        'locations' => [['line' => $line, 'column' => $column]],
         'path'      => null,
     ];
 }
@@ -22,12 +21,12 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new ExecutableDefinitionRule(),
             '
-            query Foo {
-              dog {
-                name
-              }
-            }
-            '
+query Foo {
+  dog {
+    name
+  }
+}
+'
         );
     }
 
@@ -36,17 +35,17 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new ExecutableDefinitionRule(),
             '
-            query Foo {
-              dog {
-                name
-                ...Frag
-              }
-            }
-            
-            fragment Frag on Dog {
-              name
-            }
-            '
+query Foo {
+  dog {
+    name
+    ...Frag
+  }
+}
+
+fragment Frag on Dog {
+  name
+}
+'
         );
     }
 
@@ -55,23 +54,23 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
         $this->expectFailsRule(
             new ExecutableDefinitionRule(),
             '
-            query Foo {
-              dog {
-                name
-              }
-            }
-            
-            type Cow {
-              name: String
-            }
-            
-            extend type Dog {
-              color: String
-            }
-            ',
+query Foo {
+  dog {
+    name
+  }
+}
+
+type Cow {
+  name: String
+}
+
+extend type Dog {
+  color: String
+}
+',
             [
-                nonExecutableDefinition('Cow', 8, 7),
-                nonExecutableDefinition('Dog', 12, 7),
+                nonExecutableDefinition('Cow', 8, 1),
+                nonExecutableDefinition('Dog', 12, 1),
             ]
         );
     }
@@ -81,17 +80,17 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
         $this->expectFailsRule(
             new ExecutableDefinitionRule(),
             '
-            schema {
-              query: Query
-            }
-            
-            type Query {
-              test: String
-            }
-            ',
+schema {
+  query: Query
+}
+
+type Query {
+  test: String
+}
+',
             [
-                nonExecutableDefinition('schema', 2, 7),
-                nonExecutableDefinition('Query', 6, 7),
+                nonExecutableDefinition('schema', 2, 1),
+                nonExecutableDefinition('Query', 6, 1),
             ]
         );
     }

@@ -10,8 +10,7 @@ function unknownArgument($argumentName, $fieldName, $typeName, $suggestedArgumen
 {
     return [
         'message'   => unknownArgumentMessage($argumentName, $fieldName, $typeName, $suggestedArguments),
-        // TODO: Add locations when support has been added to GraphQLError.
-        'locations' => null, //[['line' => $line, 'column' => $column]],
+        'locations' => [['line' => $line, 'column' => $column]],
         'path'      => null,
     ];
 }
@@ -20,8 +19,7 @@ function unknownDirectiveArgument($argumentName, $directiveName, $suggestedArgum
 {
     return [
         'message'   => unknownDirectiveArgumentMessage($argumentName, $directiveName, $suggestedArguments),
-        // TODO: Add locations when support has been added to GraphQLError.
-        'locations' => null, //[['line' => $line, 'column' => $column]],
+        'locations' => [['line' => $line, 'column' => $column]],
         'path'      => null,
     ];
 }
@@ -33,10 +31,10 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
             '
-            fragment argOnRequiredArg on Dog {
-              doesKnownCommand(dogCommand: SIT)
-            }
-            '
+fragment argOnRequiredArg on Dog {
+  doesKnownCommand(dogCommand: SIT)
+}
+'
         );
     }
 
@@ -45,10 +43,10 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
             '
-            fragment multipleArgs on ComplicatedArgs {
-              multipleReqs(req1: 1, req2: 2)
-            }
-            '
+fragment multipleArgs on ComplicatedArgs {
+  multipleReqs(req1: 1, req2: 2)
+}
+'
         );
     }
 
@@ -57,10 +55,10 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
             '
-            fragment argOnUnknownField on Dog {
-              unknownField(unknownArg: SIT)
-            }
-            '
+fragment argOnUnknownField on Dog {
+  unknownField(unknownArg: SIT)
+}
+'
         );
     }
 
@@ -69,10 +67,10 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
             '
-            fragment multipleArgsReverseOrder on ComplicatedArgs {
-              multipleReqs(req2: 2, req1: 1)
-            }
-            '
+fragment multipleArgsReverseOrder on ComplicatedArgs {
+  multipleReqs(req2: 2, req1: 1)
+}
+'
         );
     }
 
@@ -81,10 +79,10 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
             '
-            fragment noArgOnOptionalArg on Dog {
-              isHouseTrained
-            }
-            '
+fragment noArgOnOptionalArg on Dog {
+  isHouseTrained
+}
+'
         );
     }
 
@@ -93,18 +91,18 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
             '
-            {
-              dog {
-                doesKnowCommand(dogCommand: SIT)
-              }
-              human {
-                pet {
-                  ... on Dog {
-                    doesKnowCommand(dogCommand: SIT)
-                  }
-                }
-              }
-            }
+{
+  dog {
+    doesKnowCommand(dogCommand: SIT)
+  }
+  human {
+    pet {
+      ... on Dog {
+        doesKnowCommand(dogCommand: SIT)
+      }
+    }
+  }
+}
             '
         );
     }
@@ -114,10 +112,10 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
             '
-            {
-              dog @skip(if: true)
-            }
-            '
+{
+  dog @skip(if: true)
+}
+'
         );
     }
 
@@ -126,11 +124,11 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
             '
-            {
-              dog @skip(unless: true)
-            }
-            ',
-            [unknownDirectiveArgument('unless', 'skip', [], 3, 19)]
+{
+  dog @skip(unless: true)
+}
+',
+            [unknownDirectiveArgument('unless', 'skip', [], 3, 13)]
         );
     }
 
@@ -139,11 +137,11 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
             '
-            {
-              dog @skip(iff: true)
-            }
-            ',
-            [unknownDirectiveArgument('iff', 'skip', ['if'], 3, 19)]
+{
+  dog @skip(iff: true)
+}
+',
+            [unknownDirectiveArgument('iff', 'skip', ['if'], 3, 13)]
         );
     }
 
@@ -152,11 +150,11 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
             '
-            fragment invalidArgName on Dog {
-              doesKnowCommand(unknown: true)
-            }
-            ',
-            [unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 3, 25)]
+fragment invalidArgName on Dog {
+  doesKnowCommand(unknown: true)
+}
+',
+            [unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 3, 19)]
         );
     }
 
@@ -165,11 +163,11 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
             '
-            fragment invalidArgName on Dog {
-              doesKnowCommand(dogcommand: true)
-            }
-            ',
-            [unknownArgument('dogcommand', 'doesKnowCommand', 'Dog', ['dogCommand'], 3, 25)]
+fragment invalidArgName on Dog {
+  doesKnowCommand(dogcommand: true)
+}
+',
+            [unknownArgument('dogcommand', 'doesKnowCommand', 'Dog', ['dogCommand'], 3, 19)]
         );
     }
 
@@ -178,13 +176,13 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
             '
-            fragment oneGoodArgOneInvalidArg on Dog {
-              doesKnowCommand(whoknows: 1, dogCommand: SIT, unknown: true)
-            }
-            ',
+fragment oneGoodArgOneInvalidArg on Dog {
+  doesKnowCommand(whoknows: 1, dogCommand: SIT, unknown: true)
+}
+',
             [
-                unknownArgument('whoknows', 'doesKnowCommand', 'Dog', [], 3, 25),
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 3, 55),
+                unknownArgument('whoknows', 'doesKnowCommand', 'Dog', [], 3, 19),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 3, 49),
             ]
         );
     }
@@ -194,22 +192,22 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
             '
-            {
-              dog {
-                doesKnowCommand(unknown: true)
-              }
-              human {
-                pet {
-                  ... on Dog {
-                    doesKnowCommand(unknown: true)
-                  }
-                }
-              }
-            }
-            ',
+{
+  dog {
+    doesKnowCommand(unknown: true)
+  }
+  human {
+    pet {
+      ... on Dog {
+        doesKnowCommand(unknown: true)
+      }
+    }
+  }
+}
+',
             [
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 4, 27),
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 9, 31),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 4, 21),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 9, 25),
             ]
         );
     }
