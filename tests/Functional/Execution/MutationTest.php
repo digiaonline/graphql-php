@@ -2,9 +2,8 @@
 
 namespace Digia\GraphQL\Test\Functional\Execution;
 
-use Digia\GraphQL\Execution\Execution;
+use function Digia\GraphQL\execute;
 use Digia\GraphQL\Execution\ExecutionResult;
-use function Digia\GraphQL\executor;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
@@ -44,22 +43,8 @@ class MutationTest extends TestCase
         }
         ');
 
-        $rootValue      = [];
-        $contextValue   = '';
-        $variableValues = [];
-        $operationName  = 'M';
-        $fieldResolver  = null;
-
         /** @var ExecutionResult $executionResult */
-        $executionResult = executor()->execute(
-            $schema,
-            $documentNode,
-            $rootValue,
-            $contextValue,
-            $variableValues,
-            $operationName,
-            $fieldResolver
-        );
+        $executionResult = execute($schema, $documentNode);
 
         $expected = new ExecutionResult([
             'greeting' => 'Hello Han Solo.'
@@ -81,21 +66,6 @@ class MutationTest extends TestCase
         ');
 
         $schema = GraphQLSchema([
-            'mutation' =>
-                new ObjectType([
-                    'name'   => 'M',
-                    'fields' => [
-                        'd' => [
-                            'type'    => GraphQLString(),
-                            'resolve' => function () {
-                                return 'd';
-                            }
-                        ]
-                    ]
-                ])
-        ]);
-
-        $schema = GraphQLSchema([
             'query'    => new ObjectType([
                 'name'   => 'Q',
                 'fields' => [
@@ -110,22 +80,9 @@ class MutationTest extends TestCase
             ])
         ]);
 
-        $rootValue      = [];
-        $contextValue   = '';
-        $variableValues = [];
-        $operationName  = 'M';
-        $fieldResolver  = null;
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = executor()->execute(
-            $schema,
-            $documentNode,
-            $rootValue,
-            $contextValue,
-            $variableValues,
-            $operationName,
-            $fieldResolver
-        );
+        $executionResult = execute($schema, $documentNode);
 
         $expected = new ExecutionResult([], []);
 

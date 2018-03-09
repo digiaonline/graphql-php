@@ -24,8 +24,6 @@ class ExecutionProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(ExecutionInterface::class, function () {
-            return new Execution();
-        }, true/* $shared */);
+        $this->container->add(ExecutionInterface::class, Execution::class, true/* $shared */);
     }
 }

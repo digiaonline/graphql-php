@@ -102,8 +102,7 @@ function graphql(
     callable $fieldResolver = null
 ): ExecutionResult {
     /** @noinspection PhpParamsInspection */
-    return GraphQL::getInstance()
-        ->get(ExecutionInterface::class)
+    return GraphQL::get(ExecutionInterface::class)
         ->execute(
             $schema,
             parse($source),
@@ -138,8 +137,7 @@ function execute(
     callable $fieldResolver = null
 ): ExecutionResult
 {
-    return GraphQL::getInstance()
-        ->get(ExecutionInterface::class)
+    return GraphQL::get(ExecutionInterface::class)
         ->execute(
             $schema,
             $documentNode,
