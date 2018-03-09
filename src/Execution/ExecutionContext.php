@@ -57,7 +57,7 @@ class ExecutionContext
      * @param                         $contextValue
      * @param                         $variableValues
      * @param                         $fieldResolver
-     * @param OperationDefinitionNode $operatgion
+     * @param OperationDefinitionNode $operation
      * @param array                   $errors
      */
     public function __construct(
