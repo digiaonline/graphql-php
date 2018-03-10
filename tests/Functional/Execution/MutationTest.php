@@ -2,12 +2,11 @@
 
 namespace Digia\GraphQL\Test\Functional\Execution;
 
-use function Digia\GraphQL\execute;
+
 use Digia\GraphQL\Execution\ExecutionResult;
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use function Digia\GraphQL\parse;
+use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
@@ -27,24 +26,25 @@ class MutationTest extends TestCase
                         'greeting' => [
                             'type'    => GraphQLString(),
                             'resolve' => function ($source, $args, $context, $info) {
-                                return sprintf('Hello %s.', 'Han Solo');
+                                return sprintf('Hello %s.', $args['name']);
                             },
+                            'args'    => [
+                                'name' => [
+                                    'type' => GraphQLString()
+                                ]
+                            ]
                         ]
                     ]
                 ])
         ]);
 
-        //@TODO Get proper $name variable
-
-        /** @var DocumentNode $documentNode */
-        $documentNode = parse('
+        $source = '
         mutation M($name: String) {
             greeting(name:$name)
-        }
-        ');
+        }';
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = execute($schema, $documentNode);
+        $executionResult = graphql($schema, $source, '', null, ['name' => 'Han Solo']);
 
         $expected = new ExecutionResult([
             'greeting' => 'Hello Han Solo.'
@@ -58,13 +58,6 @@ class MutationTest extends TestCase
      */
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
-        /** @var DocumentNode $documentNode */
-        $documentNode = parse('
-        mutation M {
-          thisIsIllegalDontIncludeMe
-        }
-        ');
-
         $schema = GraphQLSchema([
             'query'    => new ObjectType([
                 'name'   => 'Q',
@@ -82,7 +75,7 @@ class MutationTest extends TestCase
 
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = execute($schema, $documentNode);
+        $executionResult = graphql($schema, 'mutation M { thisIsIllegalDontIncludeMe }');
 
         $expected = new ExecutionResult([], []);
 
