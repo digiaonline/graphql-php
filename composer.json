@@ -58,6 +58,8 @@
             "./tests/Functional/Validation/Rule/FragmentsOnCompositeTypesRuleTest.php",
             "./tests/Functional/Validation/Rule/KnownArgumentNamesRuleTest.php",
             "./tests/Functional/Validation/Rule/KnownDirectivesRuleTest.php",
+            "./tests/Functional/Validation/Rule/KnownFragmentNamesRuleTest.php",
+            "./tests/Functional/Validation/Rule/KnownTypeNamesRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {

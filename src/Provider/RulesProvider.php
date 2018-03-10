@@ -8,6 +8,7 @@ use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
 use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
 use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
+use Digia\GraphQL\Validation\Rule\KnownTypeNamesRule;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class RulesProvider extends AbstractServiceProvider
@@ -22,6 +23,7 @@ class RulesProvider extends AbstractServiceProvider
         KnownArgumentNamesRule::class,
         KnownDirectivesRule::class,
         KnownFragmentNamesRule::class,
+        KnownTypeNamesRule::class,
     ];
 
     /**
@@ -39,6 +41,7 @@ class RulesProvider extends AbstractServiceProvider
         $this->container->add(KnownArgumentNamesRule::class, KnownArgumentNamesRule::class, true/* $shared */);
         $this->container->add(KnownDirectivesRule::class, KnownDirectivesRule::class, true/* $shared */);
         $this->container->add(KnownFragmentNamesRule::class, KnownFragmentNamesRule::class, true/* $shared */);
+        $this->container->add(KnownTypeNamesRule::class, KnownTypeNamesRule::class, true/* $shared */);
 
     }
 }

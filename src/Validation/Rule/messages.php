@@ -121,3 +121,17 @@ function unknownFragmentMessage(string $fragmentName): string
 {
     return sprintf('Unknown fragment "%s".', $fragmentName);
 }
+
+/**
+ * @param string $typeName
+ * @param array  $suggestedTypes
+ * @return string
+ */
+function unknownTypeMessage(string $typeName, array $suggestedTypes): string
+{
+    $message = sprintf('Unknown type "%s".', $typeName);
+    if (!empty($suggestedTypes)) {
+        return $message . ' ' . sprintf('Did you mean %s?', quotedOrList($suggestedTypes));
+    }
+    return $message;
+}
