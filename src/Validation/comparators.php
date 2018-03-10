@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
+use function Digia\GraphQL\printNode;
 use Digia\GraphQL\Type\Definition\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
@@ -36,7 +37,7 @@ function compareArguments($argumentsA, $argumentsB): bool
  */
 function compareValues($valueA, $valueB): bool
 {
-    return $valueA == $valueB;
+    return printNode($valueA) === printNode($valueB);
 }
 
 /**

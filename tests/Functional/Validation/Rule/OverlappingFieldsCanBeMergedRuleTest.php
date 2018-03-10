@@ -34,8 +34,6 @@ fragment mergeIdenticalFields on Dog {
 
     public function testIdenticalFieldsWithIdenticalArguments()
     {
-        $this->markTestIncomplete('Test fails because we do not have support for comparing arguments.');
-
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
             '

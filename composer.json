@@ -66,6 +66,7 @@
             "./tests/Functional/Validation/Rule/NoUndefinedVariablesRuleTest.php",
             "./tests/Functional/Validation/Rule/NoUnusedFragmentsRuleTest.php",
             "./tests/Functional/Validation/Rule/NoUnusedVariablesRuleTest.php",
+            "./tests/Functional/Validation/Rule/OverlappingFieldsCanBeMergedRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {

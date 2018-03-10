@@ -137,5 +137,34 @@ function isOperation(string $value): bool
  */
 function locationShorthandToArray(array $shorthand): ?array
 {
-    return isset($shorthand[0], $shorthand[1]) ? ['line' => $shorthand[0], 'column' => $shorthand[1]] :null;
+    return isset($shorthand[0], $shorthand[1]) ? ['line' => $shorthand[0], 'column' => $shorthand[1]] : null;
+}
+
+/**
+ * @param array $array
+ * @return string
+ */
+function block(array $array): string
+{
+    return !empty($array) ? "{\n" . indent(implode("\n", $array)) . "\n}" : '';
+}
+
+/**
+ * @param string      $start
+ * @param null|string $maybeString
+ * @param null|string $end
+ * @return string
+ */
+function wrap(string $start, ?string $maybeString = null, ?string $end = null): string
+{
+    return null !== $maybeString ? ($start . $maybeString . ($end ?? '')) : '';
+}
+
+/**
+ * @param null|string $maybeString
+ * @return string
+ */
+function indent(?string $maybeString): string
+{
+    return null !== $maybeString ? '  ' . preg_replace("/\n/", "\n  ", $maybeString) : '';
 }
