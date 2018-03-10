@@ -154,3 +154,16 @@ function fragmentCycleMessage(string $fragmentName, array $spreadNames): string
     $via = !empty($spreadNames) ? ' via ' . implode(', ', $spreadNames) : '';
     return sprintf('Cannot spread fragment "%s" within itself%s.', $fragmentName, $via);
 }
+
+/**
+ * @param string      $variableName
+ * @param null|string $operationName
+ * @return string
+ */
+function undefinedVariableMessage(string $variableName, ?string $operationName = null): string
+{
+    /** @noinspection IsEmptyFunctionUsageInspection */
+    return !empty($operationName)
+        ? sprintf('Variable "$%s" is not defined by operation "%s".', $variableName, $operationName)
+        : sprintf('Variable "$%s" is not defined.', $variableName);
+}

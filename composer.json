@@ -37,7 +37,7 @@
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
             "./src/Validation/rules.php",
-            "./src/Validation/Rule/messages.php",
+            "./src/Validation/messages.php",
             "./src/helpers.php"
         ],
         "psr-4": {
@@ -62,6 +62,7 @@
             "./tests/Functional/Validation/Rule/KnownTypeNamesRuleTest.php",
             "./tests/Functional/Validation/Rule/LoneAnonymousOperationRuleTest.php",
             "./tests/Functional/Validation/Rule/NoFragmentCyclesRuleTest.php",
+            "./tests/Functional/Validation/Rule/NoUndefinedVariablesRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {

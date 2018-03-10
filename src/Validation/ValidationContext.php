@@ -7,8 +7,13 @@ use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
-use Digia\GraphQL\Language\AST\Node\SelectionNodeInterface;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
+use Digia\GraphQL\Language\AST\Node\VariableDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\VariableNode;
+use Digia\GraphQL\Language\AST\Visitor\TypeInfoVisitor;
+use Digia\GraphQL\Language\AST\Visitor\Visitor;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Field;
@@ -47,6 +52,21 @@ class ValidationContext
      * @var array
      */
     protected $fragmentSpreads = [];
+
+    /**
+     * @var array
+     */
+    protected $variableUsages = [];
+
+    /**
+     * @var array
+     */
+    protected $recursiveVariableUsages = [];
+
+    /**
+     * @var array
+     */
+    protected $recursivelyReferencedFragment = [];
 
     /**
      * ValidationContext constructor.
@@ -166,5 +186,100 @@ class ValidationContext
         }
 
         return $spreads;
+    }
+
+    /**
+     * @param OperationDefinitionNode $operation
+     * @return array
+     */
+    public function getRecursiveVariableUsages(OperationDefinitionNode $operation): array
+    {
+        $usages = $this->recursiveVariableUsages[(string)$operation] ?? null;
+
+        if (null === $usages) {
+            $usages    = $this->getVariableUsages($operation);
+            $fragments = $this->getRecursivelyReferencedFragments($operation);
+
+            foreach ($fragments as $fragment) {
+                // TODO: Figure out a more performance way to do this.
+                /** @noinspection SlowArrayOperationsInLoopInspection */
+                $usages = array_merge($usages, $this->getVariableUsages($fragment));
+            }
+
+            $this->recursiveVariableUsages[(string)$operation] = $usages;
+        }
+
+        return $usages;
+    }
+
+    /**
+     * @param OperationDefinitionNode|FragmentDefinitionNode $node
+     * @return array
+     */
+    public function getVariableUsages(NodeInterface $node): array
+    {
+        $usages = $this->variableUsages[(string)$node] ?? null;
+
+        if (null === $usages) {
+            $usages   = [];
+            $typeInfo = new TypeInfo($this->schema);
+            $visitor  = new TypeInfoVisitor($typeInfo, new Visitor(
+                function (NodeInterface $node) use (&$usages, $typeInfo): ?NodeInterface {
+                    if ($node instanceof VariableDefinitionNode) {
+                        return null;
+                    }
+
+                    if ($node instanceof VariableNode) {
+                        $usages[] = ['node' => $node, 'type' => $typeInfo->getInputType()];
+                    }
+
+                    return $node;
+                }
+            ));
+
+            $node->accept($visitor);
+
+            $this->variableUsages[(string)$node] = $usages;
+        }
+
+        return $usages;
+    }
+
+    /**
+     * @param OperationDefinitionNode $operation
+     * @return array|FragmentDefinitionNode[]
+     */
+    public function getRecursivelyReferencedFragments(OperationDefinitionNode $operation): array
+    {
+        $fragments = $this->recursivelyReferencedFragment[(string)$operation] ?? null;
+
+        if (null === $fragments) {
+            $fragments      = [];
+            $collectedNames = [];
+            $nodesToVisit   = [$operation->getSelectionSet()];
+
+            while (!empty($nodesToVisit)) {
+                $node    = array_pop($nodesToVisit);
+                $spreads = $this->getFragmentSpreads($node);
+
+                foreach ($spreads as $spread) {
+                    $fragmentName = $spread->getNameValue();
+
+                    if (!isset($collectedNames[$fragmentName])) {
+                        $collectedNames[$fragmentName] = true;
+                        $fragment                      = $this->getFragment($fragmentName);
+
+                        if (null !== $fragment) {
+                            $fragments[]    = $fragment;
+                            $nodesToVisit[] = $fragment->getSelectionSet();
+                        }
+                    }
+                }
+            }
+
+            $this->recursivelyReferencedFragment[(string)$operation] = $fragments;
+        }
+
+        return $fragments;
     }
 }

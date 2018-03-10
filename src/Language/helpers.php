@@ -130,3 +130,12 @@ function isOperation(string $value): bool
     // TODO: Benchmark
     return \in_array($value, ['query', 'mutation', 'subscription'], true);
 }
+
+/**
+ * @param array $shorthand
+ * @return array|null
+ */
+function locationShorthandToArray(array $shorthand): ?array
+{
+    return isset($shorthand[0], $shorthand[1]) ? ['line' => $shorthand[0], 'column' => $shorthand[1]] :null;
+}

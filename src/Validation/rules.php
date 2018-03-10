@@ -12,6 +12,7 @@ use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownTypeNamesRule;
 use Digia\GraphQL\Validation\Rule\LoneAnonymousOperationRule;
 use Digia\GraphQL\Validation\Rule\NoFragmentCyclesRule;
+use Digia\GraphQL\Validation\Rule\NoUndefinedVariablesRule;
 
 /**
  * @return array
@@ -28,5 +29,6 @@ function specifiedRules(): array
         GraphQL::get(KnownTypeNamesRule::class),
         GraphQL::get(LoneAnonymousOperationRule::class),
         GraphQL::get(NoFragmentCyclesRule::class),
+        GraphQL::get(NoUndefinedVariablesRule::class),
     ];
 }
