@@ -176,3 +176,16 @@ function unusedFragmentMessage(string $fragmentName): string
 {
     return sprintf('Fragment "%s" is never used.', $fragmentName);
 }
+
+/**
+ * @param string      $variableName
+ * @param null|string $operationName
+ * @return string
+ */
+function unusedVariableMessage(string $variableName, ?string $operationName = null): string
+{
+    /** @noinspection IsEmptyFunctionUsageInspection */
+    return !empty($operationName)
+        ? sprintf('Variable "$%s" is never used in operation "%s".', $variableName, $operationName)
+        : sprintf('Variable "$%s" is never used.', $variableName);
+}

@@ -3,28 +3,23 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\VariableDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\VariableNode;
 
 /**
- * No unused fragments
+ * No unused variables
  *
- * A GraphQL document is only valid if all fragment definitions are spread
- * within operations, or spread within other fragments spread within operations.
+ * A GraphQL operation is only valid if all variables defined by an operation
+ * are used, either directly or within a spread fragment.
  */
-class NoUnusedFragmentsRule extends AbstractRule
+class NoUnusedVariablesRule extends AbstractRule
 {
     /**
-     * @var array|OperationDefinitionNode[]
+     * @var array|VariableDefinitionNode[]
      */
-    protected $operationDefinitions = [];
-
-    /**
-     * @var array|FragmentDefinitionNode[]
-     */
-    protected $fragmentDefinitions = [];
+    protected $variableDefinitions;
 
     /**
      * @inheritdoc
@@ -32,13 +27,11 @@ class NoUnusedFragmentsRule extends AbstractRule
     public function enterNode(NodeInterface $node): ?NodeInterface
     {
         if ($node instanceof OperationDefinitionNode) {
-            $this->operationDefinitions[] = $node;
-            return null;
+            $this->variableDefinitions = [];
         }
 
-        if ($node instanceof FragmentDefinitionNode) {
-            $this->fragmentDefinitions[] = $node;
-            return null;
+        if ($node instanceof VariableDefinitionNode) {
+            $this->variableDefinitions[] = $node;
         }
 
         return $node;
@@ -49,21 +42,26 @@ class NoUnusedFragmentsRule extends AbstractRule
      */
     public function leaveNode(NodeInterface $node): ?NodeInterface
     {
-        if ($node instanceof DocumentNode) {
-            $fragmentNamesUsed = [];
+        if ($node instanceof OperationDefinitionNode) {
+            $variableNamesUsed = [];
+            $usages            = $this->context->getRecursiveVariableUsages($node);
+            $operationNameNode = $node->getName();
+            $operationName     = null !== $operationNameNode ? $operationNameNode->getValue() : null;
 
-            foreach ($this->operationDefinitions as $operation) {
-                foreach ($this->context->getRecursivelyReferencedFragments($operation) as $fragment) {
-                    $fragmentNamesUsed[$fragment->getNameValue()] = true;
-                }
+            /** @var VariableNode $variableNode */
+            foreach ($usages as ['node' => $variableNode]) {
+                $variableNamesUsed[$variableNode->getNameValue()] = true;
             }
 
-            foreach ($this->fragmentDefinitions as $fragment) {
-                $fragmentName = $fragment->getNameValue();
+            foreach ($this->variableDefinitions as $variableDefinition) {
+                $variableName = $variableDefinition->getVariable()->getNameValue();
 
-                if (!isset($fragmentNamesUsed[$fragmentName])) {
+                if (!isset($variableNamesUsed[$variableName])) {
                     $this->context->reportError(
-                        new ValidationException(unusedFragmentMessage($fragmentName), [$fragment])
+                        new ValidationException(
+                            unusedVariableMessage($variableName, $operationName),
+                            [$variableDefinition]
+                        )
                     );
                 }
             }

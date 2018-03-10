@@ -2,143 +2,257 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use Digia\GraphQL\Validation\Rule\NoUnusedFragmentsRule;
+use Digia\GraphQL\Validation\Rule\NoUnusedVariablesRule;
 use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\Rule\unusedFragmentMessage;
+use function Digia\GraphQL\Validation\Rule\unusedVariableMessage;
 
-function unusedFragment($fragmentName, $location)
+function unusedVariable($variableName, $operationName, $location)
 {
     return [
-        'message'   => unusedFragmentMessage($fragmentName),
+        'message'   => unusedVariableMessage($variableName, $operationName),
         'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
 
-class NoUnusedFragmentsRuleTest extends RuleTestCase
+class NoUnusedVariablesRuleTest extends RuleTestCase
 {
-    public function testAllFragmentNamesAreUsed()
+    public function testUsesAllVariables()
     {
         $this->expectPassesRule(
-            new NoUnusedFragmentsRule(),
+            new NoUnusedVariablesRule(),
             '
-{
-  human(id: 4) {
-    ...HumanFields1
-    ... on Human {
-      ...HumanFields2
-    }
-  }
-}
-fragment HumanFields1 on Human {
-  name
-  ...HumanFields3
-}
-fragment HumanFields2 on Human {
-  name
-}
-fragment HumanFields3 on Human {
-  name
+query ($a: String, $b: String, $c: String) {
+  field(a: $a, b: $b, c: $c)
 }
 '
         );
     }
 
-    public function testContainsUnknownFragments()
+    public function testUsesAllVariablesDeeply()
+    {
+        $this->expectPassesRule(
+            new NoUnusedVariablesRule(),
+            '
+query Foo($a: String, $b: String, $c: String) {
+  field(a: $a) {
+    field(b: $b) {
+      field(c: $c)
+    }
+  }
+}
+'
+        );
+    }
+
+    public function testUsesAllVariablesDeeplyInInlineFragments()
+    {
+        $this->expectPassesRule(
+            new NoUnusedVariablesRule(),
+            '
+query Foo($a: String, $b: String, $c: String) {
+  ... on Type {
+    field(a: $a) {
+      field(b: $b) {
+        ... on Type {
+          field(c: $c)
+        }
+      }
+    }
+  }
+}
+'
+        );
+    }
+
+    public function testUsesAllVariablesInFragments()
+    {
+        $this->expectPassesRule(
+            new NoUnusedVariablesRule(),
+            '
+query Foo($a: String, $b: String, $c: String) {
+  ...FragA
+}
+fragment FragA on Type {
+  field(a: $a) {
+    ...FragB
+  }
+}
+fragment FragB on Type {
+  field(b: $b) {
+    ...FragC
+  }
+}
+fragment FragC on Type {
+  field(c: $c)
+}
+'
+        );
+    }
+
+    public function testVariableUsedByFragmentInMultipleOperations()
+    {
+        $this->expectPassesRule(
+            new NoUnusedVariablesRule(),
+            '
+query Foo($a: String) {
+  ...FragA
+}
+query Bar($b: String) {
+  ...FragB
+}
+fragment FragA on Type {
+  field(a: $a)
+}
+fragment FragB on Type {
+  field(b: $b)
+}
+'
+        );
+    }
+
+    public function testVariableUsedByRecursiveFragment()
+    {
+        $this->expectPassesRule(
+            new NoUnusedVariablesRule(),
+            '
+query Foo($a: String) {
+  ...FragA
+}
+fragment FragA on Type {
+  field(a: $a) {
+    ...FragA
+  }
+}
+'
+        );
+    }
+
+    public function testVariableNotUsed()
     {
         $this->expectFailsRule(
-            new NoUnusedFragmentsRule(),
+            new NoUnusedVariablesRule(),
             '
-query Foo {
-  human(id: 4) {
-    ...HumanFields1
-  }
+query ($a: String, $b: String, $c: String) {
+  field(a: $a, b: $b)
 }
-query Bar {
-  human(id: 4) {
-    ...HumanFields2
-  }
-}
-fragment HumanFields1 on Human {
-  name
-  ...HumanFields3
-}
-fragment HumanFields2 on Human {
-  name
-}
-fragment HumanFields3 on Human {
-  name
-}
-fragment Unused1 on Human {
-  name
-}
-fragment Unused2 on Human {
-  name
+',
+            [unusedVariable('c', null, [2, 32])]
+        );
+    }
+
+    public function testMultipleVariablesNotUsed()
+    {
+        $this->expectFailsRule(
+            new NoUnusedVariablesRule(),
+            '
+query Foo($a: String, $b: String, $c: String) {
+  field(b: $b)
 }
 ',
             [
-                unusedFragment('Unused1', [22, 1]),
-                unusedFragment('Unused2', [25, 1]),
+                unusedVariable('a', 'Foo', [2, 11]),
+                unusedVariable('c', 'Foo', [2, 35]),
             ]
         );
     }
 
-    public function testContainsUnknownFragmentsWithReferenceCycle()
+    public function testVariableNotUsedInFragments()
     {
         $this->expectFailsRule(
-            new NoUnusedFragmentsRule(),
+            new NoUnusedVariablesRule(),
             '
-query Foo {
-  human(id: 4) {
-    ...HumanFields1
+query Foo($a: String, $b: String, $c: String) {
+  ...FragA
+}
+fragment FragA on Type {
+  field(a: $a) {
+    ...FragB
   }
 }
-query Bar {
-  human(id: 4) {
-    ...HumanFields2
+fragment FragB on Type {
+  field(b: $b) {
+    ...FragC
   }
 }
-fragment HumanFields1 on Human {
-  name
-  ...HumanFields3
+fragment FragC on Type {
+  field
 }
-fragment HumanFields2 on Human {
-  name
+',
+            [unusedVariable('c', 'Foo', [2, 35])]
+        );
+    }
+
+    public function testMultipleVariablesNotUsedInFragments()
+    {
+        $this->expectFailsRule(
+            new NoUnusedVariablesRule(),
+            '
+query Foo($a: String, $b: String, $c: String) {
+  ...FragA
 }
-fragment HumanFields3 on Human {
-  name
+fragment FragA on Type {
+  field {
+    ...FragB
+  }
 }
-fragment Unused1 on Human {
-  name
-  ...Unused2
+fragment FragB on Type {
+  field(b: $b) {
+    ...FragC
+  }
 }
-fragment Unused2 on Human {
-  name
-  ...Unused1
+fragment FragC on Type {
+  field
 }
 ',
             [
-                unusedFragment('Unused1', [22, 1]),
-                unusedFragment('Unused2', [26, 1]),
+                unusedVariable('a', 'Foo', [2, 11]),
+                unusedVariable('c', 'Foo', [2, 35]),
             ]
         );
     }
 
-    public function testContainsUnknownAndUndefinedFragments()
+    public function testVariableNotUsedByUnreferencedFragment()
     {
         $this->expectFailsRule(
-            new NoUnusedFragmentsRule(),
+            new NoUnusedVariablesRule(),
             '
-query Foo {
-  human(id: 4) {
-    ...bar
-  }
+query Foo($b: String) {
+  ...FragA
 }
-fragment foo on Human {
-  name
+fragment FragA on Type {
+  field(a: $a)
+}
+fragment FragB on Type {
+  field(b: $b)
 }
 ',
-            [unusedFragment('foo', [7, 1])]
+            [unusedVariable('b', 'Foo', [2, 11])]
+        );
+    }
+
+    public function testVariableNotUsedByFragmentUsedByOtherOperation()
+    {
+        $this->expectFailsRule(
+            new NoUnusedVariablesRule(),
+            '
+query Foo($b: String) {
+  ...FragA
+}
+query Bar($a: String) {
+  ...FragB
+}
+fragment FragA on Type {
+  field(a: $a)
+}
+fragment FragB on Type {
+  field(b: $b)
+}
+',
+            [
+                unusedVariable('b', 'Foo', [2, 11]),
+                unusedVariable('a', 'Bar', [5, 11]),
+            ]
         );
     }
 }

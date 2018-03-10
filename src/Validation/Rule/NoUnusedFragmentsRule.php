@@ -52,18 +52,18 @@ class NoUnusedFragmentsRule extends AbstractRule
         if ($node instanceof DocumentNode) {
             $fragmentNamesUsed = [];
 
-            foreach ($this->operationDefinitions as $operation) {
-                foreach ($this->context->getRecursivelyReferencedFragments($operation) as $fragment) {
-                    $fragmentNamesUsed[$fragment->getNameValue()] = true;
+            foreach ($this->operationDefinitions as $operationDefinition) {
+                foreach ($this->context->getRecursivelyReferencedFragments($operationDefinition) as $fragmentDefinition) {
+                    $fragmentNamesUsed[$fragmentDefinition->getNameValue()] = true;
                 }
             }
 
-            foreach ($this->fragmentDefinitions as $fragment) {
-                $fragmentName = $fragment->getNameValue();
+            foreach ($this->fragmentDefinitions as $fragmentDefinition) {
+                $fragmentName = $fragmentDefinition->getNameValue();
 
                 if (!isset($fragmentNamesUsed[$fragmentName])) {
                     $this->context->reportError(
-                        new ValidationException(unusedFragmentMessage($fragmentName), [$fragment])
+                        new ValidationException(unusedFragmentMessage($fragmentName), [$fragmentDefinition])
                     );
                 }
             }
