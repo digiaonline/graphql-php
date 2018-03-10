@@ -9,6 +9,7 @@ use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
 use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownTypeNamesRule;
+use Digia\GraphQL\Validation\Rule\LoneAnonymousOperationRule;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class RulesProvider extends AbstractServiceProvider
@@ -24,6 +25,7 @@ class RulesProvider extends AbstractServiceProvider
         KnownDirectivesRule::class,
         KnownFragmentNamesRule::class,
         KnownTypeNamesRule::class,
+        LoneAnonymousOperationRule::class,
     ];
 
     /**
@@ -31,17 +33,8 @@ class RulesProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(ExecutableDefinitionRule::class, ExecutableDefinitionRule::class, true/* $shared */);
-        $this->container->add(FieldOnCorrectTypeRule::class, FieldOnCorrectTypeRule::class, true/* $shared */);
-        $this->container->add(
-            FragmentsOnCompositeTypesRule::class,
-            FragmentsOnCompositeTypesRule::class,
-            true/* $shared */
-        );
-        $this->container->add(KnownArgumentNamesRule::class, KnownArgumentNamesRule::class, true/* $shared */);
-        $this->container->add(KnownDirectivesRule::class, KnownDirectivesRule::class, true/* $shared */);
-        $this->container->add(KnownFragmentNamesRule::class, KnownFragmentNamesRule::class, true/* $shared */);
-        $this->container->add(KnownTypeNamesRule::class, KnownTypeNamesRule::class, true/* $shared */);
-
+        foreach ($this->provides as $className) {
+            $this->container->add($className, $className, true/* $shared */);
+        }
     }
 }

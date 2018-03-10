@@ -135,3 +135,11 @@ function unknownTypeMessage(string $typeName, array $suggestedTypes): string
     }
     return $message;
 }
+
+/**
+ * @return string
+ */
+function anonymousOperationNotAloneMessage(): string
+{
+    return 'This anonymous operation must be the only defined operation.';
+}
