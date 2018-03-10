@@ -195,11 +195,11 @@ function unusedVariableMessage(string $variableName, ?string $operationName = nu
  * @param mixed  $reason
  * @return string
  */
-function fieldsConflictMessage(string $reasonName, $reason): string
+function fieldsConflictMessage(string $responseName, $reason): string
 {
     return sprintf(
         'Fields "%s" conflict because %s. Use different aliases on the fields to fetch both if this was intentional.',
-        $reasonName,
+        $responseName,
         conflictReasonMessage($reason)
     );
 }

@@ -17,8 +17,12 @@ class Printer implements PrinterInterface
      * Printer constructor.
      * @param array|WriterInterface[] $writers
      */
-    public function __construct($writers)
+    public function __construct(array $writers)
     {
+        foreach ($writers as $writer) {
+            $writer->setPrinter($this);
+        }
+
         $this->writers = $writers;
     }
 

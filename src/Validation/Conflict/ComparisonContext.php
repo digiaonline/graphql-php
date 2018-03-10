@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\AST\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 
-class ConflictContext
+class ComparisonContext
 {
     /**
      * @var array
@@ -47,7 +47,7 @@ class ConflictContext
      */
     public function registerFragment(NodeInterface $fragment)
     {
-        $this->fragmentNames[$fragment->getNameValue()] = true;
+        $this->fragmentNames[] = $fragment->getNameValue();
 
         return $this;
     }
