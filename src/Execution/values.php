@@ -6,7 +6,9 @@ use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\AST\Node\ArgumentNode;
+use Digia\GraphQL\Language\AST\Node\DirectiveNode;
 use Digia\GraphQL\Language\AST\Node\DirectivesTrait;
+use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\VariableNode;
@@ -26,7 +28,7 @@ use function Digia\GraphQL\Util\keyMap;
  * @throws InvalidTypeException
  * @throws InvariantException
  */
-function getArgumentValues($definition, NodeInterface $node, array $variableValues = []): array
+function getArgumentValues($definition, $node, array $variableValues = []): array
 {
     $coercedValues       = [];
     $argumentDefinitions = $definition->getArguments();
