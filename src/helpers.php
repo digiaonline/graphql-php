@@ -113,38 +113,3 @@ function graphql(
             $fieldResolver
         );
 }
-
-/**
- * Note that this is temporary needed
- * We can remove this later
- *
- * @param SchemaInterface $schema
- * @param DocumentNode    $documentNode
- * @param null            $rootValue
- * @param null            $contextValue
- * @param null            $variableValues
- * @param null            $operationName
- * @param callable|null   $fieldResolver
- * @return ExecutionResult
- */
-function execute(
-    SchemaInterface $schema,
-    DocumentNode $documentNode,
-    $rootValue = null,
-    $contextValue = null,
-    $variableValues = [],
-    $operationName = null,
-    callable $fieldResolver = null
-): ExecutionResult
-{
-    return GraphQL::get(ExecutionInterface::class)
-        ->execute(
-            $schema,
-            $documentNode,
-            $rootValue,
-            $contextValue,
-            $variableValues,
-            $operationName,
-            $fieldResolver
-        );
-}

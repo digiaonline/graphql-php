@@ -315,7 +315,7 @@ abstract class ExecutionStrategy
         try {
             $args = getArgumentValues($field, $fieldNode, $context->getVariableValues());
 
-            return $resolveFunction($source, $args, $context, $info);
+            return $resolveFunction($source, $args, $context->getContextValue(), $info);
         } catch (\Throwable $error) {
             return $error;
         }
