@@ -4,7 +4,11 @@ namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\AST\Node\FieldNode;
 use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
+use Digia\GraphQL\Language\AST\Node\SelectionNodeInterface;
+use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Field;
@@ -38,6 +42,11 @@ class ValidationContext
      * @var array|FragmentDefinitionNode[]
      */
     protected $fragments = [];
+
+    /**
+     * @var array
+     */
+    protected $fragmentSpreads = [];
 
     /**
      * ValidationContext constructor.
@@ -124,5 +133,38 @@ class ValidationContext
         }
 
         return $this->fragments[$name] ?? null;
+    }
+
+    /**
+     * @param SelectionSetNode $selectionSet
+     * @return array|FragmentSpreadNode[]
+     */
+    public function getFragmentSpreads(SelectionSetNode $selectionSet): array
+    {
+        $spreads = $this->fragmentSpreads[(string)$selectionSet] ?? null;
+
+        if (null === $spreads) {
+            $spreads = [];
+
+            $setsToVisit = [$selectionSet];
+
+            while (!empty($setsToVisit)) {
+                /** @var SelectionSetNode $set */
+                $set = array_pop($setsToVisit);
+
+                /** @var FieldNode $selection */
+                foreach ($set->getSelections() as $selection) {
+                    if ($selection instanceof FragmentSpreadNode) {
+                        $spreads[] = $selection;
+                    } elseif ($selection->hasSelectionSet()) {
+                        $setsToVisit[] = $selection->getSelectionSet();
+                    }
+                }
+            }
+
+            $this->fragmentSpreads[(string)$selectionSet] = $spreads;
+        }
+
+        return $spreads;
     }
 }

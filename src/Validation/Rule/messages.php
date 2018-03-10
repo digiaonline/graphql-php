@@ -143,3 +143,14 @@ function anonymousOperationNotAloneMessage(): string
 {
     return 'This anonymous operation must be the only defined operation.';
 }
+
+/**
+ * @param string $fragmentName
+ * @param array  $spreadNames
+ * @return string
+ */
+function fragmentCycleMessage(string $fragmentName, array $spreadNames): string
+{
+    $via = !empty($spreadNames) ? ' via ' . implode(', ', $spreadNames) : '';
+    return sprintf('Cannot spread fragment "%s" within itself%s.', $fragmentName, $via);
+}
