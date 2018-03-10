@@ -71,6 +71,4 @@ class NoUnusedFragmentsRule extends AbstractRule
 
         return $node;
     }
-
-
 }

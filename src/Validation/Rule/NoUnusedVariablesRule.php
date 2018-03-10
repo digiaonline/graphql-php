@@ -69,6 +69,4 @@ class NoUnusedVariablesRule extends AbstractRule
 
         return $node;
     }
-
-
 }

@@ -61,7 +61,7 @@ class KnownDirectivesRule extends AbstractRule
                 return $node;
             }
 
-            $location = getDirectiveLocationFromASTPath($node);
+            $location = $this->getDirectiveLocationFromASTPath($node);
 
             if (null !== $location && !in_array($location, $directiveDefinition->getLocations())) {
                 $this->context->reportError(
@@ -72,74 +72,74 @@ class KnownDirectivesRule extends AbstractRule
 
         return $node;
     }
-}
 
-/**
- * @param NodeInterface|AcceptVisitorTrait $node
- * @return string
- */
-function getDirectiveLocationFromASTPath(NodeInterface $node): string
-{
-    /** @var NodeInterface $appliedTo */
-    $appliedTo = $node->getAncestor();
+    /**
+     * @param NodeInterface|AcceptVisitorTrait $node
+     * @return string|null
+     */
+    protected function getDirectiveLocationFromASTPath(NodeInterface $node): ?string
+    {
+        /** @var NodeInterface $appliedTo */
+        $appliedTo = $node->getAncestor();
 
-    if ($appliedTo instanceof OperationDefinitionNode) {
-        switch ($appliedTo->getOperation()) {
-            case 'query':
-                return DirectiveLocationEnum::QUERY;
-            case 'mutation':
-                return DirectiveLocationEnum::MUTATION;
-            case 'subscription':
-                return DirectiveLocationEnum::SUBSCRIPTION;
-            default:
-                // TODO: Throw appropriate exception.
+        if ($appliedTo instanceof OperationDefinitionNode) {
+            switch ($appliedTo->getOperation()) {
+                case 'query':
+                    return DirectiveLocationEnum::QUERY;
+                case 'mutation':
+                    return DirectiveLocationEnum::MUTATION;
+                case 'subscription':
+                    return DirectiveLocationEnum::SUBSCRIPTION;
+                default:
+                    return null;
+            }
         }
-    }
-    if ($appliedTo instanceof FieldNode) {
-        return DirectiveLocationEnum::FIELD;
-    }
-    if ($appliedTo instanceof FragmentSpreadNode) {
-        return DirectiveLocationEnum::FRAGMENT_SPREAD;
-    }
-    if ($appliedTo instanceof InlineFragmentNode) {
-        return DirectiveLocationEnum::INLINE_FRAGMENT;
-    }
-    if ($appliedTo instanceof FragmentDefinitionNode) {
-        return DirectiveLocationEnum::FRAGMENT_DEFINITION;
-    }
-    if ($appliedTo instanceof SchemaDefinitionNode) {
-        return DirectiveLocationEnum::SCHEMA;
-    }
-    if ($appliedTo instanceof ScalarTypeDefinitionNode || $appliedTo instanceof ScalarTypeExtensionNode) {
-        return DirectiveLocationEnum::SCALAR;
-    }
-    if ($appliedTo instanceof ObjectTypeDefinitionNode || $appliedTo instanceof ObjectTypeExtensionNode) {
-        return DirectiveLocationEnum::OBJECT;
-    }
-    if ($appliedTo instanceof FieldDefinitionNode) {
-        return DirectiveLocationEnum::FIELD_DEFINITION;
-    }
-    if ($appliedTo instanceof InterfaceTypeDefinitionNode || $appliedTo instanceof InterfaceTypeExtensionNode) {
-        return DirectiveLocationEnum::INTERFACE;
-    }
-    if ($appliedTo instanceof UnionTypeDefinitionNode || $appliedTo instanceof UnionTypeExtensionNode) {
-        return DirectiveLocationEnum::UNION;
-    }
-    if ($appliedTo instanceof EnumTypeDefinitionNode || $appliedTo instanceof EnumTypeExtensionNode) {
-        return DirectiveLocationEnum::ENUM;
-    }
-    if ($appliedTo instanceof EnumValueDefinitionNode) {
-        return DirectiveLocationEnum::ENUM_VALUE;
-    }
-    if ($appliedTo instanceof InputObjectTypeDefinitionNode || $appliedTo instanceof InputObjectTypeExtensionNode) {
-        return DirectiveLocationEnum::INPUT_OBJECT;
-    }
-    if ($appliedTo instanceof InputValueDefinitionNode) {
-        $parentNode = $node->getAncestor(2);
-        return $parentNode instanceof InputObjectTypeDefinitionNode
-            ? DirectiveLocationEnum::INPUT_FIELD_DEFINITION
-            : DirectiveLocationEnum::ARGUMENT_DEFINITION;
-    }
+        if ($appliedTo instanceof FieldNode) {
+            return DirectiveLocationEnum::FIELD;
+        }
+        if ($appliedTo instanceof FragmentSpreadNode) {
+            return DirectiveLocationEnum::FRAGMENT_SPREAD;
+        }
+        if ($appliedTo instanceof InlineFragmentNode) {
+            return DirectiveLocationEnum::INLINE_FRAGMENT;
+        }
+        if ($appliedTo instanceof FragmentDefinitionNode) {
+            return DirectiveLocationEnum::FRAGMENT_DEFINITION;
+        }
+        if ($appliedTo instanceof SchemaDefinitionNode) {
+            return DirectiveLocationEnum::SCHEMA;
+        }
+        if ($appliedTo instanceof ScalarTypeDefinitionNode || $appliedTo instanceof ScalarTypeExtensionNode) {
+            return DirectiveLocationEnum::SCALAR;
+        }
+        if ($appliedTo instanceof ObjectTypeDefinitionNode || $appliedTo instanceof ObjectTypeExtensionNode) {
+            return DirectiveLocationEnum::OBJECT;
+        }
+        if ($appliedTo instanceof FieldDefinitionNode) {
+            return DirectiveLocationEnum::FIELD_DEFINITION;
+        }
+        if ($appliedTo instanceof InterfaceTypeDefinitionNode || $appliedTo instanceof InterfaceTypeExtensionNode) {
+            return DirectiveLocationEnum::INTERFACE;
+        }
+        if ($appliedTo instanceof UnionTypeDefinitionNode || $appliedTo instanceof UnionTypeExtensionNode) {
+            return DirectiveLocationEnum::UNION;
+        }
+        if ($appliedTo instanceof EnumTypeDefinitionNode || $appliedTo instanceof EnumTypeExtensionNode) {
+            return DirectiveLocationEnum::ENUM;
+        }
+        if ($appliedTo instanceof EnumValueDefinitionNode) {
+            return DirectiveLocationEnum::ENUM_VALUE;
+        }
+        if ($appliedTo instanceof InputObjectTypeDefinitionNode || $appliedTo instanceof InputObjectTypeExtensionNode) {
+            return DirectiveLocationEnum::INPUT_OBJECT;
+        }
+        if ($appliedTo instanceof InputValueDefinitionNode) {
+            $parentNode = $node->getAncestor(2);
+            return $parentNode instanceof InputObjectTypeDefinitionNode
+                ? DirectiveLocationEnum::INPUT_FIELD_DEFINITION
+                : DirectiveLocationEnum::ARGUMENT_DEFINITION;
+        }
 
-    // TODO: Throw appropriate exception.
+        return null;
+    }
 }
