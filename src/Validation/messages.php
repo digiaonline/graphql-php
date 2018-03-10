@@ -189,3 +189,33 @@ function unusedVariableMessage(string $variableName, ?string $operationName = nu
         ? sprintf('Variable "$%s" is never used in operation "%s".', $variableName, $operationName)
         : sprintf('Variable "$%s" is never used.', $variableName);
 }
+
+/**
+ * @param string $reasonName
+ * @param mixed  $reason
+ * @return string
+ */
+function fieldsConflictMessage(string $reasonName, $reason): string
+{
+    return sprintf(
+        'Fields "%s" conflict because %s. Use different aliases on the fields to fetch both if this was intentional.',
+        $reasonName,
+        conflictReasonMessage($reason)
+    );
+}
+
+/**
+ * @param array|string $reason
+ * @return string
+ */
+function conflictReasonMessage($reason): string
+{
+    if (\is_array($reason)) {
+        return implode(' and ', array_map(function ($subreason) {
+            [$fieldName, $message] = $subreason;
+            return sprintf('subfields "%s" conflict because %s', $fieldName, conflictReasonMessage($message));
+        }, $reason));
+    }
+
+    return $reason;
+}

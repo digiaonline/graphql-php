@@ -39,7 +39,7 @@ class Validator implements ValidatorInterface
         $context = $this->contextBuilder->build($schema, $document, $typeInfo);
 
         $visitors = array_map(function (RuleInterface $rule) use ($context) {
-            return $rule->setContext($context);
+            return $rule->setValidationContext($context);
         }, $rules ?? specifiedRules());
 
         $visitor = new TypeInfoVisitor($typeInfo, new ParallelVisitor($visitors));

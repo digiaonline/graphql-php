@@ -36,6 +36,7 @@
             "./src/Util/suggestionList.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
+            "./src/Validation/comparators.php",
             "./src/Validation/rules.php",
             "./src/Validation/messages.php",
             "./src/helpers.php"

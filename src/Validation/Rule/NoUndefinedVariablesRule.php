@@ -43,7 +43,7 @@ class NoUndefinedVariablesRule extends AbstractRule
     public function leaveNode(NodeInterface $node): ?NodeInterface
     {
         if ($node instanceof OperationDefinitionNode) {
-            $usages = $this->context->getRecursiveVariableUsages($node);
+            $usages = $this->validationContext->getRecursiveVariableUsages($node);
 
             foreach ($usages as ['node' => $variableNode]) {
                 /** @var VariableNode $variableNode */
@@ -51,7 +51,7 @@ class NoUndefinedVariablesRule extends AbstractRule
 
                 if (!isset($this->definedVariableNames[$variableName])) {
                     $operationName = $node->getName();
-                    $this->context->reportError(
+                    $this->validationContext->reportError(
                         new ValidationException(
                             undefinedVariableMessage($variableName, $operationName ? $operationName->getValue() : null),
                             [$variableNode, $node]

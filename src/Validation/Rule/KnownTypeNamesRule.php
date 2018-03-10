@@ -30,12 +30,12 @@ class KnownTypeNamesRule extends AbstractRule
         }
 
         if ($node instanceof NamedTypeNode) {
-            $schema   = $this->context->getSchema();
+            $schema   = $this->validationContext->getSchema();
             $typeName = $node->getNameValue();
             $type     = $schema->getType($typeName);
 
             if (null === $type) {
-                $this->context->reportError(
+                $this->validationContext->reportError(
                     new ValidationException(
                         unknownTypeMessage($typeName, suggestionList($typeName, array_keys($schema->getTypeMap()))),
                         [$node]

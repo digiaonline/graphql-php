@@ -52,10 +52,10 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
         $typeCondition = $node->getTypeCondition();
 
         if (null !== $typeCondition) {
-            $type = typeFromAST($this->context->getSchema(), $typeCondition);
+            $type = typeFromAST($this->validationContext->getSchema(), $typeCondition);
 
             if (null !== $type && !($type instanceof CompositeTypeInterface)) {
-                $this->context->reportError(new ValidationException($errorMessageFunction($node), [$typeCondition]));
+                $this->validationContext->reportError(new ValidationException($errorMessageFunction($node), [$typeCondition]));
             }
         }
     }

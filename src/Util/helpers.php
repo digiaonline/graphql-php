@@ -5,6 +5,18 @@ namespace Digia\GraphQL\Util;
 /**
  * @param array    $array
  * @param callable $fn
+ * @return bool
+ */
+function arrayEvery(array $array, callable $fn): bool
+{
+    return array_reduce($array, function ($result, $value) use ($fn) {
+        return $result && $fn($value);
+    }, true);
+}
+
+/**
+ * @param array    $array
+ * @param callable $fn
  * @return mixed
  */
 function arraySome(array $array, callable $fn)

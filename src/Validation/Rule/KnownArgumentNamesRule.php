@@ -24,16 +24,16 @@ class KnownArgumentNamesRule extends AbstractRule
     public function enterNode(NodeInterface $node): ?NodeInterface
     {
         if ($node instanceof ArgumentNode) {
-            $argumentDefinition = $this->context->getArgument();
+            $argumentDefinition = $this->validationContext->getArgument();
 
             if (null === $argumentDefinition) {
                 $argumentOf = $node->getAncestor();
                 if ($argumentOf instanceof FieldNode) {
-                    $fieldDefinition = $this->context->getFieldDefinition();
-                    $parentType      = $this->context->getParentType();
+                    $fieldDefinition = $this->validationContext->getFieldDefinition();
+                    $parentType      = $this->validationContext->getParentType();
 
                     if (null !== $fieldDefinition && null !== $parentType) {
-                        $this->context->reportError(
+                        $this->validationContext->reportError(
                             new ValidationException(
                                 unknownArgumentMessage(
                                     (string)$node,
@@ -51,10 +51,10 @@ class KnownArgumentNamesRule extends AbstractRule
                         );
                     }
                 } elseif ($argumentOf instanceof DirectiveNode) {
-                    $directive = $this->context->getDirective();
+                    $directive = $this->validationContext->getDirective();
 
                     if (null !== $directive) {
-                        $this->context->reportError(
+                        $this->validationContext->reportError(
                             new ValidationException(
                                 unknownDirectiveArgumentMessage(
                                     (string)$node,

@@ -30,20 +30,20 @@ class FieldOnCorrectTypeRule extends AbstractRule
     public function enterNode(NodeInterface $node): ?NodeInterface
     {
         if ($node instanceof FieldNode) {
-            $type = $this->context->getParentType();
+            $type = $this->validationContext->getParentType();
 
             if (null !== $type && $type instanceof OutputTypeInterface) {
-                $fieldDefinition = $this->context->getFieldDefinition();
+                $fieldDefinition = $this->validationContext->getFieldDefinition();
 
                 if (null === $fieldDefinition) {
-                    $schema              = $this->context->getSchema();
+                    $schema              = $this->validationContext->getSchema();
                     $fieldName           = $node->getNameValue();
                     $suggestedTypeNames  = $this->getSuggestedTypeNames($schema, $type, $fieldName);
                     $suggestedFieldNames = count($suggestedTypeNames) !== 0
                         ? []
                         : $this->getSuggestedFieldNames($type, $fieldName);
 
-                    $this->context->reportError(
+                    $this->validationContext->reportError(
                         new ValidationException(
                             undefinedFieldMessage(
                                 $fieldName,

@@ -26,7 +26,7 @@ class ExecutableDefinitionRule extends AbstractRule
             /** @var NamedTypeNode $definition */
             foreach ($node->getDefinitions() as $definition) {
                 if (!$definition instanceof ExecutableDefinitionNodeInterface) {
-                    $this->context->reportError(
+                    $this->validationContext->reportError(
                         new ValidationException(
                             nonExecutableDefinitionMessage(
                                 $definition instanceof SchemaDefinitionNode ? 'schema' : $definition->getNameValue()

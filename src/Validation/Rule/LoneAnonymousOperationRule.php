@@ -33,7 +33,7 @@ class LoneAnonymousOperationRule extends AbstractRule
 
         if ($node instanceof OperationDefinitionNode) {
             if (null === $node->getName() && $this->operationCount > 1) {
-                $this->context->reportError(
+                $this->validationContext->reportError(
                     new ValidationException(anonymousOperationNotAloneMessage(), [$node])
                 );
             }

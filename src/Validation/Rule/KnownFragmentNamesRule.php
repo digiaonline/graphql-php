@@ -21,10 +21,10 @@ class KnownFragmentNamesRule extends AbstractRule
     {
         if ($node instanceof FragmentSpreadNode) {
             $fragmentName = $node->getNameValue();
-            $fragment = $this->context->getFragment($fragmentName);
+            $fragment = $this->validationContext->getFragment($fragmentName);
 
             if (null === $fragment) {
-                $this->context->reportError(
+                $this->validationContext->reportError(
                     new ValidationException(unknownFragmentMessage($fragmentName), [$node->getName()])
                 );
             }

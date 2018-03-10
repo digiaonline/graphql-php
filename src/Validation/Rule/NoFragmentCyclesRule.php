@@ -66,7 +66,7 @@ class NoFragmentCyclesRule extends AbstractRule
 
         $this->visitedFragments[$fragmentName] = true;
 
-        $spreadNodes = $this->context->getFragmentSpreads($fragment->getSelectionSet());
+        $spreadNodes = $this->validationContext->getFragmentSpreads($fragment->getSelectionSet());
 
         if (empty($spreadNodes)) {
             return;
@@ -82,7 +82,7 @@ class NoFragmentCyclesRule extends AbstractRule
                 $this->spreadPath[] = $spreadNode;
 
                 if (!isset($this->visitedFragments[$spreadName])) {
-                    $spreadFragment = $this->context->getFragment($spreadName);
+                    $spreadFragment = $this->validationContext->getFragment($spreadName);
 
                     if (null !== $spreadFragment) {
                         $this->detectFragmentCycle($spreadFragment);
@@ -93,7 +93,7 @@ class NoFragmentCyclesRule extends AbstractRule
             } else {
                 $cyclePath = \array_slice($this->spreadPath, $cycleIndex);
 
-                $this->context->reportError(
+                $this->validationContext->reportError(
                     new ValidationException(
                         fragmentCycleMessage($spreadName, array_map(function (FragmentSpreadNode $spread) {
                             return $spread->getNameValue();
