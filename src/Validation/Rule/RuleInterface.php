@@ -2,13 +2,13 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Validation\ValidationContext;
+use Digia\GraphQL\Validation\ValidationContextInterface;
 
 interface RuleInterface
 {
     /**
-     * @param ValidationContext $context
+     * @param ValidationContextInterface $context
      * @return $this
      */
-    public function setContext(ValidationContext $context);
+    public function setContext(ValidationContextInterface $context);
 }

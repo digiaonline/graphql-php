@@ -21,7 +21,7 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 
-class ValidationContext
+class ValidationContext implements ValidationContextInterface
 {
     /**
      * @var SchemaInterface
@@ -31,7 +31,7 @@ class ValidationContext
     /**
      * @var DocumentNode
      */
-    protected $documentNode;
+    protected $document;
 
     /**
      * @var TypeInfo
@@ -71,18 +71,18 @@ class ValidationContext
     /**
      * ValidationContext constructor.
      * @param SchemaInterface $schema
-     * @param DocumentNode    $documentNode
+     * @param DocumentNode    $document
      * @param TypeInfo        $typeInfo
      */
-    public function __construct(SchemaInterface $schema, DocumentNode $documentNode, TypeInfo $typeInfo)
+    public function __construct(SchemaInterface $schema, DocumentNode $document, TypeInfo $typeInfo)
     {
-        $this->schema       = $schema;
-        $this->documentNode = $documentNode;
-        $this->typeInfo     = $typeInfo;
+        $this->schema   = $schema;
+        $this->document = $document;
+        $this->typeInfo = $typeInfo;
     }
 
     /**
-     * @param ValidationException $error
+     * @inheritdoc
      */
     public function reportError(ValidationException $error): void
     {
@@ -90,7 +90,7 @@ class ValidationContext
     }
 
     /**
-     * @return array|ValidationException[]
+     * @inheritdoc
      */
     public function getErrors(): array
     {
@@ -98,7 +98,7 @@ class ValidationContext
     }
 
     /**
-     * @return TypeInterface|null
+     * @inheritdoc
      */
     public function getParentType(): ?TypeInterface
     {
@@ -106,7 +106,7 @@ class ValidationContext
     }
 
     /**
-     * @return Field|null
+     * @inheritdoc
      */
     public function getFieldDefinition(): ?Field
     {
@@ -114,7 +114,7 @@ class ValidationContext
     }
 
     /**
-     * @return SchemaInterface
+     * @inheritdoc
      */
     public function getSchema(): SchemaInterface
     {
@@ -122,7 +122,7 @@ class ValidationContext
     }
 
     /**
-     * @return Argument|null
+     * @inheritdoc
      */
     public function getArgument(): ?Argument
     {
@@ -130,7 +130,7 @@ class ValidationContext
     }
 
     /**
-     * @return Directive|null
+     * @inheritdoc
      */
     public function getDirective(): ?Directive
     {
@@ -138,13 +138,12 @@ class ValidationContext
     }
 
     /**
-     * @param string $name
-     * @return FragmentDefinitionNode|null
+     * @inheritdoc
      */
     public function getFragment(string $name): ?FragmentDefinitionNode
     {
         if (empty($this->fragments)) {
-            $this->fragments = array_reduce($this->documentNode->getDefinitions(), function ($fragments, $definition) {
+            $this->fragments = array_reduce($this->document->getDefinitions(), function ($fragments, $definition) {
                 if ($definition instanceof FragmentDefinitionNode) {
                     $fragments[$definition->getNameValue()] = $definition;
                 }
@@ -156,8 +155,7 @@ class ValidationContext
     }
 
     /**
-     * @param SelectionSetNode $selectionSet
-     * @return array|FragmentSpreadNode[]
+     * @inheritdoc
      */
     public function getFragmentSpreads(SelectionSetNode $selectionSet): array
     {
@@ -189,8 +187,7 @@ class ValidationContext
     }
 
     /**
-     * @param OperationDefinitionNode $operation
-     * @return array
+     * @inheritdoc
      */
     public function getRecursiveVariableUsages(OperationDefinitionNode $operation): array
     {
@@ -213,8 +210,8 @@ class ValidationContext
     }
 
     /**
-     * @param OperationDefinitionNode|FragmentDefinitionNode $node
-     * @return array
+     * @param NodeInterface|OperationDefinitionNode|FragmentDefinitionNode $node
+     * @inheritdoc
      */
     public function getVariableUsages(NodeInterface $node): array
     {
@@ -246,8 +243,7 @@ class ValidationContext
     }
 
     /**
-     * @param OperationDefinitionNode $operation
-     * @return array|FragmentDefinitionNode[]
+     * @inheritdoc
      */
     public function getRecursivelyReferencedFragments(OperationDefinitionNode $operation): array
     {

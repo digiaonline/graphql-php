@@ -1,0 +1,83 @@
+<?php
+
+namespace Digia\GraphQL\Validation;
+
+use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
+use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
+use Digia\GraphQL\Type\Definition\Argument;
+use Digia\GraphQL\Type\Definition\Directive;
+use Digia\GraphQL\Type\Definition\Field;
+use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Type\SchemaInterface;
+
+interface ValidationContextInterface
+{
+    /**
+     * @param ValidationException $error
+     */
+    public function reportError(ValidationException $error): void;
+
+    /**
+     * @return array|ValidationException[]
+     */
+    public function getErrors(): array;
+
+    /**
+     * @return TypeInterface|null
+     */
+    public function getParentType(): ?TypeInterface;
+
+    /**
+     * @return Field|null
+     */
+    public function getFieldDefinition(): ?Field;
+
+    /**
+     * @return SchemaInterface
+     */
+    public function getSchema(): SchemaInterface;
+
+    /**
+     * @return Argument|null
+     */
+    public function getArgument(): ?Argument;
+
+    /**
+     * @return Directive|null
+     */
+    public function getDirective(): ?Directive;
+
+    /**
+     * @param string $name
+     * @return FragmentDefinitionNode|null
+     */
+    public function getFragment(string $name): ?FragmentDefinitionNode;
+
+    /**
+     * @param SelectionSetNode $selectionSet
+     * @return array|FragmentSpreadNode[]
+     */
+    public function getFragmentSpreads(SelectionSetNode $selectionSet): array;
+
+    /**
+     * @param OperationDefinitionNode $operation
+     * @return array
+     */
+    public function getRecursiveVariableUsages(OperationDefinitionNode $operation): array;
+
+    /**
+     * @param NodeInterface|OperationDefinitionNode|FragmentDefinitionNode $node
+     * @return array
+     */
+    public function getVariableUsages(NodeInterface $node): array;
+
+    /**
+     * @param OperationDefinitionNode $operation
+     * @return array|FragmentDefinitionNode[]
+     */
+    public function getRecursivelyReferencedFragments(OperationDefinitionNode $operation): array;
+}

@@ -12,6 +12,20 @@ use Digia\GraphQL\Validation\Rule\RuleInterface;
 class Validator implements ValidatorInterface
 {
     /**
+     * @var ContextBuilderInterface
+     */
+    protected $contextBuilder;
+
+    /**
+     * Validator constructor.
+     * @param ContextBuilderInterface $contextBuilder
+     */
+    public function __construct(ContextBuilderInterface $contextBuilder)
+    {
+        $this->contextBuilder = $contextBuilder;
+    }
+
+    /**
      * @inheritdoc
      */
     public function validate(
@@ -22,7 +36,7 @@ class Validator implements ValidatorInterface
     ): array {
         $typeInfo = $typeInfo ?? new TypeInfo($schema);
 
-        $context = new ValidationContext($schema, $document, $typeInfo);
+        $context = $this->contextBuilder->build($schema, $document, $typeInfo);
 
         $visitors = array_map(function (RuleInterface $rule) use ($context) {
             return $rule->setContext($context);
