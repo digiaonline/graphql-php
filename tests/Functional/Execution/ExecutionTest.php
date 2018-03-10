@@ -3,27 +3,14 @@
 namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\ExecutionResult;
-use Digia\GraphQL\Language\AST\Node\ArgumentNode;
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
-use Digia\GraphQL\Language\AST\Node\NameNode;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
-use Digia\GraphQL\Language\AST\Node\StringValueNode;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
-use Digia\GraphQL\Language\Location;
-use Digia\GraphQL\Language\Source;
-use Digia\GraphQL\Language\SourceLocation;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema;
 use function Digia\GraphQL\graphql;
-use function Digia\GraphQL\execute;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
+use function Digia\GraphQL\Type\GraphQLObjectType;
+use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
 class ExecutionTest extends TestCase
@@ -85,7 +72,7 @@ class ExecutionTest extends TestCase
         ]);
 
         $rootValue = 'rootValue';
-        $source  = 'query Example { a }';
+        $source    = 'query Example { a }';
 
         /** @var ExecutionResult $executionResult */
         $result = graphql($schema, $source, $rootValue);
@@ -115,37 +102,8 @@ class ExecutionTest extends TestCase
                 ])
         ]);
 
-        $documentNode = new DocumentNode([
-            'definitions' => [
-                new OperationDefinitionNode([
-                    'kind'                => NodeKindEnum::OPERATION_DEFINITION,
-                    'name'                => new NameNode([
-                        'value' => 'query',
-                    ]),
-                    'selectionSet'        => new SelectionSetNode([
-                        'selections' => [
-                            new FieldNode([
-                                'name'      => new NameNode([
-                                    'value'    => 'hello',
-                                    'location' => new Location(
-                                        15,
-                                        20,
-                                        new Source('query Example {hello}', 'GraphQL', new SourceLocation())
-                                    )
-                                ]),
-                                'arguments' => []
-                            ])
-                        ]
-                    ]),
-                    'operation'           => 'query',
-                    'directives'          => [],
-                    'variableDefinitions' => []
-                ])
-            ],
-        ]);
-
         /** @var ExecutionResult $executionResult */
-        $executionResult = execute($schema, $documentNode);
+        $executionResult = graphql($schema, 'query Greeting {hello}');
 
         $expected = new ExecutionResult(['hello' => 'world'], []);
 
@@ -177,52 +135,11 @@ class ExecutionTest extends TestCase
                 ])
         ]);
 
-        $documentNode = new DocumentNode([
-            'definitions' => [
-                new OperationDefinitionNode([
-                    'kind'                => NodeKindEnum::OPERATION_DEFINITION,
-                    'name'                => new NameNode([
-                        'value' => 'query'
-                    ]),
-                    'selectionSet'        => new SelectionSetNode([
-                        'selections' => [
-                            new FieldNode([
-                                'name'      => new NameNode([
-                                    'value'    => 'greeting',
-                                    'location' => new Location(
-                                        15,
-                                        20,
-                                        new Source('query Hello($name: String) {greeting(name: $name)}', 'GraphQL',
-                                            new SourceLocation())
-                                    )
-                                ]),
-                                'arguments' => [
-                                    new ArgumentNode([
-                                        'name'  => new NameNode([
-                                            'value' => 'name',
-                                        ]),
-                                        'type'  => new NamedTypeNode([
-                                            'name' => new NameNode([
-                                                'value' => 'String',
-                                            ]),
-                                        ]),
-                                        'value' => new StringValueNode([
-                                            'value' => 'Han Solo'
-                                        ])
-                                    ])
-                                ]
-                            ])
-                        ]
-                    ]),
-                    'operation'           => 'query',
-                    'directives'          => [],
-                    'variableDefinitions' => []
-                ])
-            ],
-        ]);
+        $source         = 'query Hello($name: String) {greeting(name: $name)}';
+        $variableValues = ['name' => 'Han Solo'];
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = execute($schema, $documentNode);
+        $executionResult = graphql($schema, $source, '', null, $variableValues);
 
         $expected = new ExecutionResult(['greeting' => 'Hello Han Solo'], []);
 

@@ -2,11 +2,14 @@
 
 namespace Digia\GraphQL\Test\Functional\Execution;
 
-use function Digia\GraphQL\execute;
+
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
+
+use function Digia\GraphQL\execute;
+use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
@@ -58,13 +61,6 @@ class MutationTest extends TestCase
      */
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
-        /** @var DocumentNode $documentNode */
-        $documentNode = parse('
-        mutation M {
-          thisIsIllegalDontIncludeMe
-        }
-        ');
-
         $schema = GraphQLSchema([
             'query'    => new ObjectType([
                 'name'   => 'Q',
@@ -82,7 +78,7 @@ class MutationTest extends TestCase
 
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = execute($schema, $documentNode);
+        $executionResult = graphql($schema, 'mutation M { thisIsIllegalDontIncludeMe }');
 
         $expected = new ExecutionResult([], []);
 
