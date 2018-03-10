@@ -2,24 +2,25 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use function Digia\GraphQL\Language\locationShorthandToArray;
 use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
 use function Digia\GraphQL\Validation\Rule\unknownArgumentMessage;
 use function Digia\GraphQL\Validation\Rule\unknownDirectiveArgumentMessage;
 
-function unknownArgument($argumentName, $fieldName, $typeName, $suggestedArguments, $line, $column)
+function unknownArgument($argumentName, $fieldName, $typeName, $suggestedArguments, $location)
 {
     return [
         'message'   => unknownArgumentMessage($argumentName, $fieldName, $typeName, $suggestedArguments),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
 
-function unknownDirectiveArgument($argumentName, $directiveName, $suggestedArguments, $line, $column)
+function unknownDirectiveArgument($argumentName, $directiveName, $suggestedArguments, $location)
 {
     return [
         'message'   => unknownDirectiveArgumentMessage($argumentName, $directiveName, $suggestedArguments),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
@@ -128,7 +129,7 @@ fragment noArgOnOptionalArg on Dog {
   dog @skip(unless: true)
 }
 ',
-            [unknownDirectiveArgument('unless', 'skip', [], 3, 13)]
+            [unknownDirectiveArgument('unless', 'skip', [], [3, 13])]
         );
     }
 
@@ -141,7 +142,7 @@ fragment noArgOnOptionalArg on Dog {
   dog @skip(iff: true)
 }
 ',
-            [unknownDirectiveArgument('iff', 'skip', ['if'], 3, 13)]
+            [unknownDirectiveArgument('iff', 'skip', ['if'], [3, 13])]
         );
     }
 
@@ -154,7 +155,7 @@ fragment invalidArgName on Dog {
   doesKnowCommand(unknown: true)
 }
 ',
-            [unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 3, 19)]
+            [unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [3, 19])]
         );
     }
 
@@ -167,7 +168,7 @@ fragment invalidArgName on Dog {
   doesKnowCommand(dogcommand: true)
 }
 ',
-            [unknownArgument('dogcommand', 'doesKnowCommand', 'Dog', ['dogCommand'], 3, 19)]
+            [unknownArgument('dogcommand', 'doesKnowCommand', 'Dog', ['dogCommand'], [3, 19])]
         );
     }
 
@@ -181,8 +182,8 @@ fragment oneGoodArgOneInvalidArg on Dog {
 }
 ',
             [
-                unknownArgument('whoknows', 'doesKnowCommand', 'Dog', [], 3, 19),
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 3, 49),
+                unknownArgument('whoknows', 'doesKnowCommand', 'Dog', [], [3, 19]),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [3, 49]),
             ]
         );
     }
@@ -206,8 +207,8 @@ fragment oneGoodArgOneInvalidArg on Dog {
 }
 ',
             [
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 4, 21),
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], 9, 25),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [4, 21]),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [9, 25]),
             ]
         );
     }

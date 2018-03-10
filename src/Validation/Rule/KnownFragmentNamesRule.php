@@ -6,6 +6,12 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 
+/**
+ * Known fragment names
+ *
+ * A GraphQL document is only valid if all `...Fragment` fragment spreads refer
+ * to fragments defined in the same document.
+ */
 class KnownFragmentNamesRule extends AbstractRule
 {
     /**

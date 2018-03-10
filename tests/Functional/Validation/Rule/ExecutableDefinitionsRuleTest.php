@@ -3,13 +3,14 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionRule;
+use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Validation\Rule\nonExecutableDefinitionMessage;
 
-function nonExecutableDefinition($definitionName, $line, $column)
+function nonExecutableDefinition($definitionName, $location)
 {
     return [
         'message'   => nonExecutableDefinitionMessage($definitionName),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
@@ -69,8 +70,8 @@ extend type Dog {
 }
 ',
             [
-                nonExecutableDefinition('Cow', 8, 1),
-                nonExecutableDefinition('Dog', 12, 1),
+                nonExecutableDefinition('Cow', [8, 1]),
+                nonExecutableDefinition('Dog', [12, 1]),
             ]
         );
     }
@@ -89,8 +90,8 @@ type Query {
 }
 ',
             [
-                nonExecutableDefinition('schema', 2, 1),
-                nonExecutableDefinition('Query', 6, 1),
+                nonExecutableDefinition('schema', [2, 1]),
+                nonExecutableDefinition('Query', [6, 1]),
             ]
         );
     }

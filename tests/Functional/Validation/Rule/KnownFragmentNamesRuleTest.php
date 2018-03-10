@@ -3,13 +3,14 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
+use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Validation\Rule\unknownFragmentMessage;
 
-function unknownFragment($fragmentName, $line, $column)
+function unknownFragment($fragmentName, $location)
 {
     return [
         'message'   => unknownFragmentMessage($fragmentName),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
@@ -65,9 +66,9 @@ fragment HumanFields on Human {
 }
 ',
             [
-                unknownFragment('UnknownFragment1', 4, 8),
-                unknownFragment('UnknownFragment2', 6, 10),
-                unknownFragment('UnknownFragment3', 12, 6),
+                unknownFragment('UnknownFragment1', [4, 8]),
+                unknownFragment('UnknownFragment2', [6, 10]),
+                unknownFragment('UnknownFragment3', [12, 6]),
             ]
         );
     }

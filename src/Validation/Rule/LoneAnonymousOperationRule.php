@@ -7,6 +7,12 @@ use Digia\GraphQL\Language\AST\Node\DocumentNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 
+/**
+ * Lone anonymous operation
+ *
+ * A GraphQL document is only valid if when it contains an anonymous operation
+ * (the query short-hand) that it contains only that one operation definition.
+ */
 class LoneAnonymousOperationRule extends AbstractRule
 {
     /**

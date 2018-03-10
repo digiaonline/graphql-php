@@ -3,23 +3,24 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
+use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Validation\Rule\misplacedDirectiveMessage;
 use function Digia\GraphQL\Validation\Rule\unknownDirectiveMessage;
 
-function unknownDirective($directiveName, $line, $column)
+function unknownDirective($directiveName, $location)
 {
     return [
         'message'   => unknownDirectiveMessage($directiveName),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
 
-function misplacedDirective($directiveName, $location, $line, $column)
+function misplacedDirective($directiveName, $directiveLocation, $location)
 {
     return [
-        'message'   => misplacedDirectiveMessage($directiveName, $location),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'message'   => misplacedDirectiveMessage($directiveName, $directiveLocation),
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
@@ -70,7 +71,7 @@ fragment Frag on Dog {
   }
 }
 ',
-            [unknownDirective('unknown', 3, 7)]
+            [unknownDirective('unknown', [3, 7])]
         );
     }
 
@@ -92,9 +93,9 @@ fragment Frag on Dog {
 }
 ',
             [
-                unknownDirective('unknown', 3, 7),
-                unknownDirective('unknown', 6, 9),
-                unknownDirective('unknown', 8, 10),
+                unknownDirective('unknown', [3, 7]),
+                unknownDirective('unknown', [6, 9]),
+                unknownDirective('unknown', [8, 10]),
             ]
         );
     }
@@ -132,10 +133,10 @@ mutation Bar @onQuery {
 }
 ',
             [
-                misplacedDirective('include', 'QUERY', 2, 11),
-                misplacedDirective('onQuery', 'FIELD', 3, 8),
-                misplacedDirective('onQuery', 'FRAGMENT_SPREAD', 4, 11),
-                misplacedDirective('onQuery', 'MUTATION', 7, 14),
+                misplacedDirective('include', 'QUERY', [2, 11]),
+                misplacedDirective('onQuery', 'FIELD', [3, 8]),
+                misplacedDirective('onQuery', 'FRAGMENT_SPREAD', [4, 11]),
+                misplacedDirective('onQuery', 'MUTATION', [7, 14]),
             ]
         );
     }
@@ -214,44 +215,39 @@ schema @onObject {
 }
 ',
             [
-                misplacedDirective('onInterface', 'OBJECT', 2, 35),
+                misplacedDirective('onInterface', 'OBJECT', [2, 35]),
                 misplacedDirective(
                     'onInputFieldDefinition',
                     'ARGUMENT_DEFINITION',
-                    3,
-                    22
+                    [3, 22]
                 ),
                 misplacedDirective(
                     'onInputFieldDefinition',
                     'FIELD_DEFINITION',
-                    3,
-                    55
+                    [3, 55]
                 ),
-                misplacedDirective('onEnum', 'SCALAR', 6, 17),
-                misplacedDirective('onObject', 'INTERFACE', 8, 23),
+                misplacedDirective('onEnum', 'SCALAR', [6, 17]),
+                misplacedDirective('onObject', 'INTERFACE', [8, 23]),
                 misplacedDirective(
                     'onInputFieldDefinition',
                     'ARGUMENT_DEFINITION',
-                    9,
-                    22
+                    [9, 22]
                 ),
                 misplacedDirective(
                     'onInputFieldDefinition',
                     'FIELD_DEFINITION',
-                    9,
-                    55
+                    [9, 55]
                 ),
-                misplacedDirective('onEnumValue', 'UNION', 12, 15),
-                misplacedDirective('onScalar', 'ENUM', 14, 13),
-                misplacedDirective('onUnion', 'ENUM_VALUE', 15, 12),
-                misplacedDirective('onEnum', 'INPUT_OBJECT', 18, 15),
+                misplacedDirective('onEnumValue', 'UNION', [12, 15]),
+                misplacedDirective('onScalar', 'ENUM', [14, 13]),
+                misplacedDirective('onUnion', 'ENUM_VALUE', [15, 12]),
+                misplacedDirective('onEnum', 'INPUT_OBJECT', [18, 15]),
                 misplacedDirective(
                     'onArgumentDefinition',
                     'INPUT_FIELD_DEFINITION',
-                    19,
-                    16
+                    [19, 16]
                 ),
-                misplacedDirective('onObject', 'SCHEMA', 22, 8),
+                misplacedDirective('onObject', 'SCHEMA', [22, 8]),
             ]
         );
     }

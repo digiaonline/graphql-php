@@ -12,16 +12,23 @@ use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 class NoFragmentCyclesRule extends AbstractRule
 {
     /**
+     * Tracks already visited fragments to maintain O(N) and to ensure that cycles
+     * are not redundantly reported.
+     *
      * @var array
      */
     protected $visitedFragments = [];
 
     /**
+     * Array of AST nodes used to produce meaningful errors.
+     *
      * @var array
      */
     protected $spreadPath = [];
 
     /**
+     * Position in the spread path.
+     *
      * @var array
      */
     protected $spreadPathIndexByName = [];
@@ -47,6 +54,10 @@ class NoFragmentCyclesRule extends AbstractRule
     }
 
     /**
+     * This does a straight-forward DFS to find cycles.
+     * It does not terminate when a cycle was found but continues to explore
+     * the graph to find all possible cycles.
+     *
      * @param FragmentDefinitionNode $fragment
      */
     protected function detectFragmentCycle(FragmentDefinitionNode $fragment): void

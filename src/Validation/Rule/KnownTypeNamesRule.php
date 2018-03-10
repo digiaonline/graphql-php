@@ -11,6 +11,12 @@ use Digia\GraphQL\Language\AST\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
 use function Digia\GraphQL\Util\suggestionList;
 
+/**
+ * Known type names
+ *
+ * A GraphQL document is only valid if referenced types (specifically
+ * variable definitions and fragment conditions) are defined by the type schema.
+ */
 class KnownTypeNamesRule extends AbstractRule
 {
     /**

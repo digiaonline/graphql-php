@@ -3,13 +3,14 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
+use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Validation\Rule\fragmentOnNonCompositeMessage;
 
-function fragmentOnNonComposite($fragmentName, $typeName, $line, $column)
+function fragmentOnNonComposite($fragmentName, $typeName, $location)
 {
     return [
         'message'   => fragmentOnNonCompositeMessage($fragmentName, $typeName),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
@@ -89,7 +90,7 @@ fragment scalarFragment on Boolean {
   bad
 }
 ',
-            [fragmentOnNonComposite('scalarFragment', 'Boolean', 2, 28)]
+            [fragmentOnNonComposite('scalarFragment', 'Boolean', [2, 28])]
         );
     }
 }

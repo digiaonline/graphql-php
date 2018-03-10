@@ -9,6 +9,12 @@ use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
 
+/**
+ * Executable definitions
+ *
+ * A GraphQL document is only valid for execution if all definitions are either
+ * operation or fragment definitions.
+ */
 class ExecutableDefinitionRule extends AbstractRule
 {
     /**

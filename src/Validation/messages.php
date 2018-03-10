@@ -167,3 +167,12 @@ function undefinedVariableMessage(string $variableName, ?string $operationName =
         ? sprintf('Variable "$%s" is not defined by operation "%s".', $variableName, $operationName)
         : sprintf('Variable "$%s" is not defined.', $variableName);
 }
+
+/**
+ * @param string $fragmentName
+ * @return string
+ */
+function unusedFragmentMessage(string $fragmentName): string
+{
+    return sprintf('Fragment "%s" is never used.', $fragmentName);
+}

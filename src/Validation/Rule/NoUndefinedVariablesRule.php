@@ -8,6 +8,12 @@ use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\AST\Node\VariableNode;
 
+/**
+ * No undefined variables
+ *
+ * A GraphQL operation is only valid if all variables encountered, both directly
+ * and via fragment spreads, are defined by that operation.
+ */
 class NoUndefinedVariablesRule extends AbstractRule
 {
     /**

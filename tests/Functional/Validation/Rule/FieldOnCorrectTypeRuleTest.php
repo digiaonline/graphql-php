@@ -3,13 +3,14 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
+use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Validation\Rule\undefinedFieldMessage;
 
-function undefinedField($field, $type, $suggestedTypes, $suggestsFields, $line, $column)
+function undefinedField($field, $type, $suggestedTypes, $suggestsFields, $location)
 {
     return [
         'message'   => undefinedFieldMessage($field, $type, $suggestedTypes, $suggestsFields),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
@@ -105,8 +106,8 @@ fragment typeKnownAgain on Pet {
 }
 ',
             [
-                undefinedField('unknown_pet_field', 'Pet', [], [], 3, 3),
-                undefinedField('unknown_cat_field', 'Cat', [], [], 5, 7),
+                undefinedField('unknown_pet_field', 'Pet', [], [], [3, 3]),
+                undefinedField('unknown_cat_field', 'Cat', [], [], [5, 7]),
             ]
         );
     }
@@ -120,7 +121,7 @@ fragment fieldNotDefined on Dog {
   meowVolume
 }
       ',
-            [undefinedField('meowVolume', 'Dog', [], ['barkVolume'], 3, 3)]
+            [undefinedField('meowVolume', 'Dog', [], ['barkVolume'], [3, 3])]
         );
     }
 
@@ -135,7 +136,7 @@ fragment deepFieldNotDefined on Dog {
   }
 }
 ',
-            [undefinedField('unknown_field', 'Dog', [], [], 3, 3)]
+            [undefinedField('unknown_field', 'Dog', [], [], [3, 3])]
         );
     }
 
@@ -150,7 +151,7 @@ fragment subFieldNotDefined on Human {
   }
 }
 ',
-            [undefinedField('unknown_field', 'Pet', [], [], 4, 5)]
+            [undefinedField('unknown_field', 'Pet', [], [], [4, 5])]
         );
     }
 
@@ -165,7 +166,7 @@ fragment fieldNotDefined on Pet {
   }
 }
 ',
-            [undefinedField('meowVolume', 'Dog', [], ['barkVolume'], 4, 5)]
+            [undefinedField('meowVolume', 'Dog', [], ['barkVolume'], [4, 5])]
         );
     }
 
@@ -178,7 +179,7 @@ fragment aliasedFieldTargetNotDefined on Dog {
   volume: mooVolume
 }
 ',
-            [undefinedField('mooVolume', 'Dog', [], ['barkVolume'], 3, 3)]
+            [undefinedField('mooVolume', 'Dog', [], ['barkVolume'], [3, 3])]
         );
     }
 
@@ -191,7 +192,7 @@ fragment aliasedLyingFieldTargetNotDefined on Dog {
   barkVolume: kawVolume
 }
 ',
-            [undefinedField('kawVolume', 'Dog', [], ['barkVolume'], 3, 3)]
+            [undefinedField('kawVolume', 'Dog', [], ['barkVolume'], [3, 3])]
         );
     }
 
@@ -204,7 +205,7 @@ fragment notDefinedOnInterface on Pet {
   tailLength
 }
 ',
-            [undefinedField('tailLength', 'Pet', [], [], 3, 3)]
+            [undefinedField('tailLength', 'Pet', [], [], [3, 3])]
         );
     }
 
@@ -217,7 +218,7 @@ fragment definedOnImplementorsButNotInterface on Pet {
   nickname
 }
 ',
-            [undefinedField('nickname', 'Pet', ['Dog', 'Cat'], ['name'], 3, 3)]
+            [undefinedField('nickname', 'Pet', ['Dog', 'Cat'], ['name'], [3, 3])]
         );
     }
 
@@ -242,7 +243,7 @@ fragment directFieldSelectionOnUnion on CatOrDog {
   directField
 }
 ',
-            [undefinedField('directField', 'CatOrDog', [], [], 3, 3)]
+            [undefinedField('directField', 'CatOrDog', [], [], [3, 3])]
         );
     }
 
@@ -265,8 +266,7 @@ fragment definedOnImplementorsQueriedOnUnion on CatOrDog {
                     'CatOrDog',
                     ['Being', 'Pet', 'Canine', 'Dog', 'Cat'],
                     [],
-                    3,
-                    3
+                    [3, 3]
                 )
             ]
         );

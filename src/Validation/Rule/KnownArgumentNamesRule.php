@@ -10,6 +10,12 @@ use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
 use function Digia\GraphQL\Util\suggestionList;
 
+/**
+ * Known argument names
+ *
+ * A GraphQL field is only valid if all supplied arguments are defined by
+ * that field.
+ */
 class KnownArgumentNamesRule extends AbstractRule
 {
     /**

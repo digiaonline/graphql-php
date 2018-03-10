@@ -31,6 +31,12 @@ use Digia\GraphQL\Language\AST\Visitor\AcceptVisitorTrait;
 use Digia\GraphQL\Type\Definition\Directive;
 use function Digia\GraphQL\Util\find;
 
+/**
+ * Known directives
+ *
+ * A GraphQL document is only valid if all `@directives` are known by the
+ * schema and legally positioned.
+ */
 class KnownDirectivesRule extends AbstractRule
 {
     /**

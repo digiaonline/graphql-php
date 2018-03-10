@@ -2,15 +2,15 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use Digia\GraphQL\Validation\Rule\KnownTypeNamesRule;
-use function Digia\GraphQL\Validation\Rule\anonymousOperationNotAloneMessage;
 use Digia\GraphQL\Validation\Rule\LoneAnonymousOperationRule;
+use function Digia\GraphQL\Language\locationShorthandToArray;
+use function Digia\GraphQL\Validation\Rule\anonymousOperationNotAloneMessage;
 
-function anonymousOperationNotAlone($line, $column)
+function anonymousOperationNotAlone($location)
 {
     return [
         'message'   => anonymousOperationNotAloneMessage(),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
@@ -85,8 +85,8 @@ fragment Foo on Type {
 }            
 ',
             [
-                anonymousOperationNotAlone(2, 1),
-                anonymousOperationNotAlone(5, 1),
+                anonymousOperationNotAlone([2, 1]),
+                anonymousOperationNotAlone([5, 1]),
             ]
         );
     }
@@ -103,7 +103,7 @@ mutation Foo {
   fieldB
 }            
 ',
-            [anonymousOperationNotAlone(2, 1)]
+            [anonymousOperationNotAlone([2, 1])]
         );
     }
 
@@ -119,7 +119,7 @@ subscription Foo {
   fieldB
 }            
 ',
-            [anonymousOperationNotAlone(2, 1)]
+            [anonymousOperationNotAlone([2, 1])]
         );
     }
 }

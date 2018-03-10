@@ -16,6 +16,12 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 use function Digia\GraphQL\Util\suggestionList;
 
+/**
+ * Fields on correct type
+ *
+ * A GraphQL document is only valid if all fields selected are defined by the
+ * parent type, or are an allowed meta field such as __typename.
+ */
 class FieldOnCorrectTypeRule extends AbstractRule
 {
     /**

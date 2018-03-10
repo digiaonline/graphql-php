@@ -2,16 +2,15 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownTypeNamesRule;
-use function Digia\GraphQL\Validation\Rule\unknownFragmentMessage;
+use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Validation\Rule\unknownTypeMessage;
 
-function unknownType($typeName, $suggestedTypes, $line, $column)
+function unknownType($typeName, $suggestedTypes, $location)
 {
     return [
         'message'   => unknownTypeMessage($typeName, $suggestedTypes),
-        'locations' => [['line' => $line, 'column' => $column]],
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
@@ -51,9 +50,9 @@ fragment PetFields on Peettt {
 }
 ',
             [
-                unknownType('JumbledUpLetters', [], 2, 17),
-                unknownType('Badger', [], 5, 19),
-                unknownType('Peettt', ['Pet'], 8, 23),
+                unknownType('JumbledUpLetters', [], [2, 17]),
+                unknownType('Badger', [], [5, 19]),
+                unknownType('Peettt', ['Pet'], [8, 23]),
             ]
         );
     }
@@ -79,7 +78,7 @@ query Foo($var: NotInTheSchema) {
   }
 }
 ',
-            [unknownType('NotInTheSchema', [], 12, 17)]
+            [unknownType('NotInTheSchema', [], [12, 17])]
         );
     }
 }

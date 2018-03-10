@@ -36,6 +36,7 @@
             "./src/Util/suggestionList.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
+            "./src/Validation/Rule/KnownDirectivesRule.php",
             "./src/Validation/rules.php",
             "./src/Validation/messages.php",
             "./src/helpers.php"
@@ -63,6 +64,7 @@
             "./tests/Functional/Validation/Rule/LoneAnonymousOperationRuleTest.php",
             "./tests/Functional/Validation/Rule/NoFragmentCyclesRuleTest.php",
             "./tests/Functional/Validation/Rule/NoUndefinedVariablesRuleTest.php",
+            "./tests/Functional/Validation/Rule/NoUnusedFragmentsRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {
