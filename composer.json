@@ -47,7 +47,7 @@
     "autoload-dev": {
         "files": [
             "./tests/Functional/Language/SchemaParserTest.php",
-            "./tests/Functional/Language/testSchema.php"
+            "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\Test\\": "./tests"

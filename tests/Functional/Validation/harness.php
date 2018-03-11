@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\Language;
+namespace Digia\GraphQL\Test\Functional\Validation;
 
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -111,7 +111,7 @@ function Dog(): ObjectType
                             'dogCommand' => ['type' => DogCommand()],
                         ],
                     ],
-                    'isHousetrained'  => [
+                    'isHouseTrained'  => [
                         'type' => GraphQLBoolean(),
                         'args' => [
                             'atOtherHomes' => [

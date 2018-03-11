@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Language\AST\Visitor;
 use Digia\GraphQL\Language\AST\Node\NodeInterface;
 use Digia\GraphQL\Util\SerializationInterface;
 
-trait AcceptVisitorTrait
+trait AcceptsVisitorsTrait
 {
 
     /**
@@ -14,9 +14,24 @@ trait AcceptVisitorTrait
     protected $visitor;
 
     /**
+     * @var string|int|null
+     */
+    protected $key;
+
+    /**
+     * @var NodeInterface|null
+     */
+    protected $parent;
+
+    /**
      * @var array
      */
     protected $path;
+
+    /**
+     * @var array
+     */
+    protected $ancestors = [];
 
     /**
      * @var boolean
@@ -24,26 +39,31 @@ trait AcceptVisitorTrait
     protected $isEdited = false;
 
     /**
-     * @param VisitorInterface   $visitor
-     * @param string|int||null $key
-     * @param NodeInterface|null $parent
-     * @param array              $path
-     * @return NodeInterface|AcceptVisitorTrait|SerializationInterface|null
+     * @param VisitorInterface      $visitor
+     * @param string|int|null       $key
+     * @param NodeInterface|null    $parent
+     * @param array|string[]        $path
+     * @param array|NodeInterface[] $ancestors
+     * @return NodeInterface|AcceptsVisitorsTrait|SerializationInterface|null
      */
-    public function accept(
+    public function acceptVisitor(
         VisitorInterface $visitor,
         $key = null,
         ?NodeInterface $parent = null,
-        array $path = []
+        array $path = [],
+        array $ancestors = []
     ): ?NodeInterface {
-        $this->visitor = $visitor;
-        $this->path    = $path;
+        $this->visitor   = $visitor;
+        $this->key       = $key;
+        $this->parent    = $parent;
+        $this->path      = $path;
+        $this->ancestors = $ancestors;
 
-        /** @var NodeInterface|AcceptVisitorTrait|null $newNode */
+        /** @var NodeInterface|AcceptsVisitorsTrait|null $newNode */
         $newNode = clone $this; // TODO: Benchmark cloning
 
         // If the result was null, it means that we should not traverse this branch.
-        if (null === ($newNode = $visitor->enterNode($newNode, $key, $parent, $this->path))) {
+        if (null === ($newNode = $visitor->enterNode($newNode))) {
             return null;
         }
 
@@ -73,7 +93,7 @@ trait AcceptVisitorTrait
             }
         }
 
-        return $visitor->leaveNode($newNode, $key, $parent, $this->path);
+        return $visitor->leaveNode($newNode);
     }
 
     /**
@@ -95,6 +115,47 @@ trait AcceptVisitorTrait
     }
 
     /**
+     * @param int $depth
+     * @return NodeInterface|null
+     */
+    public function getAncestor(int $depth = 1): ?NodeInterface
+    {
+        return !empty($this->ancestors) ? $this->ancestors[\count($this->ancestors) - $depth] : null;
+    }
+
+    /**
+     * @return NodeInterface[]
+     */
+    public function getAncestors(): array
+    {
+        return $this->ancestors;
+    }
+
+    /**
+     * @return int|null|string
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
+
+    /**
+     * @return NodeInterface|null
+     */
+    public function getParent(): ?NodeInterface
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPath(): array
+    {
+        return $this->path;
+    }
+
+    /**
      * @param string|int $key
      * @return array|NodeInterface|NodeInterface[]|null
      */
@@ -110,14 +171,21 @@ trait AcceptVisitorTrait
      */
     protected function visitNodeOrNodes($nodeOrNodes, $key)
     {
-        return \is_array($nodeOrNodes)
+        $this->addAncestor($this);
+
+        $newNodeOrNodes = \is_array($nodeOrNodes)
             ? $this->visitNodes($nodeOrNodes, $key)
             : $this->visitNode($nodeOrNodes, $key, $this);
+
+        $this->removeAncestor();
+
+        return $newNodeOrNodes;
     }
 
     /**
-     * @param NodeInterface[] $nodes
-     * @param string|int      $key
+     * @param NodeInterface[]    $nodes
+     * @param string|int         $key
+     * @param NodeInterface|null $parent
      * @return NodeInterface[]
      */
     protected function visitNodes(array $nodes, $key): array
@@ -142,21 +210,21 @@ trait AcceptVisitorTrait
     }
 
     /**
-     * @param NodeInterface|AcceptVisitorTrait $node
-     * @param string|int                       $key
-     * @param NodeInterface|null               $parent
+     * @param NodeInterface|AcceptsVisitorsTrait $node
+     * @param string|int                         $key
+     * @param NodeInterface|null                 $parent
      * @return NodeInterface|null
      */
     protected function visitNode(NodeInterface $node, $key, ?NodeInterface $parent): ?NodeInterface
     {
         $this->addOneToPath($key);
 
-        $newNode = $node->accept($this->visitor, $key, $parent, $this->path);
+        $newNode = $node->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
 
         // If the node was edited, we need to revisit it
         // to produce the expected result.
         if (null !== $newNode && $newNode->isEdited()) {
-            $newNode = $newNode->accept($this->visitor, $key, $parent, $this->path);
+            $newNode = $newNode->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
         }
 
         $this->removeOneFromPath();
@@ -165,7 +233,7 @@ trait AcceptVisitorTrait
     }
 
     /**
-     * @param NodeInterface|AcceptVisitorTrait $node
+     * @param NodeInterface|AcceptsVisitorsTrait $node
      * @return bool
      */
     protected function determineIsEdited(NodeInterface $node): bool
@@ -198,7 +266,24 @@ trait AcceptVisitorTrait
      */
     protected function removeOneFromPath()
     {
-        $this->path = \array_slice($this->path, 0, count($this->path) - 1);
+        $this->path = \array_slice($this->path, 0, -1);
+    }
+
+    /**
+     * Adds an ancestor.
+     * @param NodeInterface $node
+     */
+    protected function addAncestor(NodeInterface $node)
+    {
+        $this->ancestors[] = $node;
+    }
+
+    /**
+     *  Removes the last ancestor.
+     */
+    protected function removeAncestor()
+    {
+        $this->ancestors = \array_slice($this->ancestors, 0, -1);
     }
 
     /**
