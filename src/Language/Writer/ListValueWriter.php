@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\ListValueNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\ListValueNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 use function Digia\GraphQL\Language\wrap;
 
 class ListValueWriter extends AbstractWriter

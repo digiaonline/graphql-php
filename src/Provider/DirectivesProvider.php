@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Provider;
 
 use Digia\GraphQL\GraphQL;
-use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
+use Digia\GraphQL\Language\DirectiveLocationEnum;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use function Digia\GraphQL\Type\GraphQLBoolean;
 use function Digia\GraphQL\Type\GraphQLDirective;

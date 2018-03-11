@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\printNode;

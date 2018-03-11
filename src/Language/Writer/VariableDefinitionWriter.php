@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\VariableDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use function Digia\GraphQL\Language\wrap;
 
 class VariableDefinitionWriter extends AbstractWriter

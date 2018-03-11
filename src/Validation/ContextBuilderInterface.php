@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 

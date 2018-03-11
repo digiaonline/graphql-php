@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Util;
 
 use Digia\GraphQL\Error\InvalidTypeException;
-use Digia\GraphQL\Language\AST\Node\ListTypeNode;
-use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
-use Digia\GraphQL\Language\AST\Node\NonNullTypeNode;
-use Digia\GraphQL\Language\AST\Node\TypeNodeInterface;
+use Digia\GraphQL\Language\Node\ListTypeNode;
+use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Language\Node\NonNullTypeNode;
+use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 use function Digia\GraphQL\Type\GraphQLList;

@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Util;
 
 use Digia\GraphQL\Error\InvalidTypeException;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
+use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;

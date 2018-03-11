@@ -3,12 +3,12 @@
 namespace Digia\GraphQL\Provider;
 
 use Digia\GraphQL\GraphQL;
-use Digia\GraphQL\Language\AST\Node\BooleanValueNode;
-use Digia\GraphQL\Language\AST\Node\FloatValueNode;
-use Digia\GraphQL\Language\AST\Node\IntValueNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\StringValueNode;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\Node\BooleanValueNode;
+use Digia\GraphQL\Language\Node\FloatValueNode;
+use Digia\GraphQL\Language\Node\IntValueNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\StringValueNode;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use function Digia\GraphQL\Type\GraphQLScalarType;

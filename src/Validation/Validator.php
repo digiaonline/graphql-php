@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Visitor\ParallelVisitor;
-use Digia\GraphQL\Language\AST\Visitor\TypeInfoVisitor;
+use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Visitor\ParallelVisitor;
+use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use Digia\GraphQL\Validation\Rule\RuleInterface;

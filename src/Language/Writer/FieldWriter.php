@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\FieldNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 use function Digia\GraphQL\Language\wrap;
 
 class FieldWriter extends AbstractWriter

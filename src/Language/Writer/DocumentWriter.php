@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 
 class DocumentWriter extends AbstractWriter
 {

@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Provider;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\GraphQL;
-use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
+use Digia\GraphQL\Language\DirectiveLocationEnum;
 use Digia\GraphQL\Type\Definition\AbstractType;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\EnumType;

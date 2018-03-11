@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\ArgumentNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\ArgumentNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 
 class ArgumentWriter extends AbstractWriter
 {

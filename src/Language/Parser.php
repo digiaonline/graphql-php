@@ -3,11 +3,11 @@
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\Language\AST\Builder\DirectorInterface;
-use Digia\GraphQL\Language\AST\Builder\NodeBuilderInterface;
-use Digia\GraphQL\Language\AST\DirectiveLocationEnum;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\NodeBuilder\DirectorInterface;
+use Digia\GraphQL\Language\NodeBuilder\NodeBuilderInterface;
+use Digia\GraphQL\Language\DirectiveLocationEnum;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
 
 class Parser implements ParserInterface, DirectorInterface
 {

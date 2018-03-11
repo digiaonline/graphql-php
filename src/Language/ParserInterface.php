@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\NodeInterface;
 
 interface ParserInterface
 {

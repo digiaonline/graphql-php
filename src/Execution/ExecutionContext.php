@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
-use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Type\Schema;
 
 class ExecutionContext

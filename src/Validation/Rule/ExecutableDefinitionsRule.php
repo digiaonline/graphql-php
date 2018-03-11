@@ -3,11 +3,11 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\ExecutableDefinitionNodeInterface;
-use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
+use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\ExecutableDefinitionNodeInterface;
+use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
 
 /**

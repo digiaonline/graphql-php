@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Provider;
 
-use Digia\GraphQL\Language\AST\Builder\NodeBuilder;
-use Digia\GraphQL\Language\AST\Builder\NodeBuilderInterface;
-use Digia\GraphQL\Language\AST\Builder\SupportedBuilders;
+use Digia\GraphQL\Language\NodeBuilder\NodeBuilder;
+use Digia\GraphQL\Language\NodeBuilder\NodeBuilderInterface;
+use Digia\GraphQL\Language\NodeBuilder\SupportedBuilders;
 use Digia\GraphQL\Language\Lexer;
 use Digia\GraphQL\Language\LexerInterface;
 use Digia\GraphQL\Language\Parser;

@@ -3,15 +3,15 @@
 namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
-use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
-use Digia\GraphQL\Language\AST\Node\NameNode;
-use Digia\GraphQL\Language\AST\Node\NullValueNode;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\FieldNode;
+use Digia\GraphQL\Language\Node\FragmentSpreadNode;
+use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Language\Node\NameNode;
+use Digia\GraphQL\Language\Node\NullValueNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Node\SelectionSetNode;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Test\TestCase;

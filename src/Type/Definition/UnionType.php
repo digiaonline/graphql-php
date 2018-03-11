@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Language\AST\Node\UnionTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
 

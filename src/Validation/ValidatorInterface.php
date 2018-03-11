@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\Error\GraphQLException;
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Visitor\VisitorBreak;
+use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Visitor\VisitorBreak;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 

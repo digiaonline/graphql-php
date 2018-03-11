@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Type\Schema;
 
 interface ExecutionInterface

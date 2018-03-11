@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Error;
 
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;

@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Type\Schema;
 
 class ExecutionArguments

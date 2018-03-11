@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\ListTypeNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\NonNullTypeNode;
+use Digia\GraphQL\Language\Node\ListTypeNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\NonNullTypeNode;
 use function Digia\GraphQL\Language\wrap;
 
 class NullTypeWriter extends AbstractWriter
