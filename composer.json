@@ -20,6 +20,8 @@
     },
     "autoload": {
         "files": [
+            "./src/Error/formatError.php",
+            "./src/Error/printError.php",
             "./src/Execution/values.php",
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
@@ -30,8 +32,11 @@
             "./src/Util/coercers.php",
             "./src/Util/helpers.php",
             "./src/Util/invariant.php",
+            "./src/Util/orList.php",
+            "./src/Util/suggestionList.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
+            "./src/Validation/messages.php",
             "./src/Validation/rules.php",
             "./src/helpers.php"
         ],
@@ -48,7 +53,8 @@
     "autoload-dev": {
         "files": [
             "./tests/Functional/Language/SchemaParserTest.php",
-            "./tests/Functional/Validation/harness.php"
+            "./tests/Functional/Validation/harness.php",
+            "./tests/Functional/Validation/Rule/ExecutableDefinitionsRuleTest.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\Test\\": "./tests"
