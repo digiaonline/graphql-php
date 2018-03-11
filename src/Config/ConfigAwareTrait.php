@@ -2,17 +2,15 @@
 
 namespace Digia\GraphQL\Config;
 
-trait ConfigTrait
+trait ConfigAwareTrait
 {
-
     /**
      * @var array
      */
     private $config;
 
     /**
-     * ConfigTrait constructor.
-     *
+     * ConfigAwareTrait constructor.
      * @param array $config
      */
     public function __construct(array $config = [])

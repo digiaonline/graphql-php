@@ -4,6 +4,5 @@ namespace Digia\GraphQL\Config;
 
 class ConfigObject
 {
-
-    use ConfigTrait;
+    use ConfigAwareTrait;
 }
