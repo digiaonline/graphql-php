@@ -41,7 +41,11 @@ class StringReader extends AbstractReader
             }
 
             if ($this->isSourceCharacter($code)) {
-                throw new SyntaxErrorException(sprintf('Invalid character within String: %s', printCharCode($code)));
+                throw new SyntaxErrorException(
+                    $this->lexer->getSource(),
+                    $pos,
+                    sprintf('Invalid character within String: %s', printCharCode($code))
+                );
             }
 
             ++$pos;
@@ -86,6 +90,8 @@ class StringReader extends AbstractReader
                         );
                         if ($charCode < 0) {
                             throw new SyntaxErrorException(
+                                $this->lexer->getSource(),
+                                $pos,
                                 sprintf(
                                     'Invalid character escape sequence: \\u%s',
                                     sliceString($body, $pos + 1, $pos + 5)
@@ -96,7 +102,11 @@ class StringReader extends AbstractReader
                         $pos   += 4;
                         break;
                     default:
-                        throw new SyntaxErrorException(sprintf('Invalid character escape sequence: \\%s', chr($code)));
+                        throw new SyntaxErrorException(
+                            $this->lexer->getSource(),
+                            $pos,
+                            sprintf('Invalid character escape sequence: \\%s', chr($code))
+                        );
                 }
 
                 ++$pos;
@@ -104,7 +114,7 @@ class StringReader extends AbstractReader
             }
         }
 
-        throw new SyntaxErrorException('Unterminated string.');
+        throw new SyntaxErrorException($this->lexer->getSource(), $pos, 'Unterminated string.');
     }
 
     /**

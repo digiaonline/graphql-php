@@ -40,8 +40,11 @@ class NumberReader extends AbstractReader
             // 0
             $code = charCodeAt($body, ++$pos);
             if (isNumber($code)) {
-                throw new SyntaxErrorException(sprintf('Invalid number, unexpected digit after 0: %s.',
-                    printCharCode($code)));
+                throw new SyntaxErrorException(
+                    $this->lexer->getSource(),
+                    $pos,
+                    sprintf('Invalid number, unexpected digit after 0: %s.', printCharCode($code))
+                );
             }
         } else {
             $pos  = $this->readDigits($code, $pos);
@@ -106,6 +109,10 @@ class NumberReader extends AbstractReader
             return $pos;
         }
 
-        throw new SyntaxErrorException(sprintf('Invalid number, expected digit but got: %s', printCharCode($code)));
+        throw new SyntaxErrorException(
+            $this->lexer->getSource(),
+            $pos,
+            sprintf('Invalid number, expected digit but got: %s', printCharCode($code))
+        );
     }
 }
