@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Execution\Resolver;
 
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Execution\ResponsePath;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Node\FieldNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\SchemaInterface;

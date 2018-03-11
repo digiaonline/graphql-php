@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\IntValueNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\StringValueNode;
+use Digia\GraphQL\Language\Node\IntValueNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\StringValueNode;
 use function Digia\GraphQL\Util\jsonEncode;
 
 class StringValueWriter extends AbstractWriter

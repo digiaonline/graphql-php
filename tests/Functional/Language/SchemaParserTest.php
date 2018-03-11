@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use function Digia\GraphQL\parse;

@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
-use Digia\GraphQL\Language\AST\Node\InterfaceTypeDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeTrait;
 
 /**
  * Interface Type Definition

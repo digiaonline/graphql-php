@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\FloatValueNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\FloatValueNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 
 class FloatValueWriter extends AbstractWriter
 {

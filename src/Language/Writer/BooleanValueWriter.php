@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\BooleanValueNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\BooleanValueNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 
 class BooleanValueWriter extends AbstractWriter
 {

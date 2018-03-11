@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\LanguageException;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Writer\WriterInterface;
 
 class Printer implements PrinterInterface

@@ -3,11 +3,11 @@
 namespace Digia\GraphQL\Provider;
 
 use Digia\GraphQL\Error\InvalidTypeException;
-use Digia\GraphQL\Language\AST\Node\NamedTypeNode;
-use Digia\GraphQL\Language\AST\Schema\DefinitionBuilder;
-use Digia\GraphQL\Language\AST\Schema\DefinitionBuilderInterface;
-use Digia\GraphQL\Language\AST\Schema\SchemaBuilder;
-use Digia\GraphQL\Language\AST\Schema\SchemaBuilderInterface;
+use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Language\SchemaBuilder\DefinitionBuilder;
+use Digia\GraphQL\Language\SchemaBuilder\DefinitionBuilderInterface;
+use Digia\GraphQL\Language\SchemaBuilder\SchemaBuilder;
+use Digia\GraphQL\Language\SchemaBuilder\SchemaBuilderInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Psr\SimpleCache\CacheInterface;
 

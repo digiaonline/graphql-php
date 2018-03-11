@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\ObjectFieldNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\ObjectFieldNode;
 
 class ObjectFieldWriter extends AbstractWriter
 {

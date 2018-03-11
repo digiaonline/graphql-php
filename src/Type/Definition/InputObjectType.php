@@ -20,8 +20,8 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Language\AST\Node\InputObjectTypeDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeTrait;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;

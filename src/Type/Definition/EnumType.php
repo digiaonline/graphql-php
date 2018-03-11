@@ -4,10 +4,10 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Language\AST\Node\EnumTypeDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;

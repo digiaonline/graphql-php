@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Language\AST\Node\SchemaDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;

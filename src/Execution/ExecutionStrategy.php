@@ -4,11 +4,11 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
-use Digia\GraphQL\Language\AST\NodeKindEnum;
+use Digia\GraphQL\Language\Node\FieldNode;
+use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Node\SelectionSetNode;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema;

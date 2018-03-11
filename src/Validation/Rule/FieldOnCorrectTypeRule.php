@@ -3,9 +3,9 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\AST\Node\FieldNode;
-use Digia\GraphQL\Language\AST\Node\InterfacesTrait;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\FieldNode;
+use Digia\GraphQL\Language\Node\InterfacesTrait;
+use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\FieldsTrait;
 use Digia\GraphQL\Type\Definition\InterfaceType;

@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\EnumValueNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\EnumValueNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 
 class EnumValueWriter extends AbstractWriter
 {

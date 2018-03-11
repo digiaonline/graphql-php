@@ -3,11 +3,11 @@
 namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\SelectionSetNode;
+use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\FragmentSpreadNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Field;

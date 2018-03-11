@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\ExecutionContext;
-use Digia\GraphQL\Language\AST\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\Execution\getArgumentValues;
 use function Digia\GraphQL\parse;

@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
-use Digia\GraphQL\Language\AST\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Type\Schema;
 
 /**

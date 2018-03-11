@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Language\Writer;
 
-use Digia\GraphQL\Language\AST\Node\FragmentSpreadNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\FragmentSpreadNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 use function Digia\GraphQL\Language\wrap;
 
 class FragmentSpreadWriter extends AbstractWriter

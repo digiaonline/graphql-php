@@ -3,9 +3,9 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
-use Digia\GraphQL\Language\AST\Node\NodeTrait;
-use Digia\GraphQL\Language\AST\Node\ScalarTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use function Digia\GraphQL\Util\invariant;
 
 /**
