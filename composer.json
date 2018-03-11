@@ -38,7 +38,7 @@
             "./src/Util/valueFromAST.php",
             "./src/Validation/messages.php",
             "./src/Validation/rules.php",
-            "./src/helpers.php"
+            "./src/api.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\": "./src"
