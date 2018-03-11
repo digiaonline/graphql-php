@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Config\ConfigObject;
-use Digia\GraphQL\Config\ConfigTrait;
+use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\NameNode;
@@ -105,7 +105,7 @@ class VisitorTest extends TestCase
             }
         );
 
-        /** @var ConfigTrait $editedAst */
+        /** @var ConfigAwareTrait $editedAst */
         $editedAst = $ast->acceptVisitor($visitor);
 
         $this->assertTrue($editedAst->getConfigValue('didEnter'));
