@@ -28,7 +28,7 @@ use function Digia\GraphQL\Type\isOutputType;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\typeFromAST;
 
-class TypeInfoVisitor extends Visitor
+class TypeInfoVisitor implements VisitorInterface
 {
     /**
      * @var TypeInfo
@@ -36,27 +36,26 @@ class TypeInfoVisitor extends Visitor
     protected $typeInfo;
 
     /**
+     * @var VisitorInterface
+     */
+    protected $visitor;
+
+    /**
      * TypeInfoVisitor constructor.
      * @param TypeInfo      $typeInfo
      * @param callable|null $enterFunction
      * @param callable|null $leaveFunction
      */
-    public function __construct(TypeInfo $typeInfo, ?callable $enterFunction = null, ?callable $leaveFunction = null)
+    public function __construct(TypeInfo $typeInfo, VisitorInterface $visitor)
     {
-        parent::__construct($enterFunction, $leaveFunction);
-
         $this->typeInfo = $typeInfo;
+        $this->visitor  = $visitor;
     }
 
     /**
      * @inheritdoc
      */
-    public function enterNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
+    public function enterNode(NodeInterface $node): ?NodeInterface {
         $schema = $this->typeInfo->getSchema();
 
         if ($node instanceof SelectionSetNode) {
@@ -139,19 +138,14 @@ class TypeInfoVisitor extends Visitor
             $this->typeInfo->setEnumValue($enumValue);
         }
 
-        return parent::enterNode($node, $key, $parent, $path);
+        return $this->visitor->enterNode($node);
     }
 
     /**
      * @inheritdoc
      */
-    public function leaveNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
-        $newNode = parent::leaveNode($node, $key, $parent, $path);
+    public function leaveNode(NodeInterface $node): ?NodeInterface {
+        $newNode = $this->visitor->leaveNode($node);
 
         if (null === $newNode) {
             return null;

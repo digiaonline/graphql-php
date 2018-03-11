@@ -31,28 +31,20 @@ class Visitor implements VisitorInterface
     /**
      * @inheritdoc
      */
-    public function enterNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
+    public function enterNode(NodeInterface $node): ?NodeInterface
+    {
         return null !== $this->enterFunction
-            ? \call_user_func($this->enterFunction, $node, $key, $parent, $path)
+            ? \call_user_func($this->enterFunction, $node)
             : $node;
     }
 
     /**
      * @inheritdoc
      */
-    public function leaveNode(
-        NodeInterface $node,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = []
-    ): ?NodeInterface {
+    public function leaveNode(NodeInterface $node): ?NodeInterface
+    {
         return null !== $this->leaveFunction
-            ? \call_user_func($this->leaveFunction, $node, $key, $parent, $path)
+            ? \call_user_func($this->leaveFunction, $node)
             : $node;
     }
 }

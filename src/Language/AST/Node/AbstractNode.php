@@ -3,16 +3,15 @@
 namespace Digia\GraphQL\Language\AST\Node;
 
 use Digia\GraphQL\Config\ConfigObject;
-use Digia\GraphQL\Language\AST\Visitor\AcceptVisitorInterface;
-use Digia\GraphQL\Language\AST\Visitor\AcceptVisitorTrait;
+use Digia\GraphQL\Language\AST\Visitor\AcceptsVisitorsInterface;
+use Digia\GraphQL\Language\AST\Visitor\AcceptsVisitorsTrait;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Util\SerializationInterface;
 use function Digia\GraphQL\Util\jsonEncode;
 
-abstract class AbstractNode extends ConfigObject implements SerializationInterface, AcceptVisitorInterface
+abstract class AbstractNode extends ConfigObject implements SerializationInterface, AcceptsVisitorsInterface
 {
-
-    use AcceptVisitorTrait;
+    use AcceptsVisitorsTrait;
 
     /**
      * @var string
