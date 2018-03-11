@@ -14,6 +14,7 @@ use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\NonNullType;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Language\valueFromAST;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\keyMap;
@@ -87,17 +88,21 @@ class ValuesResolver
     }
 
     /**
-     * @param $argumentNode
-     * @param $argumentType
-     * @param $argumentName
-     * @param $variableValues
+     * @param NodeInterface $argumentNode
+     * @param TypeInterface $argumentType
+     * @param string        $argumentName
+     * @param               $variableValues
      * @return mixed|null
      * @throws ExecutionException
      * @throws InvalidTypeException
      * @throws InvariantException
      */
-    private function coerceValueForASTNode($argumentNode, $argumentType, $argumentName, $variableValues)
-    {
+    protected function coerceValueForASTNode(
+        NodeInterface $argumentNode,
+        TypeInterface $argumentType,
+        string $argumentName,
+        $variableValues
+    ) {
         $valueNode = $argumentNode->getValue();
 
         $coercedValue = valueFromAST($valueNode, $argumentType, $variableValues);
@@ -116,19 +121,19 @@ class ValuesResolver
     }
 
     /**
-     * @param VariableNode $variableNode
-     * @param              $argumentType
-     * @param              $name
-     * @param              $variableValues
-     * @param              $defaultValue
+     * @param VariableNode  $variableNode
+     * @param TypeInterface $argumentType
+     * @param string        $argumentName
+     * @param array         $variableValues
+     * @param               $defaultValue
      * @return mixed
      * @throws ExecutionException
      */
-    private function coerceValueForVariableNode(
+    protected function coerceValueForVariableNode(
         VariableNode $variableNode,
-        $argumentType,
-        $argumentName,
-        $variableValues,
+        TypeInterface $argumentType,
+        string $argumentName,
+        array $variableValues,
         $defaultValue
     ) {
         $variableName = $variableNode->getNameValue();
@@ -166,8 +171,11 @@ class ValuesResolver
      * @throws InvalidTypeException
      * @throws InvariantException
      */
-    function getDirectiveValues(DirectiveInterface $directive, NodeInterface $node, array $variableValues = []): ?array
-    {
+    public function getDirectiveValues(
+        DirectiveInterface $directive,
+        NodeInterface $node, array
+        $variableValues = []
+    ): ?array {
         $directiveNode = $node->hasDirectives()
             ? find($node->getDirectives(), function (NamedTypeNode $value) use ($directive) {
                 return $value->getNameValue() === $directive->getName();

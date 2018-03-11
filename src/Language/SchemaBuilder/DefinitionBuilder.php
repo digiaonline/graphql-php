@@ -6,6 +6,7 @@ use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\LanguageException;
+use Digia\GraphQL\Execution\ValuesResolver;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumValueDefinitionNode;
@@ -33,7 +34,6 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Psr\SimpleCache\CacheInterface;
-use function Digia\GraphQL\Execution\getDirectiveValues;
 use function Digia\GraphQL\Language\valueFromAST;
 use function Digia\GraphQL\Type\assertNullableType;
 use function Digia\GraphQL\Type\GraphQLDirective;
@@ -421,6 +421,6 @@ function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputType
  */
 function getDeprecationReason(NodeInterface $node): ?string
 {
-    $deprecated = getDirectiveValues(GraphQLDeprecatedDirective(), $node);
+    $deprecated = (new ValuesResolver())->getDirectiveValues(GraphQLDeprecatedDirective(), $node);
     return $deprecated['reason'] ?? null;
 }
