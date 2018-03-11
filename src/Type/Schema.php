@@ -107,7 +107,7 @@ class Schema extends ConfigObject implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getMutation(): ObjectType
+    public function getMutation(): ?ObjectType
     {
         return $this->mutation;
     }
@@ -115,7 +115,7 @@ class Schema extends ConfigObject implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getSubscription(): ObjectType
+    public function getSubscription(): ?ObjectType
     {
         return $this->subscription;
     }
