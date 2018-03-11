@@ -11,6 +11,7 @@ use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
 use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownTypeNamesRule;
 use Digia\GraphQL\Validation\Rule\LoneAnonymousOperationRule;
+use Digia\GraphQL\Validation\Rule\NoFragmentCyclesRule;
 use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
 
 /**
@@ -27,6 +28,7 @@ function specifiedRules(): array
         GraphQL::get(KnownFragmentNamesRule::class),
         GraphQL::get(KnownTypeNamesRule::class),
         GraphQL::get(LoneAnonymousOperationRule::class),
+        GraphQL::get(NoFragmentCyclesRule::class),
         GraphQL::get(PossibleFragmentSpreadsRule::class),
     ];
 }
