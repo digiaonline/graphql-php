@@ -22,7 +22,6 @@
         "files": [
             "./src/Error/formatError.php",
             "./src/Error/printError.php",
-            "./src/Execution/values.php",
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
             "./src/Type/definition.php",
