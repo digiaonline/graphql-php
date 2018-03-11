@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Provider;
 
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionsRule;
+use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class RulesProvider extends AbstractServiceProvider
@@ -12,6 +13,7 @@ class RulesProvider extends AbstractServiceProvider
      */
     protected $provides = [
         ExecutableDefinitionsRule::class,
+        FieldOnCorrectTypeRule::class,
     ];
 
     /**

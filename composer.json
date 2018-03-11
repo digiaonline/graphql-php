@@ -53,8 +53,9 @@
     "autoload-dev": {
         "files": [
             "./tests/Functional/Language/SchemaParserTest.php",
-            "./tests/Functional/Validation/harness.php",
-            "./tests/Functional/Validation/Rule/ExecutableDefinitionsRuleTest.php"
+            "./tests/Functional/Validation/Rule/ExecutableDefinitionsRuleTest.php",
+            "./tests/Functional/Validation/Rule/FieldOnCorrectTypeRuleTest.php",
+            "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\Test\\": "./tests"
