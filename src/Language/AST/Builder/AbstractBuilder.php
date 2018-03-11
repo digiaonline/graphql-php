@@ -31,7 +31,7 @@ abstract class AbstractBuilder implements BuilderInterface
     protected function createLocation(array $ast): ?Location
     {
         return isset($ast['loc']['start'], $ast['loc']['end'])
-            ? new Location($ast['loc']['start'], $ast['loc']['end'])
+            ? new Location($ast['loc']['start'], $ast['loc']['end'], $ast['loc']['source'] ?? null)
             : null;
     }
 

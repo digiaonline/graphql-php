@@ -19,6 +19,22 @@ trait AliasTrait
     }
 
     /**
+     * @return null|string
+     */
+    public function getAliasValue(): ?string
+    {
+        return null !== $this->alias ? $this->alias->getValue() : null;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getAliasOrNameValue()
+    {
+        return $this->getAliasValue() ?? $this->getNameValue();
+    }
+
+    /**
      * @return array|null
      */
     public function getAliasAsArray(): ?array
