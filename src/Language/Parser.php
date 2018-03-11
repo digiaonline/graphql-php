@@ -3,11 +3,10 @@
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\Language\NodeBuilder\DirectorInterface;
-use Digia\GraphQL\Language\NodeBuilder\NodeBuilderInterface;
-use Digia\GraphQL\Language\DirectiveLocationEnum;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\NodeBuilder\DirectorInterface;
+use Digia\GraphQL\Language\NodeBuilder\NodeBuilderInterface;
 
 class Parser implements ParserInterface, DirectorInterface
 {
@@ -149,7 +148,11 @@ class Parser implements ParserInterface, DirectorInterface
             return $token;
         }
 
-        throw new SyntaxErrorException(sprintf('Expected %s, found %s', $kind, $token));
+        throw new SyntaxErrorException(
+            $lexer->getSource(),
+            $token->getStart(),
+            sprintf('Expected %s, found %s', $kind, $token)
+        );
     }
 
     /**
@@ -167,7 +170,11 @@ class Parser implements ParserInterface, DirectorInterface
             return $token;
         }
 
-        throw new SyntaxErrorException(sprintf('Expected %s, found %s', $value, $token));
+        throw new SyntaxErrorException(
+            $lexer->getSource(),
+            $token->getStart(),
+            sprintf('Expected %s, found %s', $value, $token)
+        );
     }
 
     /**
@@ -182,7 +189,11 @@ class Parser implements ParserInterface, DirectorInterface
     {
         $token = $atToken ?: $lexer->getToken();
 
-        return new SyntaxErrorException(sprintf('Unexpected %s', $token));
+        return new SyntaxErrorException(
+            $lexer->getSource(),
+            $token->getStart(),
+            sprintf('Unexpected %s', $token)
+        );
     }
 
     /**

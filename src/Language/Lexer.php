@@ -193,7 +193,7 @@ class Lexer implements LexerInterface
             return $reader->read($code, $pos, $line, $col, $prev);
         }
 
-        throw new SyntaxErrorException($this->unexpectedCharacterMessage($code));
+        throw new SyntaxErrorException($this->source, $pos, $this->unexpectedCharacterMessage($code));
     }
 
     /**
@@ -217,7 +217,11 @@ class Lexer implements LexerInterface
         $code = charCodeAt($body, $pos);
 
         if (isSourceCharacter($code)) {
-            throw new SyntaxErrorException(sprintf('Cannot contain the invalid character %s', printCharCode($code)));
+            throw new SyntaxErrorException(
+                $this->source,
+                $pos,
+                sprintf('Cannot contain the invalid character %s', printCharCode($code))
+            );
         }
 
         return $this->read($code, $pos, $line, $col, $prev);

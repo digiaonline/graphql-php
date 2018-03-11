@@ -50,7 +50,11 @@ class BlockStringReader extends AbstractReader
             }
 
             if (isSourceCharacter($code)) {
-                throw new SyntaxErrorException(sprintf('Invalid character within String: %s', printCharCode($code)));
+                throw new SyntaxErrorException(
+                    $this->lexer->getSource(),
+                    $pos,
+                    sprintf('Invalid character within String: %s', printCharCode($code))
+                );
             }
 
             if ($this->isEscapedTripleQuote($body, $code, $pos)) {
@@ -62,7 +66,7 @@ class BlockStringReader extends AbstractReader
             }
         }
 
-        throw new SyntaxErrorException('Unterminated string.');
+        throw new SyntaxErrorException($this->lexer->getSource(), $pos, 'Unterminated string.');
     }
 
     /**
