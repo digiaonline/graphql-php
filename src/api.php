@@ -3,6 +3,7 @@
 namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionInterface;
@@ -75,15 +76,6 @@ function buildSchema(string $source, array $options = []): SchemaInterface
 }
 
 /**
- * @param NodeInterface $node
- * @return string
- */
-function printNode(NodeInterface $node): string
-{
-    return GraphQL::get(PrinterInterface::class)->print($node);
-}
-
-/**
  * @param SchemaInterface $schema
  * @param DocumentNode    $document
  * @return array|ValidationException[]
@@ -91,6 +83,15 @@ function printNode(NodeInterface $node): string
 function validate(SchemaInterface $schema, DocumentNode $document): array
 {
     return GraphQL::get(ValidatorInterface::class)->validate($schema, $document);
+}
+
+/**
+ * @param NodeInterface $node
+ * @return string
+ */
+function printNode(NodeInterface $node): string
+{
+    return GraphQL::get(PrinterInterface::class)->print($node);
 }
 
 /**
@@ -113,6 +114,21 @@ function graphql(
     $operationName = null,
     callable $fieldResolver = null
 ): ExecutionResult {
+    // TODO: Validate schema
+
+    $document = null;
+
+    try {
+        $document = parse($source);
+    } catch (SyntaxErrorException $error) {
+        return new ExecutionResult([], [$error]);
+    }
+
+    $validationErrors = validate($schema, $document);
+    if (!empty($validationErrors)) {
+        return new ExecutionResult([], $validationErrors);
+    }
+
     /** @noinspection PhpParamsInspection */
     return GraphQL::get(ExecutionInterface::class)
         ->execute(
