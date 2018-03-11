@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Provider;
 
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionsRule;
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
+use Digia\GraphQL\Validation\Rule\LoneAnonymousOperationRule;
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
 use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
@@ -25,6 +26,7 @@ class RulesProvider extends AbstractServiceProvider
         KnownDirectivesRule::class,
         KnownFragmentNamesRule::class,
         KnownTypeNamesRule::class,
+        LoneAnonymousOperationRule::class,
         PossibleFragmentSpreadsRule::class,
     ];
 
