@@ -20,6 +20,8 @@
     },
     "autoload": {
         "files": [
+            "./src/Error/formatError.php",
+            "./src/Error/printError.php",
             "./src/Execution/values.php",
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
@@ -30,8 +32,13 @@
             "./src/Util/coercers.php",
             "./src/Util/helpers.php",
             "./src/Util/invariant.php",
+            "./src/Util/orList.php",
+            "./src/Util/suggestionList.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
+            "./src/Validation/comparators.php",
+            "./src/Validation/rules.php",
+            "./src/Validation/messages.php",
             "./src/helpers.php"
         ],
         "psr-4": {
@@ -47,7 +54,20 @@
     "autoload-dev": {
         "files": [
             "./tests/Functional/Language/SchemaParserTest.php",
-            "./tests/Functional/Language/testSchema.php"
+            "./tests/Functional/Validation/Rule/ExecutableDefinitionsRuleTest.php",
+            "./tests/Functional/Validation/Rule/FieldOnCorrectTypeRuleTest.php",
+            "./tests/Functional/Validation/Rule/FragmentsOnCompositeTypesRuleTest.php",
+            "./tests/Functional/Validation/Rule/KnownArgumentNamesRuleTest.php",
+            "./tests/Functional/Validation/Rule/KnownDirectivesRuleTest.php",
+            "./tests/Functional/Validation/Rule/KnownFragmentNamesRuleTest.php",
+            "./tests/Functional/Validation/Rule/KnownTypeNamesRuleTest.php",
+            "./tests/Functional/Validation/Rule/LoneAnonymousOperationRuleTest.php",
+            "./tests/Functional/Validation/Rule/NoFragmentCyclesRuleTest.php",
+            "./tests/Functional/Validation/Rule/NoUndefinedVariablesRuleTest.php",
+            "./tests/Functional/Validation/Rule/NoUnusedFragmentsRuleTest.php",
+            "./tests/Functional/Validation/Rule/NoUnusedVariablesRuleTest.php",
+            "./tests/Functional/Validation/Rule/OverlappingFieldsCanBeMergedRuleTest.php",
+            "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\Test\\": "./tests"

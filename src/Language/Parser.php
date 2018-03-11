@@ -193,8 +193,9 @@ class Parser implements ParserInterface, DirectorInterface
     protected function createLocation(LexerInterface $lexer, Token $startToken): ?array
     {
         return !$lexer->getOption('noLocation', false) ? [
-            'start' => $startToken->getStart(),
-            'end'   => $lexer->getLastToken()->getEnd(),
+            'start'  => $startToken->getStart(),
+            'end'    => $lexer->getLastToken()->getEnd(),
+            'source' => $lexer->getSource(),
         ] : null;
     }
 

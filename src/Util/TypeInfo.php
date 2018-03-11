@@ -155,9 +155,9 @@ class TypeInfo
     }
 
     /**
-     * @param InputTypeInterface|null $type
+     * @param TypeInterface|null $type
      */
-    public function pushInputType(?InputTypeInterface $type): void
+    public function pushInputType(?TypeInterface $type): void
     {
         $this->inputTypeStack[] = $type;
     }
