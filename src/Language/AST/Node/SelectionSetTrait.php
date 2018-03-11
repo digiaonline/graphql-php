@@ -11,6 +11,14 @@ trait SelectionSetTrait
     protected $selectionSet;
 
     /**
+     * @return bool
+     */
+    public function hasSelectionSet(): bool
+    {
+        return null !== $this->selectionSet;
+    }
+
+    /**
      * @return SelectionSetNode|null
      */
     public function getSelectionSet(): ?SelectionSetNode

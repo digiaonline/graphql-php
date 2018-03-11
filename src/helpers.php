@@ -3,6 +3,7 @@
 namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Execution\Execution;
 use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionResult;
@@ -15,6 +16,7 @@ use Digia\GraphQL\Language\PrinterInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\SerializationInterface;
+use Digia\GraphQL\Validation\ValidatorInterface;
 
 /**
  * @param string|Source $source
@@ -78,7 +80,17 @@ function buildSchema(string $source, array $options = []): SchemaInterface
  */
 function printNode(NodeInterface $node): string
 {
-    return GraphQL::getInstance()->get(PrinterInterface::class)->print($node);
+    return GraphQL::get(PrinterInterface::class)->print($node);
+}
+
+/**
+ * @param SchemaInterface $schema
+ * @param DocumentNode    $document
+ * @return array|ValidationException[]
+ */
+function validate(SchemaInterface $schema, DocumentNode $document): array
+{
+    return GraphQL::get(ValidatorInterface::class)->validate($schema, $document);
 }
 
 /**

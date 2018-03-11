@@ -43,4 +43,12 @@ trait NameTrait
         $this->name = $name;
         return $this;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString(): string
+    {
+        return $this->getNameValue() ?? '';
+    }
 }

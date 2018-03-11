@@ -72,9 +72,9 @@ class Source
     }
 
     /**
-     * @return SourceLocation|null
+     * @return SourceLocation
      */
-    public function getLocationOffset(): ?SourceLocation
+    public function getLocationOffset(): SourceLocation
     {
         return $this->locationOffset;
     }
@@ -118,7 +118,8 @@ class Source
             );
         }
 
-        $this->locationOffset = $locationOffset;
+        $this->locationOffset = $locationOffset ?? new SourceLocation();
+
         return $this;
     }
 }

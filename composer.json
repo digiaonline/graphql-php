@@ -32,6 +32,7 @@
             "./src/Util/invariant.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
+            "./src/Validation/rules.php",
             "./src/helpers.php"
         ],
         "psr-4": {
