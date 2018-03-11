@@ -11,6 +11,7 @@ use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownTypeNamesRule;
 use Digia\GraphQL\Validation\Rule\LoneAnonymousOperationRule;
 use Digia\GraphQL\Validation\Rule\NoFragmentCyclesRule;
+use Digia\GraphQL\Validation\Rule\NoUndefinedVariablesRule;
 use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -29,6 +30,7 @@ class RulesProvider extends AbstractServiceProvider
         KnownTypeNamesRule::class,
         LoneAnonymousOperationRule::class,
         NoFragmentCyclesRule::class,
+        NoUndefinedVariablesRule::class,
         PossibleFragmentSpreadsRule::class,
     ];
 
