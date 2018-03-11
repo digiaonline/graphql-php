@@ -185,7 +185,7 @@ class ExecutionContext
     public function getExecutionStrategy(): ExecutionStrategy
     {
         //We can probably return different strategy in the future e.g:AsyncExecutionStrategy
-        return new ExecutorExecutionStrategy($this, $this->operation, $this->rootValue);
+        return new ExecutorExecutionStrategy($this, $this->operation, $this->rootValue, new ValuesResolver());
     }
 
     /**

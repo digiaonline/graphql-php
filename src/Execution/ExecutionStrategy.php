@@ -6,9 +6,9 @@ use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
-use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema;
@@ -39,6 +39,11 @@ abstract class ExecutionStrategy
 
 
     /**
+     * @var ValuesResolver
+     */
+    protected $valuesResolver;
+
+    /**
      * @var array
      */
     protected $finalResult;
@@ -52,11 +57,13 @@ abstract class ExecutionStrategy
     public function __construct(
         ExecutionContext $context,
         OperationDefinitionNode $operation,
-        $rootValue
+        $rootValue,
+        $valueResolver
     ) {
-        $this->context   = $context;
-        $this->operation = $operation;
-        $this->rootValue = $rootValue;
+        $this->context        = $context;
+        $this->operation      = $operation;
+        $this->rootValue      = $rootValue;
+        $this->valuesResolver = $valueResolver;
     }
 
     /**
@@ -313,7 +320,7 @@ abstract class ExecutionStrategy
         ResolveInfo $info
     ) {
         try {
-            $args = getArgumentValues($field, $fieldNode, $context->getVariableValues());
+            $args = $this->valuesResolver->coerceArgumentValues($field, $fieldNode, $context->getVariableValues());
 
             return $resolveFunction($source, $args, $context->getContextValue(), $info);
         } catch (\Throwable $error) {
