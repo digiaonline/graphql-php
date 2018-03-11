@@ -7,6 +7,7 @@ use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
 use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
+use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
 use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -21,6 +22,7 @@ class RulesProvider extends AbstractServiceProvider
         FragmentsOnCompositeTypesRule::class,
         KnownArgumentNamesRule::class,
         KnownDirectivesRule::class,
+        KnownFragmentNamesRule::class,
         PossibleFragmentSpreadsRule::class,
     ];
 
