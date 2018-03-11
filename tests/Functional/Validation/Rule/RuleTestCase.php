@@ -23,12 +23,22 @@ abstract class RuleTestCase extends TestCase
 
     protected function expectPassesRule($rule, $query)
     {
-        return $this->expectValid(testSchema(), [$rule], $query);
+        return $this->expectPassesRuleWithSchema(testSchema(), $rule, $query);
+    }
+
+    protected function expectPassesRuleWithSchema($schema, $rule, $query)
+    {
+        return $this->expectValid($schema, [$rule], $query);
     }
 
     protected function expectFailsRule($rule, $query, $expectedErrors = [])
     {
-        return $this->expectInvalid(testSchema(), [$rule], $query, $expectedErrors);
+        return $this->expectFailsRuleWithSchema(testSchema(), $rule, $query, $expectedErrors);
+    }
+
+    protected function expectFailsRuleWithSchema($schema, $rule, $query, $expectedErrors = [])
+    {
+        return $this->expectInvalid($schema, [$rule], $query, $expectedErrors);
     }
 
     protected function expectValid($schema, $rules, $query)

@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation;
 
 use Digia\GraphQL\Test\TestCase;
+use function Digia\GraphQL\Validation\fieldsConflictMessage;
 use function Digia\GraphQL\Validation\undefinedFieldMessage;
 
 class MessagesTest extends TestCase
@@ -49,6 +50,14 @@ class MessagesTest extends TestCase
         $this->assertEquals(
             undefinedFieldMessage('f', 'T', [], ['z', 'y', 'x', 'w', 'v', 'u']),
             'Cannot query field "f" on type "T". Did you mean "z", "y", "x", "w" or "v"?'
+        );
+    }
+
+    public function testFieldConflictMessageContainsHintForAliasConflict()
+    {
+        $this->assertEquals(
+            fieldsConflictMessage('x', 'a and b are different fields'),
+            'Fields "x" conflict because a and b are different fields. Use different aliases on the fields to fetch both if this was intentional.'
         );
     }
 }

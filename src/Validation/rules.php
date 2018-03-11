@@ -15,6 +15,7 @@ use Digia\GraphQL\Validation\Rule\NoFragmentCyclesRule;
 use Digia\GraphQL\Validation\Rule\NoUndefinedVariablesRule;
 use Digia\GraphQL\Validation\Rule\NoUnusedFragmentsRule;
 use Digia\GraphQL\Validation\Rule\NoUnusedVariablesRule;
+use Digia\GraphQL\Validation\Rule\OverlappingFieldsCanBeMergedRule;
 use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
 
 /**
@@ -35,6 +36,7 @@ function specifiedRules(): array
         GraphQL::get(NoUndefinedVariablesRule::class),
         GraphQL::get(NoUnusedFragmentsRule::class),
         GraphQL::get(NoUnusedVariablesRule::class),
+        GraphQL::get(OverlappingFieldsCanBeMergedRule::class),
         GraphQL::get(PossibleFragmentSpreadsRule::class),
     ];
 }

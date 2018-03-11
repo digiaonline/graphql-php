@@ -14,6 +14,7 @@ use Digia\GraphQL\Validation\Rule\NoFragmentCyclesRule;
 use Digia\GraphQL\Validation\Rule\NoUndefinedVariablesRule;
 use Digia\GraphQL\Validation\Rule\NoUnusedFragmentsRule;
 use Digia\GraphQL\Validation\Rule\NoUnusedVariablesRule;
+use Digia\GraphQL\Validation\Rule\OverlappingFieldsCanBeMergedRule;
 use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -35,6 +36,7 @@ class RulesProvider extends AbstractServiceProvider
         NoUndefinedVariablesRule::class,
         NoUnusedFragmentsRule::class,
         NoUnusedVariablesRule::class,
+        OverlappingFieldsCanBeMergedRule::class,
         PossibleFragmentSpreadsRule::class,
     ];
 

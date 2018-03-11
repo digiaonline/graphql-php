@@ -36,6 +36,7 @@
             "./src/Util/typeComparators.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
+            "./src/Validation/comparators.php",
             "./src/Validation/messages.php",
             "./src/Validation/rules.php",
             "./src/api.php"
@@ -69,6 +70,7 @@
             "./tests/Functional/Validation/Rule/NoUndefinedVariablesRuleTest.php",
             "./tests/Functional/Validation/Rule/NoUnusedFragmentsRuleTest.php",
             "./tests/Functional/Validation/Rule/NoUnusedVariablesRuleTest.php",
+            "./tests/Functional/Validation/Rule/OverlappingFieldsCanBeMergedRuleTest.php",
             "./tests/Functional/Validation/Rule/PossibleFragmentSpreadsRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
