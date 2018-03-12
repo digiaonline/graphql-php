@@ -13,6 +13,7 @@ use function Digia\GraphQL\Validation\missingFieldArgumentMessage;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
 use function Digia\GraphQL\Validation\noSubselectionAllowedMessage;
 use function Digia\GraphQL\Validation\requiresSubselectionMessage;
+use function Digia\GraphQL\Validation\singleFieldOnlyMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleAnonymousSpreadMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
 use function Digia\GraphQL\Validation\undefinedFieldMessage;
@@ -217,6 +218,17 @@ function requiredSubselection($fieldName, $typeName, $location)
     return [
         'message'   => requiresSubselectionMessage($fieldName, $typeName),
         'locations' => [locationShorthandToArray($location)],
+        'path'      => null,
+    ];
+}
+
+function singleFieldOnly($name, $locations)
+{
+    return [
+        'message'   => singleFieldOnlyMessage($name),
+        'locations' => array_map(function ($shorthand) {
+            return locationShorthandToArray($shorthand);
+        }, $locations),
         'path'      => null,
     ];
 }
