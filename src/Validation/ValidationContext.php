@@ -98,6 +98,14 @@ class ValidationContext implements ValidationContextInterface
     }
 
     /**
+     * @return TypeInterface|null
+     */
+    public function getType(): ?TypeInterface
+    {
+        return $this->typeInfo->getType();
+    }
+
+    /**
      * @inheritdoc
      */
     public function getParentType(): ?TypeInterface

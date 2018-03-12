@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
 class FragmentSpreadNode extends AbstractNode implements NodeInterface
 {
 

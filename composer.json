@@ -33,6 +33,7 @@
             "./src/Util/invariant.php",
             "./src/Util/orList.php",
             "./src/Util/suggestionList.php",
+            "./src/Util/typeComparators.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
             "./src/Validation/messages.php",
@@ -54,6 +55,7 @@
             "./tests/Functional/Language/SchemaParserTest.php",
             "./tests/Functional/Validation/Rule/ExecutableDefinitionsRuleTest.php",
             "./tests/Functional/Validation/Rule/FieldOnCorrectTypeRuleTest.php",
+            "./tests/Functional/Validation/Rule/PossibleFragmentSpreadsRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {

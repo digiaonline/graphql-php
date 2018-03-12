@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\quotedOrList;
 
 /**
@@ -41,7 +40,7 @@ function undefinedFieldMessage(
 }
 
 /**
- * @param TypeInterface $type
+ * @param string $type
  * @return string
  */
 function inlineFragmentOnNonCompositeMessage(string $typeName): string
@@ -218,4 +217,37 @@ function conflictReasonMessage($reason): string
     }
 
     return $reason;
+}
+
+/**
+ * @param string $fragmentName
+ * @param string $parentType
+ * @param string $fragmentType
+ * @return string
+ */
+function typeIncompatibleSpreadMessage(
+    string $fragmentName,
+    string $parentType,
+    string $fragmentType
+): string {
+    return sprintf(
+        'Fragment "%s" cannot be spread here as objects of type "%s" can never be of type "%s".',
+        $fragmentName,
+        $parentType,
+        $fragmentType
+    );
+}
+
+/**
+ * @param string $parentType
+ * @param string $fragmentType
+ * @return string
+ */
+function typeIncompatibleAnonymousSpreadMessage(string $parentType, string $fragmentType): string
+{
+    return sprintf(
+        'Fragment cannot be spread here as objects of type "%s" can never be of type "%s".',
+        $parentType,
+        $fragmentType
+    );
 }
