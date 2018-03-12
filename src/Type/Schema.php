@@ -177,10 +177,10 @@ class Schema extends ConfigObject implements SchemaInterface
                 )
             );
 
-            $this->_possibleTypeMap = array_reduce($possibleTypes, function (array $map, TypeInterface $type) {
+            $this->_possibleTypeMap[$abstractTypeName] = array_reduce($possibleTypes, function (array $map, TypeInterface $type) {
                 $map[$type->getName()] = true;
                 return $map;
-            });
+            }, []);
         }
 
         return isset($this->_possibleTypeMap[$abstractTypeName][$possibleTypeName]);

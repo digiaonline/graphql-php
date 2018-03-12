@@ -6,6 +6,7 @@ use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionsRule;
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
+use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
 
 /**
  * @return array
@@ -16,5 +17,6 @@ function specifiedRules(): array
         GraphQL::get(ExecutableDefinitionsRule::class),
         GraphQL::get(FieldOnCorrectTypeRule::class),
         GraphQL::get(FragmentsOnCompositeTypesRule::class),
+        GraphQL::get(PossibleFragmentSpreadsRule::class),
     ];
 }

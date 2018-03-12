@@ -29,6 +29,11 @@ interface ValidationContextInterface
     /**
      * @return TypeInterface|null
      */
+    public function getType(): ?TypeInterface;
+
+    /**
+     * @return TypeInterface|null
+     */
     public function getParentType(): ?TypeInterface;
 
     /**

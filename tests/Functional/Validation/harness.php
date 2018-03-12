@@ -167,7 +167,7 @@ function Intelligent(): InterfaceType
     static $instance = null;
     return $instance ??
         $instance = GraphQLInterfaceType([
-            'Intelligent',
+            'name'   => 'Intelligent',
             'fields' => [
                 'iq' => ['type' => GraphQLInt()],
             ],
@@ -252,9 +252,6 @@ function FurColor(): EnumType
         ]);
 }
 
-/**
- * @return InputObjectType
- */
 function ComplexInput(): InputObjectType
 {
     static $instance = null;
