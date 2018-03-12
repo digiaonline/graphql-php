@@ -7,9 +7,6 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\arraySome;
 
-const MAX_INT = 2147483647;
-const MIN_INT = -2147483648;
-
 /**
  * @return ScalarType
  */
