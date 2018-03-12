@@ -255,3 +255,35 @@ function typeIncompatibleAnonymousSpreadMessage(string $parentType, string $frag
         $fragmentType
     );
 }
+
+/**
+ * @param string $fieldName
+ * @param string $argumentName
+ * @param string $typeName
+ * @return string
+ */
+function missingFieldArgumentMessage(string $fieldName, string $argumentName, string $typeName): string
+{
+    return sprintf(
+        'Field "%s" argument "%s" of type "%s" is required but not provided.',
+        $fieldName,
+        $argumentName,
+        $typeName
+    );
+}
+
+/**
+ * @param string $directiveName
+ * @param string $argumentName
+ * @param string $typeName
+ * @return string
+ */
+function missingDirectiveArgumentMessage(string $directiveName, string $argumentName, string $typeName): string
+{
+    return sprintf(
+        'Directive "%s" argument "%s" of type "%s" is required but not provided.',
+        $directiveName,
+        $argumentName,
+        $typeName
+    );
+}

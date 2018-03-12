@@ -27,6 +27,7 @@ class SupportedRules
         NoUnusedVariablesRule::class,
         OverlappingFieldsCanBeMergedRule::class,
         PossibleFragmentSpreadsRule::class,
+        ProvidedNonNullArgumentsRule::class,
     ];
 
     /**
