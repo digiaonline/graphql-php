@@ -322,3 +322,12 @@ function singleFieldOnlyMessage(?string $name): string
     $prefix = $name ? "Subscription {$name}" : 'Anonymous subscription';
     return sprintf('%s must select only one top level field.', $prefix);
 }
+
+/**
+ * @param string $argumentName
+ * @return string
+ */
+function duplicateArgumentMessage(string $argumentName): string
+{
+    return sprintf('There can be only one argument named "%s".', $argumentName);
+}

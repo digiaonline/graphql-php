@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Test\Functional\Validation;
 
 use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Validation\anonymousOperationNotAloneMessage;
+use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
 use function Digia\GraphQL\Validation\fragmentCycleMessage;
 use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
@@ -226,6 +227,17 @@ function singleFieldOnly($name, $locations)
 {
     return [
         'message'   => singleFieldOnlyMessage($name),
+        'locations' => array_map(function ($shorthand) {
+            return locationShorthandToArray($shorthand);
+        }, $locations),
+        'path'      => null,
+    ];
+}
+
+function duplicateArgument($argumentName, $locations)
+{
+    return [
+        'message'   => duplicateArgumentMessage($argumentName),
         'locations' => array_map(function ($shorthand) {
             return locationShorthandToArray($shorthand);
         }, $locations),
