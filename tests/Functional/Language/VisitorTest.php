@@ -1256,7 +1256,7 @@ class VisitorTest extends TestCase
 
         // TODO: Add asserts for print once the printer is implemented
 
-        $this->markTestIncomplete('This test is currently failing, should be fixed later.');
+        $this->markTestIncomplete('BUG: Nodes added by visitors are visited either too early or too late.');
 
         $this->assertEquals([
             ['enter', 'Document', null, null, null, null],

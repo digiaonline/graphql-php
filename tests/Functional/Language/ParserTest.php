@@ -71,6 +71,8 @@ class ParserTest extends TestCase
           { field(arg: "Has a \u0A0A multi-byte character.") }
         '));
 
+        $this->markTestIncomplete('BUG: Multi-byte characters in strings are not handled correctly.');
+
         $this->assertArraySubset([
             'definitions' => [
                 [
@@ -82,7 +84,7 @@ class ParserTest extends TestCase
                                         'value' => [
                                             'kind' => NodeKindEnum::STRING,
                                             // TODO: Fix this test case.
-                                            // 'value' => 'Has a \u0A0A multi-byte character.',
+                                            'value' => 'Has a \u0A0A multi-byte character.',
                                         ],
                                     ],
                                 ],
@@ -111,7 +113,7 @@ class ParserTest extends TestCase
           }
         ');
 
-        $this->markTestIncomplete('This test is currently failing, should be fixed later.');
+        $this->markTestIncomplete('INCOMPLETE: Test case seems incomplete, should it be fixed or removed?');
 
         $expected = new DocumentNode([
             'location'    => new Location(0, 261, null),
