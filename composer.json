@@ -55,7 +55,7 @@
             "./tests/Functional/Language/SchemaParserTest.php",
             "./tests/Functional/Validation/Rule/ExecutableDefinitionsRuleTest.php",
             "./tests/Functional/Validation/Rule/FieldOnCorrectTypeRuleTest.php",
-            "./tests/Functional/Validation/Rule/FragmentsOnCompositeTypesRuleTest.php"
+            "./tests/Functional/Validation/Rule/FragmentsOnCompositeTypesRuleTest.php",
             "./tests/Functional/Validation/Rule/PossibleFragmentSpreadsRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
