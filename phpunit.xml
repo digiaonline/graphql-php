@@ -13,9 +13,7 @@
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/Execution</directory>
-            <directory suffix=".php">src/Language</directory>
-            <directory suffix=".php">src/Type</directory>
+            <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
 </phpunit>
