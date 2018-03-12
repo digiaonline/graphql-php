@@ -3,8 +3,6 @@
 namespace Digia\GraphQL\Util;
 
 use Digia\GraphQL\Error\InvalidTypeException;
-use const Digia\GraphQL\Type\MAX_INT;
-use const Digia\GraphQL\Type\MIN_INT;
 
 /**
  * @param $value
@@ -53,7 +51,7 @@ function coerceInt($value)
         $value = (int)$value;
     }
 
-    if (!\is_int($value) || $value > MAX_INT || $value < MIN_INT) {
+    if (!\is_int($value) || $value > PHP_INT_MAX || $value < PHP_INT_MIN) {
         throw new InvalidTypeException(sprintf('Int cannot represent non 32-bit signed integer value: %s', $value));
     }
 
