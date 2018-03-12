@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\NoFragmentCyclesRule;
 use function Digia\GraphQL\Test\Functional\Validation\fragmentCycle;
 
@@ -11,10 +12,10 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Dog { ...fragB }
-fragment fragB on Dog { name }
-'
+            dedent('
+            fragment fragA on Dog { ...fragB }
+            fragment fragB on Dog { name }
+            ')
         );
     }
 
@@ -22,10 +23,10 @@ fragment fragB on Dog { name }
     {
         $this->expectPassesRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Dog { ...fragB, ...fragB }
-fragment fragB on Dog { name }
-'
+            dedent('
+            fragment fragA on Dog { ...fragB, ...fragB }
+            fragment fragB on Dog { name }
+            ')
         );
     }
 
@@ -33,11 +34,11 @@ fragment fragB on Dog { name }
     {
         $this->expectPassesRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Dog { ...fragB, ...fragC }
-fragment fragB on Dog { ...fragC }
-fragment fragC on Dog { name }
-'
+            dedent('
+            fragment fragA on Dog { ...fragB, ...fragC }
+            fragment fragB on Dog { ...fragC }
+            fragment fragC on Dog { name }
+            ')
         );
     }
 
@@ -45,16 +46,16 @@ fragment fragC on Dog { name }
     {
         $this->expectPassesRule(
             new NoFragmentCyclesRule(),
-            '
-fragment nameFragment on Pet {
-  ... on Dog { name }
-  ... on Cat { name }
-}
-fragment spreadsInAnon on Pet {
-  ... on Dog { ...nameFragment }
-  ... on Cat { ...nameFragment }
-}
-'
+            dedent('
+            fragment nameFragment on Pet {
+              ... on Dog { name }
+              ... on Cat { name }
+            }
+            fragment spreadsInAnon on Pet {
+              ... on Dog { ...nameFragment }
+              ... on Cat { ...nameFragment }
+            }
+            ')
         );
     }
 
@@ -62,11 +63,11 @@ fragment spreadsInAnon on Pet {
     {
         $this->expectPassesRule(
             new NoFragmentCyclesRule(),
-            '
-fragment nameFragment on Pet {
-  ...UnknownFragment
-}
-'
+            dedent('
+            fragment nameFragment on Pet {
+              ...UnknownFragment
+            }
+            ')
         );
     }
 
@@ -74,10 +75,10 @@ fragment nameFragment on Pet {
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Human { relatives { ...fragA } },
-',
-            [fragmentCycle('fragA', [], [[2, 39]])]
+            dedent('
+            fragment fragA on Human { relatives { ...fragA } },
+            '),
+            [fragmentCycle('fragA', [], [[1, 39]])]
         );
     }
 
@@ -85,10 +86,10 @@ fragment fragA on Human { relatives { ...fragA } },
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Dog { ...fragA }
-',
-            [fragmentCycle('fragA', [], [[2, 25]])]
+            dedent('
+            fragment fragA on Dog { ...fragA }
+            '),
+            [fragmentCycle('fragA', [], [[1, 25]])]
         );
     }
 
@@ -96,14 +97,14 @@ fragment fragA on Dog { ...fragA }
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Pet {
-  ... on Dog {
-    ...fragA
-  }
-}
-',
-            [fragmentCycle('fragA', [], [[4, 5]])]
+            dedent('
+            fragment fragA on Pet {
+              ... on Dog {
+                ...fragA
+              }
+            }
+            '),
+            [fragmentCycle('fragA', [], [[3, 5]])]
         );
     }
 
@@ -111,11 +112,11 @@ fragment fragA on Pet {
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Dog { ...fragB }
-fragment fragB on Dog { ...fragA }
-',
-            [fragmentCycle('fragA', ['fragB'], [[2, 25], [3, 25]])]
+            dedent('
+            fragment fragA on Dog { ...fragB }
+            fragment fragB on Dog { ...fragA }
+            '),
+            [fragmentCycle('fragA', ['fragB'], [[1, 25], [2, 25]])]
         );
     }
 
@@ -123,11 +124,11 @@ fragment fragB on Dog { ...fragA }
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragB on Dog { ...fragA }
-fragment fragA on Dog { ...fragB }
-',
-            [fragmentCycle('fragB', ['fragA'], [[2, 25], [3, 25]])]
+            dedent('
+            fragment fragB on Dog { ...fragA }
+            fragment fragA on Dog { ...fragB }
+            '),
+            [fragmentCycle('fragB', ['fragA'], [[1, 25], [2, 25]])]
         );
     }
 
@@ -135,19 +136,19 @@ fragment fragA on Dog { ...fragB }
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Pet {
-  ... on Dog {
-    ...fragB
-  }
-}
-fragment fragB on Pet {
-  ... on Dog {
-    ...fragA
-  }
-}
-',
-            [fragmentCycle('fragA', ['fragB'], [[4, 5], [9, 5]])]
+            dedent('
+            fragment fragA on Pet {
+              ... on Dog {
+                ...fragB
+              }
+            }
+            fragment fragB on Pet {
+              ... on Dog {
+                ...fragA
+              }
+            }
+            '),
+            [fragmentCycle('fragA', ['fragB'], [[3, 5], [8, 5]])]
         );
     }
 
@@ -155,41 +156,27 @@ fragment fragB on Pet {
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Dog { ...fragB }
-fragment fragB on Dog { ...fragC }
-fragment fragC on Dog { ...fragO }
-fragment fragX on Dog { ...fragY }
-fragment fragY on Dog { ...fragZ }
-fragment fragZ on Dog { ...fragO }
-fragment fragO on Dog { ...fragP }
-fragment fragP on Dog { ...fragA, ...fragX }
-',
+            dedent('
+            fragment fragA on Dog { ...fragB }
+            fragment fragB on Dog { ...fragC }
+            fragment fragC on Dog { ...fragO }
+            fragment fragX on Dog { ...fragY }
+            fragment fragY on Dog { ...fragZ }
+            fragment fragZ on Dog { ...fragO }
+            fragment fragO on Dog { ...fragP }
+            fragment fragP on Dog { ...fragA, ...fragX }
+            '),
             [
-                fragmentCycle('fragA', [
-                    'fragB',
-                    'fragC',
+                fragmentCycle(
+                    'fragA',
+                    ['fragB', 'fragC', 'fragO', 'fragP'],
+                    [[1, 25], [2, 25], [3, 25], [7, 25], [8, 25]]
+                ),
+                fragmentCycle(
                     'fragO',
-                    'fragP',
-                ], [
-                    [2, 25],
-                    [3, 25],
-                    [4, 25],
-                    [8, 25],
-                    [9, 25],
-                ]),
-                fragmentCycle('fragO', [
-                    'fragP',
-                    'fragX',
-                    'fragY',
-                    'fragZ',
-                ], [
-                    [8, 25],
-                    [9, 35],
-                    [5, 25],
-                    [6, 25],
-                    [7, 25],
-                ])
+                    ['fragP', 'fragX', 'fragY', 'fragZ'],
+                    [[7, 25], [8, 35], [4, 25], [5, 25], [6, 25]]
+                )
             ]
         );
     }
@@ -198,14 +185,14 @@ fragment fragP on Dog { ...fragA, ...fragX }
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Dog { ...fragB, ...fragC }
-fragment fragB on Dog { ...fragA }
-fragment fragC on Dog { ...fragA }
-',
+            dedent('
+            fragment fragA on Dog { ...fragB, ...fragC }
+            fragment fragB on Dog { ...fragA }
+            fragment fragC on Dog { ...fragA }
+            '),
             [
-                fragmentCycle('fragA', ['fragB'], [[2, 25], [3, 25]]),
-                fragmentCycle('fragA', ['fragC'], [[2, 35], [4, 25]]),
+                fragmentCycle('fragA', ['fragB'], [[1, 25], [2, 25]]),
+                fragmentCycle('fragA', ['fragC'], [[1, 35], [3, 25]]),
             ]
         );
     }
@@ -214,14 +201,14 @@ fragment fragC on Dog { ...fragA }
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Dog { ...fragC }
-fragment fragB on Dog { ...fragC }
-fragment fragC on Dog { ...fragA, ...fragB }
-',
+            dedent('
+            fragment fragA on Dog { ...fragC }
+            fragment fragB on Dog { ...fragC }
+            fragment fragC on Dog { ...fragA, ...fragB }
+            '),
             [
-                fragmentCycle('fragA', ['fragC'], [[2, 25], [4, 25]]),
-                fragmentCycle('fragC', ['fragB'], [[4, 35], [3, 25]]),
+                fragmentCycle('fragA', ['fragC'], [[1, 25], [3, 25]]),
+                fragmentCycle('fragC', ['fragB'], [[3, 35], [2, 25]]),
             ]
         );
     }
@@ -230,15 +217,15 @@ fragment fragC on Dog { ...fragA, ...fragB }
     {
         $this->expectFailsRule(
             new NoFragmentCyclesRule(),
-            '
-fragment fragA on Dog { ...fragB }
-fragment fragB on Dog { ...fragB, ...fragC }
-fragment fragC on Dog { ...fragA, ...fragB }
-',
+            dedent('
+            fragment fragA on Dog { ...fragB }
+            fragment fragB on Dog { ...fragB, ...fragC }
+            fragment fragC on Dog { ...fragA, ...fragB }
+            '),
             [
-                fragmentCycle('fragB', [], [[3, 25]]),
-                fragmentCycle('fragA', ['fragB', 'fragC'], [[2, 25], [3, 35], [4, 25]]),
-                fragmentCycle('fragB', ['fragC'], [[3, 35], [4, 35]]),
+                fragmentCycle('fragB', [], [[2, 25]]),
+                fragmentCycle('fragA', ['fragB', 'fragC'], [[1, 25], [2, 35], [3, 25]]),
+                fragmentCycle('fragB', ['fragC'], [[2, 35], [3, 35]]),
             ]
         );
     }

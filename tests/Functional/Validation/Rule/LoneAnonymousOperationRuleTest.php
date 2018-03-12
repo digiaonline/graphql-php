@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\LoneAnonymousOperationRule;
 use function Digia\GraphQL\Test\Functional\Validation\anonymousOperationNotAlone;
 
@@ -11,11 +12,11 @@ class LoneAnonymousOperationRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new LoneAnonymousOperationRule(),
-            '
-fragment fragA on Type {
-  field
-}
-'
+            dedent('
+            fragment fragA on Type {
+              field
+            }
+            ')
         );
     }
 
@@ -23,11 +24,11 @@ fragment fragA on Type {
     {
         $this->expectPassesRule(
             new LoneAnonymousOperationRule(),
-            '
-{
-  field
-}
-'
+            dedent('
+            {
+              field
+            }
+            ')
         );
     }
 
@@ -35,15 +36,15 @@ fragment fragA on Type {
     {
         $this->expectPassesRule(
             new LoneAnonymousOperationRule(),
-            '
-query Foo {
-  field
-}
-
-query Bar {
-  field
-}
-'
+            dedent('
+            query Foo {
+              field
+            }
+            
+            query Bar {
+              field
+            }
+            ')
         );
     }
 
@@ -51,14 +52,14 @@ query Bar {
     {
         $this->expectPassesRule(
             new LoneAnonymousOperationRule(),
-            '
-{
-  ...Foo
-}
-fragment Foo on Type {
-  field
-}
-'
+            dedent('
+            {
+              ...Foo
+            }
+            fragment Foo on Type {
+              field
+            }
+            ')
         );
     }
 
@@ -66,17 +67,17 @@ fragment Foo on Type {
     {
         $this->expectFailsRule(
             new LoneAnonymousOperationRule(),
-            '
-{
-  fieldA
-}
-{
-  fieldB
-}            
-',
+            dedent('
+            {
+              fieldA
+            }
+            {
+              fieldB
+            }            
+            '),
             [
-                anonymousOperationNotAlone([2, 1]),
-                anonymousOperationNotAlone([5, 1]),
+                anonymousOperationNotAlone([1, 1]),
+                anonymousOperationNotAlone([4, 1]),
             ]
         );
     }
@@ -85,15 +86,15 @@ fragment Foo on Type {
     {
         $this->expectFailsRule(
             new LoneAnonymousOperationRule(),
-            '
-{
-  fieldA
-}
-mutation Foo {
-  fieldB
-}            
-',
-            [anonymousOperationNotAlone([2, 1])]
+            dedent('
+            {
+              fieldA
+            }
+            mutation Foo {
+              fieldB
+            }            
+            '),
+            [anonymousOperationNotAlone([1, 1])]
         );
     }
 
@@ -101,15 +102,15 @@ mutation Foo {
     {
         $this->expectFailsRule(
             new LoneAnonymousOperationRule(),
-            '
-{
-  fieldA
-}
-subscription Foo {
-  fieldB
-}            
-',
-            [anonymousOperationNotAlone([2, 1])]
+            dedent('
+            {
+              fieldA
+            }
+            subscription Foo {
+              fieldB
+            }            
+            '),
+            [anonymousOperationNotAlone([1, 1])]
         );
     }
 }

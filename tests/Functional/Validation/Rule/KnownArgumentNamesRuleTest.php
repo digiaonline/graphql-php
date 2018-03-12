@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\unknownArgument;
 use function Digia\GraphQL\Test\Functional\Validation\unknownDirectiveArgument;
 
@@ -12,11 +13,11 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
-            '
-fragment argOnRequiredArg on Dog {
-  doesKnownCommand(dogCommand: SIT)
-}
-'
+            dedent('
+            fragment argOnRequiredArg on Dog {
+              doesKnownCommand(dogCommand: SIT)
+            }
+            ')
         );
     }
 
@@ -24,11 +25,11 @@ fragment argOnRequiredArg on Dog {
     {
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
-            '
-fragment multipleArgs on ComplicatedArgs {
-  multipleReqs(req1: 1, req2: 2)
-}
-'
+            dedent('
+            fragment multipleArgs on ComplicatedArgs {
+              multipleReqs(req1: 1, req2: 2)
+            }
+            ')
         );
     }
 
@@ -36,11 +37,11 @@ fragment multipleArgs on ComplicatedArgs {
     {
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
-            '
-fragment argOnUnknownField on Dog {
-  unknownField(unknownArg: SIT)
-}
-'
+            dedent('
+            fragment argOnUnknownField on Dog {
+              unknownField(unknownArg: SIT)
+            }
+            ')
         );
     }
 
@@ -48,11 +49,11 @@ fragment argOnUnknownField on Dog {
     {
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
-            '
-fragment multipleArgsReverseOrder on ComplicatedArgs {
-  multipleReqs(req2: 2, req1: 1)
-}
-'
+            dedent('
+            fragment multipleArgsReverseOrder on ComplicatedArgs {
+              multipleReqs(req2: 2, req1: 1)
+            }
+            ')
         );
     }
 
@@ -60,11 +61,11 @@ fragment multipleArgsReverseOrder on ComplicatedArgs {
     {
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
-            '
-fragment noArgOnOptionalArg on Dog {
-  isHouseTrained
-}
-'
+            dedent('
+            fragment noArgOnOptionalArg on Dog {
+              isHouseTrained
+            }
+            ')
         );
     }
 
@@ -72,20 +73,20 @@ fragment noArgOnOptionalArg on Dog {
     {
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
-            '
-{
-  dog {
-    doesKnowCommand(dogCommand: SIT)
-  }
-  human {
-    pet {
-      ... on Dog {
-        doesKnowCommand(dogCommand: SIT)
-      }
-    }
-  }
-}
-            '
+            dedent('
+            {
+              dog {
+                doesKnowCommand(dogCommand: SIT)
+              }
+              human {
+                pet {
+                  ... on Dog {
+                    doesKnowCommand(dogCommand: SIT)
+                  }
+                }
+              }
+            }
+            ')
         );
     }
 
@@ -93,11 +94,11 @@ fragment noArgOnOptionalArg on Dog {
     {
         $this->expectPassesRule(
             new KnownArgumentNamesRule(),
-            '
-{
-  dog @skip(if: true)
-}
-'
+            dedent('
+            {
+              dog @skip(if: true)
+            }
+            ')
         );
     }
 
@@ -105,12 +106,12 @@ fragment noArgOnOptionalArg on Dog {
     {
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
-            '
-{
-  dog @skip(unless: true)
-}
-',
-            [unknownDirectiveArgument('unless', 'skip', [], [3, 13])]
+            dedent('
+            {
+              dog @skip(unless: true)
+            }
+            '),
+            [unknownDirectiveArgument('unless', 'skip', [], [2, 13])]
         );
     }
 
@@ -118,12 +119,12 @@ fragment noArgOnOptionalArg on Dog {
     {
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
-            '
-{
-  dog @skip(iff: true)
-}
-',
-            [unknownDirectiveArgument('iff', 'skip', ['if'], [3, 13])]
+            dedent('
+            {
+              dog @skip(iff: true)
+            }
+            '),
+            [unknownDirectiveArgument('iff', 'skip', ['if'], [2, 13])]
         );
     }
 
@@ -131,12 +132,12 @@ fragment noArgOnOptionalArg on Dog {
     {
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
-            '
-fragment invalidArgName on Dog {
-  doesKnowCommand(unknown: true)
-}
-',
-            [unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [3, 19])]
+            dedent('
+            fragment invalidArgName on Dog {
+              doesKnowCommand(unknown: true)
+            }
+            '),
+            [unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [2, 19])]
         );
     }
 
@@ -144,12 +145,12 @@ fragment invalidArgName on Dog {
     {
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
-            '
-fragment invalidArgName on Dog {
-  doesKnowCommand(dogcommand: true)
-}
-',
-            [unknownArgument('dogcommand', 'doesKnowCommand', 'Dog', ['dogCommand'], [3, 19])]
+            dedent('
+            fragment invalidArgName on Dog {
+              doesKnowCommand(dogcommand: true)
+            }
+            '),
+            [unknownArgument('dogcommand', 'doesKnowCommand', 'Dog', ['dogCommand'], [2, 19])]
         );
     }
 
@@ -157,14 +158,14 @@ fragment invalidArgName on Dog {
     {
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
-            '
-fragment oneGoodArgOneInvalidArg on Dog {
-  doesKnowCommand(whoknows: 1, dogCommand: SIT, unknown: true)
-}
-',
+            dedent('
+            fragment oneGoodArgOneInvalidArg on Dog {
+              doesKnowCommand(whoknows: 1, dogCommand: SIT, unknown: true)
+            }
+            '),
             [
-                unknownArgument('whoknows', 'doesKnowCommand', 'Dog', [], [3, 19]),
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [3, 49]),
+                unknownArgument('whoknows', 'doesKnowCommand', 'Dog', [], [2, 19]),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [2, 49]),
             ]
         );
     }
@@ -173,23 +174,23 @@ fragment oneGoodArgOneInvalidArg on Dog {
     {
         $this->expectFailsRule(
             new KnownArgumentNamesRule(),
-            '
-{
-  dog {
-    doesKnowCommand(unknown: true)
-  }
-  human {
-    pet {
-      ... on Dog {
-        doesKnowCommand(unknown: true)
-      }
-    }
-  }
-}
-',
+            dedent('
+            {
+              dog {
+                doesKnowCommand(unknown: true)
+              }
+              human {
+                pet {
+                  ... on Dog {
+                    doesKnowCommand(unknown: true)
+                  }
+                }
+              }
+            }
+            '),
             [
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [4, 21]),
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [9, 25]),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [3, 21]),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [8, 25]),
             ]
         );
     }

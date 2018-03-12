@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionsRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\nonExecutableDefinition;
 
 class ExecutableDefinitionsRuleTest extends RuleTestCase
@@ -11,13 +12,13 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new ExecutableDefinitionsRule(),
-            '
-query Foo {
-  dog {
-    name
-  }
-}
-'
+            dedent('
+            query Foo {
+              dog {
+                name
+              }
+            }
+            ')
         );
     }
 
@@ -25,18 +26,18 @@ query Foo {
     {
         $this->expectPassesRule(
             new ExecutableDefinitionsRule(),
-            '
-query Foo {
-  dog {
-    name
-    ...Frag
-  }
-}
-
-fragment Frag on Dog {
-  name
-}
-'
+            dedent('
+            query Foo {
+              dog {
+                name
+                ...Frag
+              }
+            }
+            
+            fragment Frag on Dog {
+              name
+            }
+            ')
         );
     }
 
@@ -44,24 +45,24 @@ fragment Frag on Dog {
     {
         $this->expectFailsRule(
             new ExecutableDefinitionsRule(),
-            '
-query Foo {
-  dog {
-    name
-  }
-}
-
-type Cow {
-  name: String
-}
-
-extend type Dog {
-  color: String
-}
-',
+            dedent('
+            query Foo {
+              dog {
+                name
+              }
+            }
+            
+            type Cow {
+              name: String
+            }
+            
+            extend type Dog {
+              color: String
+            }
+            '),
             [
-                nonExecutableDefinition('Cow', [8, 1]),
-                nonExecutableDefinition('Dog', [12, 1]),
+                nonExecutableDefinition('Cow', [7, 1]),
+                nonExecutableDefinition('Dog', [11, 1]),
             ]
         );
     }
@@ -70,18 +71,18 @@ extend type Dog {
     {
         $this->expectFailsRule(
             new ExecutableDefinitionsRule(),
-            '
-schema {
-  query: Query
-}
-
-type Query {
-  test: String
-}
-',
+            dedent('
+            schema {
+              query: Query
+            }
+            
+            type Query {
+              test: String
+            }
+            '),
             [
-                nonExecutableDefinition('schema', [2, 1]),
-                nonExecutableDefinition('Query', [6, 1]),
+                nonExecutableDefinition('schema', [1, 1]),
+                nonExecutableDefinition('Query', [5, 1]),
             ]
         );
     }

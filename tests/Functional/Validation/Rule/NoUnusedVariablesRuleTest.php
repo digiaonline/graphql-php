@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\NoUnusedVariablesRule;
 use function Digia\GraphQL\Test\Functional\Validation\unusedVariable;
 
@@ -11,11 +12,11 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new NoUnusedVariablesRule(),
-            '
-query ($a: String, $b: String, $c: String) {
-  field(a: $a, b: $b, c: $c)
-}
-'
+            dedent('
+            query ($a: String, $b: String, $c: String) {
+              field(a: $a, b: $b, c: $c)
+            }
+            ')
         );
     }
 
@@ -23,15 +24,15 @@ query ($a: String, $b: String, $c: String) {
     {
         $this->expectPassesRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($a: String, $b: String, $c: String) {
-  field(a: $a) {
-    field(b: $b) {
-      field(c: $c)
-    }
-  }
-}
-'
+            dedent('
+            query Foo($a: String, $b: String, $c: String) {
+              field(a: $a) {
+                field(b: $b) {
+                  field(c: $c)
+                }
+              }
+            }
+            ')
         );
     }
 
@@ -39,19 +40,19 @@ query Foo($a: String, $b: String, $c: String) {
     {
         $this->expectPassesRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($a: String, $b: String, $c: String) {
-  ... on Type {
-    field(a: $a) {
-      field(b: $b) {
-        ... on Type {
-          field(c: $c)
-        }
-      }
-    }
-  }
-}
-'
+            dedent('
+            query Foo($a: String, $b: String, $c: String) {
+              ... on Type {
+                field(a: $a) {
+                  field(b: $b) {
+                    ... on Type {
+                      field(c: $c)
+                    }
+                  }
+                }
+              }
+            }
+            ')
         );
     }
 
@@ -59,24 +60,24 @@ query Foo($a: String, $b: String, $c: String) {
     {
         $this->expectPassesRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($a: String, $b: String, $c: String) {
-  ...FragA
-}
-fragment FragA on Type {
-  field(a: $a) {
-    ...FragB
-  }
-}
-fragment FragB on Type {
-  field(b: $b) {
-    ...FragC
-  }
-}
-fragment FragC on Type {
-  field(c: $c)
-}
-'
+            dedent('
+            query Foo($a: String, $b: String, $c: String) {
+              ...FragA
+            }
+            fragment FragA on Type {
+              field(a: $a) {
+                ...FragB
+              }
+            }
+            fragment FragB on Type {
+              field(b: $b) {
+                ...FragC
+              }
+            }
+            fragment FragC on Type {
+              field(c: $c)
+            }
+            ')
         );
     }
 
@@ -84,20 +85,20 @@ fragment FragC on Type {
     {
         $this->expectPassesRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($a: String) {
-  ...FragA
-}
-query Bar($b: String) {
-  ...FragB
-}
-fragment FragA on Type {
-  field(a: $a)
-}
-fragment FragB on Type {
-  field(b: $b)
-}
-'
+            dedent('
+            query Foo($a: String) {
+              ...FragA
+            }
+            query Bar($b: String) {
+              ...FragB
+            }
+            fragment FragA on Type {
+              field(a: $a)
+            }
+            fragment FragB on Type {
+              field(b: $b)
+            }
+            ')
         );
     }
 
@@ -105,16 +106,16 @@ fragment FragB on Type {
     {
         $this->expectPassesRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($a: String) {
-  ...FragA
-}
-fragment FragA on Type {
-  field(a: $a) {
-    ...FragA
-  }
-}
-'
+            dedent('
+            query Foo($a: String) {
+              ...FragA
+            }
+            fragment FragA on Type {
+              field(a: $a) {
+                ...FragA
+              }
+            }
+            ')
         );
     }
 
@@ -122,12 +123,12 @@ fragment FragA on Type {
     {
         $this->expectFailsRule(
             new NoUnusedVariablesRule(),
-            '
-query ($a: String, $b: String, $c: String) {
-  field(a: $a, b: $b)
-}
-',
-            [unusedVariable('c', null, [2, 32])]
+            dedent('
+            query ($a: String, $b: String, $c: String) {
+              field(a: $a, b: $b)
+            }
+            '),
+            [unusedVariable('c', null, [1, 32])]
         );
     }
 
@@ -135,14 +136,14 @@ query ($a: String, $b: String, $c: String) {
     {
         $this->expectFailsRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($a: String, $b: String, $c: String) {
-  field(b: $b)
-}
-',
+            dedent('
+            query Foo($a: String, $b: String, $c: String) {
+              field(b: $b)
+            }
+            '),
             [
-                unusedVariable('a', 'Foo', [2, 11]),
-                unusedVariable('c', 'Foo', [2, 35]),
+                unusedVariable('a', 'Foo', [1, 11]),
+                unusedVariable('c', 'Foo', [1, 35]),
             ]
         );
     }
@@ -151,25 +152,25 @@ query Foo($a: String, $b: String, $c: String) {
     {
         $this->expectFailsRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($a: String, $b: String, $c: String) {
-  ...FragA
-}
-fragment FragA on Type {
-  field(a: $a) {
-    ...FragB
-  }
-}
-fragment FragB on Type {
-  field(b: $b) {
-    ...FragC
-  }
-}
-fragment FragC on Type {
-  field
-}
-',
-            [unusedVariable('c', 'Foo', [2, 35])]
+            dedent('
+            query Foo($a: String, $b: String, $c: String) {
+              ...FragA
+            }
+            fragment FragA on Type {
+              field(a: $a) {
+                ...FragB
+              }
+            }
+            fragment FragB on Type {
+              field(b: $b) {
+                ...FragC
+              }
+            }
+            fragment FragC on Type {
+              field
+            }
+            '),
+            [unusedVariable('c', 'Foo', [1, 35])]
         );
     }
 
@@ -177,27 +178,27 @@ fragment FragC on Type {
     {
         $this->expectFailsRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($a: String, $b: String, $c: String) {
-  ...FragA
-}
-fragment FragA on Type {
-  field {
-    ...FragB
-  }
-}
-fragment FragB on Type {
-  field(b: $b) {
-    ...FragC
-  }
-}
-fragment FragC on Type {
-  field
-}
-',
+            dedent('
+            query Foo($a: String, $b: String, $c: String) {
+              ...FragA
+            }
+            fragment FragA on Type {
+              field {
+                ...FragB
+              }
+            }
+            fragment FragB on Type {
+              field(b: $b) {
+                ...FragC
+              }
+            }
+            fragment FragC on Type {
+              field
+            }
+            '),
             [
-                unusedVariable('a', 'Foo', [2, 11]),
-                unusedVariable('c', 'Foo', [2, 35]),
+                unusedVariable('a', 'Foo', [1, 11]),
+                unusedVariable('c', 'Foo', [1, 35]),
             ]
         );
     }
@@ -206,18 +207,18 @@ fragment FragC on Type {
     {
         $this->expectFailsRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($b: String) {
-  ...FragA
-}
-fragment FragA on Type {
-  field(a: $a)
-}
-fragment FragB on Type {
-  field(b: $b)
-}
-',
-            [unusedVariable('b', 'Foo', [2, 11])]
+            dedent('
+            query Foo($b: String) {
+              ...FragA
+            }
+            fragment FragA on Type {
+              field(a: $a)
+            }
+            fragment FragB on Type {
+              field(b: $b)
+            }
+            '),
+            [unusedVariable('b', 'Foo', [1, 11])]
         );
     }
 
@@ -225,23 +226,23 @@ fragment FragB on Type {
     {
         $this->expectFailsRule(
             new NoUnusedVariablesRule(),
-            '
-query Foo($b: String) {
-  ...FragA
-}
-query Bar($a: String) {
-  ...FragB
-}
-fragment FragA on Type {
-  field(a: $a)
-}
-fragment FragB on Type {
-  field(b: $b)
-}
-',
+            dedent('
+            query Foo($b: String) {
+              ...FragA
+            }
+            query Bar($a: String) {
+              ...FragB
+            }
+            fragment FragA on Type {
+              field(a: $a)
+            }
+            fragment FragB on Type {
+              field(b: $b)
+            }
+            '),
             [
-                unusedVariable('b', 'Foo', [2, 11]),
-                unusedVariable('a', 'Bar', [5, 11]),
+                unusedVariable('b', 'Foo', [1, 11]),
+                unusedVariable('a', 'Bar', [4, 11]),
             ]
         );
     }

@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\OverlappingFieldsCanBeMergedRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\fieldConflict;
 use function Digia\GraphQL\Type\GraphQLID;
 use function Digia\GraphQL\Type\GraphQLInt;
@@ -183,12 +184,12 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment uniqueFields on Dog {
-  name
-  nickname
-}
-'
+            dedent('
+            fragment uniqueFields on Dog {
+              name
+              nickname
+            }
+            ')
         );
     }
 
@@ -196,12 +197,12 @@ fragment uniqueFields on Dog {
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment mergeIdenticalFields on Dog {
-  name
-  name
-}
-'
+            dedent('
+            fragment mergeIdenticalFields on Dog {
+              name
+              name
+            }
+            ')
         );
     }
 
@@ -209,12 +210,12 @@ fragment mergeIdenticalFields on Dog {
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment mergeIdenticalFieldsWithIdenticalArgs on Dog {
-  doesKnowCommand(dogCommand: SIT)
-  doesKnowCommand(dogCommand: SIT)
-}
-'
+            dedent('
+            fragment mergeIdenticalFieldsWithIdenticalArgs on Dog {
+              doesKnowCommand(dogCommand: SIT)
+              doesKnowCommand(dogCommand: SIT)
+            }
+            ')
         );
     }
 
@@ -222,12 +223,12 @@ fragment mergeIdenticalFieldsWithIdenticalArgs on Dog {
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment mergeSameFieldsWithSameDirectives on Dog {
-  name @include(if: true)
-  name @include(if: true)
-}
-'
+            dedent('
+            fragment mergeSameFieldsWithSameDirectives on Dog {
+            name @include(if: true)
+            name @include(if: true)
+            }
+            ')
         );
     }
 
@@ -235,12 +236,12 @@ fragment mergeSameFieldsWithSameDirectives on Dog {
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment differentArgsWithDifferentAliases on Dog {
-  knowsSit: doesKnowCommand(dogCommand: SIT)
-  knowsDown: doesKnowCommand(dogCommand: DOWN)
-}
-'
+            dedent('
+            fragment differentArgsWithDifferentAliases on Dog {
+              knowsSit: doesKnowCommand(dogCommand: SIT)
+              knowsDown: doesKnowCommand(dogCommand: DOWN)
+            }
+            ')
         );
     }
 
@@ -248,12 +249,12 @@ fragment differentArgsWithDifferentAliases on Dog {
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment differentDirectivesWithDifferentAliases on Dog {
-  nameIfTrue: name @include(if: true)
-  nameIfFalse: name @include(if: false)
-}
-'
+            dedent('
+            fragment differentDirectivesWithDifferentAliases on Dog {
+              nameIfTrue: name @include(if: true)
+              nameIfFalse: name @include(if: false)
+            }
+            ')
         );
     }
 
@@ -264,12 +265,12 @@ fragment differentDirectivesWithDifferentAliases on Dog {
         // may have the same desired effect of including or skipping a field.
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment differentDirectivesWithDifferentAliases on Dog {
-  name @include(if: true)
-  name @include(if: false)
-}
-'
+            dedent('
+            fragment differentDirectivesWithDifferentAliases on Dog {
+              name @include(if: true)
+              name @include(if: false)
+            }
+            ')
         );
     }
 
@@ -277,13 +278,13 @@ fragment differentDirectivesWithDifferentAliases on Dog {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment sameAliasesWithDifferentFieldTargets on Dog {
-  fido: name
-  fido: nickname
-}
-',
-            [fieldConflict('fido', 'name and nickname are different fields', [[3, 3], [4, 3]])]
+            dedent('
+            fragment sameAliasesWithDifferentFieldTargets on Dog {
+              fido: name
+              fido: nickname
+            }
+            '),
+            [fieldConflict('fido', 'name and nickname are different fields', [[2, 3], [3, 3]])]
         );
     }
 
@@ -293,16 +294,16 @@ fragment sameAliasesWithDifferentFieldTargets on Dog {
         // these fields can never overlap.
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment sameAliasesWithDifferentFieldTargets on Pet {
-  ... on Dog {
-    name
-  }
-  ... on Cat {
-    name: nickname
-  }
-}
-'
+            dedent('
+            fragment sameAliasesWithDifferentFieldTargets on Pet {
+              ... on Dog {
+                name
+              }
+              ... on Cat {
+                name: nickname
+              }
+            }
+            ')
         );
     }
 
@@ -310,13 +311,13 @@ fragment sameAliasesWithDifferentFieldTargets on Pet {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment aliasMaskingDirectFieldAccess on Dog {
-  name: nickname
-  name
-}
-',
-            [fieldConflict('name', 'nickname and name are different fields', [[3, 3], [4, 3]])]
+            dedent('
+            fragment aliasMaskingDirectFieldAccess on Dog {
+              name: nickname
+              name
+            }
+            '),
+            [fieldConflict('name', 'nickname and name are different fields', [[2, 3], [3, 3]])]
         );
     }
 
@@ -324,13 +325,13 @@ fragment aliasMaskingDirectFieldAccess on Dog {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment conflictingArgs on Dog {
-  doesKnowCommand
-  doesKnowCommand(dogCommand: HEEL)
-}
-',
-            [fieldConflict('doesKnowCommand', 'they have differing arguments', [[3, 3], [4, 3]])]
+            dedent('
+            fragment conflictingArgs on Dog {
+              doesKnowCommand
+              doesKnowCommand(dogCommand: HEEL)
+            }
+            '),
+            [fieldConflict('doesKnowCommand', 'they have differing arguments', [[2, 3], [3, 3]])]
         );
     }
 
@@ -338,13 +339,13 @@ fragment conflictingArgs on Dog {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment conflictingArgs on Dog {
-  doesKnowCommand(dogCommand: SIT)
-  doesKnowCommand
-}
-',
-            [fieldConflict('doesKnowCommand', 'they have differing arguments', [[3, 3], [4, 3]])]
+            dedent('
+            fragment conflictingArgs on Dog {
+              doesKnowCommand(dogCommand: SIT)
+              doesKnowCommand
+            }
+            '),
+            [fieldConflict('doesKnowCommand', 'they have differing arguments', [[2, 3], [3, 3]])]
         );
     }
 
@@ -352,13 +353,13 @@ fragment conflictingArgs on Dog {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment conflictingArgs on Dog {
-  doesKnowCommand(dogCommand: SIT)
-  doesKnowCommand(dogCommand: HEEL)
-}
-',
-            [fieldConflict('doesKnowCommand', 'they have differing arguments', [[3, 3], [4, 3]])]
+            dedent('
+            fragment conflictingArgs on Dog {
+              doesKnowCommand(dogCommand: SIT)
+              doesKnowCommand(dogCommand: HEEL)
+            }
+            '),
+            [fieldConflict('doesKnowCommand', 'they have differing arguments', [[2, 3], [3, 3]])]
         );
     }
 
@@ -368,16 +369,16 @@ fragment conflictingArgs on Dog {
         // these fields can never overlap.
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment conflictingArgs on Pet {
-  ... on Dog {
-    name(surname: true)
-  }
-  ... on Cat {
-    name
-  }
-}
-'
+            dedent('
+            fragment conflictingArgs on Pet {
+              ... on Dog {
+                name(surname: true)
+              }
+              ... on Cat {
+                name
+              }
+            }
+            ')
         );
     }
 
@@ -385,19 +386,19 @@ fragment conflictingArgs on Pet {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  ...A
-  ...B
-}
-fragment A on Type {
-  x: a
-}
-fragment B on Type {
-  x: b
-}
-',
-            [fieldConflict('x', 'a and b are different fields', [[7, 3], [10, 3]])]
+            dedent('
+            {
+              ...A
+              ...B
+            }
+            fragment A on Type {
+              x: a
+            }
+            fragment B on Type {
+              x: b
+            }
+            '),
+            [fieldConflict('x', 'a and b are different fields', [[6, 3], [9, 3]])]
         );
     }
 
@@ -405,33 +406,33 @@ fragment B on Type {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  f1 {
-    ...A
-    ...B
-  }
-  f2 {
-    ...B
-    ...A
-  }
-  f3 {
-    ...A
-    ...B
-    x: c
-  }
-}
-fragment A on Type {
-  x: a
-}
-fragment B on Type {
-  x: b
-}
-',
+            dedent('
+            {
+              f1 {
+                ...A
+                ...B
+              }
+              f2 {
+                ...B
+                ...A
+              }
+              f3 {
+                ...A
+                ...B
+                x: c
+              }
+            }
+            fragment A on Type {
+              x: a
+            }
+            fragment B on Type {
+              x: b
+            }
+            '),
             [
-                fieldConflict('x', 'a and b are different fields', [[18, 3], [21, 3]]),
-                fieldConflict('x', 'c and a are different fields', [[14, 5], [18, 3]]),
-                fieldConflict('x', 'c and b are different fields', [[14, 5], [21, 3]]),
+                fieldConflict('x', 'a and b are different fields', [[17, 3], [20, 3]]),
+                fieldConflict('x', 'c and a are different fields', [[13, 5], [17, 3]]),
+                fieldConflict('x', 'c and b are different fields', [[13, 5], [20, 3]]),
             ]
         );
     }
@@ -440,21 +441,21 @@ fragment B on Type {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  field {
-    x: a
-  },
-  field {
-    x: b
-  }
-}
-',
+            dedent('
+            {
+              field {
+                x: a
+              },
+              field {
+                x: b
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'field',
                     [['x', 'a and b are different fields']],
-                    [[3, 3], [4, 5], [6, 3], [7, 5]]
+                    [[2, 3], [3, 5], [5, 3], [6, 5]]
                 )
             ]
         );
@@ -464,18 +465,18 @@ fragment B on Type {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  field {
-    x: a
-    y: c
-  },
-  field {
-    x: b
-    y: d
-  }
-}
-',
+            dedent('
+            {
+              field {
+                x: a
+                y: c
+              },
+              field {
+                x: b
+                y: d
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'field',
@@ -483,14 +484,7 @@ fragment B on Type {
                         ['x', 'a and b are different fields'],
                         ['y', 'c and d are different fields'],
                     ],
-                    [
-                        [3, 3],
-                        [4, 5],
-                        [5, 5],
-                        [7, 3],
-                        [8, 5],
-                        [9, 5],
-                    ]
+                    [[2, 3], [3, 5], [4, 5], [6, 3], [7, 5], [8, 5]]
                 )
             ]
         );
@@ -500,32 +494,25 @@ fragment B on Type {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  field {
-    deepField {
-      x: a
-    }
-  },
-  field {
-    deepField {
-      x: b
-    }
-  }
-}
-',
+            dedent('
+            {
+              field {
+                deepField {
+                  x: a
+                }
+              },
+              field {
+                deepField {
+                  x: b
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'field',
                     ['deepField', [['x', 'a and b are different fields']]],
-                    [
-                        [3, 3],
-                        [4, 5],
-                        [5, 7],
-                        [8, 3],
-                        [9, 5],
-                        [10, 7],
-                    ]
+                    [[2, 3], [3, 5], [4, 7], [7, 3], [8, 5], [9, 7]]
                 )
             ]
         );
@@ -535,33 +522,28 @@ fragment B on Type {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  field {
-    deepField {
-      x: a
-    }
-    deepField {
-      x: b
-    }
-  },
-  field {
-    deepField {
-      y
-    }
-  }
-}
-',
+            dedent('
+            {
+              field {
+                deepField {
+                  x: a
+                }
+                deepField {
+                  x: b
+                }
+              },
+              field {
+                deepField {
+                  y
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'deepField',
                     ['x', 'a and b are different fields'],
-                    [
-                        [4, 5],
-                        [5, 7],
-                        [7, 5],
-                        [8, 7],
-                    ]
+                    [[3, 5], [4, 7], [6, 5], [7, 7]]
                 )
             ]
         );
@@ -571,41 +553,36 @@ fragment B on Type {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  field {
-    ...F
-  }
-  field {
-    ...F
-  }
-}
-fragment F on T {
-  deepField {
-    deeperField {
-      x: a
-    }
-    deeperField {
-      x: b
-    }
-  },
-  deepField {
-    deeperField {
-      y
-    }
-  }
-}
-',
+            dedent('
+            {
+              field {
+                ...F
+              }
+              field {
+                ...F
+              }
+            }
+            fragment F on T {
+              deepField {
+                deeperField {
+                  x: a
+                }
+                deeperField {
+                  x: b
+                }
+              },
+              deepField {
+                deeperField {
+                  y
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'deeperField',
                     ['x', 'a and b are different fields'],
-                    [
-                        [12, 5],
-                        [13, 7],
-                        [15, 5],
-                        [16, 7],
-                    ]
+                    [[11, 5], [12, 7], [14, 5], [15, 7]]
                 )
             ]
         );
@@ -615,30 +592,30 @@ fragment F on T {
     {
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  field {
-    ...F
-  }
-  field {
-    ...I
-  }
-}
-fragment F on T {
-  x: a
-  ...G
-}
-fragment G on T {
-  y: c
-}
-fragment I on T {
-  y: d
-  ...J
-}
-fragment J on T {
-  x: b
-}
-',
+            dedent('
+            {
+              field {
+                ...F
+              }
+              field {
+                ...I
+              }
+            }
+            fragment F on T {
+              x: a
+              ...G
+            }
+            fragment G on T {
+              y: c
+            }
+            fragment I on T {
+              y: d
+              ...J
+            }
+            fragment J on T {
+              x: b
+            }
+            '),
             [
                 fieldConflict(
                     'field',
@@ -646,14 +623,7 @@ fragment J on T {
                         ['x', 'a and b are different fields'],
                         ['y', 'c and d are different fields'],
                     ],
-                    [
-                        [3, 3],
-                        [11, 3],
-                        [15, 3],
-                        [6, 3],
-                        [22, 3],
-                        [18, 3],
-                    ]
+                    [[2, 3], [10, 3], [14, 3], [5, 3], [21, 3], [17, 3]]
                 )
             ]
         );
@@ -663,17 +633,17 @@ fragment J on T {
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  field
-  ...Unknown
-  ...Known
-}
-fragment Known on T {
-  field
-  ...OtherUnknown
-}
-'
+            dedent('
+            {
+              field
+              ...Unknown
+              ...Known
+            }
+            fragment Known on T {
+              field
+              ...OtherUnknown
+            }
+            ')
         );
     }
 
@@ -686,23 +656,23 @@ fragment Known on T {
         $this->expectFailsRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ...on IntBox {
-      scalar
-    }
-    ...on NonNullStringBox1 {
-      scalar
-    }
-  }
-}
-',
+            dedent('
+            {
+              someBox {
+                ...on IntBox {
+                  scalar
+                }
+                ...on NonNullStringBox1 {
+                  scalar
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'scalar',
                     'they return conflicting types Int and String!',
-                    [[5, 7], [8, 7]]
+                    [[4, 7], [7, 7]]
                 )
             ]
         );
@@ -716,22 +686,22 @@ fragment Known on T {
         $this->expectPassesRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ... on SomeBox {
-      deepBox {
-        unrelatedField
-      }
-    }
-    ... on StringBox {
-      deepBox {
-        unrelatedField
-      }
-    }
-  }
-}
-'
+            dedent('
+            {
+              someBox {
+                ... on SomeBox {
+                  deepBox {
+                    unrelatedField
+                  }
+                }
+                ... on StringBox {
+                  deepBox {
+                    unrelatedField
+                  }
+                }
+              }
+            }
+            ')
         );
     }
 
@@ -740,23 +710,23 @@ fragment Known on T {
         $this->expectFailsRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ... on IntBox {
-      scalar
-    }
-    ... on StringBox {
-      scalar
-    }
-  }
-}
-',
+            dedent('
+            {
+              someBox {
+                ... on IntBox {
+                  scalar
+                }
+                ... on StringBox {
+                  scalar
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'scalar',
                     'they return conflicting types Int and String',
-                    [[5, 7], [8, 7]]
+                    [[4, 7], [7, 7]]
                 )
             ]
         );
@@ -767,55 +737,55 @@ fragment Known on T {
         $this->expectFailsRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ... on IntBox {
-      deepBox {
-        ...X
-      }
-    }
-  }
-  someBox {
-    ... on StringBox {
-      deepBox {
-        ...Y
-      }
-    }
-  }
-  memoed: someBox {
-    ... on IntBox {
-      deepBox {
-        ...X
-      }
-    }
-  }
-  memoed: someBox {
-    ... on StringBox {
-      deepBox {
-        ...Y
-      }
-    }
-  }
-  other: someBox {
-    ...X
-  }
-  other: someBox {
-    ...Y
-  }
-}
-fragment X on SomeBox {
-  scalar
-}
-fragment Y on SomeBox {
-  scalar: unrelatedField
-}
-',
+            dedent('
+            {
+              someBox {
+                ... on IntBox {
+                  deepBox {
+                    ...X
+                  }
+                }
+              }
+              someBox {
+                ... on StringBox {
+                  deepBox {
+                    ...Y
+                  }
+                }
+              }
+              memoed: someBox {
+                ... on IntBox {
+                  deepBox {
+                    ...X
+                  }
+                }
+              }
+              memoed: someBox {
+                ... on StringBox {
+                  deepBox {
+                    ...Y
+                  }
+                }
+              }
+              other: someBox {
+                ...X
+              }
+              other: someBox {
+                ...Y
+              }
+            }
+            fragment X on SomeBox {
+              scalar
+            }
+            fragment Y on SomeBox {
+              scalar: unrelatedField
+            }
+            '),
             [
                 fieldConflict(
                     'other',
                     ['scalar', 'scalar and unrelatedField are different fields'],
-                    [[31, 3], [39, 3], [34, 3], [42, 3]]
+                    [[30, 3], [38, 3], [33, 3], [41, 3]]
                 )
             ]
         );
@@ -853,27 +823,27 @@ fragment Y on SomeBox {
         $this->expectFailsRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ... on IntBox {
-      box: listStringBox {
-        scalar
-      }
-    }
-    ... on StringBox {
-      box: stringBox {
-        scalar
-      }
-    }
-  }
-}
-',
+            dedent('
+            {
+              someBox {
+                ... on IntBox {
+                  box: listStringBox {
+                    scalar
+                  }
+                }
+                ... on StringBox {
+                  box: stringBox {
+                    scalar
+                  }
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'box',
                     'they return conflicting types [StringBox] and StringBox',
-                    [[5, 7], [10, 7]]
+                    [[4, 7], [9, 7]]
                 )
             ]
         );
@@ -881,27 +851,27 @@ fragment Y on SomeBox {
         $this->expectFailsRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ... on IntBox {
-      box: stringBox {
-        scalar
-      }
-    }
-    ... on StringBox {
-      box: listStringBox {
-        scalar
-      }
-    }
-  }
-}
-',
+            dedent('
+            {
+              someBox {
+                ... on IntBox {
+                  box: stringBox {
+                    scalar
+                  }
+                }
+                ... on StringBox {
+                  box: listStringBox {
+                    scalar
+                  }
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'box',
                     'they return conflicting types StringBox and [StringBox]',
-                    [[5, 7], [10, 7]]
+                    [[4, 7], [9, 7]]
                 )
             ]
         );
@@ -912,28 +882,28 @@ fragment Y on SomeBox {
         $this->expectFailsRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ... on IntBox {
-      box: stringBox {
-        val: scalar
-        val: unrelatedField
-      }
-    }
-    ... on StringBox {
-      box: stringBox {
-        val: scalar
-      }
-    }
-  }
-}
-',
+            dedent('
+            {
+              someBox {
+                ... on IntBox {
+                  box: stringBox {
+                    val: scalar
+                    val: unrelatedField
+                  }
+                }
+                ... on StringBox {
+                  box: stringBox {
+                    val: scalar
+                  }
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'val',
                     'scalar and unrelatedField are different fields',
-                    [[6, 9], [7, 9]]
+                    [[5, 9], [6, 9]]
                 )
             ]
         );
@@ -944,27 +914,27 @@ fragment Y on SomeBox {
         $this->expectFailsRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ... on IntBox {
-      box: stringBox {
-        scalar
-      }
-    }
-    ... on StringBox {
-      box: intBox {
-        scalar
-      }
-    }
-  }
-}
-',
+            dedent('
+            {
+              someBox {
+                ... on IntBox {
+                  box: stringBox {
+                    scalar
+                  }
+                }
+                ... on StringBox {
+                  box: intBox {
+                    scalar
+                  }
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'box',
                     ['scalar', 'they return conflicting types String and Int'],
-                    [[5, 7], [6, 9], [10, 7], [11, 9]]
+                    [[4, 7], [5, 9], [9, 7], [10, 9]]
                 )
             ]
         );
@@ -975,18 +945,18 @@ fragment Y on SomeBox {
         $this->expectPassesRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ... on IntBox {
-      scalar: unrelatedField
-    }
-    ... on StringBox {
-      scalar
-    }
-  }
-}
-'
+            dedent('
+            {
+              someBox {
+                ... on IntBox {
+                  scalar: unrelatedField
+                }
+                ... on StringBox {
+                  scalar
+                }
+              }
+            }
+            ')
         );
     }
 
@@ -995,18 +965,18 @@ fragment Y on SomeBox {
         $this->expectPassesRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ...on NonNullStringBox1 {
-      scalar
-    }
-    ...on NonNullStringBox2 {
-      scalar
-    }
-  }
-}
-'
+            dedent('
+            {
+              someBox {
+                ...on NonNullStringBox1 {
+                  scalar
+                }
+                ...on NonNullStringBox2 {
+                  scalar
+                }
+              }
+            }
+            ')
         );
     }
 
@@ -1015,14 +985,14 @@ fragment Y on SomeBox {
         $this->expectPassesRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  a
-  ... {
-    a
-  }
-}
-'
+            dedent('
+            {
+              a
+              ... {
+                a
+              }
+            }
+            ')
         );
     }
 
@@ -1031,38 +1001,31 @@ fragment Y on SomeBox {
         $this->expectFailsRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  connection {
-    ...edgeID
-    edges {
-      node {
-        id: name
-      }
-    }
-  }
-}
-
-fragment edgeID on Connection {
-  edges {
-    node {
-      id
-    }
-  }
-}
-',
+            dedent('
+            {
+              connection {
+                ...edgeID
+                edges {
+                  node {
+                    id: name
+                  }
+                }
+              }
+            }
+            
+            fragment edgeID on Connection {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+            '),
             [
                 fieldConflict(
                     'edges',
                     ['node', [['id', 'name and id are different fields']]],
-                    [
-                        [5, 5],
-                        [6, 7],
-                        [7, 9],
-                        [14, 3],
-                        [15, 5],
-                        [16, 7],
-                    ]
+                    [[4, 5], [5, 7], [6, 9], [13, 3], [14, 5], [15, 7]]
                 )
             ]
         );
@@ -1073,18 +1036,18 @@ fragment edgeID on Connection {
         $this->expectPassesRuleWithSchema(
             schema(),
             new OverlappingFieldsCanBeMergedRule(),
-            '
-{
-  someBox {
-    ...on UnknownType {
-      scalar
-    }
-    ...on NonNullStringBox2 {
-      scalar
-    }
-  }
-}
-'
+            dedent('
+            {
+              someBox {
+                ...on UnknownType {
+                  scalar
+                }
+                ...on NonNullStringBox2 {
+                  scalar
+                }
+              }
+            }
+            ')
         );
     }
 
@@ -1092,9 +1055,9 @@ fragment edgeID on Connection {
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment fragA on Human { name, relatives { name, ...fragA } }
-'
+            dedent('
+            fragment fragA on Human { name, relatives { name, ...fragA } }
+            ')
         );
     }
 
@@ -1102,9 +1065,9 @@ fragment fragA on Human { name, relatives { name, ...fragA } }
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment fragA on Human { name, ...fragA }
-'
+            dedent('
+            fragment fragA on Human { name, ...fragA }
+            ')
         );
     }
 
@@ -1112,11 +1075,11 @@ fragment fragA on Human { name, ...fragA }
     {
         $this->expectPassesRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment fragA on Human { name, ...fragB }
-fragment fragB on Human { name, ...fragC }
-fragment fragC on Human { name, ...fragA }
-'
+            dedent('
+            fragment fragA on Human { name, ...fragB }
+            fragment fragB on Human { name, ...fragC }
+            fragment fragC on Human { name, ...fragA }
+            ')
         );
     }
 
@@ -1126,18 +1089,18 @@ fragment fragC on Human { name, ...fragA }
 
         $this->expectFailsRule(
             new OverlappingFieldsCanBeMergedRule(),
-            '
-fragment sameAliasesWithDifferentFieldTargets on Dog {
-  ...sameAliasesWithDifferentFieldTargets
-  fido: name
-  fido: nickname
-}
-',
+            dedent('
+            fragment sameAliasesWithDifferentFieldTargets on Dog {
+              ...sameAliasesWithDifferentFieldTargets
+              fido: name
+              fido: nickname
+            }
+            '),
             [
                 fieldConflict(
                     'fido',
                     'name and nickname are different fields',
-                    [[4, 3], [5, 3]]
+                    [[3, 3], [4, 3]]
                 )
             ]
         );
