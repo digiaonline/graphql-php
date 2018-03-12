@@ -19,7 +19,7 @@ class IntrospectionTest extends TestCase
 
     public function setUp()
     {
-        $this->introspectionQuery = readFile(__DIR__ . '/../../../Resources/introspection.graphql');
+        $this->introspectionQuery = readFile(__DIR__ . '/../../../resources/introspection.graphql');
     }
 
     public function testExecutesAnIntrospectionQuery()
