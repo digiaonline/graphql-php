@@ -11,6 +11,8 @@ use function Digia\GraphQL\Validation\misplacedDirectiveMessage;
 use function Digia\GraphQL\Validation\missingDirectiveArgumentMessage;
 use function Digia\GraphQL\Validation\missingFieldArgumentMessage;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
+use function Digia\GraphQL\Validation\noSubselectionAllowedMessage;
+use function Digia\GraphQL\Validation\requiresSubselectionMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleAnonymousSpreadMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
 use function Digia\GraphQL\Validation\undefinedFieldMessage;
@@ -196,6 +198,24 @@ function missingDirectiveArgument($directiveName, $argumentName, $typeName, $loc
 {
     return [
         'message'   => missingDirectiveArgumentMessage($directiveName, $argumentName, $typeName),
+        'locations' => [locationShorthandToArray($location)],
+        'path'      => null,
+    ];
+}
+
+function noSubselectionAllowed($fieldName, $typeName, $location)
+{
+    return [
+        'message'   => noSubselectionAllowedMessage($fieldName, $typeName),
+        'locations' => [locationShorthandToArray($location)],
+        'path'      => null,
+    ];
+}
+
+function requiredSubselection($fieldName, $typeName, $location)
+{
+    return [
+        'message'   => requiresSubselectionMessage($fieldName, $typeName),
         'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
