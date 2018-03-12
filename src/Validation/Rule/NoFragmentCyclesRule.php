@@ -95,16 +95,16 @@ class NoFragmentCyclesRule extends AbstractRule
                     }
                 }
 
-                array_pop($this->spreadPath);
+                \array_pop($this->spreadPath);
             } else {
                 $cyclePath = \array_slice($this->spreadPath, $cycleIndex);
 
                 $this->validationContext->reportError(
                     new ValidationException(
-                        fragmentCycleMessage($spreadName, array_map(function (FragmentSpreadNode $spread) {
+                        fragmentCycleMessage($spreadName, \array_map(function (FragmentSpreadNode $spread) {
                             return $spread->getNameValue();
                         }, $cyclePath)),
-                        array_merge($cyclePath, [$spreadNode])
+                        \array_merge($cyclePath, [$spreadNode])
                     )
                 );
             }
