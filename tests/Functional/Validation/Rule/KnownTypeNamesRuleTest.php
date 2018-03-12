@@ -3,17 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\KnownTypeNamesRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\unknownTypeMessage;
-
-function unknownType($typeName, $suggestedTypes, $location)
-{
-    return [
-        'message'   => unknownTypeMessage($typeName, $suggestedTypes),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\unknownType;
 
 class KnownTypeNamesRuleTest extends RuleTestCase
 {

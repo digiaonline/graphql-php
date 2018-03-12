@@ -3,20 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\NoUndefinedVariablesRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\undefinedVariableMessage;
-
-function undefinedVariable($variableName, $variableLocation, $operationName, $operationLocation)
-{
-    return [
-        'message'   => undefinedVariableMessage($variableName, $operationName),
-        'locations' => [
-            locationShorthandToArray($variableLocation),
-            locationShorthandToArray($operationLocation),
-        ],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\undefinedVariable;
 
 class NoUndefinedVariablesRuleTest extends RuleTestCase
 {

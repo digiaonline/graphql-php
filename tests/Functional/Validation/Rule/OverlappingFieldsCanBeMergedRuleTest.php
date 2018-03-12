@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\OverlappingFieldsCanBeMergedRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
+use function Digia\GraphQL\Test\Functional\Validation\fieldConflict;
 use function Digia\GraphQL\Type\GraphQLID;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLInterfaceType;
@@ -12,18 +12,6 @@ use function Digia\GraphQL\Type\GraphQLNonNull;
 use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Validation\fieldsConflictMessage;
-
-function fieldConflict($responseName, $reason, $locations)
-{
-    return [
-        'message'   => fieldsConflictMessage($responseName, $reason),
-        'locations' => array_map(function ($shorthand) {
-            return locationShorthandToArray($shorthand);
-        }, $locations),
-        'path'      => null,
-    ];
-}
 
 function SomeBox()
 {

@@ -3,17 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionsRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
-
-function nonExecutableDefinition($definitionName, $location)
-{
-    return [
-        'message'   => nonExecutableDefinitionMessage($definitionName),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\nonExecutableDefinition;
 
 class ExecutableDefinitionsRuleTest extends RuleTestCase
 {

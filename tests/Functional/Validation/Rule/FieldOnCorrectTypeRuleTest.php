@@ -3,17 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\undefinedFieldMessage;
-
-function undefinedField($field, $type, $suggestedTypes, $suggestsFields, $location)
-{
-    return [
-        'message'   => undefinedFieldMessage($field, $type, $suggestedTypes, $suggestsFields),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\undefinedField;
 
 class FieldOnCorrectTypeRuleTest extends RuleTestCase
 {

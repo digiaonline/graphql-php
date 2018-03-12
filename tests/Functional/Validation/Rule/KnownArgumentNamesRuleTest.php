@@ -3,27 +3,8 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\unknownArgumentMessage;
-use function Digia\GraphQL\Validation\unknownDirectiveArgumentMessage;
-
-function unknownArgument($argumentName, $fieldName, $typeName, $suggestedArguments, $location)
-{
-    return [
-        'message'   => unknownArgumentMessage($argumentName, $fieldName, $typeName, $suggestedArguments),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
-
-function unknownDirectiveArgument($argumentName, $directiveName, $suggestedArguments, $location)
-{
-    return [
-        'message'   => unknownDirectiveArgumentMessage($argumentName, $directiveName, $suggestedArguments),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\unknownArgument;
+use function Digia\GraphQL\Test\Functional\Validation\unknownDirectiveArgument;
 
 class KnownArgumentNamesRuleTest extends RuleTestCase
 {
