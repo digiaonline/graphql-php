@@ -22,4 +22,30 @@ interface AcceptsVisitorsInterface
         array $path = [],
         array $ancestors = []
     ): ?NodeInterface;
+
+    /**
+     * @return int|null|string
+     */
+    public function getKey();
+
+    /**
+     * @return NodeInterface|null
+     */
+    public function getParent(): ?NodeInterface;
+
+    /**
+     * @return array
+     */
+    public function getPath(): array;
+
+    /**
+     * @param int $depth
+     * @return NodeInterface|null
+     */
+    public function getAncestor(int $depth = 1): ?NodeInterface;
+
+    /**
+     * @return NodeInterface[]
+     */
+    public function getAncestors(): array;
 }
