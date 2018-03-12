@@ -3,17 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\unknownFragmentMessage;
-
-function unknownFragment($fragmentName, $location)
-{
-    return [
-        'message'   => unknownFragmentMessage($fragmentName),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\unknownFragment;
 
 class KnownFragmentNamesRuleTest extends RuleTestCase
 {

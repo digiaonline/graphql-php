@@ -3,19 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\NoFragmentCyclesRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\fragmentCycleMessage;
-
-function fragmentCycle($fragmentName, $spreadNames, array $locations)
-{
-    return [
-        'message'   => fragmentCycleMessage($fragmentName, $spreadNames),
-        'locations' => array_map(function ($shorthand) {
-            return locationShorthandToArray($shorthand);
-        }, $locations),
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\fragmentCycle;
 
 class NoFragmentCyclesRuleTest extends RuleTestCase
 {

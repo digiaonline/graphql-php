@@ -3,27 +3,8 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\misplacedDirectiveMessage;
-use function Digia\GraphQL\Validation\unknownDirectiveMessage;
-
-function unknownDirective($directiveName, $location)
-{
-    return [
-        'message'   => unknownDirectiveMessage($directiveName),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
-
-function misplacedDirective($directiveName, $directiveLocation, $location)
-{
-    return [
-        'message'   => misplacedDirectiveMessage($directiveName, $directiveLocation),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\misplacedDirective;
+use function Digia\GraphQL\Test\Functional\Validation\unknownDirective;
 
 class KnownDirectivesRuleTest extends RuleTestCase
 {

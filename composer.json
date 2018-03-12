@@ -58,20 +58,8 @@
     "autoload-dev": {
         "files": [
             "./tests/Functional/Language/SchemaParserTest.php",
-            "./tests/Functional/Validation/Rule/ExecutableDefinitionsRuleTest.php",
-            "./tests/Functional/Validation/Rule/FieldOnCorrectTypeRuleTest.php",
-            "./tests/Functional/Validation/Rule/FragmentsOnCompositeTypesRuleTest.php",
-            "./tests/Functional/Validation/Rule/KnownArgumentNamesRuleTest.php",
-            "./tests/Functional/Validation/Rule/KnownDirectivesRuleTest.php",
-            "./tests/Functional/Validation/Rule/KnownFragmentNamesRuleTest.php",
-            "./tests/Functional/Validation/Rule/KnownTypeNamesRuleTest.php",
-            "./tests/Functional/Validation/Rule/LoneAnonymousOperationRuleTest.php",
-            "./tests/Functional/Validation/Rule/NoFragmentCyclesRuleTest.php",
-            "./tests/Functional/Validation/Rule/NoUndefinedVariablesRuleTest.php",
-            "./tests/Functional/Validation/Rule/NoUnusedFragmentsRuleTest.php",
-            "./tests/Functional/Validation/Rule/NoUnusedVariablesRuleTest.php",
+            "./tests/Functional/Validation/errors.php",
             "./tests/Functional/Validation/Rule/OverlappingFieldsCanBeMergedRuleTest.php",
-            "./tests/Functional/Validation/Rule/PossibleFragmentSpreadsRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {

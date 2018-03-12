@@ -3,17 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\NoUnusedVariablesRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\unusedVariableMessage;
-
-function unusedVariable($variableName, $operationName, $location)
-{
-    return [
-        'message'   => unusedVariableMessage($variableName, $operationName),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\unusedVariable;
 
 class NoUnusedVariablesRuleTest extends RuleTestCase
 {

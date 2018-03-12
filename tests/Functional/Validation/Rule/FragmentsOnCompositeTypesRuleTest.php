@@ -3,17 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
-
-function fragmentOnNonComposite($fragmentName, $typeName, $location)
-{
-    return [
-        'message'   => fragmentOnNonCompositeMessage($fragmentName, $typeName),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\fragmentOnNonComposite;
 
 class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
 {

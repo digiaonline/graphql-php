@@ -2,30 +2,9 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use Digia\GraphQL\Validation\Rule\ExecutableDefinitionsRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
 use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
-use function Digia\GraphQL\Validation\typeIncompatibleAnonymousSpreadMessage;
-use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
-
-function typeIncompatibleSpread($fragmentName, $parentType, $fragmentType, $location)
-{
-    return [
-        'message'   => typeIncompatibleSpreadMessage($fragmentName, $parentType, $fragmentType),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
-
-function typeIncompatibleAnonymousSpread($parentType, $fragmentType, $location)
-{
-    return [
-        'message'   => typeIncompatibleAnonymousSpreadMessage($parentType, $fragmentType),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\typeIncompatibleAnonymousSpread;
+use function Digia\GraphQL\Test\Functional\Validation\typeIncompatibleSpread;
 
 class PossibleFragmentSpreadsRuleTest extends RuleTestCase
 {

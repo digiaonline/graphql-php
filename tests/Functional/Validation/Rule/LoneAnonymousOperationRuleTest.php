@@ -3,17 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Validation\Rule\LoneAnonymousOperationRule;
-use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Validation\anonymousOperationNotAloneMessage;
-
-function anonymousOperationNotAlone($location)
-{
-    return [
-        'message'   => anonymousOperationNotAloneMessage(),
-        'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
-    ];
-}
+use function Digia\GraphQL\Test\Functional\Validation\anonymousOperationNotAlone;
 
 class LoneAnonymousOperationRuleTest extends RuleTestCase
 {
