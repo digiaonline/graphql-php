@@ -49,7 +49,6 @@ class GraphQL
         ScalarTypesProvider::class,
         DirectivesProvider::class,
         ValidationProvider::class,
-        RulesProvider::class,
         ExecutionProvider::class,
     ];
 
