@@ -3,9 +3,9 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\AST\Node\FragmentDefinitionNode;
-use Digia\GraphQL\Language\AST\Node\InlineFragmentNode;
-use Digia\GraphQL\Language\AST\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\InlineFragmentNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use function Digia\GraphQL\Util\typeFromAST;
 use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
