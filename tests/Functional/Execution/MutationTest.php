@@ -6,16 +6,14 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use function Digia\GraphQL\graphql;
+use function Digia\GraphQL\execute;
+use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
 class MutationTest extends TestCase
 {
 
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     */
     public function testSimpleMutation()
     {
         $schema = GraphQLSchema([
@@ -43,8 +41,7 @@ class MutationTest extends TestCase
             greeting(name:$name)
         }';
 
-        /** @var ExecutionResult $executionResult */
-        $executionResult = graphql($schema, $source, '', null, ['name' => 'Han Solo']);
+        $executionResult = execute($schema, parse($source), '', null, ['name' => 'Han Solo']);
 
         $expected = new ExecutionResult([
             'greeting' => 'Hello Han Solo.'
@@ -53,9 +50,6 @@ class MutationTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     */
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
         $schema = GraphQLSchema([
@@ -74,8 +68,7 @@ class MutationTest extends TestCase
         ]);
 
 
-        /** @var ExecutionResult $executionResult */
-        $executionResult = graphql($schema, 'mutation M { thisIsIllegalDontIncludeMe }');
+        $executionResult = execute($schema, parse('mutation M { thisIsIllegalDontIncludeMe }'));
 
         $expected = new ExecutionResult([], []);
 

@@ -38,7 +38,6 @@
             "./src/Util/valueFromAST.php",
             "./src/Validation/comparators.php",
             "./src/Validation/messages.php",
-            "./src/Validation/rules.php",
             "./src/api.php"
         ],
         "psr-4": {
