@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
 use function Digia\GraphQL\Test\Functional\Validation\fragmentOnNonComposite;
 
@@ -11,11 +12,11 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
-            '
-fragment validFragment on Dog {
-  barks
-}
-'
+            dedent('
+            fragment validFragment on Dog {
+              barks
+            }
+            ')
         );
     }
 
@@ -23,11 +24,11 @@ fragment validFragment on Dog {
     {
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
-            '
-fragment validFragment on Pet {
-  name
-}
-'
+            dedent('
+            fragment validFragment on Pet {
+              name
+            }
+            ')
         );
     }
 
@@ -35,13 +36,13 @@ fragment validFragment on Pet {
     {
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
-            '
-fragment validFragment on Pet {
-  ... on Dog {
-    barks
-  }
-}
-'
+            dedent('
+            fragment validFragment on Pet {
+              ... on Dog {
+                barks
+              }
+            }
+            ')
         );
     }
 
@@ -49,13 +50,13 @@ fragment validFragment on Pet {
     {
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
-            '
-fragment validFragment on Pet {
-  ... {
-    name
-  }
-}
-'
+            dedent('
+            fragment validFragment on Pet {
+              ... {
+                name
+              }
+            }
+            ')
         );
     }
 
@@ -75,12 +76,12 @@ fragment validFragment on CatOrDog {
     {
         $this->expectFailsRule(
             new FragmentsOnCompositeTypesRule(),
-            '
-fragment scalarFragment on Boolean {
-  bad
-}
-',
-            [fragmentOnNonComposite('scalarFragment', 'Boolean', [2, 28])]
+            dedent('
+            fragment scalarFragment on Boolean {
+              bad
+            }
+            '),
+            [fragmentOnNonComposite('scalarFragment', 'Boolean', [1, 28])]
         );
     }
 }

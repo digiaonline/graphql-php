@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
 use function Digia\GraphQL\Test\Functional\Validation\typeIncompatibleAnonymousSpread;
 use function Digia\GraphQL\Test\Functional\Validation\typeIncompatibleSpread;
@@ -12,10 +13,10 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment objectWithinObject on Dog { ...dogFragment }
-fragment dogFragment on Dog { barkVolume }
-'
+            dedent('
+            fragment objectWithinObject on Dog { ...dogFragment }
+            fragment dogFragment on Dog { barkVolume }
+            ')
         );
     }
 
@@ -23,9 +24,9 @@ fragment dogFragment on Dog { barkVolume }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment objectWithinObjectAnon on Dog { ... on Dog { barkVolume } }
-'
+            dedent('
+            fragment objectWithinObjectAnon on Dog { ... on Dog { barkVolume } }
+            ')
         );
     }
 
@@ -33,10 +34,10 @@ fragment objectWithinObjectAnon on Dog { ... on Dog { barkVolume } }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment objectWithinInterface on Pet { ...dogFragment }
-fragment dogFragment on Dog { barkVolume }
-'
+            dedent('
+            fragment objectWithinInterface on Pet { ...dogFragment }
+            fragment dogFragment on Dog { barkVolume }
+            ')
         );
     }
 
@@ -44,10 +45,10 @@ fragment dogFragment on Dog { barkVolume }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment objectWithinUnion on CatOrDog { ...dogFragment }
-fragment dogFragment on Dog { barkVolume }
-'
+            dedent('
+            fragment objectWithinUnion on CatOrDog { ...dogFragment }
+            fragment dogFragment on Dog { barkVolume }
+            ')
         );
     }
 
@@ -55,10 +56,10 @@ fragment dogFragment on Dog { barkVolume }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment unionWithinObject on Dog { ...catOrDogFragment }
-fragment catOrDogFragment on CatOrDog { __typename }
-'
+            dedent('
+            fragment unionWithinObject on Dog { ...catOrDogFragment }
+            fragment catOrDogFragment on CatOrDog { __typename }
+            ')
         );
     }
 
@@ -66,10 +67,10 @@ fragment catOrDogFragment on CatOrDog { __typename }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment unionWithinInterface on Pet { ...catOrDogFragment }
-fragment catOrDogFragment on CatOrDog { __typename }
-'
+            dedent('
+            fragment unionWithinInterface on Pet { ...catOrDogFragment }
+            fragment catOrDogFragment on CatOrDog { __typename }
+            ')
         );
     }
 
@@ -77,10 +78,10 @@ fragment catOrDogFragment on CatOrDog { __typename }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment unionWithinUnion on DogOrHuman { ...catOrDogFragment }
-fragment catOrDogFragment on CatOrDog { __typename }
-'
+            dedent('
+            fragment unionWithinUnion on DogOrHuman { ...catOrDogFragment }
+            fragment catOrDogFragment on CatOrDog { __typename }
+            ')
         );
     }
 
@@ -88,10 +89,10 @@ fragment catOrDogFragment on CatOrDog { __typename }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment interfaceWithinObject on Dog { ...petFragment }
-fragment petFragment on Pet { name }
-'
+            dedent('
+            fragment interfaceWithinObject on Dog { ...petFragment }
+            fragment petFragment on Pet { name }
+            ')
         );
     }
 
@@ -99,10 +100,10 @@ fragment petFragment on Pet { name }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment interfaceWithinInterface on Pet { ...beingFragment }
-fragment beingFragment on Being { name }
-'
+            dedent('
+            fragment interfaceWithinInterface on Pet { ...beingFragment }
+            fragment beingFragment on Being { name }
+            ')
         );
     }
 
@@ -110,9 +111,9 @@ fragment beingFragment on Being { name }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment interfaceWithinInterface on Pet { ... on Being { name } }
-'
+            dedent('
+            fragment interfaceWithinInterface on Pet { ... on Being { name } }
+            ')
         );
     }
 
@@ -120,10 +121,10 @@ fragment interfaceWithinInterface on Pet { ... on Being { name } }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment interfaceWithinUnion on CatOrDog { ...petFragment }
-fragment petFragment on Pet { name }
-'
+            dedent('
+            fragment interfaceWithinUnion on CatOrDog { ...petFragment }
+            fragment petFragment on Pet { name }
+            ')
         );
     }
 
@@ -131,10 +132,10 @@ fragment petFragment on Pet { name }
     {
         $this->expectPassesRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment petFragment on Pet { ...badInADifferentWay }
-fragment badInADifferentWay on String { name }
-'
+            dedent('
+            fragment petFragment on Pet { ...badInADifferentWay }
+            fragment badInADifferentWay on String { name }
+            ')
         );
     }
 
@@ -142,11 +143,11 @@ fragment badInADifferentWay on String { name }
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidObjectWithinObject on Cat { ...dogFragment }
-fragment dogFragment on Dog { barkVolume }
-',
-            [typeIncompatibleSpread('dogFragment', 'Cat', 'Dog', [2, 45])]
+            dedent('
+            fragment invalidObjectWithinObject on Cat { ...dogFragment }
+            fragment dogFragment on Dog { barkVolume }
+            '),
+            [typeIncompatibleSpread('dogFragment', 'Cat', 'Dog', [1, 45])]
         );
     }
 
@@ -154,12 +155,12 @@ fragment dogFragment on Dog { barkVolume }
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidObjectWithinObjectAnon on Cat {
-  ... on Dog { barkVolume }
-}
-',
-            [typeIncompatibleAnonymousSpread('Cat', 'Dog', [3, 3])]
+            dedent('
+            fragment invalidObjectWithinObjectAnon on Cat {
+              ... on Dog { barkVolume }
+            }
+            '),
+            [typeIncompatibleAnonymousSpread('Cat', 'Dog', [2, 3])]
         );
     }
 
@@ -167,11 +168,11 @@ fragment invalidObjectWithinObjectAnon on Cat {
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidObjectWithinInterface on Pet { ...humanFragment }
-fragment humanFragment on Human { pets { name } }
-',
-            [typeIncompatibleSpread('humanFragment', 'Pet', 'Human', [2, 48])]
+            dedent('
+            fragment invalidObjectWithinInterface on Pet { ...humanFragment }
+            fragment humanFragment on Human { pets { name } }
+            '),
+            [typeIncompatibleSpread('humanFragment', 'Pet', 'Human', [1, 48])]
         );
     }
 
@@ -179,11 +180,11 @@ fragment humanFragment on Human { pets { name } }
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidObjectWithinUnion on CatOrDog { ...humanFragment }
-fragment humanFragment on Human { pets { name } }
-',
-            [typeIncompatibleSpread('humanFragment', 'CatOrDog', 'Human', [2, 49])]
+            dedent('
+            fragment invalidObjectWithinUnion on CatOrDog { ...humanFragment }
+            fragment humanFragment on Human { pets { name } }
+            '),
+            [typeIncompatibleSpread('humanFragment', 'CatOrDog', 'Human', [1, 49])]
         );
     }
 
@@ -191,11 +192,11 @@ fragment humanFragment on Human { pets { name } }
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidUnionWithinObject on Human { ...catOrDogFragment }
-fragment catOrDogFragment on CatOrDog { __typename }
-',
-            [typeIncompatibleSpread('catOrDogFragment', 'Human', 'CatOrDog', [2, 46])]
+            dedent('
+            fragment invalidUnionWithinObject on Human { ...catOrDogFragment }
+            fragment catOrDogFragment on CatOrDog { __typename }
+            '),
+            [typeIncompatibleSpread('catOrDogFragment', 'Human', 'CatOrDog', [1, 46])]
         );
     }
 
@@ -203,11 +204,11 @@ fragment catOrDogFragment on CatOrDog { __typename }
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidUnionWithinInterface on Pet { ...humanOrAlienFragment }
-fragment humanOrAlienFragment on HumanOrAlien { __typename }
-',
-            [typeIncompatibleSpread('humanOrAlienFragment', 'Pet', 'HumanOrAlien', [2, 47])]
+            dedent('
+            fragment invalidUnionWithinInterface on Pet { ...humanOrAlienFragment }
+            fragment humanOrAlienFragment on HumanOrAlien { __typename }
+            '),
+            [typeIncompatibleSpread('humanOrAlienFragment', 'Pet', 'HumanOrAlien', [1, 47])]
         );
     }
 
@@ -215,11 +216,11 @@ fragment humanOrAlienFragment on HumanOrAlien { __typename }
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidUnionWithinUnion on CatOrDog { ...humanOrAlienFragment }
-fragment humanOrAlienFragment on HumanOrAlien { __typename }
-',
-            [typeIncompatibleSpread('humanOrAlienFragment', 'CatOrDog', 'HumanOrAlien', [2, 48])]
+            dedent('
+            fragment invalidUnionWithinUnion on CatOrDog { ...humanOrAlienFragment }
+            fragment humanOrAlienFragment on HumanOrAlien { __typename }
+            '),
+            [typeIncompatibleSpread('humanOrAlienFragment', 'CatOrDog', 'HumanOrAlien', [1, 48])]
         );
     }
 
@@ -227,11 +228,11 @@ fragment humanOrAlienFragment on HumanOrAlien { __typename }
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidInterfaceWithinObject on Cat { ...intelligentFragment }
-fragment intelligentFragment on Intelligent { iq }
-',
-            [typeIncompatibleSpread('intelligentFragment', 'Cat', 'Intelligent', [2, 48])]
+            dedent('
+            fragment invalidInterfaceWithinObject on Cat { ...intelligentFragment }
+            fragment intelligentFragment on Intelligent { iq }
+            '),
+            [typeIncompatibleSpread('intelligentFragment', 'Cat', 'Intelligent', [1, 48])]
         );
     }
 
@@ -239,13 +240,13 @@ fragment intelligentFragment on Intelligent { iq }
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidInterfaceWithinInterface on Pet {
-  ...intelligentFragment
-}
-fragment intelligentFragment on Intelligent { iq }
-',
-            [typeIncompatibleSpread('intelligentFragment', 'Pet', 'Intelligent', [3, 3])]
+            dedent('
+            fragment invalidInterfaceWithinInterface on Pet {
+              ...intelligentFragment
+            }
+            fragment intelligentFragment on Intelligent { iq }
+            '),
+            [typeIncompatibleSpread('intelligentFragment', 'Pet', 'Intelligent', [2, 3])]
         );
     }
 
@@ -253,12 +254,12 @@ fragment intelligentFragment on Intelligent { iq }
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidInterfaceWithinInterfaceAnon on Pet {
-  ...on Intelligent { iq }
-}
-',
-            [typeIncompatibleAnonymousSpread('Pet', 'Intelligent', [3, 3])]
+            dedent('
+            fragment invalidInterfaceWithinInterfaceAnon on Pet {
+              ...on Intelligent { iq }
+            }
+            '),
+            [typeIncompatibleAnonymousSpread('Pet', 'Intelligent', [2, 3])]
         );
     }
 
@@ -266,11 +267,11 @@ fragment invalidInterfaceWithinInterfaceAnon on Pet {
     {
         $this->expectFailsRule(
             new PossibleFragmentSpreadsRule(),
-            '
-fragment invalidInterfaceWithinUnion on HumanOrAlien { ...petFragment }
-fragment petFragment on Pet { name }
-',
-            [typeIncompatibleSpread('petFragment', 'HumanOrAlien', 'Pet', [2, 56])]
+            dedent('
+            fragment invalidInterfaceWithinUnion on HumanOrAlien { ...petFragment }
+            fragment petFragment on Pet { name }
+            '),
+            [typeIncompatibleSpread('petFragment', 'HumanOrAlien', 'Pet', [1, 56])]
         );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
 use function Digia\GraphQL\Test\Functional\Validation\unknownFragment;
 
@@ -11,29 +12,29 @@ class KnownFragmentNamesRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new KnownFragmentNamesRule(),
-            '
-{
-  human(id: 4) {
-    ...HumanFields1
-    ... on Human {
-      ...HumanFields2
-    }
-    ... {
-      name
-    }
-  }
-}
-fragment HumanFields1 on Human {
-  name
-  ...HumanFields3
-}
-fragment HumanFields2 on Human {
-  name
-}
-fragment HumanFields3 on Human {
-  name
-}
-'
+            dedent('
+            {
+              human(id: 4) {
+                ...HumanFields1
+                ... on Human {
+                  ...HumanFields2
+                }
+                ... {
+                  name
+                }
+              }
+            }
+            fragment HumanFields1 on Human {
+              name
+              ...HumanFields3
+            }
+            fragment HumanFields2 on Human {
+              name
+            }
+            fragment HumanFields3 on Human {
+              name
+            }
+            ')
         );
     }
 
@@ -41,24 +42,24 @@ fragment HumanFields3 on Human {
     {
         $this->expectFailsRule(
             new KnownFragmentNamesRule(),
-            '
-{
-  human(id: 4) {
-    ...UnknownFragment1
-    ... on Human {
-      ...UnknownFragment2
-    }
-  }
-}
-fragment HumanFields on Human {
-  name
-  ...UnknownFragment3
-}
-',
+            dedent('
+            {
+              human(id: 4) {
+                ...UnknownFragment1
+                ... on Human {
+                  ...UnknownFragment2
+                }
+              }
+            }
+            fragment HumanFields on Human {
+              name
+              ...UnknownFragment3
+            }
+            '),
             [
-                unknownFragment('UnknownFragment1', [4, 8]),
-                unknownFragment('UnknownFragment2', [6, 10]),
-                unknownFragment('UnknownFragment3', [12, 6]),
+                unknownFragment('UnknownFragment1', [3, 8]),
+                unknownFragment('UnknownFragment2', [5, 10]),
+                unknownFragment('UnknownFragment3', [11, 6]),
             ]
         );
     }

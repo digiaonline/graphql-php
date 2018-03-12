@@ -168,3 +168,16 @@ function indent(?string $maybeString): string
 {
     return null !== $maybeString ? '  ' . preg_replace("/\n/", "\n  ", $maybeString) : '';
 }
+
+/**
+ * @param string $str
+ * @return string
+ */
+function dedent(string $str): string
+{
+    $trimmed = \preg_replace("/^\n*|[ \t]*$/", '', $str); // Remove leading newline and trailing whitespace
+    $matches = [];
+    \preg_match("/^[ \t]*/", $trimmed, $matches); // Figure out indent
+    $indent = $matches[0];
+    return \str_replace($indent, '', $trimmed); // Remove indent
+}
