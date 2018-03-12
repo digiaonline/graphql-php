@@ -17,12 +17,19 @@ class Validator implements ValidatorInterface
     protected $contextBuilder;
 
     /**
+     * @var RuleInterface[]
+     */
+    protected $rules;
+
+    /**
      * Validator constructor.
      * @param ContextBuilderInterface $contextBuilder
+     * @param RuleInterface[]         $rules
      */
-    public function __construct(ContextBuilderInterface $contextBuilder)
+    public function __construct(ContextBuilderInterface $contextBuilder, array $rules)
     {
         $this->contextBuilder = $contextBuilder;
+        $this->rules          = $rules;
     }
 
     /**
@@ -31,16 +38,17 @@ class Validator implements ValidatorInterface
     public function validate(
         SchemaInterface $schema,
         DocumentNode $document,
-        array $rules = [],
+        ?array $rules = null,
         ?TypeInfo $typeInfo = null
     ): array {
         $typeInfo = $typeInfo ?? new TypeInfo($schema);
+        $rules    = $rules ?? $this->rules;
 
         $context = $this->contextBuilder->build($schema, $document, $typeInfo);
 
         $visitors = array_map(function (RuleInterface $rule) use ($context) {
             return $rule->setValidationContext($context);
-        }, $rules ?? specifiedRules());
+        }, $rules);
 
         $visitor = new TypeInfoVisitor($typeInfo, new ParallelVisitor($visitors));
 
