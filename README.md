@@ -13,7 +13,7 @@ A PHP7 implementation of the [GraphQL specification](http://facebook.github.io/g
 
 ## Motivation
 
-When we started developing this project there was two GraphQL implementations available for PHP developers; one from 
+When we started developing this project there were two GraphQL implementations available for PHP developers; one from 
 [Webonyx](https://github.com/webonyx/graphql-php/) and one from [Youshido](https://github.com/youshido/graphql/). 
 The one from Webonyx is a direct port of the reference implementation and it includes a lot of things that we think 
 should be provided as separate libraries. The other implementation from Youshido has some neat ideas, but unfortunately 
@@ -49,16 +49,16 @@ Defines the GraphQL language and the associated AST.
 
 #### Parsing
 
-We want to encourage developers to use the official GraphQL parser written C++ through a PHP extension because its 
+We want to encourage developers to use the official GraphQL parser written in C++ through a PHP extension because its 
 performance is outstanding. However, we will also provide a shim for the parser, which will allow developers to use 
 this library without installing a custom PHP extension in their environment.
 
 The official GraphQL parser takes a GQL string as its input and returns the corresponding Abstract Syntax Tree (AST), 
-an associative array in PHP, as its output. Most of the GraphQL implementations (across all languages) takes a
+an associative array in PHP, as its output. Most of the GraphQL implementations (across all languages) take a
 different approach where they convert the AST directly into nodes (class instances in PHP). While this approach might 
-be a bit faster, it introduces tight-coupling between the parser and the rest of the library, which we think is 
+be a bit faster, it introduces tight coupling between the parser and the rest of the library, which we think is 
 short-sighted. Instead we decided to take a different approach, where the parser produces the AST as an associative 
-array. This allows the developers to use the parser written in C++ if they want more performance.
+array. This allows developers to use the parser written in C++ if they want more performance.
 
 #### AST representation
 
@@ -74,7 +74,7 @@ Describes the GraphQL type system and schema definition.
 #### Schema definition
 
 Most of the existing GraphQL implementations encourages the developer to create the schema programmatically. However,
-GraphQL has an experimental featured which lets you define your schema using its Schema Definition Language (SDL). We 
+GraphQL has an experimental feature which lets you define your schema using its Schema Definition Language (SDL). We 
 think that this is the natural way to define the schema, so we built our type system around this idea. This approach 
 will also allow developers to define the schema in formats native to different ecosystems, such as PHP array, YAML and 
 even XML.
