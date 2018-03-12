@@ -6,15 +6,18 @@ use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
+use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
+use function Digia\GraphQL\Util\typeFromAST;
 
 /**
  * Class AbstractStrategy
@@ -76,7 +79,10 @@ abstract class ExecutionStrategy
      * @param SelectionSetNode $selectionSet
      * @param                  $fields
      * @param                  $visitedFragmentNames
-     * @return \ArrayObject
+     * @return mixed
+     * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\ExecutionException
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     protected function collectFields(
         ObjectType $runtimeType,
@@ -85,20 +91,25 @@ abstract class ExecutionStrategy
         $visitedFragmentNames
     ) {
         foreach ($selectionSet->getSelections() as $selection) {
-            /** @var FieldNode $selection */
             switch ($selection->getKind()) {
                 case NodeKindEnum::FIELD:
-                    $name = $this->getFieldNameKey($selection);
+                    /** @var FieldNode $selection */
+                    $fieldName = $this->getFieldNameKey($selection);
                     if (!isset($runtimeType->getFields()[$selection->getNameValue()])) {
                         continue 2;
                     }
-                    if (!isset($fields[$name])) {
-                        $fields[$name] = new \ArrayObject();
+                    if (!isset($fields[$fieldName])) {
+                        $fields[$fieldName] = new \ArrayObject();
                     }
-                    $fields[$name][] = $selection;
+                    $fields[$fieldName][] = $selection;
                     break;
                 case NodeKindEnum::INLINE_FRAGMENT:
-                    //TODO check if should include this node
+                    /** @var FragmentDefinitionNode $selection */
+                    if (!$this->shouldIncludeNode($selection) ||
+                        !$this->doesFragmentConditionMatch($selection, $runtimeType)
+                    ) {
+                        continue 2;
+                    }
                     $this->collectFields(
                         $runtimeType,
                         $selection->getSelectionSet(),
@@ -107,13 +118,13 @@ abstract class ExecutionStrategy
                     );
                     break;
                 case NodeKindEnum::FRAGMENT_SPREAD:
-                    //TODO check if should include this node
-                    if (!empty($visitedFragmentNames[$selection->getNameValue()])) {
+                    $fragmentName = $selection->getNameValue();
+                    if (!empty($visitedFragmentNames[$fragmentName]) || !$this->shouldIncludeNode($selection)) {
                         continue 2;
                     }
-                    $visitedFragmentNames[$selection->getNameValue()] = true;
+                    $visitedFragmentNames[$fragmentName] = true;
                     /** @var FragmentDefinitionNode $fragment */
-                    $fragment = $this->context->getFragments()[$selection->getNameValue()];
+                    $fragment = $this->context->getFragments()[$fragmentName];
                     $this->collectFields(
                         $runtimeType,
                         $fragment->getSelectionSet(),
@@ -127,6 +138,60 @@ abstract class ExecutionStrategy
         return $fields;
     }
 
+
+    /**
+     * @param $node
+     * @return bool
+     * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\ExecutionException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
+    private function shouldIncludeNode(NodeInterface $node)
+    {
+        $skip = $this->valuesResolver->getDirectiveValues(GraphQLSkipDirective(), $node,
+            $this->context->getVariableValues());
+
+        if ($skip && $skip['if'] === true) {
+            return false;
+        }
+
+        $include = $this->valuesResolver->getDirectiveValues(GraphQLSkipDirective(), $node,
+            $this->context->getVariableValues());
+
+        if ($include && $include['if'] === false) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param FragmentDefinitionNode $fragment
+     * @param ObjectType             $type
+     * @return bool
+     * @throws InvalidTypeException
+     */
+    private function doesFragmentConditionMatch(FragmentDefinitionNode $fragment, ObjectType $type)
+    {
+        $typeConditionNode = $fragment->getTypeCondition();
+
+        if (!$typeConditionNode) {
+            return true;
+        }
+
+        $conditionalType = typeFromAST($this->context->getSchema(), $typeConditionNode);
+
+        if ($conditionalType === $type) {
+            return true;
+        }
+
+        if ($conditionalType instanceof AbstractTypeInterface) {
+            return $this->context->getSchema()->isPossibleType($conditionalType, $type);
+        }
+
+        return false;
+    }
+
     /**
      * @TODO: consider to move this to FieldNode
      * @param FieldNode $node
@@ -138,19 +203,19 @@ abstract class ExecutionStrategy
     }
 
     /**
-     * Implements the "Evaluating selection sets" section of the spec
-     * for "read" mode.
-     * @param ObjectType $parentType
-     * @param            $source
+     * Implements the "Evaluating selection sets" section of the spec for "read" mode.
+     * @param ObjectType $objectType
+     * @param            $rootValue
      * @param            $path
      * @param            $fields
-     *
      * @return array
      * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\ExecutionException
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     protected function executeFields(
-        ObjectType $parentType,
-        $source,
+        ObjectType $objectType,
+        $rootValue,
         $path,
         $fields
     ): array {
@@ -160,8 +225,40 @@ abstract class ExecutionStrategy
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
 
-            $result = $this->resolveField($parentType,
-                $source,
+            $result = $this->resolveField($objectType,
+                $rootValue,
+                $fieldNodes,
+                $fieldPath
+            );
+
+            $finalResults[$fieldName] = $result;
+        }
+
+        return $finalResults;
+    }
+
+    /**
+     * Implements the "Evaluating selection sets" section of the spec for "write" mode.
+     *
+     * @param ObjectType $objectType
+     * @param            $rootValue
+     * @param            $path
+     * @param            $fields
+     * @return array
+     * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\ExecutionException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
+    public function executeFieldsSerially(ObjectType $objectType, $rootValue, $path, $fields)
+    {
+        $finalResults = [];
+
+        foreach ($fields as $fieldName => $fieldNodes) {
+            $fieldPath   = $path;
+            $fieldPath[] = $fieldName;
+
+            $result = $this->resolveField($objectType,
+                $rootValue,
                 $fieldNodes,
                 $fieldPath
             );
@@ -205,16 +302,17 @@ abstract class ExecutionStrategy
 
     /**
      * @param ObjectType $parentType
-     * @param            $source
+     * @param            $rootValue
      * @param            $fieldNodes
      * @param            $path
-     *
-     * @return mixed
+     * @return array|null|\Throwable
      * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\ExecutionException
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     protected function resolveField(
         ObjectType $parentType,
-        $source,
+        $rootValue,
         $fieldNodes,
         $path
     ) {
@@ -231,11 +329,11 @@ abstract class ExecutionStrategy
 
         $resolveFunction = $this->determineResolveFunction($field, $parentType, $this->context);
 
-        $result = $this->resolveOrError(
+        $result = $this->resolveFieldValueOrError(
             $field,
             $fieldNode,
             $resolveFunction,
-            $source,
+            $rootValue,
             $this->context,
             $info
         );
@@ -311,7 +409,7 @@ abstract class ExecutionStrategy
      * @param ResolveInfo      $info
      * @return array|\Throwable
      */
-    private function resolveOrError(
+    private function resolveFieldValueOrError(
         Field $field,
         FieldNode $fieldNode,
         callable $resolveFunction,
@@ -330,12 +428,14 @@ abstract class ExecutionStrategy
 
     /**
      * @param ObjectType  $returnType
-     * @param FieldNode[] $fieldNodes
+     * @param             $fieldNodes
      * @param ResolveInfo $info
-     * @param array       $path
+     * @param             $path
      * @param             $result
-     * @return array|\stdClass
+     * @return array
      * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\ExecutionException
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     private function collectAndExecuteSubFields(
         ObjectType $returnType,
@@ -347,6 +447,7 @@ abstract class ExecutionStrategy
         $subFields = new \ArrayObject();
 
         foreach ($fieldNodes as $fieldNode) {
+            /** @var FieldNode $fieldNode */
             if ($fieldNode->getSelectionSet() !== null) {
                 $subFields = $this->collectFields(
                     $returnType,
