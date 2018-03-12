@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Validation;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionsRule;
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
+use Digia\GraphQL\Validation\Rule\NoUndefinedVariablesRule;
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
 use Digia\GraphQL\Validation\Rule\KnownArgumentNamesRule;
 use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
@@ -29,6 +30,7 @@ function specifiedRules(): array
         GraphQL::get(KnownTypeNamesRule::class),
         GraphQL::get(LoneAnonymousOperationRule::class),
         GraphQL::get(NoFragmentCyclesRule::class),
+        GraphQL::get(NoUndefinedVariablesRule::class),
         GraphQL::get(PossibleFragmentSpreadsRule::class),
     ];
 }
