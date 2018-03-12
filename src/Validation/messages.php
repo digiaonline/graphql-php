@@ -209,14 +209,18 @@ function fieldsConflictMessage(string $responseName, $reason): string
  */
 function conflictReasonMessage($reason): string
 {
-    if (\is_array($reason)) {
-        return implode(' and ', array_map(function ($subreason) {
-            [$fieldName, $message] = $subreason;
-            return sprintf('subfields "%s" conflict because %s', $fieldName, conflictReasonMessage($message));
-        }, $reason));
+    if (\is_string($reason)) {
+        return $reason;
     }
 
-    return $reason;
+    if (\is_array($reason) && \is_string($reason[0])) {
+        return conflictReasonMessage([$reason]);
+    }
+
+    return implode(' and ', array_map(function ($reason) {
+        [$responseName, $subreason] = $reason;
+        return sprintf('subfields "%s" conflict because %s', $responseName, conflictReasonMessage($subreason));
+    }, $reason));
 }
 
 /**
