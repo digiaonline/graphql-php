@@ -250,7 +250,7 @@ fragment directFieldSelectionOnUnion on CatOrDog {
     public function testDefinedOnImplementorsQueriedOnUnion()
     {
         $this->markTestIncomplete(
-            'Test taken from the reference implementation goes against all logic because Cat is defined before Dog.'
+            'POTENTIAL BUG: Test taken from the reference implementation goes against all logic because Cat is defined before Dog.'
         );
 
         $this->expectFailsRule(
