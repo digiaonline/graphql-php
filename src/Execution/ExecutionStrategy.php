@@ -181,12 +181,12 @@ abstract class ExecutionStrategy
      */
     public function getFieldDefinition(Schema $schema, ObjectType $parentType, string $fieldName)
     {
-        $schemaMetaFieldDifinition   = SchemaMetaFieldDefinition();
+        $schemaMetaFieldDefinition   = SchemaMetaFieldDefinition();
         $typeMetaFieldDefinition     = TypeMetaFieldDefinition();
         $typeNameMetaFieldDefinition = TypeNameMetaFieldDefinition();
 
-        if ($fieldName === $schemaMetaFieldDifinition->getName() && $schema->getQuery() === $parentType) {
-            return $schemaMetaFieldDifinition;
+        if ($fieldName === $schemaMetaFieldDefinition->getName() && $schema->getQuery() === $parentType) {
+            return $schemaMetaFieldDefinition;
         }
 
         if ($fieldName === $typeMetaFieldDefinition->getName() && $schema->getQuery() === $parentType) {
