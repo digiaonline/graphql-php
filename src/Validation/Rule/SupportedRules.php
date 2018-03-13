@@ -27,6 +27,7 @@ class SupportedRules
         SingleFieldSubscriptionsRule::class,
         UniqueArgumentNamesRule::class,
         UniqueDirectivesPerLocationRule::class,
+        UniqueFragmentNamesRule::class,
     ];
 
     /**
