@@ -9,7 +9,7 @@ use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use function Digia\GraphQL\Util\doTypesOverlap;
+use Digia\GraphQL\Util\TypeComparator;
 use function Digia\GraphQL\Util\typeFromAST;
 use function Digia\GraphQL\Validation\typeIncompatibleAnonymousSpreadMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
@@ -24,6 +24,20 @@ use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
 class PossibleFragmentSpreadsRule extends AbstractRule
 {
     /**
+     * @var TypeComparator
+     */
+    protected $typeComparator;
+
+    /**
+     * PossibleFragmentSpreadsRule constructor.
+     */
+    public function __construct()
+    {
+        $this->typeComparator = new TypeComparator();
+    }
+
+
+    /**
      * @inheritdoc
      */
     public function enterNode(NodeInterface $node): ?NodeInterface
@@ -34,7 +48,8 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
             if ($fragmentType instanceof CompositeTypeInterface &&
                 $parentType instanceof CompositeTypeInterface &&
-                !doTypesOverlap($this->validationContext->getSchema(), $fragmentType, $parentType)) {
+                !$this->typeComparator->doTypesOverlap($this->validationContext->getSchema(),
+                    $fragmentType, $parentType)) {
                 $this->validationContext->reportError(
                     new ValidationException(
                         typeIncompatibleAnonymousSpreadMessage($parentType, $fragmentType),
@@ -51,7 +66,8 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
             if (null !== $fragmentType &&
                 null !== $parentType &&
-                !doTypesOverlap($this->validationContext->getSchema(), $fragmentType, $parentType)) {
+                !$this->typeComparator->doTypesOverlap($this->validationContext->getSchema(),
+                    $fragmentType, $parentType)) {
                 $this->validationContext->reportError(
                     new ValidationException(
                         typeIncompatibleSpreadMessage($fragmentName, $parentType, $fragmentType),

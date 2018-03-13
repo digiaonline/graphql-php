@@ -33,7 +33,6 @@
             "./src/Util/invariant.php",
             "./src/Util/orList.php",
             "./src/Util/suggestionList.php",
-            "./src/Util/typeComparators.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
             "./src/Validation/comparators.php",

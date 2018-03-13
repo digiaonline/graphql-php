@@ -6,6 +6,7 @@ namespace Digia\GraphQL\Test\Functional\Validation;
 use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Language\locationsShorthandToArray;
 use function Digia\GraphQL\Validation\anonymousOperationNotAloneMessage;
+use function Digia\GraphQL\Validation\badVariablePositionMessage;
 use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 use function Digia\GraphQL\Validation\duplicateDirectiveMessage;
 use function Digia\GraphQL\Validation\duplicateFragmentMessage;
@@ -305,6 +306,15 @@ function variableDefaultValueNotAllowed($variableName, $typeName, $guessedTypeNa
     return [
         'message'   => variableDefaultValueNotAllowedMessage($variableName, $typeName, $guessedTypeName),
         'locations' => [locationShorthandToArray($location)],
+        'path'      => null,
+    ];
+}
+
+function badVariablePosition($variableName, $typeName, $expectedTypeName, $locations)
+{
+    return [
+        'message'   => badVariablePositionMessage($variableName, $typeName, $expectedTypeName),
+        'locations' => locationsShorthandToArray($locations),
         'path'      => null,
     ];
 }

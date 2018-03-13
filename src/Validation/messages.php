@@ -402,3 +402,19 @@ function variableDefaultValueNotAllowedMessage(string $variableName, string $typ
         $guessedTypeName
     );
 }
+
+/**
+ * @param string $variableName
+ * @param string $typeName
+ * @param string $expectedTypeName
+ * @return string
+ */
+function badVariablePositionMessage(string $variableName, string $typeName, string $expectedTypeName): string
+{
+    return sprintf(
+        'Variable "$%s" of type "%s" used in position expecting type "%s".',
+        $variableName,
+        $typeName,
+        $expectedTypeName
+    );
+}

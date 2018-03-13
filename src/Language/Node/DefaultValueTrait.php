@@ -13,6 +13,14 @@ trait DefaultValueTrait
     protected $defaultValue;
 
     /**
+     * @return bool
+     */
+    public function hasDefaultValue(): bool
+    {
+        return null !== $this->defaultValue;
+    }
+
+    /**
      * @return ValueNodeInterface|SerializationInterface|null
      */
     public function getDefaultValue(): ?ValueNodeInterface
