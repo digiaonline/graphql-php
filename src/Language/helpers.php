@@ -132,12 +132,23 @@ function isOperation(string $value): bool
 }
 
 /**
- * @param array $shorthand
+ * @param array $location
  * @return array|null
  */
-function locationShorthandToArray(array $shorthand): ?array
+function locationShorthandToArray(array $location): ?array
 {
-    return isset($shorthand[0], $shorthand[1]) ? ['line' => $shorthand[0], 'column' => $shorthand[1]] : null;
+    return isset($location[0], $location[1]) ? ['line' => $location[0], 'column' => $location[1]] : null;
+}
+
+/**
+ * @param array $locations
+ * @return array
+ */
+function locationsShorthandToArray(array $locations): array
+{
+    return array_map(function ($shorthand) {
+        return locationShorthandToArray($shorthand);
+    }, $locations);
 }
 
 /**

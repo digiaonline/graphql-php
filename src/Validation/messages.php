@@ -340,3 +340,12 @@ function duplicateDirectiveMessage(string $directiveName): string
 {
     return sprintf('The directive "%s" can only be used once at this location.', $directiveName);
 }
+
+/**
+ * @param string $fieldName
+ * @return string
+ */
+function duplicateInputFieldMessage(string $fieldName): string
+{
+    return sprintf('There can be only one input field named "%s".', $fieldName);
+}
