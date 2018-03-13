@@ -37,6 +37,11 @@ interface ValidationContextInterface
     public function getParentType(): ?TypeInterface;
 
     /**
+     * @return TypeInterface|null
+     */
+    public function getInputType(): ?TypeInterface;
+
+    /**
      * @return Field|null
      */
     public function getFieldDefinition(): ?Field;

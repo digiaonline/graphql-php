@@ -34,6 +34,7 @@ use function Digia\GraphQL\Validation\unknownFragmentMessage;
 use function Digia\GraphQL\Validation\unknownTypeMessage;
 use function Digia\GraphQL\Validation\unusedFragmentMessage;
 use function Digia\GraphQL\Validation\unusedVariableMessage;
+use function Digia\GraphQL\Validation\variableDefaultValueNotAllowedMessage;
 
 function nonExecutableDefinition($definitionName, $location)
 {
@@ -294,6 +295,15 @@ function nonInputTypeOnVariable($variableName, $typeName, $location)
 {
     return [
         'message'   => nonInputTypeOnVariableMessage($variableName, $typeName),
+        'locations' => [locationShorthandToArray($location)],
+        'path'      => null,
+    ];
+}
+
+function variableDefaultValueNotAllowed($variableName, $typeName, $guessedTypeName, $location)
+{
+    return [
+        'message'   => variableDefaultValueNotAllowedMessage($variableName, $typeName, $guessedTypeName),
         'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
