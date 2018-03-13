@@ -32,7 +32,7 @@ class SupportedRules
     /**
      * @return array
      */
-    public static function getNew(): array
+    public static function build(): array
     {
         $rules = [];
 

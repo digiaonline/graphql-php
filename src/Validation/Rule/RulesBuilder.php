@@ -9,6 +9,6 @@ class RulesBuilder implements RulesBuilderInterface
      */
     public function build(): array
     {
-        return SupportedRules::getNew();
+        return SupportedRules::build();
     }
 }
