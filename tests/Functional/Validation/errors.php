@@ -19,6 +19,7 @@ use function Digia\GraphQL\Validation\misplacedDirectiveMessage;
 use function Digia\GraphQL\Validation\missingDirectiveArgumentMessage;
 use function Digia\GraphQL\Validation\missingFieldArgumentMessage;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
+use function Digia\GraphQL\Validation\nonInputTypeOnVariableMessage;
 use function Digia\GraphQL\Validation\noSubselectionAllowedMessage;
 use function Digia\GraphQL\Validation\requiresSubselectionMessage;
 use function Digia\GraphQL\Validation\singleFieldOnlyMessage;
@@ -285,6 +286,15 @@ function duplicateVariable($variableName, $locations)
     return [
         'message'   => duplicateVariableMessage($variableName),
         'locations' => locationsShorthandToArray($locations),
+        'path'      => null,
+    ];
+}
+
+function nonInputTypeOnVariable($variableName, $typeName, $location)
+{
+    return [
+        'message'   => nonInputTypeOnVariableMessage($variableName, $typeName),
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
