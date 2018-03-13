@@ -64,11 +64,11 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             new FragmentsOnCompositeTypesRule(),
-            '
-fragment validFragment on CatOrDog {
-  __typename
-}
-'
+            dedent('
+            fragment validFragment on CatOrDog {
+              __typename
+            }
+            ')
         );
     }
 

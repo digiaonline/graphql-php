@@ -342,6 +342,15 @@ function duplicateDirectiveMessage(string $directiveName): string
 }
 
 /**
+ * @param string $fragmentName
+ * @return string
+ */
+function duplicateFragmentMessage(string $fragmentName): string
+{
+    return sprintf('There can be only one fragment named "%s".', $fragmentName);
+}
+
+/**
  * @param string $fieldName
  * @return string
  */

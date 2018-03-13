@@ -3,12 +3,12 @@
 namespace Digia\GraphQL\Test\Functional\Validation;
 
 
-
 use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Language\locationsShorthandToArray;
 use function Digia\GraphQL\Validation\anonymousOperationNotAloneMessage;
 use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 use function Digia\GraphQL\Validation\duplicateDirectiveMessage;
+use function Digia\GraphQL\Validation\duplicateFragmentMessage;
 use function Digia\GraphQL\Validation\duplicateInputFieldMessage;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
 use function Digia\GraphQL\Validation\fragmentCycleMessage;
@@ -246,6 +246,15 @@ function duplicateDirective($directiveName, $locations)
 {
     return [
         'message'   => duplicateDirectiveMessage($directiveName),
+        'locations' => locationsShorthandToArray($locations),
+        'path'      => null,
+    ];
+}
+
+function duplicateFragment($fragmentName, $locations)
+{
+    return [
+        'message'   => duplicateFragmentMessage($fragmentName),
         'locations' => locationsShorthandToArray($locations),
         'path'      => null,
     ];
