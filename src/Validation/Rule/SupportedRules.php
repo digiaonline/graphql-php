@@ -29,6 +29,7 @@ class SupportedRules
         PossibleFragmentSpreadsRule::class,
         ProvidedNonNullArgumentsRule::class,
         ScalarLeafsRule::class,
+        SingleFieldSubscriptionsRule::class,
     ];
 
     /**

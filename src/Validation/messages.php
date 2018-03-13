@@ -312,3 +312,13 @@ function requiresSubselectionMessage(string $fieldName, string $typeName): strin
         $fieldName
     );
 }
+
+/**
+ * @param null|string $name
+ * @return string
+ */
+function singleFieldOnlyMessage(?string $name): string
+{
+    $prefix = $name ? "Subscription {$name}" : 'Anonymous subscription';
+    return sprintf('%s must select only one top level field.', $prefix);
+}
