@@ -39,7 +39,7 @@ class DirectivesProvider extends AbstractServiceProvider
                     DirectiveLocationEnum::INLINE_FRAGMENT,
                 ],
                 'args'        => [
-                    'if ' => [
+                    'if' => [
                         'type'        => GraphQLNonNull(GraphQLBoolean()),
                         'description' => 'Included when true.',
                     ],

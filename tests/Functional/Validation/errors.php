@@ -8,6 +8,8 @@ use function Digia\GraphQL\Validation\fieldsConflictMessage;
 use function Digia\GraphQL\Validation\fragmentCycleMessage;
 use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
 use function Digia\GraphQL\Validation\misplacedDirectiveMessage;
+use function Digia\GraphQL\Validation\missingDirectiveArgumentMessage;
+use function Digia\GraphQL\Validation\missingFieldArgumentMessage;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleAnonymousSpreadMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
@@ -176,6 +178,24 @@ function typeIncompatibleAnonymousSpread($parentType, $fragmentType, $location)
 {
     return [
         'message'   => typeIncompatibleAnonymousSpreadMessage($parentType, $fragmentType),
+        'locations' => [locationShorthandToArray($location)],
+        'path'      => null,
+    ];
+}
+
+function missingFieldArgument($fieldName, $argumentName, $typeName, $location)
+{
+    return [
+        'message'   => missingFieldArgumentMessage($fieldName, $argumentName, $typeName),
+        'locations' => [locationShorthandToArray($location)],
+        'path'      => null,
+    ];
+}
+
+function missingDirectiveArgument($directiveName, $argumentName, $typeName, $location)
+{
+    return [
+        'message'   => missingDirectiveArgumentMessage($directiveName, $argumentName, $typeName),
         'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
