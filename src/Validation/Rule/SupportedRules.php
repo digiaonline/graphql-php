@@ -31,6 +31,7 @@ class SupportedRules
         ScalarLeafsRule::class,
         SingleFieldSubscriptionsRule::class,
         UniqueArgumentNamesRule::class,
+        UniqueDirectivesPerLocationRule::class,
     ];
 
     /**

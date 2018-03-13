@@ -2,11 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
-class FieldNode extends AbstractNode implements SelectionNodeInterface
+class FieldNode extends AbstractNode implements SelectionNodeInterface, DirectivesInterface
 {
-
     use AliasTrait;
     use NameTrait;
     use ArgumentsTrait;

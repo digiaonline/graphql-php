@@ -331,3 +331,12 @@ function duplicateArgumentMessage(string $argumentName): string
 {
     return sprintf('There can be only one argument named "%s".', $argumentName);
 }
+
+/**
+ * @param string $directiveName
+ * @return string
+ */
+function duplicateDirectiveMessage(string $directiveName): string
+{
+    return sprintf('The directive "%s" can only be used once at this location.', $directiveName);
+}

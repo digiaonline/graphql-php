@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Language\Node;
 
 trait DirectivesTrait
 {
-
     /**
      * @var DirectiveNode[]
      */

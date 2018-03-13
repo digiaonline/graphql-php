@@ -2,11 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
-class FragmentDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface
+class FragmentDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface, DirectivesInterface
 {
-
     use NameTrait;
     use VariableDefinitionsTrait;
     use TypeConditionTrait;

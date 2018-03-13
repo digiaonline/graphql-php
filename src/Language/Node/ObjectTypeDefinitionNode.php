@@ -2,11 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
-class ObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface
+class ObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface, DirectivesInterface
 {
-
     use DescriptionTrait;
     use NameTrait;
     use InterfacesTrait;
