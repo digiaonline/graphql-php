@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use Digia\GraphQL\Validation\Rule\RuleInterface;
+use Digia\GraphQL\Validation\Rule\RulesBuilderInterface;
 
 class Validator implements ValidatorInterface
 {
@@ -17,19 +18,19 @@ class Validator implements ValidatorInterface
     protected $contextBuilder;
 
     /**
-     * @var RuleInterface[]
+     * @var RulesBuilderInterface
      */
-    protected $rules;
+    protected $rulesBuilder;
 
     /**
      * Validator constructor.
      * @param ContextBuilderInterface $contextBuilder
-     * @param RuleInterface[]         $rules
+     * @param RuleInterface[]         $rulesBuilder
      */
-    public function __construct(ContextBuilderInterface $contextBuilder, array $rules)
+    public function __construct(ContextBuilderInterface $contextBuilder, RulesBuilderInterface $rulesBuilder)
     {
         $this->contextBuilder = $contextBuilder;
-        $this->rules          = $rules;
+        $this->rulesBuilder   = $rulesBuilder;
     }
 
     /**
@@ -42,7 +43,7 @@ class Validator implements ValidatorInterface
         ?TypeInfo $typeInfo = null
     ): array {
         $typeInfo = $typeInfo ?? new TypeInfo($schema);
-        $rules    = $rules ?? $this->rules;
+        $rules    = $rules ?? $this->rulesBuilder->build();
 
         $context = $this->contextBuilder->build($schema, $document, $typeInfo);
 

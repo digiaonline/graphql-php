@@ -5,11 +5,6 @@ namespace Digia\GraphQL\Validation\Rule;
 class SupportedRules
 {
     /**
-     * @var RuleInterface[]
-     */
-    private static $rules;
-
-    /**
      * @var array
      */
     private static $supportedRules = [
@@ -37,16 +32,15 @@ class SupportedRules
     /**
      * @return array
      */
-    public static function get(): array
+    public static function build(): array
     {
-        if (null === self::$rules) {
-            self::$rules = [];
+        $rules = [];
 
-            foreach (self::$supportedRules as $className) {
-                self::$rules[] = new $className();
-            }
+        // Rules maintain state so they should always be re-instantiated.
+        foreach (self::$supportedRules as $className) {
+            $rules[] = new $className();
         }
 
-        return self::$rules;
+        return $rules;
     }
 }
