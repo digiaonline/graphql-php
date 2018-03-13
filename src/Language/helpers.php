@@ -75,7 +75,8 @@ function isLetter(int $code): bool
  */
 function isNumber(int $code): bool
 {
-    return $code >= 48 && $code <= 57; // 0-9
+    // - or 0-9
+    return $code === 45 || ($code >= 48 && $code <= 57);
 }
 
 /**

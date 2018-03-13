@@ -124,6 +124,14 @@ class ValidationContext implements ValidationContextInterface
     /**
      * @inheritdoc
      */
+    public function getParentInputType(): ?TypeInterface
+    {
+        return $this->typeInfo->getParentInputType();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getFieldDefinition(): ?Field
     {
         return $this->typeInfo->getFieldDefinition();

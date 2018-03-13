@@ -47,9 +47,11 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return coerceBoolean($value);
                 },
 
-                'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var BooleanValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::BOOLEAN ? $astNode->getValue() : null;
+                'parseLiteral' => function (NodeInterface $node) {
+                    if ($node instanceof BooleanValueNode) {
+                        return $node->getValue();
+                    }
+                    return null;
                 },
             ]);
         }, true/* $shared */);
@@ -67,11 +69,11 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 'parseValue'   => function ($value) {
                     return coerceFloat($value);
                 },
-                'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var FloatValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::FLOAT || $astNode->getKind() === NodeKindEnum::INT
-                        ? $astNode->getValue()
-                        : null;
+                'parseLiteral' => function (NodeInterface $node) {
+                    if ($node instanceof FloatValueNode || $node instanceof IntValueNode) {
+                        return $node->getValue();
+                    }
+                    return null;
                 },
             ]);
         }, true/* $shared */);
@@ -88,9 +90,14 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 'parseValue'   => function ($value) {
                     return coerceInt($value);
                 },
-                'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var IntValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::INT ? $astNode->getValue() : null;
+                'parseLiteral' => function (NodeInterface $node) {
+                    if ($node instanceof IntValueNode) {
+                        $value = (int)$node->getValue();
+                        if ($node->getValue() === (string)$value && $value <= PHP_INT_MAX && $value >= PHP_INT_MIN) {
+                            return $value;
+                        }
+                    }
+                    return null;
                 },
             ]);
         }, true/* $shared */);
@@ -110,11 +117,11 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 'parseValue'   => function ($value) {
                     return coerceString($value);
                 },
-                'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var StringValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::STRING || $astNode->getKind() === NodeKindEnum::INT
-                        ? $astNode->getValue()
-                        : null;
+                'parseLiteral' => function (NodeInterface $node) {
+                    if ($node instanceof StringValueNode || $node instanceof IntValueNode) {
+                        return $node->getValue();
+                    }
+                    return null;
                 },
             ]);
         }, true/* $shared */);
@@ -132,9 +139,11 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 'parseValue'   => function ($value) {
                     return coerceString($value);
                 },
-                'parseLiteral' => function (NodeInterface $astNode) {
-                    /** @var StringValueNode $astNode */
-                    return $astNode->getKind() === NodeKindEnum::STRING ? $astNode->getValue() : null;
+                'parseLiteral' => function (NodeInterface $node) {
+                    if ($node instanceof StringValueNode) {
+                        return $node->getValue();
+                    }
+                    return null;
                 },
             ]);
         }, true/* $shared */);

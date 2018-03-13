@@ -64,9 +64,9 @@ class GraphQLException extends AbstractException
     /**
      * Extension fields to add to the formatted error.
      *
-     * @var array|null
+     * @var \Exception|null
      */
-    protected $extensions;
+    protected $originalException;
 
     /**
      * ExecutionException constructor.
@@ -76,7 +76,7 @@ class GraphQLException extends AbstractException
      * @param Source|null $source
      * @param array|null  $positions
      * @param array|null  $path
-     * @param array|null  $extensions
+     * @param array|null  $originalException
      */
     public function __construct(
         string $message,
@@ -84,7 +84,7 @@ class GraphQLException extends AbstractException
         ?Source $source = null,
         ?array $positions = null,
         ?array $path = null,
-        ?array $extensions = null
+        ?\Exception $originalException = null
     ) {
         parent::__construct($message);
 
@@ -93,8 +93,8 @@ class GraphQLException extends AbstractException
         $this->resolvePositions($positions);
         $this->resolveLocations($positions, $source);
 
-        $this->path       = $path;
-        $this->extensions = $extensions;
+        $this->path              = $path;
+        $this->originalException = $originalException;
     }
 
     /**
@@ -164,11 +164,19 @@ class GraphQLException extends AbstractException
     }
 
     /**
-     * @return array|null
+     * @return \Exception|null
      */
-    public function getExtensions(): ?array
+    public function getOriginalException(): ?\Exception
     {
-        return $this->extensions;
+        return $this->originalException;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getOriginalError(): ?string
+    {
+        return null !== $this->originalException ? $this->originalException->getMessage() : null;
     }
 
     /**

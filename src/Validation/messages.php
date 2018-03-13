@@ -418,3 +418,41 @@ function badVariablePositionMessage(string $variableName, string $typeName, stri
         $expectedTypeName
     );
 }
+
+/**
+ * @param string      $typeName
+ * @param string      $valueName
+ * @param null|string $message
+ * @return string
+ */
+function badValueMessage(string $typeName, string $valueName, ?string $message = null): string
+{
+    return sprintf('Expected type %s, found %s%s', $typeName, $valueName, null !== $message ? "; $message" : '.');
+}
+
+/**
+ * @param string $typeName
+ * @param string $fieldName
+ * @param string $fieldTypeName
+ * @return string
+ */
+function requiredFieldMessage(string $typeName, string $fieldName, string $fieldTypeName): string
+{
+    return sprintf('Field %s.%s of required type %s was not provided.', $typeName, $fieldName, $fieldTypeName);
+}
+
+/**
+ * @param string      $typeName
+ * @param string      $fieldName
+ * @param null|string $message
+ * @return string
+ */
+function unknownFieldMessage(string $typeName, string $fieldName, ?string $message = null): string
+{
+    return sprintf(
+        'Field %s is not defined by type %s%s',
+        $fieldName,
+        $typeName,
+        null !== $message ? "; $message" : '.'
+    );
+}

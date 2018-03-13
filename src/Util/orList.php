@@ -13,8 +13,17 @@ const MAX_LENGTH = 5;
 function orList(array $items): string
 {
     $selected = \array_slice($items, 0, MAX_LENGTH);
-    $allButLast = \array_slice($selected, 0, -1);
-    return implode(', ', $allButLast) . ' or ' . $selected[\count($selected) - 1];
+    $count    = \count($selected);
+    $index    = 0;
+
+    return $count === 1
+        ? $selected[0]
+        : array_reduce($selected, function ($list, $item) use ($count, &$index) {
+            $list .= ($index > 0 && $index < ($count - 1) ? ', ' : '') . ($index === ($count - 1) ? ' or ' : '') .
+                $item;
+            $index++;
+            return $list;
+        }, '');
 }
 
 /**
