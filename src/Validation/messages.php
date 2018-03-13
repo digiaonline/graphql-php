@@ -358,3 +358,12 @@ function duplicateInputFieldMessage(string $fieldName): string
 {
     return sprintf('There can be only one input field named "%s".', $fieldName);
 }
+
+/**
+ * @param string $operationName
+ * @return string
+ */
+function duplicateOperationMessage(string $operationName): string
+{
+    return sprintf('There can be only one operation named "%s".', $operationName);
+}

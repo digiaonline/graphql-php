@@ -10,6 +10,7 @@ use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 use function Digia\GraphQL\Validation\duplicateDirectiveMessage;
 use function Digia\GraphQL\Validation\duplicateFragmentMessage;
 use function Digia\GraphQL\Validation\duplicateInputFieldMessage;
+use function Digia\GraphQL\Validation\duplicateOperationMessage;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
 use function Digia\GraphQL\Validation\fragmentCycleMessage;
 use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
@@ -264,6 +265,15 @@ function duplicateInputField($fieldName, $locations)
 {
     return [
         'message'   => duplicateInputFieldMessage($fieldName),
+        'locations' => locationsShorthandToArray($locations),
+        'path'      => null,
+    ];
+}
+
+function duplicateOperation($operationName, $locations)
+{
+    return [
+        'message'   => duplicateOperationMessage($operationName),
         'locations' => locationsShorthandToArray($locations),
         'path'      => null,
     ];
