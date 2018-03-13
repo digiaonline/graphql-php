@@ -367,3 +367,12 @@ function duplicateOperationMessage(string $operationName): string
 {
     return sprintf('There can be only one operation named "%s".', $operationName);
 }
+
+/**
+ * @param string $variableName
+ * @return string
+ */
+function duplicateVariableMessage(string $variableName): string
+{
+    return sprintf('There can be only one variable named "%s".', $variableName);
+}
