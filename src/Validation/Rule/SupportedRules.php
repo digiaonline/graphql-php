@@ -28,6 +28,7 @@ class SupportedRules
         OverlappingFieldsCanBeMergedRule::class,
         PossibleFragmentSpreadsRule::class,
         ProvidedNonNullArgumentsRule::class,
+        ScalarLeafsRule::class,
     ];
 
     /**

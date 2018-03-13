@@ -287,3 +287,28 @@ function missingDirectiveArgumentMessage(string $directiveName, string $argument
         $typeName
     );
 }
+
+/**
+ * @param string $fieldName
+ * @param string $typeName
+ * @return string
+ */
+function noSubselectionAllowedMessage(string $fieldName, string $typeName): string
+{
+    return sprintf('Field "%s" must not have a selection since type "%s" has no subfields.', $fieldName, $typeName);
+}
+
+/**
+ * @param string $fieldName
+ * @param string $typeName
+ * @return string
+ */
+function requiresSubselectionMessage(string $fieldName, string $typeName): string
+{
+    return sprintf(
+        'Field "%s" of type "%s" must have a selection of subfields. Did you mean "%s { ... }"?',
+        $fieldName,
+        $typeName,
+        $fieldName
+    );
+}
