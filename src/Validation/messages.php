@@ -386,3 +386,19 @@ function nonInputTypeOnVariableMessage(string $variableName, string $typeName): 
 {
     return sprintf('Variable "$%s" cannot be non-input type "%s".', $variableName, $typeName);
 }
+
+/**
+ * @param string $variableName
+ * @param string $typeName
+ * @param string $guessedTypeName
+ * @return string
+ */
+function variableDefaultValueNotAllowedMessage(string $variableName, string $typeName, string $guessedTypeName): string
+{
+    return sprintf(
+        'Variable "$%s" of type "%s" is required and will not use the default value. Perhaps you meant to use type "%s".',
+        $variableName,
+        $typeName,
+        $guessedTypeName
+    );
+}
