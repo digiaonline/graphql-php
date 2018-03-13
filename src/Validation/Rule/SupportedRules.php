@@ -30,6 +30,7 @@ class SupportedRules
         ProvidedNonNullArgumentsRule::class,
         ScalarLeafsRule::class,
         SingleFieldSubscriptionsRule::class,
+        UniqueArgumentNamesRule::class,
     ];
 
     /**
