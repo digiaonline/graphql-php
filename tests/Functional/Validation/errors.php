@@ -11,6 +11,7 @@ use function Digia\GraphQL\Validation\duplicateDirectiveMessage;
 use function Digia\GraphQL\Validation\duplicateFragmentMessage;
 use function Digia\GraphQL\Validation\duplicateInputFieldMessage;
 use function Digia\GraphQL\Validation\duplicateOperationMessage;
+use function Digia\GraphQL\Validation\duplicateVariableMessage;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
 use function Digia\GraphQL\Validation\fragmentCycleMessage;
 use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
@@ -274,6 +275,15 @@ function duplicateOperation($operationName, $locations)
 {
     return [
         'message'   => duplicateOperationMessage($operationName),
+        'locations' => locationsShorthandToArray($locations),
+        'path'      => null,
+    ];
+}
+
+function duplicateVariable($variableName, $locations)
+{
+    return [
+        'message'   => duplicateVariableMessage($variableName),
         'locations' => locationsShorthandToArray($locations),
         'path'      => null,
     ];
