@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
+use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
@@ -13,11 +14,18 @@ use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Field;
+use Digia\GraphQL\Type\Definition\InterfaceType;
+use Digia\GraphQL\Type\Definition\LeafTypeInterface;
+use Digia\GraphQL\Type\Definition\ListType;
+use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Schema;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
+use function Digia\GraphQL\Util\toString;
 use function Digia\GraphQL\Util\typeFromAST;
 
 /**
@@ -213,6 +221,7 @@ abstract class ExecutionStrategy
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Throwable
      */
     protected function executeFields(
         ObjectType $objectType,
@@ -226,7 +235,8 @@ abstract class ExecutionStrategy
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
 
-            $result = $this->resolveField($objectType,
+            $result = $this->resolveField(
+                $objectType,
                 $rootValue,
                 $fieldNodes,
                 $fieldPath
@@ -249,9 +259,11 @@ abstract class ExecutionStrategy
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Throwable
      */
     public function executeFieldsSerially(ObjectType $objectType, $rootValue, $path, $fields)
     {
+        //@TODO execute fields serially
         $finalResults = [];
 
         foreach ($fields as $fieldName => $fieldNodes) {
@@ -310,6 +322,7 @@ abstract class ExecutionStrategy
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Throwable
      */
     protected function resolveField(
         ObjectType $parentType,
@@ -339,10 +352,8 @@ abstract class ExecutionStrategy
             $info
         );
 
-        $returnType = ($field->getType() instanceof ObjectType) ? $field->getType() : $parentType;
-
-        $result = $this->collectAndExecuteSubFields(
-            $returnType,
+        $result = $this->completeValueCatchingError(
+            $field->getType(),
             $fieldNodes,
             $info,
             $path,
@@ -385,23 +396,277 @@ abstract class ExecutionStrategy
 
     /**
      * @param Field            $field
-     * @param ObjectType       $parentType
+     * @param ObjectType       $objectType
      * @param ExecutionContext $context
      * @return callable|mixed|null
      */
-    private function determineResolveFunction(Field $field, ObjectType $parentType, ExecutionContext $context)
+    private function determineResolveFunction(Field $field, ObjectType $objectType, ExecutionContext $context)
     {
+
         if ($field->hasResolve()) {
             return $field->getResolve();
         }
 
-        if ($parentType->hasResolve()) {
-            return $parentType->getResolve();
+        if ($objectType->hasResolve()) {
+            return $objectType->getResolve();
         }
 
         return $this->context->getFieldResolver();
     }
 
+    /**
+     * @param TypeInterface $fieldType
+     * @param               $fieldNodes
+     * @param ResolveInfo   $info
+     * @param               $path
+     * @param               $result
+     * @return null
+     * @throws \Throwable
+     */
+    public function completeValueCatchingError(
+        TypeInterface $fieldType,
+        $fieldNodes,
+        ResolveInfo $info,
+        $path,
+        &$result
+    ) {
+        if ($fieldType instanceof NonNullType) {
+            return $this->completeValueWithLocatedError(
+                $fieldType,
+                $fieldNodes,
+                $info,
+                $path,
+                $result
+            );
+        }
+
+        try {
+            $completed = $this->completeValueWithLocatedError(
+                $fieldType,
+                $fieldNodes,
+                $info,
+                $path,
+                $result
+            );
+
+            return $completed;
+        } catch (\Exception $ex) {
+            $this->context->addError(new ExecutionException($ex->getMessage()));
+            return null;
+        }
+    }
+
+    /**
+     * @param TypeInterface $fieldType
+     * @param               $fieldNodes
+     * @param ResolveInfo   $info
+     * @param               $path
+     * @param               $result
+     * @throws \Throwable
+     */
+    public function completeValueWithLocatedError(
+        TypeInterface $fieldType,
+        $fieldNodes,
+        ResolveInfo $info,
+        $path,
+        $result
+    ) {
+        try {
+            $completed = $this->completeValue(
+                $fieldType,
+                $fieldNodes,
+                $info,
+                $path,
+                $result
+            );
+            return $completed;
+        } catch (\Exception $ex) {
+            //@TODO throw located error
+            throw $ex;
+        } catch (\Throwable $ex) {
+            //@TODO throw located error
+            throw $ex;
+        }
+    }
+
+    /**
+     * @param TypeInterface $returnType
+     * @param               $fieldNodes
+     * @param ResolveInfo   $info
+     * @param               $path
+     * @param               $result
+     * @return array|mixed
+     * @throws ExecutionException
+     * @throws \Throwable
+     */
+    private function completeValue(
+        TypeInterface $returnType,
+        $fieldNodes,
+        ResolveInfo $info,
+        $path,
+        &$result
+    ) {
+        if ($result instanceof \Exception || $result instanceof \Throwable) {
+            throw $result;
+        }
+
+        // If result is null-like, return null.
+        if (null === $result) {
+            return null;
+        }
+
+        if ($returnType instanceof NonNullType) {
+            $completed = $this->completeValue(
+                $returnType->getOfType(),
+                $fieldNodes,
+                $info,
+                $path,
+                $result
+            );
+
+            if ($completed === null) {
+                throw new ExecutionException(
+                    sprintf(
+                        'Cannot return null for non-nullable field %s.%s.',
+                        $info->getParentType(), $info->getFieldName()
+                    )
+                );
+            }
+
+            return $completed;
+        }
+
+        // If field type is List, complete each item in the list with the inner type
+        if ($returnType instanceof ListType) {
+            return $this->completeListValue($returnType, $fieldNodes, $info, $path, $result);
+        }
+
+
+        // If field type is Scalar or Enum, serialize to a valid value, returning
+        // null if serialization is not possible.
+        if ($returnType instanceof LeafTypeInterface) {
+            return $this->completeLeafValue($returnType, $result);
+        }
+
+        //@TODO Make a funnction for checking abstract type?
+        if ($returnType instanceof InterfaceType || $returnType instanceof UnionType) {
+            return $this->completeAbstractValue($returnType, $fieldNodes, $info, $path, $result);
+        }
+
+        // Field type must be Object, Interface or Union and expect sub-selections.
+        if ($returnType instanceof ObjectType) {
+            return $this->completeObjectValue($returnType, $fieldNodes, $info, $path, $result);
+        }
+
+        throw new ExecutionException("Cannot complete value of unexpected type \"{$returnType}\".");
+    }
+
+    /**
+     * @param AbstractTypeInterface $returnType
+     * @param                       $fieldNodes
+     * @param ResolveInfo           $info
+     * @param                       $path
+     * @param                       $result
+     * @return array
+     * @throws ExecutionException
+     * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Throwable
+     */
+    private function completeAbstractValue(
+        AbstractTypeInterface $returnType,
+        $fieldNodes,
+        ResolveInfo $info,
+        $path,
+        &$result
+    ) {
+        $runtimeType = $returnType->resolveType($result, $this->context, $info);
+
+        if (null === $runtimeType) {
+            throw new ExecutionException(
+                sprintf(
+                    "GraphQL Interface Type `%s` returned `null` from it`s `resolveType` function for value: %s",
+                    $returnType->getName(), toString($result)
+                )
+            );
+        }
+
+        //@TODO Check if $runtimeType is a valid runtime type
+        return $this->completeObjectValue(
+            $runtimeType,
+            $fieldNodes,
+            $info,
+            $path,
+            $result
+        );
+    }
+
+    /**
+     * @param ListType    $returnType
+     * @param             $fieldNodes
+     * @param ResolveInfo $info
+     * @param             $path
+     * @param             $result
+     * @return array
+     * @throws \Throwable
+     */
+    private function completeListValue(ListType $returnType, $fieldNodes, ResolveInfo $info, $path, &$result)
+    {
+        $itemType = $returnType->getOfType();
+
+        $completedItems = [];
+
+        foreach ($result as $key => $item) {
+            $fieldPath        = $path;
+            $fieldPath[]      = $key;
+            $completedItem    = $this->completeValueCatchingError($itemType, $fieldNodes, $info, $fieldPath, $item);
+            $completedItems[] = $completedItem;
+        }
+
+        return $completedItems;
+    }
+
+    /**
+     * @param LeafTypeInterface $returnType
+     * @param                   $result
+     * @return mixed
+     * @throws ExecutionException
+     */
+    private function completeLeafValue(LeafTypeInterface $returnType, &$result)
+    {
+        $serializedResult = $returnType->serialize($result);
+
+        if ($serializedResult === null) {
+            throw new ExecutionException(
+                'Expected a value of type "' . toString($returnType) . '" but received: ' . toString($result)
+            );
+        }
+
+        return $serializedResult;
+    }
+
+    /**
+     * @param ObjectType  $returnType
+     * @param             $fieldNodes
+     * @param ResolveInfo $info
+     * @param             $path
+     * @param             $result
+     * @return array
+     * @throws ExecutionException
+     * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Throwable
+     */
+    private function completeObjectValue(ObjectType $returnType, $fieldNodes, ResolveInfo $info, $path, &$result)
+    {
+        return $this->collectAndExecuteSubFields(
+            $returnType,
+            $fieldNodes,
+            $info,
+            $path,
+            $result
+        );
+    }
 
     /**
      * @param Field            $field
@@ -439,6 +704,7 @@ abstract class ExecutionStrategy
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Throwable
      */
     private function collectAndExecuteSubFields(
         ObjectType $returnType,
