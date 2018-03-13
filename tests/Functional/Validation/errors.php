@@ -5,9 +5,11 @@ namespace Digia\GraphQL\Test\Functional\Validation;
 
 
 use function Digia\GraphQL\Language\locationShorthandToArray;
+use function Digia\GraphQL\Language\locationsShorthandToArray;
 use function Digia\GraphQL\Validation\anonymousOperationNotAloneMessage;
 use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 use function Digia\GraphQL\Validation\duplicateDirectiveMessage;
+use function Digia\GraphQL\Validation\duplicateInputFieldMessage;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
 use function Digia\GraphQL\Validation\fragmentCycleMessage;
 use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
@@ -124,9 +126,7 @@ function fragmentCycle($fragmentName, $spreadNames, array $locations)
 {
     return [
         'message'   => fragmentCycleMessage($fragmentName, $spreadNames),
-        'locations' => array_map(function ($shorthand) {
-            return locationShorthandToArray($shorthand);
-        }, $locations),
+        'locations' => locationsShorthandToArray($locations),
         'path'      => null,
     ];
 }
@@ -165,9 +165,7 @@ function fieldConflict($responseName, $reason, $locations)
 {
     return [
         'message'   => fieldsConflictMessage($responseName, $reason),
-        'locations' => array_map(function ($shorthand) {
-            return locationShorthandToArray($shorthand);
-        }, $locations),
+        'locations' => locationsShorthandToArray($locations),
         'path'      => null,
     ];
 }
@@ -230,9 +228,7 @@ function singleFieldOnly($name, $locations)
 {
     return [
         'message'   => singleFieldOnlyMessage($name),
-        'locations' => array_map(function ($shorthand) {
-            return locationShorthandToArray($shorthand);
-        }, $locations),
+        'locations' => locationsShorthandToArray($locations),
         'path'      => null,
     ];
 }
@@ -241,9 +237,7 @@ function duplicateArgument($argumentName, $locations)
 {
     return [
         'message'   => duplicateArgumentMessage($argumentName),
-        'locations' => array_map(function ($shorthand) {
-            return locationShorthandToArray($shorthand);
-        }, $locations),
+        'locations' => locationsShorthandToArray($locations),
         'path'      => null,
     ];
 }
@@ -252,9 +246,16 @@ function duplicateDirective($directiveName, $locations)
 {
     return [
         'message'   => duplicateDirectiveMessage($directiveName),
-        'locations' => array_map(function ($shorthand) {
-            return locationShorthandToArray($shorthand);
-        }, $locations),
+        'locations' => locationsShorthandToArray($locations),
+        'path'      => null,
+    ];
+}
+
+function duplicateInputField($fieldName, $locations)
+{
+    return [
+        'message'   => duplicateInputFieldMessage($fieldName),
+        'locations' => locationsShorthandToArray($locations),
         'path'      => null,
     ];
 }
