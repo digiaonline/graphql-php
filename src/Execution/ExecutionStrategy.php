@@ -6,6 +6,7 @@ use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
@@ -166,12 +167,12 @@ abstract class ExecutionStrategy
     }
 
     /**
-     * @param FragmentDefinitionNode $fragment
-     * @param ObjectType             $type
+     * @param FragmentDefinitionNode|InlineFragmentNode $fragment
+     * @param ObjectType                                $type
      * @return bool
      * @throws InvalidTypeException
      */
-    private function doesFragmentConditionMatch(FragmentDefinitionNode $fragment, ObjectType $type)
+    private function doesFragmentConditionMatch(NodeInterface $fragment, ObjectType $type)
     {
         $typeConditionNode = $fragment->getTypeCondition();
 
@@ -338,8 +339,10 @@ abstract class ExecutionStrategy
             $info
         );
 
+        $returnType = ($field->getType() instanceof ObjectType) ? $field->getType() : $parentType;
+
         $result = $this->collectAndExecuteSubFields(
-            $parentType,
+            $returnType,
             $fieldNodes,
             $info,
             $path,
@@ -404,7 +407,7 @@ abstract class ExecutionStrategy
      * @param Field            $field
      * @param FieldNode        $fieldNode
      * @param callable         $resolveFunction
-     * @param                  $source
+     * @param                  $rootValue
      * @param ExecutionContext $context
      * @param ResolveInfo      $info
      * @return array|\Throwable
@@ -413,14 +416,14 @@ abstract class ExecutionStrategy
         Field $field,
         FieldNode $fieldNode,
         callable $resolveFunction,
-        $source,
+        $rootValue,
         ExecutionContext $context,
         ResolveInfo $info
     ) {
         try {
             $args = $this->valuesResolver->coerceArgumentValues($field, $fieldNode, $context->getVariableValues());
 
-            return $resolveFunction($source, $args, $context->getContextValue(), $info);
+            return $resolveFunction($rootValue, $args, $context->getContextValue(), $info);
         } catch (\Throwable $error) {
             return $error;
         }
