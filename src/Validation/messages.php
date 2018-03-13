@@ -376,3 +376,13 @@ function duplicateVariableMessage(string $variableName): string
 {
     return sprintf('There can be only one variable named "%s".', $variableName);
 }
+
+/**
+ * @param string $variableName
+ * @param string $typeName
+ * @return string
+ */
+function nonInputTypeOnVariableMessage(string $variableName, string $typeName): string
+{
+    return sprintf('Variable "$%s" cannot be non-input type "%s".', $variableName, $typeName);
+}
