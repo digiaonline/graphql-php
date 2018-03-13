@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\Node\DirectiveNode;
+use Digia\GraphQL\Language\Node\DirectivesInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use function Digia\GraphQL\Validation\duplicateDirectiveMessage;
 
@@ -20,10 +20,8 @@ class UniqueDirectivesPerLocationRule extends AbstractRule
      */
     public function enterNode(NodeInterface $node): ?NodeInterface
     {
-        /** @var DirectiveNode[] $directives */
-        $directives = method_exists($node, 'getDirectives') ? $node->getDirectives() : null;
-
-        if (null !== $directives) {
+        if ($node instanceof DirectivesInterface) {
+            $directives      = $node->getDirectives();
             $knownDirectives = [];
 
             foreach ($directives as $directive) {
