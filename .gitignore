@@ -2,6 +2,5 @@
 /.idea/workspace.xml
 /coverage/
 /vendor/
-/tests/Unit/
 clover.xml
 composer.lock
