@@ -7,9 +7,9 @@ use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
@@ -69,13 +69,12 @@ abstract class ExecutionStrategy
     public function __construct(
         ExecutionContext $context,
         OperationDefinitionNode $operation,
-        $rootValue,
-        $valueResolver
+        $rootValue
     ) {
         $this->context        = $context;
         $this->operation      = $operation;
         $this->rootValue      = $rootValue;
-        $this->valuesResolver = $valueResolver;
+        $this->valuesResolver = new ValuesResolver();
     }
 
     /**
@@ -100,47 +99,39 @@ abstract class ExecutionStrategy
         $visitedFragmentNames
     ) {
         foreach ($selectionSet->getSelections() as $selection) {
-            switch ($selection->getKind()) {
-                case NodeKindEnum::FIELD:
-                    /** @var FieldNode $selection */
-                    $fieldName = $this->getFieldNameKey($selection);
-                    if (!isset($runtimeType->getFields()[$selection->getNameValue()])) {
-                        continue 2;
-                    }
-                    if (!isset($fields[$fieldName])) {
-                        $fields[$fieldName] = new \ArrayObject();
-                    }
-                    $fields[$fieldName][] = $selection;
-                    break;
-                case NodeKindEnum::INLINE_FRAGMENT:
-                    /** @var FragmentDefinitionNode $selection */
-                    if (!$this->shouldIncludeNode($selection) ||
-                        !$this->doesFragmentConditionMatch($selection, $runtimeType)
-                    ) {
-                        continue 2;
-                    }
-                    $this->collectFields(
-                        $runtimeType,
-                        $selection->getSelectionSet(),
-                        $fields,
-                        $visitedFragmentNames
-                    );
-                    break;
-                case NodeKindEnum::FRAGMENT_SPREAD:
-                    $fragmentName = $selection->getNameValue();
-                    if (!empty($visitedFragmentNames[$fragmentName]) || !$this->shouldIncludeNode($selection)) {
-                        continue 2;
-                    }
-                    $visitedFragmentNames[$fragmentName] = true;
-                    /** @var FragmentDefinitionNode $fragment */
-                    $fragment = $this->context->getFragments()[$fragmentName];
-                    $this->collectFields(
-                        $runtimeType,
-                        $fragment->getSelectionSet(),
-                        $fields,
-                        $visitedFragmentNames
-                    );
-                    break;
+            if ($selection instanceof FieldNode) {
+                $fieldName = $this->getFieldNameKey($selection);
+
+                if (!isset($runtimeType->getFields()[$selection->getNameValue()])) {
+                    continue;
+                }
+
+                if (!isset($fields[$fieldName])) {
+                    $fields[$fieldName] = new \ArrayObject();
+                }
+
+                $fields[$fieldName][] = $selection;
+            } elseif ($selection instanceof InlineFragmentNode) {
+                if (!$this->shouldIncludeNode($selection) ||
+                    !$this->doesFragmentConditionMatch($selection, $runtimeType)
+                ) {
+                    continue;
+                }
+
+                $this->collectFields($runtimeType, $selection->getSelectionSet(), $fields, $visitedFragmentNames);
+            } elseif ($selection instanceof FragmentSpreadNode) {
+                $fragmentName = $selection->getNameValue();
+
+                if (!empty($visitedFragmentNames[$fragmentName]) ||
+                    !$this->shouldIncludeNode($selection)
+                ) {
+                    continue;
+                }
+
+                $visitedFragmentNames[$fragmentName] = true;
+                /** @var FragmentDefinitionNode $fragment */
+                $fragment = $this->context->getFragments()[$fragmentName];
+                $this->collectFields($runtimeType, $fragment->getSelectionSet(), $fields, $visitedFragmentNames);
             }
         }
 
@@ -155,17 +146,18 @@ abstract class ExecutionStrategy
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvariantException
      */
-    private function shouldIncludeNode(NodeInterface $node)
+    private function shouldIncludeNode(NodeInterface $node): bool
     {
-        $skip = $this->valuesResolver->getDirectiveValues(GraphQLSkipDirective(), $node,
-            $this->context->getVariableValues());
+
+        $contextVariables = $this->context->getVariableValues();
+
+        $skip = $this->valuesResolver->getDirectiveValues(GraphQLSkipDirective(), $node, $contextVariables);
 
         if ($skip && $skip['if'] === true) {
             return false;
         }
 
-        $include = $this->valuesResolver->getDirectiveValues(GraphQLSkipDirective(), $node,
-            $this->context->getVariableValues());
+        $include = $this->valuesResolver->getDirectiveValues(GraphQLSkipDirective(), $node, $contextVariables);
 
         if ($include && $include['if'] === false) {
             return false;
@@ -180,8 +172,10 @@ abstract class ExecutionStrategy
      * @return bool
      * @throws InvalidTypeException
      */
-    private function doesFragmentConditionMatch(NodeInterface $fragment, ObjectType $type)
-    {
+    private function doesFragmentConditionMatch(
+        NodeInterface $fragment,
+        ObjectType $type
+    ): bool {
         $typeConditionNode = $fragment->getTypeCondition();
 
         if (!$typeConditionNode) {
@@ -206,7 +200,7 @@ abstract class ExecutionStrategy
      * @param FieldNode $node
      * @return string
      */
-    private function getFieldNameKey(FieldNode $node)
+    private function getFieldNameKey(FieldNode $node): string
     {
         return $node->getAlias() ? $node->getAlias()->getValue() : $node->getNameValue();
     }
@@ -261,8 +255,12 @@ abstract class ExecutionStrategy
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Throwable
      */
-    public function executeFieldsSerially(ObjectType $objectType, $rootValue, $path, $fields)
-    {
+    public function executeFieldsSerially(
+        ObjectType $objectType,
+        $rootValue,
+        $path,
+        $fields
+    ) {
         //@TODO execute fields serially
         $finalResults = [];
 
@@ -289,8 +287,11 @@ abstract class ExecutionStrategy
      * @return \Digia\GraphQL\Type\Definition\Field|null
      * @throws InvalidTypeException
      */
-    public function getFieldDefinition(Schema $schema, ObjectType $parentType, string $fieldName)
-    {
+    public function getFieldDefinition(
+        Schema $schema,
+        ObjectType $parentType,
+        string $fieldName
+    ) {
         $schemaMetaFieldDefinition   = SchemaMetaFieldDefinition();
         $typeMetaFieldDefinition     = TypeMetaFieldDefinition();
         $typeNameMetaFieldDefinition = TypeNameMetaFieldDefinition();
@@ -400,8 +401,11 @@ abstract class ExecutionStrategy
      * @param ExecutionContext $context
      * @return callable|mixed|null
      */
-    private function determineResolveFunction(Field $field, ObjectType $objectType, ExecutionContext $context)
-    {
+    private function determineResolveFunction(
+        Field $field,
+        ObjectType $objectType,
+        ExecutionContext $context
+    ) {
 
         if ($field->hasResolve()) {
             return $field->getResolve();
@@ -506,7 +510,7 @@ abstract class ExecutionStrategy
         $path,
         &$result
     ) {
-        if ($result instanceof \Exception || $result instanceof \Throwable) {
+        if ($result instanceof \Throwable) {
             throw $result;
         }
 
@@ -548,7 +552,7 @@ abstract class ExecutionStrategy
             return $this->completeLeafValue($returnType, $result);
         }
 
-        //@TODO Make a funnction for checking abstract type?
+        //@TODO Make a function for checking abstract type?
         if ($returnType instanceof InterfaceType || $returnType instanceof UnionType) {
             return $this->completeAbstractValue($returnType, $fieldNodes, $info, $path, $result);
         }
@@ -610,8 +614,13 @@ abstract class ExecutionStrategy
      * @return array
      * @throws \Throwable
      */
-    private function completeListValue(ListType $returnType, $fieldNodes, ResolveInfo $info, $path, &$result)
-    {
+    private function completeListValue(
+        ListType $returnType,
+        $fieldNodes,
+        ResolveInfo $info,
+        $path,
+        &$result
+    ) {
         $itemType = $returnType->getOfType();
 
         $completedItems = [];
@@ -638,7 +647,7 @@ abstract class ExecutionStrategy
 
         if ($serializedResult === null) {
             throw new ExecutionException(
-                'Expected a value of type "' . toString($returnType) . '" but received: ' . toString($result)
+                sprintf('Expected a value of type "%s" but received: %s', toString($returnType), toString($result))
             );
         }
 
@@ -657,8 +666,13 @@ abstract class ExecutionStrategy
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Throwable
      */
-    private function completeObjectValue(ObjectType $returnType, $fieldNodes, ResolveInfo $info, $path, &$result)
-    {
+    private function completeObjectValue(
+        ObjectType $returnType,
+        $fieldNodes,
+        ResolveInfo $info,
+        $path,
+        &$result
+    ) {
         return $this->collectAndExecuteSubFields(
             $returnType,
             $fieldNodes,
