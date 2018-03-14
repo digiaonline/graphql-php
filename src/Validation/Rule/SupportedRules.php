@@ -28,6 +28,11 @@ class SupportedRules
         UniqueArgumentNamesRule::class,
         UniqueDirectivesPerLocationRule::class,
         UniqueFragmentNamesRule::class,
+        UniqueVariableNamesRule::class,
+        ValuesOfCorrectTypeRule::class,
+        VariablesAreInputTypesRule::class,
+        VariablesDefaultValueAllowedRule::class,
+        VariablesInAllowedPositionRule::class,
     ];
 
     /**
