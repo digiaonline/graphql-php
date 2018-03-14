@@ -14,6 +14,7 @@ use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\Visitor;
 use Digia\GraphQL\Language\Visitor\VisitorBreak;
+use function Digia\GraphQL\printNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Util\TypeInfo;
@@ -1252,11 +1253,17 @@ class VisitorTest extends TestCase
             )
         );
 
-        $ast->acceptVisitor($visitor);
+        $editedAst = $ast->acceptVisitor($visitor);
 
-        // TODO: Add asserts for print once the printer is implemented
+        $this->assertEquals(
+            printNode($ast),
+            printNode(parse('{ human(id: 4) { name, pets }, alien }'))
+        );
 
-        $this->markTestIncomplete('BUG: Nodes added by visitors are visited either too early or too late.');
+        $this->assertEquals(
+            printNode($editedAst),
+            printNode(parse('{ human(id: 4) { name, pets { __typename } }, alien { __typename } }'))
+        );
 
         $this->assertEquals([
             ['enter', 'Document', null, null, null, null],
