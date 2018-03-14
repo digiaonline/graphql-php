@@ -22,22 +22,20 @@ class UniqueOperationNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            $operationName = $node->getNameValue();
+        $operationName = $node->getNameValue();
 
-            if (null !== $operationName) {
-                if (isset($this->knownOperationNames[$operationName])) {
-                    $this->validationContext->reportError(
-                        new ValidationException(
-                            duplicateOperationMessage($operationName),
-                            [$this->knownOperationNames[$operationName], $node->getName()]
-                        )
-                    );
-                } else {
-                    $this->knownOperationNames[$operationName] = $node->getName();
-                }
+        if (null !== $operationName) {
+            if (isset($this->knownOperationNames[$operationName])) {
+                $this->context->reportError(
+                    new ValidationException(
+                        duplicateOperationMessage($operationName),
+                        [$this->knownOperationNames[$operationName], $node->getName()]
+                    )
+                );
+            } else {
+                $this->knownOperationNames[$operationName] = $node->getName();
             }
         }
 

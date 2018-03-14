@@ -44,32 +44,30 @@ class KnownDirectivesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterDirective(DirectiveNode $node): ?NodeInterface
     {
-        if ($node instanceof DirectiveNode) {
-            /** @var Directive $directiveDefinition */
-            $directiveDefinition = find(
-                $this->validationContext->getSchema()->getDirectives(),
-                function (Directive $definition) use ($node) {
-                    return $definition->getName() === $node->getNameValue();
-                }
+        /** @var Directive $directiveDefinition */
+        $directiveDefinition = find(
+            $this->context->getSchema()->getDirectives(),
+            function (Directive $definition) use ($node) {
+                return $definition->getName() === $node->getNameValue();
+            }
+        );
+
+        if (null == $directiveDefinition) {
+            $this->context->reportError(
+                new ValidationException(unknownDirectiveMessage((string)$node), [$node])
             );
 
-            if (null == $directiveDefinition) {
-                $this->validationContext->reportError(
-                    new ValidationException(unknownDirectiveMessage((string)$node), [$node])
-                );
+            return $node;
+        }
 
-                return $node;
-            }
+        $location = $this->getDirectiveLocationFromASTPath($node);
 
-            $location = $this->getDirectiveLocationFromASTPath($node);
-
-            if (null !== $location && !in_array($location, $directiveDefinition->getLocations())) {
-                $this->validationContext->reportError(
-                    new ValidationException(misplacedDirectiveMessage((string)$node, $location), [$node])
-                );
-            }
+        if (null !== $location && !\in_array($location, $directiveDefinition->getLocations())) {
+            $this->context->reportError(
+                new ValidationException(misplacedDirectiveMessage((string)$node, $location), [$node])
+            );
         }
 
         return $node;

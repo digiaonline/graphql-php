@@ -21,30 +21,38 @@ class VariablesDefaultValueAllowedRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterSelectionSet(SelectionSetNode $node): ?NodeInterface
     {
-        if ($node instanceof SelectionSetNode || $node instanceof FragmentDefinitionNode) {
-            return null;
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    {
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    {
+        $variable     = $node->getVariable();
+        $variableName = $variable->getNameValue();
+        $defaultValue = $node->getDefaultValue();
+        $type         = $this->context->getInputType();
+
+        if (null !== $defaultValue && $type instanceof NonNullType) {
+            $this->context->reportError(
+                new ValidationException(
+                    variableDefaultValueNotAllowedMessage($variableName, $type, $type->getOfType()),
+                    [$defaultValue]
+                )
+            );
         }
 
-        if ($node instanceof VariableDefinitionNode) {
-            $variable     = $node->getVariable();
-            $variableName = $variable->getNameValue();
-            $defaultValue = $node->getDefaultValue();
-            $type         = $this->validationContext->getInputType();
-
-            if (null !== $defaultValue && $type instanceof NonNullType) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        variableDefaultValueNotAllowedMessage($variableName, $type, $type->getOfType()),
-                        [$defaultValue]
-                    )
-                );
-            }
-
-            return null; // do not traverse further.
-        }
-
-        return $node;
+        return null; // do not traverse further.
     }
 }

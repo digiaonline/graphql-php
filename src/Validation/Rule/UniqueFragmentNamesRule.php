@@ -23,30 +23,29 @@ class UniqueFragmentNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            // Fragments cannot be defined inside operation definitions.
-            return null;
+        return null; // Fragments cannot be defined inside operation definitions.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    {
+        $fragmentName = $node->getNameValue();
+
+        if (isset($this->knownFragmentNames[$fragmentName])) {
+            $this->context->reportError(
+                new ValidationException(
+                    duplicateFragmentMessage($fragmentName),
+                    [$this->knownFragmentNames[$fragmentName], $node->getName()]
+                )
+            );
+        } else {
+            $this->knownFragmentNames[$fragmentName] = $node->getName();
         }
 
-        if ($node instanceof FragmentDefinitionNode) {
-            $fragmentName = $node->getNameValue();
-
-            if (isset($this->knownFragmentNames[$fragmentName])) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        duplicateFragmentMessage($fragmentName),
-                        [$this->knownFragmentNames[$fragmentName], $node->getName()]
-                    )
-                );
-            } else {
-                $this->knownFragmentNames[$fragmentName] = $node->getName();
-            }
-
-            return null;
-        }
-
-        return $node;
+        return null;
     }
 }

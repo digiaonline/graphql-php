@@ -25,29 +25,41 @@ class UniqueArgumentNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterField(FieldNode $node): ?NodeInterface
     {
-        if ($node instanceof FieldNode || $node instanceof DirectiveNode) {
-            $this->knownArgumentNames = [];
-        }
-
-        if ($node instanceof ArgumentNode) {
-            $argumentName = $node->getNameValue();
-
-            if (isset($this->knownArgumentNames[$argumentName])) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        duplicateArgumentMessage($argumentName),
-                        [$this->knownArgumentNames[$argumentName], $node->getName()]
-                    )
-                );
-            } else {
-                $this->knownArgumentNames[$argumentName] = $node->getName();
-            }
-
-            return null;
-        }
+        $this->knownArgumentNames = [];
 
         return $node;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterDirective(DirectiveNode $node): ?NodeInterface
+    {
+        $this->knownArgumentNames = [];
+
+        return $node;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterArgument(ArgumentNode $node): ?NodeInterface
+    {
+        $argumentName = $node->getNameValue();
+
+        if (isset($this->knownArgumentNames[$argumentName])) {
+            $this->context->reportError(
+                new ValidationException(
+                    duplicateArgumentMessage($argumentName),
+                    [$this->knownArgumentNames[$argumentName], $node->getName()]
+                )
+            );
+        } else {
+            $this->knownArgumentNames[$argumentName] = $node->getName();
+        }
+
+        return null;
     }
 }

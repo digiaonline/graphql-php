@@ -30,43 +30,43 @@ class NoUnusedFragmentsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            $this->operationDefinitions[] = $node;
-            return null;
-        }
+        $this->operationDefinitions[] = $node;
 
-        if ($node instanceof FragmentDefinitionNode) {
-            $this->fragmentDefinitions[] = $node;
-            return null;
-        }
-
-        return $node;
+        return null;
     }
 
     /**
      * @inheritdoc
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof DocumentNode) {
-            $fragmentNamesUsed = [];
+        $this->fragmentDefinitions[] = $node;
 
-            foreach ($this->operationDefinitions as $operationDefinition) {
-                foreach ($this->validationContext->getRecursivelyReferencedFragments($operationDefinition) as $fragmentDefinition) {
-                    $fragmentNamesUsed[$fragmentDefinition->getNameValue()] = true;
-                }
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function leaveDocument(DocumentNode $node): ?NodeInterface
+    {
+        $fragmentNamesUsed = [];
+
+        foreach ($this->operationDefinitions as $operationDefinition) {
+            foreach ($this->context->getRecursivelyReferencedFragments($operationDefinition) as $fragmentDefinition) {
+                $fragmentNamesUsed[$fragmentDefinition->getNameValue()] = true;
             }
+        }
 
-            foreach ($this->fragmentDefinitions as $fragmentDefinition) {
-                $fragmentName = $fragmentDefinition->getNameValue();
+        foreach ($this->fragmentDefinitions as $fragmentDefinition) {
+            $fragmentName = $fragmentDefinition->getNameValue();
 
-                if (!isset($fragmentNamesUsed[$fragmentName])) {
-                    $this->validationContext->reportError(
-                        new ValidationException(unusedFragmentMessage($fragmentName), [$fragmentDefinition])
-                    );
-                }
+            if (!isset($fragmentNamesUsed[$fragmentName])) {
+                $this->context->reportError(
+                    new ValidationException(unusedFragmentMessage($fragmentName), [$fragmentDefinition])
+                );
             }
         }
 

@@ -29,26 +29,27 @@ class UniqueInputFieldNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterObjectValue(ObjectValueNode $node): ?NodeInterface
     {
-        if ($node instanceof ObjectValueNode) {
-            $this->knownInputNamesStack[] = $this->knownInputNames;
-            $this->knownInputNames = [];
-        }
+        $this->knownInputNamesStack[] = $this->knownInputNames;
+        $this->knownInputNames = [];
 
-        if ($node instanceof ObjectFieldNode) {
-            $fieldName = $node->getNameValue();
+        return $node;
+    }
 
-            if (isset($this->knownInputNames[$fieldName])) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        duplicateInputFieldMessage($fieldName),
-                        [$this->knownInputNames[$fieldName], $node->getName()]
-                    )
-                );
-            } else {
-                $this->knownInputNames[$fieldName] = $node->getName();
-            }
+    protected function enterObjectField(ObjectFieldNode $node): ?NodeInterface
+    {
+        $fieldName = $node->getNameValue();
+
+        if (isset($this->knownInputNames[$fieldName])) {
+            $this->context->reportError(
+                new ValidationException(
+                    duplicateInputFieldMessage($fieldName),
+                    [$this->knownInputNames[$fieldName], $node->getName()]
+                )
+            );
+        } else {
+            $this->knownInputNames[$fieldName] = $node->getName();
         }
 
         return $node;
@@ -57,11 +58,9 @@ class UniqueInputFieldNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface
+    protected function leaveObjectValue(ObjectValueNode $node): ?NodeInterface
     {
-        if ($node instanceof ObjectValueNode) {
-            $this->knownInputNames = \array_pop($this->knownInputNamesStack);
-        }
+        $this->knownInputNames = \array_pop($this->knownInputNamesStack);
 
         return $node;
     }

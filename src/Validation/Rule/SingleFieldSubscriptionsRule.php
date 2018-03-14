@@ -17,20 +17,20 @@ class SingleFieldSubscriptionsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode && $node->getOperation() === 'subscription') {
-            $selectionSet = $node->getSelectionSet();
-            if (null !== $selectionSet) {
-                $selections = $selectionSet->getSelections();
-                if (\count($selections) !== 1) {
-                    $this->validationContext->reportError(
-                        new ValidationException(
-                            singleFieldOnlyMessage((string)$node),
-                            \array_slice($selections, 1)
-                        )
-                    );
-                }
+        if ($node->getOperation() !== 'subscription') {
+            return $node;
+        }
+
+        $selectionSet = $node->getSelectionSet();
+
+        if (null !== $selectionSet) {
+            $selections = $selectionSet->getSelections();
+            if (\count($selections) !== 1) {
+                $this->context->reportError(
+                    new ValidationException(singleFieldOnlyMessage((string)$node), \array_slice($selections, 1))
+                );
             }
         }
 

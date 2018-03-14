@@ -42,21 +42,21 @@ class NoFragmentCyclesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            return null;
+        return null; // Operations cannot contain fragments.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    {
+        if (!isset($this->visitedFragments[$node->getNameValue()])) {
+            $this->detectFragmentCycle($node);
         }
 
-        if ($node instanceof FragmentDefinitionNode) {
-            if (!isset($this->visitedFragments[$node->getNameValue()])) {
-                $this->detectFragmentCycle($node);
-            }
-
-            return null;
-        }
-
-        return $node;
+        return null;
     }
 
     /**
@@ -72,7 +72,7 @@ class NoFragmentCyclesRule extends AbstractRule
 
         $this->visitedFragments[$fragmentName] = true;
 
-        $spreadNodes = $this->validationContext->getFragmentSpreads($fragment->getSelectionSet());
+        $spreadNodes = $this->context->getFragmentSpreads($fragment->getSelectionSet());
 
         if (empty($spreadNodes)) {
             return;
@@ -88,7 +88,7 @@ class NoFragmentCyclesRule extends AbstractRule
                 $this->spreadPath[] = $spreadNode;
 
                 if (!isset($this->visitedFragments[$spreadName])) {
-                    $spreadFragment = $this->validationContext->getFragment($spreadName);
+                    $spreadFragment = $this->context->getFragment($spreadName);
 
                     if (null !== $spreadFragment) {
                         $this->detectFragmentCycle($spreadFragment);
@@ -99,7 +99,7 @@ class NoFragmentCyclesRule extends AbstractRule
             } else {
                 $cyclePath = \array_slice($this->spreadPath, $cycleIndex);
 
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(
                         fragmentCycleMessage($spreadName, \array_map(function (FragmentSpreadNode $spread) {
                             return $spread->getNameValue();

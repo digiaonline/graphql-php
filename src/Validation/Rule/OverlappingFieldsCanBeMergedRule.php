@@ -9,6 +9,7 @@ use Digia\GraphQL\Validation\Conflict\FindsConflictsTrait;
 use Digia\GraphQL\Validation\Conflict\Map;
 use Digia\GraphQL\Validation\Conflict\PairSet;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
+use Digia\GraphQL\Validation\ValidationContextInterface;
 
 /**
  * Overlapping fields can be merged
@@ -30,29 +31,34 @@ class OverlappingFieldsCanBeMergedRule extends AbstractRule
         $this->comparedFragmentPairs        = new PairSet();
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getValidationContext(): ValidationContextInterface
+    {
+        return $this->context;
+    }
 
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterSelectionSet(SelectionSetNode $node): ?NodeInterface
     {
-        if ($node instanceof SelectionSetNode) {
-            $parentType = $this->validationContext->getParentType();
-            $conflicts  = $this->findConflictsWithinSelectionSet(
-                $this->cachedFieldsAndFragmentNames,
-                $this->comparedFragmentPairs,
-                $node,
-                $parentType
-            );
+        $parentType = $this->context->getParentType();
+        $conflicts  = $this->findConflictsWithinSelectionSet(
+            $this->cachedFieldsAndFragmentNames,
+            $this->comparedFragmentPairs,
+            $node,
+            $parentType
+        );
 
-            foreach ($conflicts as $conflict) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        fieldsConflictMessage($conflict->getResponseName(), $conflict->getReason()),
-                        $conflict->getAllFields()
-                    )
-                );
-            }
+        foreach ($conflicts as $conflict) {
+            $this->context->reportError(
+                new ValidationException(
+                    fieldsConflictMessage($conflict->getResponseName(), $conflict->getReason()),
+                    $conflict->getAllFields()
+                )
+            );
         }
 
         return $node;

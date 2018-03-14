@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\FloatValueNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NullValueNode;
 use Digia\GraphQL\Language\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\Node\ObjectValueNode;
@@ -42,12 +43,12 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterNullValue(NullValueNode $node): ?NullValueNode
+    protected function enterNullValue(NullValueNode $node): ?NodeInterface
     {
-        $type = $this->validationContext->getInputType();
+        $type = $this->context->getInputType();
 
         if ($type instanceof NonNullType) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     badValueMessage((string)$type, printNode($node)),
                     [$node]
@@ -61,15 +62,14 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterListValue(ListValueNode $node): ?ListValueNode
+    protected function enterListValue(ListValueNode $node): ?NodeInterface
     {
         // Note: TypeInfo will traverse into a list's item type, so look to the
         // parent input type to check if it is a list.
-        $type = getNullableType($this->validationContext->getParentInputType());
+        $type = getNullableType($this->context->getParentInputType());
 
         if (!($type instanceof ListType)) {
             $this->isValidScalar($node);
-
             return null; // Don't traverse further.
         }
 
@@ -79,16 +79,16 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterObjectField(ObjectFieldNode $node): ?ObjectFieldNode
+    protected function enterObjectField(ObjectFieldNode $node): ?NodeInterface
     {
-        $parentType = getNamedType($this->validationContext->getParentInputType());
-        $fieldType  = $this->validationContext->getInputType();
+        $parentType = getNamedType($this->context->getParentInputType());
+        $fieldType  = $this->context->getInputType();
 
         if (null === $fieldType && $parentType instanceof InputObjectType) {
             $suggestions = suggestionList($node->getNameValue(), \array_keys($parentType->getFields()));
-            $didYouMean  = !empty($suggestions) ? sprintf('Did you mean %s?', orList($suggestions)) : null;
+            $didYouMean  = !empty($suggestions) ? \sprintf('Did you mean %s?', orList($suggestions)) : null;
 
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     unknownFieldMessage($parentType->getName(), $node->getNameValue(), $didYouMean),
                     [$node]
@@ -102,13 +102,12 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterObjectValue(ObjectValueNode $node): ?ObjectValueNode
+    protected function enterObjectValue(ObjectValueNode $node): ?NodeInterface
     {
-        $type = getNamedType($this->validationContext->getInputType());
+        $type = getNamedType($this->context->getInputType());
 
         if (!($type instanceof InputObjectType)) {
             $this->isValidScalar($node);
-
             return null; // Don't traverse further.
         }
 
@@ -123,7 +122,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             $fieldNode = $fieldNodeMap[$fieldName] ?? null;
 
             if (null === $fieldNode && $fieldType instanceof NonNullType) {
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(
                         requiredFieldMessage($type->getName(), $fieldName, (string)$fieldType),
                         [$node]
@@ -138,16 +137,16 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterEnumValue(EnumValueNode $node): ?EnumValueNode
+    protected function enterEnumValue(EnumValueNode $node): ?NodeInterface
     {
-        $type = getNamedType($this->validationContext->getInputType());
+        $type = getNamedType($this->context->getInputType());
 
         if (!($type instanceof EnumType)) {
             $this->isValidScalar($node);
         } elseif (!$type->getValue($node->getValue())) {
             $didYouMean = $this->getEnumTypeSuggestion($type, $node);
 
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     badValueMessage($type->getName(), printNode($node), $didYouMean),
                     [$node]
@@ -161,7 +160,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterIntValue(IntValueNode $node): ?IntValueNode
+    protected function enterIntValue(IntValueNode $node): ?NodeInterface
     {
         $this->isValidScalar($node);
         return $node;
@@ -170,7 +169,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterFloatValue(FloatValueNode $node): ?FloatValueNode
+    protected function enterFloatValue(FloatValueNode $node): ?NodeInterface
     {
         $this->isValidScalar($node);
         return $node;
@@ -179,7 +178,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterStringValue(StringValueNode $node): ?StringValueNode
+    protected function enterStringValue(StringValueNode $node): ?NodeInterface
     {
         $this->isValidScalar($node);
         return $node;
@@ -188,7 +187,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterBooleanValue(BooleanValueNode $node): ?BooleanValueNode
+    protected function enterBooleanValue(BooleanValueNode $node): ?NodeInterface
     {
         $this->isValidScalar($node);
         return $node;
@@ -203,7 +202,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
      */
     protected function isValidScalar(ValueNodeInterface $node): void
     {
-        $locationType = $this->validationContext->getInputType();
+        $locationType = $this->context->getInputType();
 
         if (null === $locationType) {
             return;
@@ -214,7 +213,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
         if (!($type instanceof ScalarType)) {
             $didYouMean = $this->getEnumTypeSuggestion($type, $node) ?? null;
 
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     badValueMessage((string)$locationType, printNode($node), $didYouMean),
                     [$node]
@@ -230,7 +229,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             $result = $type->parseLiteral($node, null/* $variables */);
 
             if (null === $result) {
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(
                         badValueMessage((string)$locationType, printNode($node)),
                         [$node]
@@ -239,7 +238,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             }
         } catch (\Exception $ex) {
             // Ensure a reference to the original error is maintained.
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     badValueMessage((string)$locationType, printNode($node), $ex->getMessage()),
                     [$node],
@@ -266,7 +265,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             }, $type->getValues()));
 
             return !empty($suggestions)
-                ? sprintf('Did you mean the enum value %s?', orList($suggestions))
+                ? \sprintf('Did you mean the enum value %s?', orList($suggestions))
                 : null;
         }
 

@@ -10,5 +10,5 @@ interface RuleInterface
      * @param ValidationContextInterface $context
      * @return $this
      */
-    public function setValidationContext(ValidationContextInterface $context);
+    public function setContext(ValidationContextInterface $context);
 }

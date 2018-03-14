@@ -20,71 +20,76 @@ use function Digia\GraphQL\Validation\missingFieldArgumentMessage;
  */
 class ProvidedNonNullArgumentsRule extends AbstractRule
 {
+    // Validate on leave to allow for deeper errors to appear first.
+
     /**
      * @inheritdoc
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface
+    protected function leaveField(FieldNode $node): ?NodeInterface
     {
-        // Validate on leave to allow for deeper errors to appear first.
-        if ($node instanceof FieldNode) {
-            $fieldDefinition = $this->validationContext->getFieldDefinition();
+        $fieldDefinition = $this->context->getFieldDefinition();
 
-            if (null === $fieldDefinition) {
-                return null;
-            }
+        if (null === $fieldDefinition) {
+            return null;
+        }
 
-            $argumentNodes   = $node->getArguments();
-            $argumentNodeMap = keyMap($argumentNodes, function (ArgumentNode $argument) {
-                return $argument->getNameValue();
-            });
+        $argumentNodes   = $node->getArguments();
+        $argumentNodeMap = keyMap($argumentNodes, function (ArgumentNode $argument) {
+            return $argument->getNameValue();
+        });
 
-            foreach ($fieldDefinition->getArguments() as $argumentDefinition) {
-                $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;
-                $argumentType = $argumentDefinition->getType();
+        foreach ($fieldDefinition->getArguments() as $argumentDefinition) {
+            $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;
+            $argumentType = $argumentDefinition->getType();
 
-                if (null === $argumentNode && $argumentType instanceof NonNullType) {
-                    $this->validationContext->reportError(
-                        new ValidationException(
-                            missingFieldArgumentMessage(
-                                (string)$node,
-                                (string)$argumentDefinition,
-                                (string)$argumentType
-                            ),
-                            [$node]
-                        )
-                    );
-                }
+            if (null === $argumentNode && $argumentType instanceof NonNullType) {
+                $this->context->reportError(
+                    new ValidationException(
+                        missingFieldArgumentMessage(
+                            (string)$node,
+                            (string)$argumentDefinition,
+                            (string)$argumentType
+                        ),
+                        [$node]
+                    )
+                );
             }
         }
 
-        if ($node instanceof DirectiveNode) {
-            $directiveDefinition = $this->validationContext->getDirective();
+        return $node;
+    }
 
-            if (null === $directiveDefinition) {
-                return null;
-            }
+    /**
+     * @inheritdoc
+     */
+    protected function leaveDirective(DirectiveNode $node): ?NodeInterface
+    {
+        $directiveDefinition = $this->context->getDirective();
 
-            $argumentNodes   = $node->getArguments();
-            $argumentNodeMap = keyMap($argumentNodes, function (ArgumentNode $argument) {
-                return $argument->getNameValue();
-            });
+        if (null === $directiveDefinition) {
+            return null;
+        }
 
-            foreach ($directiveDefinition->getArguments() as $argumentDefinition) {
-                $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;
-                $argumentType = $argumentDefinition->getType();
+        $argumentNodes   = $node->getArguments();
+        $argumentNodeMap = keyMap($argumentNodes, function (ArgumentNode $argument) {
+            return $argument->getNameValue();
+        });
 
-                if (null === $argumentNode && $argumentType instanceof NonNullType) {
-                    $this->validationContext->reportError(
-                        new ValidationException(
-                            missingDirectiveArgumentMessage(
-                                (string)$node,
-                                (string)$argumentDefinition,
-                                (string)$argumentType
-                            ),
-                            [$node]
-                        )
-                    );
-                }
+        foreach ($directiveDefinition->getArguments() as $argumentDefinition) {
+            $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;
+            $argumentType = $argumentDefinition->getType();
+
+            if (null === $argumentNode && $argumentType instanceof NonNullType) {
+                $this->context->reportError(
+                    new ValidationException(
+                        missingDirectiveArgumentMessage(
+                            (string)$node,
+                            (string)$argumentDefinition,
+                            (string)$argumentType
+                        ),
+                        [$node]
+                    )
+                );
             }
         }
 
