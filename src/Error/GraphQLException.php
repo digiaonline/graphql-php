@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Error;
 
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
 
@@ -64,19 +63,19 @@ class GraphQLException extends AbstractException
     /**
      * Extension fields to add to the formatted error.
      *
-     * @var array|null
+     * @var \Exception|null
      */
-    protected $extensions;
+    protected $originalException;
 
     /**
      * ExecutionException constructor.
      *
-     * @param string      $message
-     * @param array|null  $nodes
-     * @param Source|null $source
-     * @param array|null  $positions
-     * @param array|null  $path
-     * @param array|null  $extensions
+     * @param string          $message
+     * @param array|null      $nodes
+     * @param Source|null     $source
+     * @param array|null      $positions
+     * @param array|null      $path
+     * @param \Exception|null $originalException
      */
     public function __construct(
         string $message,
@@ -84,7 +83,7 @@ class GraphQLException extends AbstractException
         ?Source $source = null,
         ?array $positions = null,
         ?array $path = null,
-        ?array $extensions = null
+        ?\Exception $originalException = null
     ) {
         parent::__construct($message);
 
@@ -93,8 +92,8 @@ class GraphQLException extends AbstractException
         $this->resolvePositions($positions);
         $this->resolveLocations($positions, $source);
 
-        $this->path       = $path;
-        $this->extensions = $extensions;
+        $this->path              = $path;
+        $this->originalException = $originalException;
     }
 
     /**
@@ -164,11 +163,19 @@ class GraphQLException extends AbstractException
     }
 
     /**
-     * @return array|null
+     * @return \Exception|null
      */
-    public function getExtensions(): ?array
+    public function getOriginalException(): ?\Exception
     {
-        return $this->extensions;
+        return $this->originalException;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getOriginalErrorMessage(): ?string
+    {
+        return null !== $this->originalException ? $this->originalException->getMessage() : null;
     }
 
     /**
@@ -191,9 +198,9 @@ class GraphQLException extends AbstractException
     protected function resolveSource(?Source $source)
     {
         if (null === $source && !empty($this->nodes)) {
-            $firstNode    = $this->nodes[0];
-            $location     = null !== $firstNode ? $firstNode->getLocation() : null;
-            $source = null !== $location ? $location->getSource() : null;
+            $firstNode = $this->nodes[0];
+            $location  = null !== $firstNode ? $firstNode->getLocation() : null;
+            $source    = null !== $location ? $location->getSource() : null;
         }
 
         $this->source = $source;

@@ -20,6 +20,8 @@ use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\InputObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
+use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\ListTypeNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
@@ -32,6 +34,7 @@ use Digia\GraphQL\Language\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\ObjectValueNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeExtensionNode;
@@ -406,6 +409,42 @@ class SpecificKindVisitor implements VisitorInterface
     }
 
     /**
+     * @param InterfaceTypeDefinitionNode $node
+     * @return InterfaceTypeDefinitionNode|null
+     */
+    protected function enterInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?InterfaceTypeDefinitionNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param InterfaceTypeDefinitionNode $node
+     * @return InterfaceTypeDefinitionNode|null
+     */
+    protected function leaveInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?InterfaceTypeDefinitionNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param InterfaceTypeExtensionNode $node
+     * @return InterfaceTypeExtensionNode|null
+     */
+    protected function enterInterfaceTypeExtension(InterfaceTypeExtensionNode $node): ?InterfaceTypeExtensionNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param InterfaceTypeExtensionNode $node
+     * @return InterfaceTypeExtensionNode|null
+     */
+    protected function leaveInterfaceTypeExtension(InterfaceTypeExtensionNode $node): ?InterfaceTypeExtensionNode
+    {
+        return $node;
+    }
+
+    /**
      * @param ListTypeNode $node
      * @return ListTypeNode|null
      */
@@ -581,6 +620,24 @@ class SpecificKindVisitor implements VisitorInterface
      * @return ObjectValueNode|null
      */
     protected function leaveObjectValue(ObjectValueNode $node): ?ObjectValueNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param OperationDefinitionNode $node
+     * @return OperationDefinitionNode|null
+     */
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?OperationDefinitionNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param OperationDefinitionNode $node
+     * @return OperationDefinitionNode|null
+     */
+    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?OperationDefinitionNode
     {
         return $node;
     }

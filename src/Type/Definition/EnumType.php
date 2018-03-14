@@ -124,10 +124,10 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
 
     /**
      * @param string $name
-     * @return EnumValue
+     * @return EnumValue|null
      * @throws InvariantException
      */
-    public function getValue(string $name): EnumValue
+    public function getValue(string $name): ?EnumValue
     {
         return $this->getValueByName($name);
     }

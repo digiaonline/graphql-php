@@ -6,6 +6,7 @@ namespace Digia\GraphQL\Test\Functional\Validation;
 use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Language\locationsShorthandToArray;
 use function Digia\GraphQL\Validation\anonymousOperationNotAloneMessage;
+use function Digia\GraphQL\Validation\badValueMessage;
 use function Digia\GraphQL\Validation\badVariablePositionMessage;
 use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 use function Digia\GraphQL\Validation\duplicateDirectiveMessage;
@@ -22,6 +23,7 @@ use function Digia\GraphQL\Validation\missingFieldArgumentMessage;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
 use function Digia\GraphQL\Validation\nonInputTypeOnVariableMessage;
 use function Digia\GraphQL\Validation\noSubselectionAllowedMessage;
+use function Digia\GraphQL\Validation\requiredFieldMessage;
 use function Digia\GraphQL\Validation\requiresSubselectionMessage;
 use function Digia\GraphQL\Validation\singleFieldOnlyMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleAnonymousSpreadMessage;
@@ -31,6 +33,7 @@ use function Digia\GraphQL\Validation\undefinedVariableMessage;
 use function Digia\GraphQL\Validation\unknownArgumentMessage;
 use function Digia\GraphQL\Validation\unknownDirectiveArgumentMessage;
 use function Digia\GraphQL\Validation\unknownDirectiveMessage;
+use function Digia\GraphQL\Validation\unknownFieldMessage;
 use function Digia\GraphQL\Validation\unknownFragmentMessage;
 use function Digia\GraphQL\Validation\unknownTypeMessage;
 use function Digia\GraphQL\Validation\unusedFragmentMessage;
@@ -315,6 +318,33 @@ function badVariablePosition($variableName, $typeName, $expectedTypeName, $locat
     return [
         'message'   => badVariablePositionMessage($variableName, $typeName, $expectedTypeName),
         'locations' => locationsShorthandToArray($locations),
+        'path'      => null,
+    ];
+}
+
+function badValue($typeName, $value, $location, $message = null)
+{
+    return [
+        'message'   => badValueMessage($typeName, $value, $message),
+        'locations' => [locationShorthandToArray($location)],
+        'path'      => null,
+    ];
+}
+
+function requiredField($typeName, $fieldName, $fieldNameType, $location)
+{
+    return [
+        'message'   => requiredFieldMessage($typeName, $fieldName, $fieldNameType),
+        'locations' => [locationShorthandToArray($location)],
+        'path'      => null,
+    ];
+}
+
+function unknownField($typeName, $fieldName, $location, $message = null)
+{
+    return [
+        'message'   => unknownFieldMessage($typeName, $fieldName, $message),
+        'locations' => [locationShorthandToArray($location)],
         'path'      => null,
     ];
 }
