@@ -20,6 +20,8 @@ use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\InputObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
+use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\ListTypeNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
@@ -402,6 +404,42 @@ class SpecificKindVisitor implements VisitorInterface
      * @return IntValueNode|null
      */
     protected function leaveIntValue(IntValueNode $node): ?IntValueNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param InterfaceTypeDefinitionNode $node
+     * @return InterfaceTypeDefinitionNode|null
+     */
+    protected function enterInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?InterfaceTypeDefinitionNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param InterfaceTypeDefinitionNode $node
+     * @return InterfaceTypeDefinitionNode|null
+     */
+    protected function leaveInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?InterfaceTypeDefinitionNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param InterfaceTypeExtensionNode $node
+     * @return InterfaceTypeExtensionNode|null
+     */
+    protected function enterInterfaceTypeExtension(InterfaceTypeExtensionNode $node): ?InterfaceTypeExtensionNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param InterfaceTypeExtensionNode $node
+     * @return InterfaceTypeExtensionNode|null
+     */
+    protected function leaveInterfaceTypeExtension(InterfaceTypeExtensionNode $node): ?InterfaceTypeExtensionNode
     {
         return $node;
     }
