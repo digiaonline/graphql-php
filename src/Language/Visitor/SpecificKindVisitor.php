@@ -32,6 +32,7 @@ use Digia\GraphQL\Language\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\ObjectValueNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeExtensionNode;
@@ -581,6 +582,24 @@ class SpecificKindVisitor implements VisitorInterface
      * @return ObjectValueNode|null
      */
     protected function leaveObjectValue(ObjectValueNode $node): ?ObjectValueNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param OperationDefinitionNode $node
+     * @return OperationDefinitionNode|null
+     */
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?OperationDefinitionNode
+    {
+        return $node;
+    }
+
+    /**
+     * @param OperationDefinitionNode $node
+     * @return OperationDefinitionNode|null
+     */
+    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?OperationDefinitionNode
     {
         return $node;
     }

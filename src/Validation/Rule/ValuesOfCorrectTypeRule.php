@@ -44,43 +44,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
-    {
-        if ($node instanceof NullValueNode) {
-            return $this->handleNullValue($node);
-        }
-
-        if ($node instanceof ListValueNode) {
-            return $this->handleListValue($node);
-        }
-
-        if ($node instanceof ObjectValueNode) {
-            return $this->handleObjectValue($node);
-        }
-
-        if ($node instanceof ObjectFieldNode) {
-            return $this->handleObjectField($node);
-        }
-
-        if ($node instanceof EnumValueNode) {
-            return $this->handleEnumValue($node);
-        }
-
-        if ($node instanceof IntValueNode ||
-            $node instanceof FloatValueNode ||
-            $node instanceof StringValueNode ||
-            $node instanceof BooleanValueNode) {
-            $this->isValidScalar($node);
-        }
-
-        return $node;
-    }
-
-    /**
-     * @param NullValueNode $node
-     * @return NodeInterface|null
-     */
-    protected function handleNullValue(NullValueNode $node): ?NodeInterface
+    protected function enterNullValue(NullValueNode $node): ?NullValueNode
     {
         $type = $this->validationContext->getInputType();
 
@@ -97,11 +61,9 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     }
 
     /**
-     * @param ListValueNode $node
-     * @return NodeInterface|null
-     * @throws InvariantException
+     * @inheritdoc
      */
-    protected function handleListValue(ListValueNode $node): ?NodeInterface
+    protected function enterListValue(ListValueNode $node): ?ListValueNode
     {
         $type = getNullableType($this->validationContext->getParentInputType());
 
@@ -115,10 +77,9 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     }
 
     /**
-     * @param ObjectFieldNode $node
-     * @throws InvariantException
+     * @inheritdoc
      */
-    protected function handleObjectValue(ObjectValueNode $node): ?NodeInterface
+    protected function enterObjectValue(ObjectValueNode $node): ?ObjectValueNode
     {
         $type = getNamedType($this->validationContext->getInputType());
 
@@ -151,10 +112,9 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     }
 
     /**
-     * @param ObjectFieldNode $node
-     * @throws InvariantException
+     * @inheritdoc
      */
-    protected function handleObjectField(ObjectFieldNode $node): ?NodeInterface
+    protected function enterObjectField(ObjectFieldNode $node): ?ObjectFieldNode
     {
         $parentType = getNamedType($this->validationContext->getParentInputType());
         $fieldType  = $this->validationContext->getInputType();
@@ -174,10 +134,9 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     }
 
     /**
-     * @param EnumValueNode $node
-     * @throws InvariantException
+     * @inheritdoc
      */
-    protected function handleEnumValue(EnumValueNode $node): ?NodeInterface
+    protected function enterEnumValue(EnumValueNode $node): ?EnumValueNode
     {
         $type = getNamedType($this->validationContext->getInputType());
 
@@ -194,6 +153,42 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             );
         }
 
+        return $node;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterIntValue(IntValueNode $node): ?IntValueNode
+    {
+        $this->isValidScalar($node);
+        return $node;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterFloatValue(FloatValueNode $node): ?FloatValueNode
+    {
+        $this->isValidScalar($node);
+        return $node;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterStringValue(StringValueNode $node): ?StringValueNode
+    {
+        $this->isValidScalar($node);
+        return $node;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterBooleanValue(BooleanValueNode $node): ?BooleanValueNode
+    {
+        $this->isValidScalar($node);
         return $node;
     }
 
