@@ -15,22 +15,30 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
         $operation = $this->context->getOperation()->getOperation();
         $schema    = $this->context->getSchema();
 
+        $path = [];
+
         $objectType = ($operation === 'mutation')
             ? $schema->getMutation()
             : $schema->getQuery();
 
-        $path = [];
-
         try {
-            $fields = $this->collectFields($objectType, $this->operation->getSelectionSet(), new \ArrayObject(),
-                new \ArrayObject());
+            $fields = $this->collectFields(
+                $objectType,
+                $this->operation->getSelectionSet(),
+                new \ArrayObject(),
+                new \ArrayObject()
+            );
 
-            $data = $this->executeFields($objectType, $this->rootValue, $path, $fields);
+            $data = ($operation === 'mutation')
+                ? $this->executeFieldsSerially($objectType, $this->rootValue, $path, $fields)
+                : $this->executeFields($objectType, $this->rootValue, $path, $fields);
 
         } catch (\Exception $ex) {
             $this->context->addError(
                 new ExecutionException($ex->getMessage())
             );
+
+            //@TODO return [null]
             return [$ex->getMessage()];
         }
 

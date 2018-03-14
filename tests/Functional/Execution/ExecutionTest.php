@@ -6,7 +6,9 @@ use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema;
+use function Digia\GraphQL\execute;
 use function Digia\GraphQL\graphql;
+use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLObjectType;
@@ -112,6 +114,185 @@ class ExecutionTest extends TestCase
 
     /**
      * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testExecuteArbitraryCode()
+    {
+        $deep = new ObjectType([
+            'name'   => 'DeepDataType',
+            'fields' => function () use (&$dataType) {
+                return [
+                    'a'      => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Already Been Done';
+                        }
+                    ],
+                    'b'      => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Boring';
+                        }
+                    ],
+                    'c'      => [
+                        'type'    => GraphQLList(GraphQLString()),
+                        'resolve' => function () {
+                            return ['Contrived', null, 'Confusing'];
+                        }
+                    ],
+                    'deeper' => [
+                        'type'    => GraphQLList($dataType),
+                        'resolve' => function () {
+                            return [
+                                [
+                                    'a' => 'Apple',
+                                    'b' => 'Banana',
+                                ],
+                                null
+                                ,
+                                [
+                                    'a' => 'Apple',
+                                    'b' => 'Banana',
+                                ]
+                            ];
+                        }
+                    ]
+                ];
+            }
+        ]);
+
+        $dataType = new ObjectType([
+            'name'   => 'DataType',
+            'fields' => function () use (&$dataType, &$deep) {
+                return [
+                    'a'       => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Apple';
+                        }
+                    ],
+                    'b'       => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Banana';
+                        }
+                    ],
+                    'c'       => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Cookie';
+                        }
+                    ],
+                    'd'       => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Donut';
+                        }
+                    ],
+                    'e'       => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Egg';
+                        }
+                    ],
+                    'f'       => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function () {
+                            return 'Fish';
+                        }
+                    ],
+                    'pic'     => [
+                        'type'    => GraphQLString(),
+                        'resolve' => function ($src, $args) {
+                            return 'Pic of size: ' . ($args['size'] ?? 50);
+                        },
+                        'args'    => [
+                            'size' => [
+                                'type' => GraphQLInt(),
+                            ]
+                        ],
+                    ],
+                    'promise' => [
+                        'type'    => $dataType,
+                        'resolve' => function () {
+                            return [];
+                        }
+                    ],
+                    'deep'    => [
+                        'type'    => $deep,
+                        'resolve' => function () {
+                            return [];
+                        }
+                    ]
+                ];
+            }
+        ]);
+
+        $source = '
+      query Example($size: Int) {
+        a,
+        b,
+        x: c
+        ...c
+        f
+        ...on DataType {
+          pic(size: $size)
+          promise {
+            a
+          }
+        }
+        deep {
+          a
+          b
+          c
+          deeper {
+            a
+            b
+          }
+        }
+      }
+
+      fragment c on DataType {
+        d
+        e
+      }
+    ';
+
+        $schema = new Schema([
+            'query' => $dataType
+        ]);
+
+        /** @var ExecutionResult $executionResult */
+        $executionResult = execute($schema, parse($source), null, null, ['size' => 100]);
+
+        $expected = new ExecutionResult([
+            'a'       => 'Apple',
+            'b'       => 'Banana',
+            'x'       => 'Cookie',
+            'd'       => 'Donut',
+            'e'       => 'Egg',
+            'f'       => 'Fish',
+            'pic'     => 'Pic of size: 100',
+            'promise' => [
+                'a' => 'Apple'
+            ],
+            'deep'    => [
+                'a'      => 'Already Been Done',
+                'b'      => 'Boring',
+                'c'      => ['Contrived', null, 'Confusing'],
+                'deeper' => [
+                    ['a' => 'Apple', 'b' => 'Banana'],
+                    null,
+                    ['a' => 'Apple', 'b' => 'Banana'],
+                ]
+            ]
+        ], []);
+
+        $this->assertEquals($expected, $executionResult);
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function testExecuteQueryHelloWithArgs()
     {
@@ -207,7 +388,7 @@ class ExecutionTest extends TestCase
     /**
      * @throws \Digia\GraphQL\Error\InvariantException
      */
-    public function testHandleFragments()
+    public function testMergeParallelFragments()
     {
         $source = <<<SRC
 { a, ...FragOne, ...FragTwo }
