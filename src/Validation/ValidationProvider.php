@@ -1,14 +1,9 @@
 <?php
 
-namespace Digia\GraphQL\Provider;
+namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Validation\ContextBuilder;
-use Digia\GraphQL\Validation\ContextBuilderInterface;
 use Digia\GraphQL\Validation\Rule\RulesBuilder;
 use Digia\GraphQL\Validation\Rule\RulesBuilderInterface;
-use Digia\GraphQL\Validation\Rule\SupportedRules;
-use Digia\GraphQL\Validation\Validator;
-use Digia\GraphQL\Validation\ValidatorInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class ValidationProvider extends AbstractServiceProvider

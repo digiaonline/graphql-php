@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Provider;
+namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\GraphQL;
@@ -17,26 +17,10 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\SchemaInterface;
-use Digia\GraphQL\Type\TypeKindEnum;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use function Digia\GraphQL\Type\__Directive;
-use function Digia\GraphQL\Type\__DirectiveLocation;
-use function Digia\GraphQL\Type\__EnumValue;
-use function Digia\GraphQL\Type\__Field;
-use function Digia\GraphQL\Type\__InputValue;
-use function Digia\GraphQL\Type\__Type;
-use function Digia\GraphQL\Type\__TypeKind;
-use function Digia\GraphQL\Type\GraphQLBoolean;
-use function Digia\GraphQL\Type\GraphQLEnumType;
-use function Digia\GraphQL\Type\GraphQLList;
-use function Digia\GraphQL\Type\GraphQLNonNull;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLString;
 
 class IntrospectionTypesProvider extends AbstractServiceProvider
 {
-
     /**
      * @var array
      */

@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Provider;
+namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\BooleanValueNode;
@@ -8,10 +8,8 @@ use Digia\GraphQL\Language\Node\FloatValueNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\StringValueNode;
-use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use function Digia\GraphQL\Type\GraphQLScalarType;
 use function Digia\GraphQL\Util\coerceBoolean;
 use function Digia\GraphQL\Util\coerceFloat;
 use function Digia\GraphQL\Util\coerceInt;
@@ -19,7 +17,6 @@ use function Digia\GraphQL\Util\coerceString;
 
 class ScalarTypesProvider extends AbstractServiceProvider
 {
-
     /**
      * @var array
      */
