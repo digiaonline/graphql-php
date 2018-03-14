@@ -18,17 +18,15 @@ class KnownFragmentNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    public function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
     {
-        if ($node instanceof FragmentSpreadNode) {
-            $fragmentName = $node->getNameValue();
-            $fragment     = $this->validationContext->getFragment($fragmentName);
+        $fragmentName = $node->getNameValue();
+        $fragment     = $this->validationContext->getFragment($fragmentName);
 
-            if (null === $fragment) {
-                $this->validationContext->reportError(
-                    new ValidationException(unknownFragmentMessage($fragmentName), [$node->getName()])
-                );
-            }
+        if (null === $fragment) {
+            $this->validationContext->reportError(
+                new ValidationException(unknownFragmentMessage($fragmentName), [$node->getName()])
+            );
         }
 
         return $node;

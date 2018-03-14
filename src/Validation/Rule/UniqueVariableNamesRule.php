@@ -23,26 +23,30 @@ class UniqueVariableNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            $this->knownVariableNames = [];
-        }
+        $this->knownVariableNames = [];
 
-        if ($node instanceof VariableDefinitionNode) {
-            $variable     = $node->getVariable();
-            $variableName = $variable->getNameValue();
+        return $node;
+    }
 
-            if (isset($this->knownVariableNames[$variableName])) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        duplicateVariableMessage($variableName),
-                        [$this->knownVariableNames[$variableName], $variable->getName()]
-                    )
-                );
-            } else {
-                $this->knownVariableNames[$variableName] = $variable->getName();
-            }
+    /**
+     * @inheritdoc
+     */
+    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    {
+        $variable     = $node->getVariable();
+        $variableName = $variable->getNameValue();
+
+        if (isset($this->knownVariableNames[$variableName])) {
+            $this->validationContext->reportError(
+                new ValidationException(
+                    duplicateVariableMessage($variableName),
+                    [$this->knownVariableNames[$variableName], $variable->getName()]
+                )
+            );
+        } else {
+            $this->knownVariableNames[$variableName] = $variable->getName();
         }
 
         return $node;

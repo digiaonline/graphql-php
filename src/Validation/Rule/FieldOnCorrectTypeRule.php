@@ -28,34 +28,32 @@ class FieldOnCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterField(FieldNode $node): ?NodeInterface
     {
-        if ($node instanceof FieldNode) {
-            $type = $this->validationContext->getParentType();
+        $type = $this->validationContext->getParentType();
 
-            if ($type instanceof OutputTypeInterface) {
-                $fieldDefinition = $this->validationContext->getFieldDefinition();
+        if ($type instanceof OutputTypeInterface) {
+            $fieldDefinition = $this->validationContext->getFieldDefinition();
 
-                if (null === $fieldDefinition) {
-                    $schema              = $this->validationContext->getSchema();
-                    $fieldName           = $node->getNameValue();
-                    $suggestedTypeNames  = $this->getSuggestedTypeNames($schema, $type, $fieldName);
-                    $suggestedFieldNames = count($suggestedTypeNames) !== 0
-                        ? []
-                        : $this->getSuggestedFieldNames($type, $fieldName);
+            if (null === $fieldDefinition) {
+                $schema              = $this->validationContext->getSchema();
+                $fieldName           = $node->getNameValue();
+                $suggestedTypeNames  = $this->getSuggestedTypeNames($schema, $type, $fieldName);
+                $suggestedFieldNames = \count($suggestedTypeNames) !== 0
+                    ? []
+                    : $this->getSuggestedFieldNames($type, $fieldName);
 
-                    $this->validationContext->reportError(
-                        new ValidationException(
-                            undefinedFieldMessage(
-                                $fieldName,
-                                (string)$type,
-                                $suggestedTypeNames,
-                                $suggestedFieldNames
-                            ),
-                            [$node]
-                        )
-                    );
-                }
+                $this->validationContext->reportError(
+                    new ValidationException(
+                        undefinedFieldMessage(
+                            $fieldName,
+                            (string)$type,
+                            $suggestedTypeNames,
+                            $suggestedFieldNames
+                        ),
+                        [$node]
+                    )
+                );
             }
         }
 
@@ -72,7 +70,6 @@ class FieldOnCorrectTypeRule extends AbstractRule
      * @param TypeInterface   $type
      * @param string          $fieldName
      * @return array
-     * @throws \Exception
      */
     protected function getSuggestedTypeNames(SchemaInterface $schema, TypeInterface $type, string $fieldName): array
     {
@@ -105,13 +102,13 @@ class FieldOnCorrectTypeRule extends AbstractRule
             }
         }
 
-        $suggestedInterfaceTypes = array_keys($interfaceUsageCount);
+        $suggestedInterfaceTypes = \array_keys($interfaceUsageCount);
 
-        uasort($suggestedInterfaceTypes, function ($a, $b) use ($interfaceUsageCount) {
+        \uasort($suggestedInterfaceTypes, function ($a, $b) use ($interfaceUsageCount) {
             return $interfaceUsageCount[$b] - $interfaceUsageCount[$a];
         });
 
-        return array_merge($suggestedInterfaceTypes, $suggestedObjectTypes);
+        return \array_merge($suggestedInterfaceTypes, $suggestedObjectTypes);
     }
 
     /**
@@ -131,7 +128,7 @@ class FieldOnCorrectTypeRule extends AbstractRule
         }
 
         /** @var FieldsTrait $type */
-        $possibleFieldNames = array_keys($type->getFields());
+        $possibleFieldNames = \array_keys($type->getFields());
         return suggestionList($fieldName, $possibleFieldNames);
     }
 }

@@ -21,30 +21,28 @@ class ScalarLeafsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterField(FieldNode $node): ?NodeInterface
     {
-        if ($node instanceof FieldNode) {
-            $type         = $this->validationContext->getType();
-            $selectionSet = $node->getSelectionSet();
+        $type         = $this->validationContext->getType();
+        $selectionSet = $node->getSelectionSet();
 
-            if (null !== $type) {
-                if (getNamedType($type) instanceof LeafTypeInterface) {
-                    if (null !== $selectionSet) {
-                        $this->validationContext->reportError(
-                            new ValidationException(
-                                noSubselectionAllowedMessage((string)$node, (string)$type),
-                                [$selectionSet]
-                            )
-                        );
-                    }
-                } elseif (null === $selectionSet) {
+        if (null !== $type) {
+            if (getNamedType($type) instanceof LeafTypeInterface) {
+                if (null !== $selectionSet) {
                     $this->validationContext->reportError(
                         new ValidationException(
-                            requiresSubselectionMessage((string)$node, (string)$type),
-                            [$node]
+                            noSubselectionAllowedMessage((string)$node, (string)$type),
+                            [$selectionSet]
                         )
                     );
                 }
+            } elseif (null === $selectionSet) {
+                $this->validationContext->reportError(
+                    new ValidationException(
+                        requiresSubselectionMessage((string)$node, (string)$type),
+                        [$node]
+                    )
+                );
             }
         }
 

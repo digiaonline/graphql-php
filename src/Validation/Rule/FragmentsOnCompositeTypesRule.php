@@ -24,24 +24,27 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof InlineFragmentNode) {
-            $this->validateFragementNode($node, function (NodeInterface $node) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                return inlineFragmentOnNonCompositeMessage((string)$node->getTypeCondition());
-            });
-        }
-
-        if ($node instanceof FragmentDefinitionNode) {
-            $this->validateFragementNode($node, function (NodeInterface $node) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                return fragmentOnNonCompositeMessage((string)$node, (string)$node->getTypeCondition());
-            });
-        }
+        $this->validateFragementNode($node, function (FragmentDefinitionNode $node) {
+            return fragmentOnNonCompositeMessage((string)$node, (string)$node->getTypeCondition());
+        });
 
         return $node;
     }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    {
+        $this->validateFragementNode($node, function (InlineFragmentNode $node) {
+            return inlineFragmentOnNonCompositeMessage((string)$node->getTypeCondition());
+        });
+
+        return $node;
+    }
+
 
     /**
      * @param NodeInterface|InlineFragmentNode|FragmentDefinitionNode $node
@@ -57,8 +60,11 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
             $type = typeFromAST($this->validationContext->getSchema(), $typeCondition);
 
             if (null !== $type && !($type instanceof CompositeTypeInterface)) {
-                $this->validationContext->reportError(new ValidationException($errorMessageFunction($node),
-                    [$typeCondition]));
+                $this->validationContext->reportError(
+                    new ValidationException($errorMessageFunction($node),
+                    [$typeCondition]
+                    )
+                );
             }
         }
     }

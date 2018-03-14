@@ -42,21 +42,21 @@ class NoFragmentCyclesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            return null;
+        return null; // Operations cannot contain fragments.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    {
+        if (!isset($this->visitedFragments[$node->getNameValue()])) {
+            $this->detectFragmentCycle($node);
         }
 
-        if ($node instanceof FragmentDefinitionNode) {
-            if (!isset($this->visitedFragments[$node->getNameValue()])) {
-                $this->detectFragmentCycle($node);
-            }
-
-            return null;
-        }
-
-        return $node;
+        return null;
     }
 
     /**

@@ -36,45 +36,48 @@ class PossibleFragmentSpreadsRule extends AbstractRule
         $this->typeComparator = new TypeComparator();
     }
 
+    /**
+     * @inheritdoc
+     */
+    protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    {
+        $fragmentType = $this->validationContext->getType();
+        $parentType   = $this->validationContext->getParentType();
+
+        if ($fragmentType instanceof CompositeTypeInterface &&
+            $parentType instanceof CompositeTypeInterface &&
+            !$this->typeComparator->doTypesOverlap($this->validationContext->getSchema(),
+                $fragmentType, $parentType)) {
+            $this->validationContext->reportError(
+                new ValidationException(
+                    typeIncompatibleAnonymousSpreadMessage($parentType, $fragmentType),
+                    [$node]
+                )
+            );
+        }
+
+        return $node;
+    }
 
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
     {
-        if ($node instanceof InlineFragmentNode) {
-            $fragmentType = $this->validationContext->getType();
-            $parentType   = $this->validationContext->getParentType();
+        $fragmentName = $node->getNameValue();
+        $fragmentType = $this->getFragmentType($fragmentName);
+        $parentType   = $this->validationContext->getParentType();
 
-            if ($fragmentType instanceof CompositeTypeInterface &&
-                $parentType instanceof CompositeTypeInterface &&
-                !$this->typeComparator->doTypesOverlap($this->validationContext->getSchema(),
-                    $fragmentType, $parentType)) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        typeIncompatibleAnonymousSpreadMessage($parentType, $fragmentType),
-                        [$node]
-                    )
-                );
-            }
-        }
-
-        if ($node instanceof FragmentSpreadNode) {
-            $fragmentName = $node->getNameValue();
-            $fragmentType = $this->getFragmentType($fragmentName);
-            $parentType   = $this->validationContext->getParentType();
-
-            if (null !== $fragmentType &&
-                null !== $parentType &&
-                !$this->typeComparator->doTypesOverlap($this->validationContext->getSchema(),
-                    $fragmentType, $parentType)) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        typeIncompatibleSpreadMessage($fragmentName, $parentType, $fragmentType),
-                        [$node]
-                    )
-                );
-            }
+        if (null !== $fragmentType &&
+            null !== $parentType &&
+            !$this->typeComparator->doTypesOverlap($this->validationContext->getSchema(),
+                $fragmentType, $parentType)) {
+            $this->validationContext->reportError(
+                new ValidationException(
+                    typeIncompatibleSpreadMessage($fragmentName, $parentType, $fragmentType),
+                    [$node]
+                )
+            );
         }
 
         return $node;

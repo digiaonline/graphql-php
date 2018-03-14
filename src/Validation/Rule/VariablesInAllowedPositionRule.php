@@ -40,14 +40,51 @@ class VariablesInAllowedPositionRule extends AbstractRule
         $this->typeComparator = new TypeComparator();
     }
 
+    /**
+     * @inheritdoc
+     */
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    {
+        $this->variableDefinitionMap = [];
+
+        return $node;
+    }
 
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            $this->variableDefinitionMap = [];
+        $usages = $this->validationContext->getRecursiveVariableUsages($node);
+
+        /**
+         * @var VariableNode  $variableNode
+         * @var TypeInterface $type
+         */
+        foreach ($usages as ['node' => $variableNode, 'type' => $type]) {
+            $variableName       = $variableNode->getNameValue();
+            $variableDefinition = $this->variableDefinitionMap[$variableName];
+
+            if (null !== $variableDefinition && null !== $type) {
+                // A var type is allowed if it is the same or more strict (e.g. is
+                // a subtype of) than the expected type. It can be more strict if
+                // the variable type is non-null when the expected type is nullable.
+                // If both are list types, the variable item type can be more strict
+                // than the expected item type (contravariant).
+                $schema       = $this->validationContext->getSchema();
+                $variableType = typeFromAST($schema, $variableDefinition->getType());
+
+                if (null !== $variableType &&
+                    !$this->typeComparator->isTypeSubTypeOf($schema,
+                        $this->getEffectiveType($variableType, $variableDefinition), $type)) {
+                    $this->validationContext->reportError(
+                        new ValidationException(
+                            badVariablePositionMessage($variableName, $variableType, $type),
+                            [$variableDefinition, $variableNode]
+                        )
+                    );
+                }
+            }
         }
 
         return $node;
@@ -55,47 +92,10 @@ class VariablesInAllowedPositionRule extends AbstractRule
 
     /**
      * @inheritdoc
-     * @throws InvalidTypeException
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            $usages = $this->validationContext->getRecursiveVariableUsages($node);
-
-            /**
-             * @var VariableNode  $variableNode
-             * @var TypeInterface $type
-             */
-            foreach ($usages as ['node' => $variableNode, 'type' => $type]) {
-                $variableName       = $variableNode->getNameValue();
-                $variableDefinition = $this->variableDefinitionMap[$variableName];
-
-                if (null !== $variableDefinition && null !== $type) {
-                    // A var type is allowed if it is the same or more strict (e.g. is
-                    // a subtype of) than the expected type. It can be more strict if
-                    // the variable type is non-null when the expected type is nullable.
-                    // If both are list types, the variable item type can be more strict
-                    // than the expected item type (contravariant).
-                    $schema       = $this->validationContext->getSchema();
-                    $variableType = typeFromAST($schema, $variableDefinition->getType());
-
-                    if (null !== $variableType &&
-                        !$this->typeComparator->isTypeSubTypeOf($schema,
-                            $this->getEffectiveType($variableType, $variableDefinition), $type)) {
-                        $this->validationContext->reportError(
-                            new ValidationException(
-                                badVariablePositionMessage($variableName, $variableType, $type),
-                                [$variableDefinition, $variableNode]
-                            )
-                        );
-                    }
-                }
-            }
-        }
-
-        if ($node instanceof VariableDefinitionNode) {
-            $this->variableDefinitionMap[$node->getVariable()->getNameValue()] = $node;
-        }
+        $this->variableDefinitionMap[$node->getVariable()->getNameValue()] = $node;
 
         return $node;
     }

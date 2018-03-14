@@ -24,20 +24,24 @@ class LoneAnonymousOperationRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterDocument(DocumentNode $node): ?NodeInterface
     {
-        if ($node instanceof DocumentNode) {
-            $this->operationCount = \count(array_filter($node->getDefinitions(), function ($definition) {
-                return $definition instanceof OperationDefinitionNode;
-            }));
-        }
+        $this->operationCount = \count(\array_filter($node->getDefinitions(), function ($definition) {
+            return $definition instanceof OperationDefinitionNode;
+        }));
 
-        if ($node instanceof OperationDefinitionNode) {
-            if (null === $node->getName() && $this->operationCount > 1) {
-                $this->validationContext->reportError(
-                    new ValidationException(anonymousOperationNotAloneMessage(), [$node])
-                );
-            }
+        return $node;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    {
+        if (null === $node->getName() && $this->operationCount > 1) {
+            $this->validationContext->reportError(
+                new ValidationException(anonymousOperationNotAloneMessage(), [$node])
+            );
         }
 
         return $node;

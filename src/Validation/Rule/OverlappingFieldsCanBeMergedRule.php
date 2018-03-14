@@ -30,29 +30,26 @@ class OverlappingFieldsCanBeMergedRule extends AbstractRule
         $this->comparedFragmentPairs        = new PairSet();
     }
 
-
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterSelectionSet(SelectionSetNode $node): ?NodeInterface
     {
-        if ($node instanceof SelectionSetNode) {
-            $parentType = $this->validationContext->getParentType();
-            $conflicts  = $this->findConflictsWithinSelectionSet(
-                $this->cachedFieldsAndFragmentNames,
-                $this->comparedFragmentPairs,
-                $node,
-                $parentType
-            );
+        $parentType = $this->validationContext->getParentType();
+        $conflicts  = $this->findConflictsWithinSelectionSet(
+            $this->cachedFieldsAndFragmentNames,
+            $this->comparedFragmentPairs,
+            $node,
+            $parentType
+        );
 
-            foreach ($conflicts as $conflict) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        fieldsConflictMessage($conflict->getResponseName(), $conflict->getReason()),
-                        $conflict->getAllFields()
-                    )
-                );
-            }
+        foreach ($conflicts as $conflict) {
+            $this->validationContext->reportError(
+                new ValidationException(
+                    fieldsConflictMessage($conflict->getResponseName(), $conflict->getReason()),
+                    $conflict->getAllFields()
+                )
+            );
         }
 
         return $node;

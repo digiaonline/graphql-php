@@ -25,15 +25,9 @@ class NoUndefinedVariablesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            $this->definedVariableNames = [];
-        }
-
-        if ($node instanceof VariableDefinitionNode) {
-            $this->definedVariableNames[$node->getVariable()->getNameValue()] = true;
-        }
+        $this->definedVariableNames = [];
 
         return $node;
     }
@@ -41,24 +35,32 @@ class NoUndefinedVariablesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
     {
-        if ($node instanceof OperationDefinitionNode) {
-            $usages = $this->validationContext->getRecursiveVariableUsages($node);
+        $this->definedVariableNames[$node->getVariable()->getNameValue()] = true;
 
-            foreach ($usages as ['node' => $variableNode]) {
-                /** @var VariableNode $variableNode */
-                $variableName = $variableNode->getNameValue();
+        return $node;
+    }
 
-                if (!isset($this->definedVariableNames[$variableName])) {
-                    $operationName = $node->getName();
-                    $this->validationContext->reportError(
-                        new ValidationException(
-                            undefinedVariableMessage($variableName, $operationName ? $operationName->getValue() : null),
-                            [$variableNode, $node]
-                        )
-                    );
-                }
+    /**
+     * @inheritdoc
+     */
+    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    {
+        $usages = $this->validationContext->getRecursiveVariableUsages($node);
+
+        foreach ($usages as ['node' => $variableNode]) {
+            /** @var VariableNode $variableNode */
+            $variableName = $variableNode->getNameValue();
+
+            if (!isset($this->definedVariableNames[$variableName])) {
+                $operationName = $node->getName();
+                $this->validationContext->reportError(
+                    new ValidationException(
+                        undefinedVariableMessage($variableName, $operationName ? $operationName->getValue() : null),
+                        [$variableNode, $node]
+                    )
+                );
             }
         }
 
