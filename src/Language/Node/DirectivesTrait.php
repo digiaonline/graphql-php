@@ -7,7 +7,7 @@ trait DirectivesTrait
     /**
      * @var DirectiveNode[]
      */
-    protected $directives;
+    protected $directives = [];
 
     /**
      * @return bool

@@ -51,7 +51,8 @@ trait AcceptsVisitorsTrait
         $key = null,
         ?NodeInterface $parent = null,
         array $path = [],
-        array $ancestors = []
+        array $ancestors = [],
+        bool $visitEvenIfEdited = false
     ): ?NodeInterface {
         $this->visitor   = $visitor;
         $this->key       = $key;
@@ -62,14 +63,15 @@ trait AcceptsVisitorsTrait
         /** @var NodeInterface|AcceptsVisitorsTrait|null $newNode */
         $newNode = clone $this; // TODO: Benchmark cloning
 
-        // If the result was null, it means that we should not traverse this branch.
-        if (null === ($newNode = $visitor->enterNode($newNode))) {
+        // If the node was NOT edited and the result was null,
+        // it means that we should not traverse this branch.
+        if (!$visitEvenIfEdited && null === ($newNode = $visitor->enterNode($newNode))) {
             return null;
         }
 
         // If the node was edited, we want to return early
         // to avoid visiting its sub-tree completely.
-        if ($newNode->determineIsEdited($this)) {
+        if (!$visitEvenIfEdited && $newNode->determineIsEdited($this)) {
             return $newNode;
         }
 
@@ -156,7 +158,7 @@ trait AcceptsVisitorsTrait
     }
 
     /**
-     * @param string|int $key
+     * @param string|int    $key
      * @return array|NodeInterface|NodeInterface[]|null
      */
     protected function getNodeOrNodes($key)
@@ -210,9 +212,9 @@ trait AcceptsVisitorsTrait
     }
 
     /**
-     * @param NodeInterface|AcceptsVisitorsTrait $node
-     * @param string|int                         $key
-     * @param NodeInterface|null                 $parent
+     * @param NodeInterface|AcceptsVisitorsInterface $node
+     * @param string|int                             $key
+     * @param NodeInterface|null                     $parent
      * @return NodeInterface|null
      */
     protected function visitNode(NodeInterface $node, $key, ?NodeInterface $parent): ?NodeInterface
@@ -221,10 +223,16 @@ trait AcceptsVisitorsTrait
 
         $newNode = $node->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
 
-        // If the node was edited, we need to revisit it
-        // to produce the expected result.
+        // If the node was edited, we need to revisit it to produce the expected result.
         if (null !== $newNode && $newNode->isEdited()) {
-            $newNode = $newNode->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
+            $newNode = $newNode->acceptVisitor(
+                $this->visitor,
+                $key,
+                $parent,
+                $this->path,
+                $this->ancestors,
+                $newNode->isEdited()
+            );
         }
 
         $this->removeOneFromPath();

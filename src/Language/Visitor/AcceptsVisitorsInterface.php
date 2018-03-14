@@ -13,15 +13,22 @@ interface AcceptsVisitorsInterface
      * @param NodeInterface|null    $parent
      * @param array|string[]        $path
      * @param array|NodeInterface[] $ancestors
-     * @return NodeInterface|null
+     * @param bool                  $isEdited
+     * @return NodeInterface|AcceptsVisitorsInterface|null
      */
     public function acceptVisitor(
         VisitorInterface $visitor,
         $key = null,
         ?NodeInterface $parent = null,
         array $path = [],
-        array $ancestors = []
+        array $ancestors = [],
+        bool $isEdited = false
     ): ?NodeInterface;
+
+    /**
+     * @return bool
+     */
+    public function isEdited(): bool;
 
     /**
      * @return int|null|string
