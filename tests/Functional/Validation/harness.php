@@ -273,7 +273,7 @@ function ComplicatedArgs(): ObjectType
     static $instance = null;
     return $instance ??
         $instance = GraphQLObjectType([
-            'name'   => 'ComplexArgs',
+            'name'   => 'ComplicatedArgs',
             // TODO List
             // TODO Coercion
             // TODO NotNulls
