@@ -1,9 +1,7 @@
 <?php
 
-namespace Digia\GraphQL\Provider;
+namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Execution\Execution;
-use Digia\GraphQL\Execution\ExecutionInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 /**

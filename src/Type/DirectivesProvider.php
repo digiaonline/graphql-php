@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Provider;
+namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
@@ -12,7 +12,6 @@ use function Digia\GraphQL\Type\GraphQLString;
 
 class DirectivesProvider extends AbstractServiceProvider
 {
-
     /**
      * @var array
      */

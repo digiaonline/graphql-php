@@ -2,15 +2,13 @@
 
 namespace Digia\GraphQL;
 
-use Digia\GraphQL\Provider\CacheProvider;
-use Digia\GraphQL\Provider\DirectivesProvider;
-use Digia\GraphQL\Provider\ExecutionProvider;
-use Digia\GraphQL\Provider\IntrospectionTypesProvider;
-use Digia\GraphQL\Provider\ParserProvider;
-use Digia\GraphQL\Provider\PrinterProvider;
-use Digia\GraphQL\Provider\ScalarTypesProvider;
-use Digia\GraphQL\Provider\SchemaBuilderProvider;
-use Digia\GraphQL\Provider\ValidationProvider;
+use Digia\GraphQL\Cache\CacheProvider;
+use Digia\GraphQL\Execution\ExecutionProvider;
+use Digia\GraphQL\Language\LanguageProvider;
+use Digia\GraphQL\Type\DirectivesProvider;
+use Digia\GraphQL\Type\IntrospectionTypesProvider;
+use Digia\GraphQL\Type\ScalarTypesProvider;
+use Digia\GraphQL\Validation\ValidationProvider;
 use League\Container\Container;
 use League\Container\ContainerInterface;
 
@@ -41,9 +39,7 @@ class GraphQL
      */
     private static $providers = [
         CacheProvider::class,
-        ParserProvider::class,
-        PrinterProvider::class,
-        SchemaBuilderProvider::class,
+        LanguageProvider::class,
         IntrospectionTypesProvider::class,
         ScalarTypesProvider::class,
         DirectivesProvider::class,
