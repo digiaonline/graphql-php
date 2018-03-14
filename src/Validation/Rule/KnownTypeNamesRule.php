@@ -26,12 +26,12 @@ class KnownTypeNamesRule extends AbstractRule
      */
     protected function enterNamedType(NamedTypeNode $node): ?NodeInterface
     {
-        $schema   = $this->validationContext->getSchema();
+        $schema   = $this->context->getSchema();
         $typeName = $node->getNameValue();
         $type     = $schema->getType($typeName);
 
         if (null === $type) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     unknownTypeMessage($typeName, suggestionList($typeName, \array_keys($schema->getTypeMap()))),
                     [$node]

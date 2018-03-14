@@ -27,7 +27,7 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
      */
     protected function leaveField(FieldNode $node): ?NodeInterface
     {
-        $fieldDefinition = $this->validationContext->getFieldDefinition();
+        $fieldDefinition = $this->context->getFieldDefinition();
 
         if (null === $fieldDefinition) {
             return null;
@@ -43,7 +43,7 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
             $argumentType = $argumentDefinition->getType();
 
             if (null === $argumentNode && $argumentType instanceof NonNullType) {
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(
                         missingFieldArgumentMessage(
                             (string)$node,
@@ -64,7 +64,7 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
      */
     protected function leaveDirective(DirectiveNode $node): ?NodeInterface
     {
-        $directiveDefinition = $this->validationContext->getDirective();
+        $directiveDefinition = $this->context->getDirective();
 
         if (null === $directiveDefinition) {
             return null;
@@ -80,7 +80,7 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
             $argumentType = $argumentDefinition->getType();
 
             if (null === $argumentNode && $argumentType instanceof NonNullType) {
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(
                         missingDirectiveArgumentMessage(
                             (string)$node,

@@ -21,10 +21,10 @@ class KnownFragmentNamesRule extends AbstractRule
     public function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
     {
         $fragmentName = $node->getNameValue();
-        $fragment     = $this->validationContext->getFragment($fragmentName);
+        $fragment     = $this->context->getFragment($fragmentName);
 
         if (null === $fragment) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(unknownFragmentMessage($fragmentName), [$node->getName()])
             );
         }

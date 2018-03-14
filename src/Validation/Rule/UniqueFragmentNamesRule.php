@@ -36,7 +36,7 @@ class UniqueFragmentNamesRule extends AbstractRule
         $fragmentName = $node->getNameValue();
 
         if (isset($this->knownFragmentNames[$fragmentName])) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     duplicateFragmentMessage($fragmentName),
                     [$this->knownFragmentNames[$fragmentName], $node->getName()]

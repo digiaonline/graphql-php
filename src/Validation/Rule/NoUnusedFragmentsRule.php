@@ -55,7 +55,7 @@ class NoUnusedFragmentsRule extends AbstractRule
         $fragmentNamesUsed = [];
 
         foreach ($this->operationDefinitions as $operationDefinition) {
-            foreach ($this->validationContext->getRecursivelyReferencedFragments($operationDefinition) as $fragmentDefinition) {
+            foreach ($this->context->getRecursivelyReferencedFragments($operationDefinition) as $fragmentDefinition) {
                 $fragmentNamesUsed[$fragmentDefinition->getNameValue()] = true;
             }
         }
@@ -64,7 +64,7 @@ class NoUnusedFragmentsRule extends AbstractRule
             $fragmentName = $fragmentDefinition->getNameValue();
 
             if (!isset($fragmentNamesUsed[$fragmentName])) {
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(unusedFragmentMessage($fragmentName), [$fragmentDefinition])
                 );
             }

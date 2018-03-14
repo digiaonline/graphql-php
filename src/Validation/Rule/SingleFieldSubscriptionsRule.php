@@ -28,7 +28,7 @@ class SingleFieldSubscriptionsRule extends AbstractRule
         if (null !== $selectionSet) {
             $selections = $selectionSet->getSelections();
             if (\count($selections) !== 1) {
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(singleFieldOnlyMessage((string)$node), \array_slice($selections, 1))
                 );
             }

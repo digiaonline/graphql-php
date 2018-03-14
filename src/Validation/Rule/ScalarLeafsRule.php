@@ -23,13 +23,13 @@ class ScalarLeafsRule extends AbstractRule
      */
     protected function enterField(FieldNode $node): ?NodeInterface
     {
-        $type         = $this->validationContext->getType();
+        $type         = $this->context->getType();
         $selectionSet = $node->getSelectionSet();
 
         if (null !== $type) {
             if (getNamedType($type) instanceof LeafTypeInterface) {
                 if (null !== $selectionSet) {
-                    $this->validationContext->reportError(
+                    $this->context->reportError(
                         new ValidationException(
                             noSubselectionAllowedMessage((string)$node, (string)$type),
                             [$selectionSet]
@@ -37,7 +37,7 @@ class ScalarLeafsRule extends AbstractRule
                     );
                 }
             } elseif (null === $selectionSet) {
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(
                         requiresSubselectionMessage((string)$node, (string)$type),
                         [$node]

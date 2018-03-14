@@ -50,7 +50,7 @@ class UniqueArgumentNamesRule extends AbstractRule
         $argumentName = $node->getNameValue();
 
         if (isset($this->knownArgumentNames[$argumentName])) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     duplicateArgumentMessage($argumentName),
                     [$this->knownArgumentNames[$argumentName], $node->getName()]

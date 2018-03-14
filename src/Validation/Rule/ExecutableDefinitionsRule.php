@@ -25,7 +25,7 @@ class ExecutableDefinitionsRule extends AbstractRule
         foreach ($node->getDefinitions() as $definition) {
             if (!$definition instanceof ExecutableDefinitionNodeInterface) {
                 /** @noinspection PhpUndefinedMethodInspection */
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(
                         nonExecutableDefinitionMessage(
                             $definition instanceof SchemaDefinitionNode ? 'schema' : $definition->getNameValue()

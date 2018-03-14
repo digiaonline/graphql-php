@@ -28,7 +28,7 @@ class UniqueDirectivesPerLocationRule extends AbstractRule
                 $directiveName = $directive->getNameValue();
 
                 if (isset($knownDirectives[$directiveName])) {
-                    $this->validationContext->reportError(
+                    $this->context->reportError(
                         new ValidationException(
                             duplicateDirectiveMessage($directiveName),
                             [$knownDirectives[$directiveName], $directive]

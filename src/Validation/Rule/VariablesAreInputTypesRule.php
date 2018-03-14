@@ -23,12 +23,12 @@ class VariablesAreInputTypesRule extends AbstractRule
      */
     protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
     {
-        $type = typeFromAST($this->validationContext->getSchema(), $node->getType());
+        $type = typeFromAST($this->context->getSchema(), $node->getType());
 
         if (!isInputType($type)) {
             $variableName = $node->getVariable()->getNameValue();
 
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     nonInputTypeOnVariableMessage($variableName, printNode($node->getType())),
                     [$node->getType()]

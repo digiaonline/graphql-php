@@ -55,7 +55,7 @@ class VariablesInAllowedPositionRule extends AbstractRule
      */
     protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
-        $usages = $this->validationContext->getRecursiveVariableUsages($node);
+        $usages = $this->context->getRecursiveVariableUsages($node);
 
         /**
          * @var VariableNode  $variableNode
@@ -71,13 +71,13 @@ class VariablesInAllowedPositionRule extends AbstractRule
                 // the variable type is non-null when the expected type is nullable.
                 // If both are list types, the variable item type can be more strict
                 // than the expected item type (contravariant).
-                $schema       = $this->validationContext->getSchema();
+                $schema       = $this->context->getSchema();
                 $variableType = typeFromAST($schema, $variableDefinition->getType());
 
                 if (null !== $variableType &&
                     !$this->typeComparator->isTypeSubTypeOf($schema,
                         $this->getEffectiveType($variableType, $variableDefinition), $type)) {
-                    $this->validationContext->reportError(
+                    $this->context->reportError(
                         new ValidationException(
                             badVariablePositionMessage($variableName, $variableType, $type),
                             [$variableDefinition, $variableNode]

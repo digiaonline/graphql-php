@@ -42,10 +42,10 @@ class VariablesDefaultValueAllowedRule extends AbstractRule
         $variable     = $node->getVariable();
         $variableName = $variable->getNameValue();
         $defaultValue = $node->getDefaultValue();
-        $type         = $this->validationContext->getInputType();
+        $type         = $this->context->getInputType();
 
         if (null !== $defaultValue && $type instanceof NonNullType) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     variableDefaultValueNotAllowedMessage($variableName, $type, $type->getOfType()),
                     [$defaultValue]

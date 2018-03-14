@@ -25,7 +25,7 @@ class KnownArgumentNamesRule extends AbstractRule
      */
     protected function enterArgument(ArgumentNode $node): ?NodeInterface
     {
-        $argumentDefinition = $this->validationContext->getArgument();
+        $argumentDefinition = $this->context->getArgument();
 
         if (null === $argumentDefinition) {
             $argumentOf = $node->getAncestor();
@@ -48,8 +48,8 @@ class KnownArgumentNamesRule extends AbstractRule
      */
     protected function validateField(NodeInterface $node): ?NodeInterface
     {
-        $fieldDefinition = $this->validationContext->getFieldDefinition();
-        $parentType      = $this->validationContext->getParentType();
+        $fieldDefinition = $this->context->getFieldDefinition();
+        $parentType      = $this->context->getParentType();
 
         if (null !== $fieldDefinition && null !== $parentType) {
             $options = array_map(function (Argument $argument) {
@@ -59,7 +59,7 @@ class KnownArgumentNamesRule extends AbstractRule
             /** @noinspection PhpUndefinedMethodInspection */
             $suggestions = suggestionList($node->getNameValue(), $options);
 
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     unknownArgumentMessage((string)$node, (string)$fieldDefinition, (string)$parentType, $suggestions),
                     [$node]
@@ -76,7 +76,7 @@ class KnownArgumentNamesRule extends AbstractRule
      */
     protected function validateDirective(NodeInterface $node): ?NodeInterface
     {
-        $directive = $this->validationContext->getDirective();
+        $directive = $this->context->getDirective();
 
         if (null !== $directive) {
             $options = array_map(function (Argument $argument) {
@@ -85,7 +85,7 @@ class KnownArgumentNamesRule extends AbstractRule
 
             $suggestions = suggestionList((string)$node, $options);
 
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     unknownDirectiveArgumentMessage((string)$node, (string)$directive, $suggestions),
                     [$node]

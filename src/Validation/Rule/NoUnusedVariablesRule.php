@@ -48,7 +48,7 @@ class NoUnusedVariablesRule extends AbstractRule
     protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
         $variableNamesUsed = [];
-        $usages            = $this->validationContext->getRecursiveVariableUsages($node);
+        $usages            = $this->context->getRecursiveVariableUsages($node);
         $operationNameNode = $node->getName();
         $operationName     = null !== $operationNameNode ? $operationNameNode->getValue() : null;
 
@@ -61,7 +61,7 @@ class NoUnusedVariablesRule extends AbstractRule
             $variableName = $variableDefinition->getVariable()->getNameValue();
 
             if (!isset($variableNamesUsed[$variableName])) {
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(
                         unusedVariableMessage($variableName, $operationName),
                         [$variableDefinition]

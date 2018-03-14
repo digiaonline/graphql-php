@@ -39,7 +39,7 @@ class UniqueVariableNamesRule extends AbstractRule
         $variableName = $variable->getNameValue();
 
         if (isset($this->knownVariableNames[$variableName])) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     duplicateVariableMessage($variableName),
                     [$this->knownVariableNames[$variableName], $variable->getName()]

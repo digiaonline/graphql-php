@@ -41,14 +41,14 @@ class PossibleFragmentSpreadsRule extends AbstractRule
      */
     protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
     {
-        $fragmentType = $this->validationContext->getType();
-        $parentType   = $this->validationContext->getParentType();
+        $fragmentType = $this->context->getType();
+        $parentType   = $this->context->getParentType();
 
         if ($fragmentType instanceof CompositeTypeInterface &&
             $parentType instanceof CompositeTypeInterface &&
-            !$this->typeComparator->doTypesOverlap($this->validationContext->getSchema(),
+            !$this->typeComparator->doTypesOverlap($this->context->getSchema(),
                 $fragmentType, $parentType)) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     typeIncompatibleAnonymousSpreadMessage($parentType, $fragmentType),
                     [$node]
@@ -66,13 +66,13 @@ class PossibleFragmentSpreadsRule extends AbstractRule
     {
         $fragmentName = $node->getNameValue();
         $fragmentType = $this->getFragmentType($fragmentName);
-        $parentType   = $this->validationContext->getParentType();
+        $parentType   = $this->context->getParentType();
 
         if (null !== $fragmentType &&
             null !== $parentType &&
-            !$this->typeComparator->doTypesOverlap($this->validationContext->getSchema(),
+            !$this->typeComparator->doTypesOverlap($this->context->getSchema(),
                 $fragmentType, $parentType)) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     typeIncompatibleSpreadMessage($fragmentName, $parentType, $fragmentType),
                     [$node]
@@ -90,13 +90,13 @@ class PossibleFragmentSpreadsRule extends AbstractRule
      */
     protected function getFragmentType(string $name): ?TypeInterface
     {
-        $fragment = $this->validationContext->getFragment($name);
+        $fragment = $this->context->getFragment($name);
 
         if (null === $fragment) {
             return null;
         }
 
-        $type = typeFromAST($this->validationContext->getSchema(), $fragment->getTypeCondition());
+        $type = typeFromAST($this->context->getSchema(), $fragment->getTypeCondition());
 
         return $type instanceof CompositeTypeInterface ? $type : null;
     }

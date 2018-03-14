@@ -7,23 +7,23 @@ trait ValidationContextAwareTrait
     /**
      * @var ValidationContextInterface
      */
-    protected $validationContext;
+    protected $context;
 
     /**
      * @return ValidationContextInterface
      */
-    public function getValidationContext(): ValidationContextInterface
+    public function getContext(): ValidationContextInterface
     {
-        return $this->validationContext;
+        return $this->context;
     }
 
     /**
-     * @param ValidationContextInterface $validationContext
+     * @param ValidationContextInterface $context
      * @return $this
      */
-    public function setValidationContext(ValidationContextInterface $validationContext)
+    public function setContext(ValidationContextInterface $context)
     {
-        $this->validationContext = $validationContext;
+        $this->context = $context;
         return $this;
     }
 }

@@ -28,7 +28,7 @@ class UniqueOperationNamesRule extends AbstractRule
 
         if (null !== $operationName) {
             if (isset($this->knownOperationNames[$operationName])) {
-                $this->validationContext->reportError(
+                $this->context->reportError(
                     new ValidationException(
                         duplicateOperationMessage($operationName),
                         [$this->knownOperationNames[$operationName], $node->getName()]

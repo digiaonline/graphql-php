@@ -9,6 +9,7 @@ use Digia\GraphQL\Validation\Conflict\FindsConflictsTrait;
 use Digia\GraphQL\Validation\Conflict\Map;
 use Digia\GraphQL\Validation\Conflict\PairSet;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
+use Digia\GraphQL\Validation\ValidationContextInterface;
 
 /**
  * Overlapping fields can be merged
@@ -33,9 +34,17 @@ class OverlappingFieldsCanBeMergedRule extends AbstractRule
     /**
      * @inheritdoc
      */
+    public function getValidationContext(): ValidationContextInterface
+    {
+        return $this->context;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function enterSelectionSet(SelectionSetNode $node): ?NodeInterface
     {
-        $parentType = $this->validationContext->getParentType();
+        $parentType = $this->context->getParentType();
         $conflicts  = $this->findConflictsWithinSelectionSet(
             $this->cachedFieldsAndFragmentNames,
             $this->comparedFragmentPairs,
@@ -44,7 +53,7 @@ class OverlappingFieldsCanBeMergedRule extends AbstractRule
         );
 
         foreach ($conflicts as $conflict) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     fieldsConflictMessage($conflict->getResponseName(), $conflict->getReason()),
                     $conflict->getAllFields()

@@ -48,14 +48,14 @@ class KnownDirectivesRule extends AbstractRule
     {
         /** @var Directive $directiveDefinition */
         $directiveDefinition = find(
-            $this->validationContext->getSchema()->getDirectives(),
+            $this->context->getSchema()->getDirectives(),
             function (Directive $definition) use ($node) {
                 return $definition->getName() === $node->getNameValue();
             }
         );
 
         if (null == $directiveDefinition) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(unknownDirectiveMessage((string)$node), [$node])
             );
 
@@ -65,7 +65,7 @@ class KnownDirectivesRule extends AbstractRule
         $location = $this->getDirectiveLocationFromASTPath($node);
 
         if (null !== $location && !\in_array($location, $directiveDefinition->getLocations())) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(misplacedDirectiveMessage((string)$node, $location), [$node])
             );
         }

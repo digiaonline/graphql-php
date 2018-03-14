@@ -42,7 +42,7 @@ class UniqueInputFieldNamesRule extends AbstractRule
         $fieldName = $node->getNameValue();
 
         if (isset($this->knownInputNames[$fieldName])) {
-            $this->validationContext->reportError(
+            $this->context->reportError(
                 new ValidationException(
                     duplicateInputFieldMessage($fieldName),
                     [$this->knownInputNames[$fieldName], $node->getName()]
