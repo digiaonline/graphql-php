@@ -6,11 +6,9 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\BooleanValueNode;
 use Digia\GraphQL\Language\Node\EnumValueNode;
-use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FloatValueNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NullValueNode;
 use Digia\GraphQL\Language\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\Node\ObjectValueNode;
@@ -65,47 +63,14 @@ class ValuesOfCorrectTypeRule extends AbstractRule
      */
     protected function enterListValue(ListValueNode $node): ?ListValueNode
     {
+        // Note: TypeInfo will traverse into a list's item type, so look to the
+        // parent input type to check if it is a list.
         $type = getNullableType($this->validationContext->getParentInputType());
 
-        if ($type instanceof ListType) {
+        if (!($type instanceof ListType)) {
             $this->isValidScalar($node);
 
             return null; // Don't traverse further.
-        }
-
-        return $node;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function enterObjectValue(ObjectValueNode $node): ?ObjectValueNode
-    {
-        $type = getNamedType($this->validationContext->getInputType());
-
-        if (!($type instanceof InputObjectType)) {
-            $this->isValidScalar($node);
-
-            return null; // Don't traverse further.
-        }
-
-        $inputFields  = $type->getFields();
-        $fieldNodeMap = keyMap($node->getFields(), function (FieldNode $field) {
-            return $field->getNameValue();
-        });
-
-        foreach ($inputFields as $fieldName => $field) {
-            $fieldType = $field->getType();
-            $fieldNode = $fieldNodeMap[$fieldName];
-
-            if (null === $fieldNode && $fieldType instanceof NonNullType) {
-                $this->validationContext->reportError(
-                    new ValidationException(
-                        requiredFieldMessage($type->getName(), $fieldName, (string)$fieldType),
-                        [$node]
-                    )
-                );
-            }
         }
 
         return $node;
@@ -125,9 +90,46 @@ class ValuesOfCorrectTypeRule extends AbstractRule
 
             $this->validationContext->reportError(
                 new ValidationException(
-                    unknownFieldMessage($parentType->getName(), $node->getNameValue(), $didYouMean)
+                    unknownFieldMessage($parentType->getName(), $node->getNameValue(), $didYouMean),
+                    [$node]
                 )
             );
+        }
+
+        return $node;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterObjectValue(ObjectValueNode $node): ?ObjectValueNode
+    {
+        $type = getNamedType($this->validationContext->getInputType());
+
+        if (!($type instanceof InputObjectType)) {
+            $this->isValidScalar($node);
+
+            return null; // Don't traverse further.
+        }
+
+        // Ensure every required field exists.
+        $inputFields  = $type->getFields();
+        $fieldNodeMap = keyMap($node->getFields(), function (ObjectFieldNode $field) {
+            return $field->getNameValue();
+        });
+
+        foreach ($inputFields as $fieldName => $field) {
+            $fieldType = $field->getType();
+            $fieldNode = $fieldNodeMap[$fieldName] ?? null;
+
+            if (null === $fieldNode && $fieldType instanceof NonNullType) {
+                $this->validationContext->reportError(
+                    new ValidationException(
+                        requiredFieldMessage($type->getName(), $fieldName, (string)$fieldType),
+                        [$node]
+                    )
+                );
+            }
         }
 
         return $node;
@@ -236,10 +238,11 @@ class ValuesOfCorrectTypeRule extends AbstractRule
                 );
             }
         } catch (\Exception $ex) {
+            // Ensure a reference to the original error is maintained.
             $this->validationContext->reportError(
                 new ValidationException(
                     badValueMessage((string)$locationType, printNode($node), $ex->getMessage()),
-                    $node,
+                    [$node],
                     null,
                     null,
                     null,
@@ -257,14 +260,16 @@ class ValuesOfCorrectTypeRule extends AbstractRule
      */
     protected function getEnumTypeSuggestion(NamedTypeInterface $type, ValueNodeInterface $node): ?string
     {
-        if (!($type instanceof EnumType)) {
-            return null;
+        if ($type instanceof EnumType) {
+            $suggestions = suggestionList(printNode($node), \array_map(function (EnumValue $value) {
+                return $value->getName();
+            }, $type->getValues()));
+
+            return !empty($suggestions)
+                ? sprintf('Did you mean the enum value %s?', orList($suggestions))
+                : null;
         }
 
-        $suggestions = suggestionList(printNode($node), array_map(function (EnumValue $value) {
-            return $value->getName();
-        }, $type->getValues()));
-
-        return !empty($suggestions) ? sprintf('Did you mean the enum value %s?', orList($suggestions)) : null;
+        return null;
     }
 }

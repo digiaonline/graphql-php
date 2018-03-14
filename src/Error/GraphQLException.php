@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Error;
 
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
 
@@ -71,12 +70,12 @@ class GraphQLException extends AbstractException
     /**
      * ExecutionException constructor.
      *
-     * @param string      $message
-     * @param array|null  $nodes
-     * @param Source|null $source
-     * @param array|null  $positions
-     * @param array|null  $path
-     * @param array|null  $originalException
+     * @param string          $message
+     * @param array|null      $nodes
+     * @param Source|null     $source
+     * @param array|null      $positions
+     * @param array|null      $path
+     * @param \Exception|null $originalException
      */
     public function __construct(
         string $message,
@@ -174,7 +173,7 @@ class GraphQLException extends AbstractException
     /**
      * @return null|string
      */
-    public function getOriginalError(): ?string
+    public function getOriginalErrorMessage(): ?string
     {
         return null !== $this->originalException ? $this->originalException->getMessage() : null;
     }
@@ -199,9 +198,9 @@ class GraphQLException extends AbstractException
     protected function resolveSource(?Source $source)
     {
         if (null === $source && !empty($this->nodes)) {
-            $firstNode    = $this->nodes[0];
-            $location     = null !== $firstNode ? $firstNode->getLocation() : null;
-            $source = null !== $location ? $location->getSource() : null;
+            $firstNode = $this->nodes[0];
+            $location  = null !== $firstNode ? $firstNode->getLocation() : null;
+            $source    = null !== $location ? $location->getSource() : null;
         }
 
         $this->source = $source;

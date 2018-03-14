@@ -29,6 +29,7 @@ class SupportedWriters
         NamedTypeWriter::class,
         NameWriter::class,
         NullTypeWriter::class,
+        NullValueWriter::class,
         ObjectFieldWriter::class,
         ObjectValueWriter::class,
         OperationDefinitionWriter::class,

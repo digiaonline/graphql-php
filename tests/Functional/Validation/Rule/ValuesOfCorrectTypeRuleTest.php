@@ -2,6 +2,9 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use Digia\GraphQL\Error\GraphQLException;
+use function Digia\GraphQL\Test\Functional\Validation\requiredField;
+use function Digia\GraphQL\Test\Functional\Validation\unknownField;
 use Digia\GraphQL\Validation\Rule\ValuesOfCorrectTypeRule;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\badValue;
@@ -560,6 +563,610 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
             }
             '),
             [badValue('DogCommand', 'sit', [3, 33], 'Did you mean the enum value SIT?')]
+        );
+    }
+
+    public function testGoodListValue()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                stringListArgField(stringListArg: ["one", null, "two"])
+              }
+            }
+            ')
+        );
+    }
+
+    public function testEmptyListValue()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                stringListArgField(stringListArg: [])
+              }
+            }
+            ')
+        );
+    }
+
+    public function testNullValue()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                stringListArgField(stringListArg: null)
+              }
+            }
+            ')
+        );
+    }
+
+    public function testSingleValueIntoList()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                stringListArgField(stringListArg: "one")
+              }
+            }
+            ')
+        );
+    }
+
+    public function testInvalidListValueWithIncorrectItemType()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                stringListArgField(stringListArg: ["one", 2])
+              }
+            }
+            '),
+            [badValue('String', '2', [3, 47])]
+        );
+    }
+
+    public function testIntValueIntoListOfStrings()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                stringListArgField(stringListArg: 1)
+              }
+            }
+            '),
+            [badValue('[String]', '1', [3, 39])]
+        );
+    }
+
+    public function testValidNonNullableValueOnOptionalArgument()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              dog {
+                isHouseTrained(atOtherHomes: true)
+              }
+            }
+            ')
+        );
+    }
+
+    public function testNoValueOnOptionalArgument()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              dog {
+                isHouseTrained
+              }
+            }
+            ')
+        );
+    }
+
+    public function testMultipleArguments()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleReqs(req1: 1, req2: 2)
+              }
+            }
+            ')
+        );
+    }
+
+    public function testMultipleArgumentsInReverseOrder()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleReqs(req2: 2, req1: 1)
+              }
+            }
+            ')
+        );
+    }
+
+    public function testNoArgumentsOnMultipleOptionalArguments()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleReqs
+              }
+            }
+            ')
+        );
+    }
+
+    public function testNoArgumentOnMultipleOptionalArguments()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleOpts
+              }
+            }
+            ')
+        );
+    }
+
+    public function testOneArgumentOnMultipleOptionalArguments()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleOpts(opt1: 1)
+              }
+            }
+            ')
+        );
+    }
+
+    public function testSecondArgumentOnMultipleOptionalArguments()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleOpts(opt2: 1)
+              }
+            }
+            ')
+        );
+    }
+
+    public function testMultipleRequiredArgumentsOnMixedList()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleOptAndReq(req1: 3, req2: 4)
+              }
+            }
+            ')
+        );
+    }
+
+    public function testAllRequiredAndOptionalArgumentsOnMixedList()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleOptAndReq(req1: 3, req2: 4, opt1: 5, opt2: 6)
+              }
+            }
+            ')
+        );
+    }
+
+    public function testInvalidNonNullableValueWithIncorrectValueType()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleReqs(req2: "two", req1: "one")
+              }
+            }
+            '),
+            [
+                badValue('Int!', '"two"', [3, 24]),
+                badValue('Int!', '"one"', [3, 37]),
+            ]
+        );
+    }
+
+    public function testIncorrectValueAndMissingArgument()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleReqs(req1: "one")
+              }
+            }
+            '),
+            [badValue('Int!', '"one"', [3, 24])]
+        );
+    }
+
+    public function testInvalidNonNullableValueWithNullValue()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                multipleReqs(req1: null)
+              }
+            }
+            '),
+            [badValue('Int!', 'null', [3, 24])]
+        );
+    }
+
+    public function testOptionalArgumentsDespiteRequiredFieldInType()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                complexArgField
+              }
+            }
+            ')
+        );
+    }
+
+    public function testPartialObjectOnlyRequired()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                complexArgField(complexArg: { requiredField: true })
+              }
+            }
+            ')
+        );
+    }
+
+    public function testParitalObjectRequiredFieldCanBeFalsey()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                complexArgField(complexArg: { requiredField: false })
+              }
+            }
+            ')
+        );
+    }
+
+    public function testPartialObjectIncludingRequired()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                complexArgField(complexArg: { requiredField: true, intField: 4 })
+              }
+            }
+            ')
+        );
+    }
+
+    public function testFullObject()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                complexArgField(complexArg: {
+                  requiredField: true,
+                  intField: 4,
+                  stringField: "foo",
+                  booleanField: false,
+                  stringListField: ["one", "two"]
+                })
+              }
+            }
+            ')
+        );
+    }
+
+    public function testFullObjectWithFieldsInDifferentOrder()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                complexArgField(complexArg: {
+                  stringListField: ["one", "two"],
+                  booleanField: false,
+                  requiredField: true,
+                  stringField: "foo",
+                  intField: 4,
+                })
+              }
+            }
+            ')
+        );
+    }
+
+    public function testPartialObjectWithMissingRequiredArgument()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                complexArgField(complexArg: { intField: 4 })
+              }
+            }
+            '),
+            [requiredField('ComplexInput', 'requiredField', 'Boolean!', [3, 33])]
+        );
+    }
+
+    public function testParitalObjectWithInvalidFieldType()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                complexArgField(complexArg: {
+                  stringListField: ["one", 2],
+                  requiredField: true,
+                })
+              }
+            }
+            '),
+            [badValue('String', '2', [4, 32])]
+        );
+    }
+
+    public function testPartialObjectUnknownFieldArgument()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              complicatedArgs {
+                complexArgField(complexArg: {
+                  requiredField: true,
+                  unknownField: "value"
+                })
+              }
+            }
+            '),
+            [unknownField('ComplexInput', 'unknownField', [5, 7], 'Did you mean intField or booleanField?')]
+        );
+    }
+
+    public function testReportsOriginalErrorForCustomScalarWhichThrows()
+    {
+        /** @var GraphQLException[] $errors */
+        $errors = $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              invalidArg(arg: 123)
+            }
+            '),
+            [badValue('Invalid', '123', [2, 19], 'Invalid scalar is always invalid: 123')]
+        );
+        $this->assertEquals($errors[0]->getOriginalErrorMessage(), 'Invalid scalar is always invalid: 123');
+    }
+
+    public function testAllowsCustomScalarToAcceptComplexLiterals()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              test1: anyArg(arg: 123)
+              test2: anyArg(arg: "abc")
+              test3: anyArg(arg: [123, "abc"])
+              test4: anyArg(arg: {deep: [123, "abc"]})
+            }
+            ')
+        );
+    }
+
+    public function testDirectiveArgumentsWithDirectivesOfValidTypes()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              dog @include(if: true) {
+                name
+              }
+              human @skip(if: false) {
+                name
+              }
+            }
+            ')
+        );
+    }
+
+    public function testDirectiveArgumentsWithDirectiveWithIncorrectTypes()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            {
+              dog @include(if: "yes") {
+                name @skip(if: ENUM)
+              }
+            }
+            '),
+            [
+                badValue('Boolean!', '"yes"', [2, 20]),
+                badValue('Boolean!', 'ENUM', [3, 20]),
+            ]
+        );
+    }
+
+    public function testVariablesWithValidDefaultValues()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            query WithDefaultValues(
+              $a: Int = 1,
+              $b: String = "ok",
+              $c: ComplexInput = { requiredField: true, intField: 3 }
+            ) {
+              dog { name }
+            }
+            ')
+        );
+    }
+
+    public function testVariablesWithValidDefaultNullValues()
+    {
+        $this->expectPassesRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            query WithDefaultValues(
+              $a: Int = null,
+              $b: String = null,
+              $c: ComplexInput = { requiredField: true, intField: null }
+            ) {
+              dog { name }
+            }
+            ')
+        );
+    }
+
+    public function testVariablesWithInvalidDefaultNullValues()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            query WithDefaultValues(
+              $a: Int! = null,
+              $b: String! = null,
+              $c: ComplexInput = { requiredField: null, intField: null }
+            ) {
+              dog { name }
+            }
+            '),
+            [
+                badValue('Int!', 'null', [2, 14]),
+                badValue('String!', 'null', [3, 17]),
+                badValue('Boolean!', 'null', [4, 39]),
+            ]
+        );
+    }
+
+    public function testVariablesWithInvalidDefaultValues()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            query InvalidDefaultValues(
+              $a: Int = "one",
+              $b: String = 4,
+              $c: ComplexInput = "notverycomplex"
+            ) {
+              dog { name }
+            }
+            '),
+            [
+                badValue('Int', '"one"', [2, 13]),
+                badValue('String', '4', [3, 16]),
+                badValue('ComplexInput', '"notverycomplex"', [4, 22]),
+            ]
+        );
+    }
+
+    public function testVariablesWithComplexInvalidDefaultValues()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            query WithDefaultValues(
+              $a: ComplexInput = { requiredField: 123, intField: "abc" }
+            ) {
+              dog { name }
+            }
+            '),
+            [
+                badValue('Boolean!', '123', [2, 39]),
+                badValue('Int', '"abc"', [2, 54]),
+            ]
+        );
+    }
+
+    public function testComplexVariablesMissingRequiredField()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            query MissingRequiredField($a: ComplexInput = {intField: 3}) {
+              dog { name }
+            }
+            '),
+            [requiredField('ComplexInput', 'requiredField', 'Boolean!', [1, 47])]
+        );
+    }
+
+    public function testListVariablesWithInvalidItem()
+    {
+        $this->expectFailsRule(
+            new ValuesOfCorrectTypeRule(),
+            dedent('
+            query InvalidItem($a: [String] = ["one", 2]) {
+              dog { name }
+            }
+            '),
+            [badValue('String', '2', [1, 42])]
         );
     }
 }

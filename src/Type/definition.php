@@ -262,7 +262,16 @@ function assertWrappingType(TypeInterface $type)
  */
 function isNullableType(TypeInterface $type): bool
 {
-    return !$type instanceof NonNullType;
+    return !isNonNullType($type);
+}
+
+/**
+ * @param TypeInterface $type
+ * @return bool
+ */
+function isNonNullType(TypeInterface $type): bool
+{
+    return $type instanceof NonNullType;
 }
 
 /**
@@ -286,7 +295,7 @@ function assertNullableType(TypeInterface $type): TypeInterface
  */
 function getNullableType(?TypeInterface $type): ?TypeInterface
 {
-    if (null !== $type) {
+    if (null === $type) {
         return null;
     }
 
