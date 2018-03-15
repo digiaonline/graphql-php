@@ -2,7 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class InputValueDefinitionNode extends AbstractNode implements DefinitionNodeInterface, DirectivesInterface
+class InputValueDefinitionNode extends AbstractNode implements DefinitionNodeInterface, DirectivesAwareInterface,
+    NameAwareInterface
 {
     use DescriptionTrait;
     use NameTrait;

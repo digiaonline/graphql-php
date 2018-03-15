@@ -14,9 +14,30 @@ use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\PrinterInterface;
 use Digia\GraphQL\Language\SchemaBuilder\SchemaBuilderInterface;
 use Digia\GraphQL\Language\Source;
+use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\SerializationInterface;
 use Digia\GraphQL\Validation\ValidatorInterface;
+
+/**
+ * @param string $source
+ * @param array  $options
+ * @return SchemaInterface
+ * @throws InvariantException
+ */
+function buildSchema(string $source, array $options = []): SchemaInterface
+{
+    return GraphQL::get(SchemaBuilderInterface::class)->build(parse($source, $options));
+}
+
+/**
+ * @param SchemaInterface $schema
+ * @return ValidationException[]
+ */
+function validateSchema(SchemaInterface $schema): array
+{
+    return GraphQL::get(SchemaValidatorInterface::class)->validate($schema);
+}
 
 /**
  * @param string|Source $source
@@ -64,19 +85,6 @@ function parseType($source, array $options = []): NodeInterface
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options)
     );
-}
-
-/**
- * @param string $source
- * @param array  $resolverMap
- * @param array  $options
- * @return SchemaInterface
- * @throws InvariantException
- * @throws SyntaxErrorException
- */
-function buildSchema(string $source, array $resolverMap = [], array $options = []): SchemaInterface
-{
-    return GraphQL::get(SchemaBuilderInterface::class)->build(parse($source, $options), $resolverMap);
 }
 
 /**
@@ -149,7 +157,10 @@ function graphql(
     $operationName = null,
     callable $fieldResolver = null
 ): ExecutionResult {
-    // TODO: Validate schema
+    $schemaValidationErrors = validateSchema($schema);
+    if (!empty($schemaValidationErrors)) {
+        return new ExecutionResult([], $schemaValidationErrors);
+    }
 
     $document = null;
 

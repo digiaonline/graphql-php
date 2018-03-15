@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class ObjectTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface, DirectivesInterface
+class ObjectTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface, DirectivesAwareInterface
 {
     use NameTrait;
     use InterfacesTrait;

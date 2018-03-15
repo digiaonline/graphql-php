@@ -26,7 +26,6 @@ class SchemaBuilder implements SchemaBuilderInterface
      * SchemaBuilder constructor.
      *
      * @param DefinitionBuilderInterface $definitionBuilder
-     * @param array                      $resolverMap
      */
     public function __construct(DefinitionBuilderInterface $definitionBuilder)
     {

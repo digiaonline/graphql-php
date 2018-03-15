@@ -48,11 +48,11 @@ class LanguageProvider extends AbstractServiceProvider
         $this->container->add(PrinterInterface::class, Printer::class, true/* $shared */)
             ->withArgument(SupportedWriters::get());
 
-        $this->container->add(DefinitionBuilderInterface::class, DefinitionBuilder::class, true/* $shared */)
+        $this->container->add(DefinitionBuilderInterface::class, DefinitionBuilder::class)
             ->withArgument(CacheInterface::class)
             ->withArgument(ValuesResolver::class);
 
-        $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class, true/* $shared */)
+        $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class)
             ->withArgument(DefinitionBuilderInterface::class);
     }
 }

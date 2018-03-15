@@ -52,17 +52,17 @@ class Schema extends ConfigObject implements SchemaInterface
     use NodeTrait;
 
     /**
-     * @var ObjectType
+     * @var TypeInterface|null
      */
     private $query;
 
     /**
-     * @var ObjectType
+     * @var TypeInterface|null
      */
     private $mutation;
 
     /**
-     * @var ObjectType
+     * @var TypeInterface|null
      */
     private $subscription;
 
@@ -99,7 +99,7 @@ class Schema extends ConfigObject implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getQuery(): ObjectType
+    public function getQuery(): ?TypeInterface
     {
         return $this->query;
     }
@@ -107,7 +107,7 @@ class Schema extends ConfigObject implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getMutation(): ?ObjectType
+    public function getMutation(): ?TypeInterface
     {
         return $this->mutation;
     }
@@ -115,7 +115,7 @@ class Schema extends ConfigObject implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getSubscription(): ?ObjectType
+    public function getSubscription(): ?TypeInterface
     {
         return $this->subscription;
     }
@@ -177,10 +177,11 @@ class Schema extends ConfigObject implements SchemaInterface
                 )
             );
 
-            $this->_possibleTypeMap[$abstractTypeName] = array_reduce($possibleTypes, function (array $map, TypeInterface $type) {
-                $map[$type->getName()] = true;
-                return $map;
-            }, []);
+            $this->_possibleTypeMap[$abstractTypeName] = array_reduce($possibleTypes,
+                function (array $map, TypeInterface $type) {
+                    $map[$type->getName()] = true;
+                    return $map;
+                }, []);
         }
 
         return isset($this->_possibleTypeMap[$abstractTypeName][$possibleTypeName]);
@@ -277,10 +278,10 @@ class Schema extends ConfigObject implements SchemaInterface
     }
 
     /**
-     * @param ObjectType $query
+     * @param TypeInterface|null $query
      * @return Schema
      */
-    protected function setQuery(ObjectType $query): Schema
+    protected function setQuery(?TypeInterface $query): Schema
     {
         $this->query = $query;
 
@@ -288,10 +289,10 @@ class Schema extends ConfigObject implements SchemaInterface
     }
 
     /**
-     * @param ObjectType|null $mutation
+     * @param TypeInterface|null $mutation
      * @return Schema
      */
-    protected function setMutation(?ObjectType $mutation): Schema
+    protected function setMutation(?TypeInterface $mutation): Schema
     {
         $this->mutation = $mutation;
 
@@ -299,10 +300,10 @@ class Schema extends ConfigObject implements SchemaInterface
     }
 
     /**
-     * @param ObjectType|null $subscription
+     * @param TypeInterface|null $subscription
      * @return Schema
      */
-    protected function setSubscription(?ObjectType $subscription): Schema
+    protected function setSubscription(?TypeInterface $subscription): Schema
     {
         $this->subscription = $subscription;
 
@@ -409,13 +410,16 @@ function typeMapReducer(array $map, ?TypeInterface $type): array
 }
 
 /**
- * @param array                    $map
- * @param null| DirectiveInterface $directive
+ * Note: We do not type-hint the `$directive`, because we want the `SchemaValidator` to catch these errors.
+ *
+ * @param array      $map
+ * @param mixed|null $directive
  * @return array
  */
-function typeMapDirectiveReducer(array $map, ?DirectiveInterface $directive): array
+function typeMapDirectiveReducer(array $map, $directive): array
 {
-    if (!$directive || !$directive->hasArguments()) {
+    if (!($directive instanceof DirectiveInterface) ||
+        ($directive instanceof DirectiveInterface && !$directive->hasArguments())) {
         return $map;
     }
 

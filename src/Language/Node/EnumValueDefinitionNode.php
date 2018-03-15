@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class EnumValueDefinitionNode extends AbstractNode implements DefinitionNodeInterface, DirectivesInterface
+class EnumValueDefinitionNode extends AbstractNode implements DefinitionNodeInterface, DirectivesAwareInterface, NameAwareInterface
 {
     use DescriptionTrait;
     use NameTrait;

@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use function Digia\GraphQL\Type\resolveThunk;
@@ -35,9 +36,9 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type\Definition
  * @property UnionTypeDefinitionNode $astNode
  */
-class UnionType extends ConfigObject implements AbstractTypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface
+class UnionType extends ConfigObject implements AbstractTypeInterface, NamedTypeInterface, CompositeTypeInterface,
+    OutputTypeInterface, NodeAwareInterface
 {
-
     use NameTrait;
     use DescriptionTrait;
     use ResolveTypeTrait;
@@ -67,7 +68,7 @@ class UnionType extends ConfigObject implements AbstractTypeInterface, NamedType
     }
 
     /**
-     * @return TypeInterface[]
+     * @return NamedTypeInterface[]
      * @throws InvariantException
      */
     public function getTypes(): array

@@ -373,20 +373,23 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         return GraphQLInputObjectType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'fields'      => $node->hasFields() ? keyValMap(
-                $node->getFields(),
-                function (InputValueDefinitionNode $value): string {
-                    return $value->getNameValue();
-                },
-                function (InputValueDefinitionNode $value): array {
-                    $type = $this->buildWrappedType($value->getType());
-                    return [
-                        'type'         => $type,
-                        'description'  => $value->getDescriptionValue(),
-                        'defaultValue' => valueFromAST($value->getDefaultValue(), $type),
-                        'astNode'      => $value,
-                    ];
-                }) : [],
+            'fields'      => $node->hasFields() ? function () use ($node) {
+                return keyValMap(
+                    $node->getFields(),
+                    function (InputValueDefinitionNode $value): string {
+                        return $value->getNameValue();
+                    },
+                    function (InputValueDefinitionNode $value): array {
+                        $type = $this->buildWrappedType($value->getType());
+                        return [
+                            'type'         => $type,
+                            'description'  => $value->getDescriptionValue(),
+                            'defaultValue' => valueFromAST($value->getDefaultValue(), $type),
+                            'astNode'      => $value,
+                        ];
+                    }
+                );
+            } : [],
             'astNode'     => $node,
         ]);
     }
@@ -468,6 +471,7 @@ function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputType
     if ($inputTypeNode instanceof ListTypeNode) {
         return GraphQLList(buildWrappedType($innerType, $inputTypeNode->getType()));
     }
+
     if ($inputTypeNode instanceof NonNullTypeNode) {
         $wrappedType = buildWrappedType($innerType, $inputTypeNode->getType());
         return GraphQLNonNull(assertNullableType($wrappedType));

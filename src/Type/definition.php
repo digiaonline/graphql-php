@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -23,6 +24,7 @@ use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
+use function Digia\GraphQL\validateSchema;
 
 /**
  * @param $thunk

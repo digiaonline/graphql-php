@@ -10,7 +10,15 @@ trait ExtensionASTNodesTrait
     /**
      * @var ObjectTypeExtensionNode[]
      */
-    private $extensionAstNodes = [];
+    private $extensionAstNodes;
+
+    /**
+     * @return bool
+     */
+    public function hasExtensionAstNodes(): bool
+    {
+        return !empty($this->extensionAstNodes);
+    }
 
     /**
      * @return ObjectTypeExtensionNode[]

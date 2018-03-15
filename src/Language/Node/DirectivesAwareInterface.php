@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-interface DirectivesInterface
+interface DirectivesAwareInterface
 {
     /**
      * @return bool

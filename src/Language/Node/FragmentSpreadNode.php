@@ -2,9 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class FragmentSpreadNode extends AbstractNode implements NodeInterface
+class FragmentSpreadNode extends AbstractNode implements NodeInterface, NameAwareInterface
 {
-
     use NameTrait;
     use DirectivesTrait;
     use SelectionSetTrait;
