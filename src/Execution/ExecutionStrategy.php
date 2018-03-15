@@ -61,6 +61,11 @@ abstract class ExecutionStrategy
     protected $finalResult;
 
     /**
+     * @var array
+     */
+    protected static $defaultFieldResolver = [__CLASS__, 'defaultFieldResolver'];
+
+    /**
      * AbstractStrategy constructor.
      * @param ExecutionContext        $context
      *
@@ -415,7 +420,7 @@ abstract class ExecutionStrategy
             return $objectType->getResolve();
         }
 
-        return $this->context->getFieldResolver();
+        return $this->context->getFieldResolver() ?? self::$defaultFieldResolver;
     }
 
     /**
@@ -694,7 +699,7 @@ abstract class ExecutionStrategy
     private function resolveFieldValueOrError(
         Field $field,
         FieldNode $fieldNode,
-        callable $resolveFunction,
+        ?callable $resolveFunction,
         $rootValue,
         ExecutionContext $context,
         ResolveInfo $info
@@ -706,6 +711,32 @@ abstract class ExecutionStrategy
         } catch (\Throwable $error) {
             return $error;
         }
+    }
+
+    /**
+     * Try to resolve a field without any field resolver function.
+     *
+     * @param array|object $rootValue
+     * @param              $args
+     * @param              $context
+     * @param ResolveInfo  $info
+     * @return mixed|null
+     */
+    public static function defaultFieldResolver($rootValue, $args, $context, ResolveInfo $info)
+    {
+        $fieldName = $info->getFieldName();
+        $property  = null;
+
+        if (is_array($rootValue) && isset($rootValue[$fieldName])) {
+            $property = $rootValue[$fieldName];
+        }
+
+        if (is_object($rootValue) && method_exists($rootValue, $fieldName)) {
+            $property = $rootValue->{$fieldName};
+        }
+
+
+        return $property instanceof \Closure ? $property($rootValue, $args, $context, $info) : $property;
     }
 
     /**

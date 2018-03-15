@@ -9,6 +9,7 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
 
     /**
      * @return ?array
+     * @throws \Throwable
      */
     function execute(): ?array
     {
