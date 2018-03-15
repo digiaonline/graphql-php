@@ -110,7 +110,7 @@ class Cat
 function PetType(): InterfaceType
 {
     return GraphQLInterfaceType([
-        'name'        => 'PetType',
+        'name'        => 'Pet',
         'fields'      => [
             'name' => ['type' => GraphQLString()]
         ],
@@ -130,7 +130,7 @@ function PetType(): InterfaceType
 function DogType(): ObjectType
 {
     return GraphQLObjectType([
-        'name'     => 'DogType',
+        'name'     => 'Dog',
         'fields'   => [
             'name'  => ['type' => GraphQLString()],
             'woofs' => ['type' => GraphQLBoolean()],
@@ -144,7 +144,7 @@ function DogType(): ObjectType
 function CatType(): ObjectType
 {
     return GraphQLObjectType([
-        'name'     => 'CatType',
+        'name'     => 'Cat',
         'fields'   => [
             'name'  => ['type' => GraphQLString()],
             'meows' => ['type' => GraphQLBoolean()],

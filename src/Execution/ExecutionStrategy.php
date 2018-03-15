@@ -100,8 +100,8 @@ abstract class ExecutionStrategy
     protected function collectFields(
         ObjectType $runtimeType,
         SelectionSetNode $selectionSet,
-        $fields,
-        $visitedFragmentNames
+        &$fields,
+        &$visitedFragmentNames
     ) {
         foreach ($selectionSet->getSelections() as $selection) {
             // Check if this Node should be included first
@@ -116,7 +116,7 @@ abstract class ExecutionStrategy
                 }
 
                 if (!isset($fields[$fieldName])) {
-                    $fields[$fieldName] = new \ArrayObject();
+                    $fields[$fieldName] = [];
                 }
 
                 $fields[$fieldName][] = $selection;
@@ -189,7 +189,9 @@ abstract class ExecutionStrategy
 
         $conditionalType = typeFromAST($this->context->getSchema(), $typeConditionNode);
 
-        if ($conditionalType === $type) {
+        // @TODO Find a better way to compare two objects
+        // $conditionalType === $type doesn't work
+        if (get_class($conditionalType) === get_class($type) && $conditionalType->getName() === $type->getName()) {
             return true;
         }
 
@@ -273,7 +275,8 @@ abstract class ExecutionStrategy
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
 
-            $result = $this->resolveField($objectType,
+            $result = $this->resolveField(
+                $objectType,
                 $rootValue,
                 $fieldNodes,
                 $fieldPath
@@ -379,7 +382,7 @@ abstract class ExecutionStrategy
      * @return ResolveInfo
      */
     private function buildResolveInfo(
-        \ArrayAccess $fieldNodes,
+        array $fieldNodes,
         FieldNode $fieldNode,
         Field $field,
         ObjectType $parentType,
@@ -765,7 +768,8 @@ abstract class ExecutionStrategy
         $path,
         &$result
     ) {
-        $subFields = new \ArrayObject();
+        $subFields = [];
+        $visitedFragmentNames = [];
 
         foreach ($fieldNodes as $fieldNode) {
             /** @var FieldNode $fieldNode */
@@ -774,12 +778,12 @@ abstract class ExecutionStrategy
                     $returnType,
                     $fieldNode->getSelectionSet(),
                     $subFields,
-                    new \ArrayObject()
+                    $visitedFragmentNames
                 );
             }
         }
 
-        if ($subFields->count()) {
+        if (!empty($subFields)) {
             return $this->executeFields($returnType, $result, $path, $subFields);
         }
 
