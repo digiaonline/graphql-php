@@ -177,7 +177,7 @@ class ValuesResolver
         $variableValues = []
     ): ?array {
         $directiveNode = $node->hasDirectives()
-            ? find($node->getDirectives(), function (NamedTypeNode $value) use ($directive) {
+            ? find($node->getDirectives(), function ($value) use ($directive) {
                 return $value->getNameValue() === $directive->getName();
             }) : null;
 

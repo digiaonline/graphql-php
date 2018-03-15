@@ -16,6 +16,7 @@ class ValuesResolverTest extends TestCase
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvalidTypeException
      * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testGetValues()
     {
