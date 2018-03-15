@@ -104,9 +104,13 @@ abstract class ExecutionStrategy
         $visitedFragmentNames
     ) {
         foreach ($selectionSet->getSelections() as $selection) {
+            // Check if this Node should be included first
+            if (!$this->shouldIncludeNode($selection)) {
+                continue;
+            }
+            // Collect fields
             if ($selection instanceof FieldNode) {
                 $fieldName = $this->getFieldNameKey($selection);
-
                 if (!isset($runtimeType->getFields()[$selection->getNameValue()])) {
                     continue;
                 }
@@ -117,9 +121,7 @@ abstract class ExecutionStrategy
 
                 $fields[$fieldName][] = $selection;
             } elseif ($selection instanceof InlineFragmentNode) {
-                if (!$this->shouldIncludeNode($selection) ||
-                    !$this->doesFragmentConditionMatch($selection, $runtimeType)
-                ) {
+                if (!$this->doesFragmentConditionMatch($selection, $runtimeType)) {
                     continue;
                 }
 
@@ -127,9 +129,7 @@ abstract class ExecutionStrategy
             } elseif ($selection instanceof FragmentSpreadNode) {
                 $fragmentName = $selection->getNameValue();
 
-                if (!empty($visitedFragmentNames[$fragmentName]) ||
-                    !$this->shouldIncludeNode($selection)
-                ) {
+                if (!empty($visitedFragmentNames[$fragmentName])) {
                     continue;
                 }
 
@@ -162,7 +162,7 @@ abstract class ExecutionStrategy
             return false;
         }
 
-        $include = $this->valuesResolver->getDirectiveValues(GraphQLSkipDirective(), $node, $contextVariables);
+        $include = $this->valuesResolver->getDirectiveValues(GraphQLIncludeDirective(), $node, $contextVariables);
 
         if ($include && $include['if'] === false) {
             return false;
