@@ -1,5 +1,6 @@
 /.idea/dictionaries
 /.idea/workspace.xml
+/.idea/php-test-framework.xml
 /coverage/
 /vendor/
 clover.xml
