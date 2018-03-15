@@ -22,12 +22,14 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
             ? $schema->getMutation()
             : $schema->getQuery();
 
+        $fields = [];
+        $visitedFragmentNames = [];
         try {
             $fields = $this->collectFields(
                 $objectType,
                 $this->operation->getSelectionSet(),
-                new \ArrayObject(),
-                new \ArrayObject()
+                $fields,
+                $visitedFragmentNames
             );
 
             $data = ($operation === 'mutation')
