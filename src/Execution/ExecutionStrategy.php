@@ -731,8 +731,15 @@ abstract class ExecutionStrategy
             $property = $rootValue[$fieldName];
         }
 
-        if (is_object($rootValue) && method_exists($rootValue, $fieldName)) {
-            $property = $rootValue->{$fieldName};
+        if (is_object($rootValue)) {
+            $getter = 'get' . ucfirst($fieldName);
+            if (method_exists($rootValue, $fieldName)) {
+                $property = $rootValue->{$getter}();
+            }
+
+            if (property_exists($rootValue, $fieldName)) {
+                $property = $rootValue->{$fieldName};
+            }
         }
 
 
