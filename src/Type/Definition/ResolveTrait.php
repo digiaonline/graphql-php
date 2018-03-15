@@ -38,10 +38,10 @@ trait ResolveTrait
     /**
      * Because of the use of ConfigTrait, setter name must match with attribute in $config array
      *
-     * @param callable $resolveFunction
+     * @param callable|null $resolveFunction
      * @return $this
      */
-    protected function setResolve(callable $resolveFunction)
+    protected function setResolve(?callable $resolveFunction)
     {
         $this->_resolveFunction = $resolveFunction;
         return $this;

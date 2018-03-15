@@ -26,6 +26,7 @@ class SchemaBuilder implements SchemaBuilderInterface
      * SchemaBuilder constructor.
      *
      * @param DefinitionBuilderInterface $definitionBuilder
+     * @param array                      $resolverMap
      */
     public function __construct(DefinitionBuilderInterface $definitionBuilder)
     {
@@ -33,19 +34,18 @@ class SchemaBuilder implements SchemaBuilderInterface
     }
 
     /**
-     * @param DocumentNode $documentNode
-     * @param array        $options
-     * @return SchemaInterface
-     * @throws LanguageException
+     * @inheritdoc
      */
-    public function build(DocumentNode $documentNode, array $options = []): SchemaInterface
+    public function build(DocumentNode $document, array $resolverMap = [], array $options = []): SchemaInterface
     {
         $schemaDefinition     = null;
         $typeDefinitions      = [];
         $nodeMap              = [];
         $directiveDefinitions = [];
 
-        foreach ($documentNode->getDefinitions() as $definition) {
+        $this->definitionBuilder->setResolverMap($resolverMap);
+
+        foreach ($document->getDefinitions() as $definition) {
             if ($definition instanceof SchemaDefinitionNode) {
                 if ($schemaDefinition) {
                     throw new LanguageException('Must provide only one schema definition.');

@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Execution\ValuesResolver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class UtilityProvider extends AbstractServiceProvider
@@ -11,6 +12,7 @@ class UtilityProvider extends AbstractServiceProvider
      */
     protected $provides = [
         TypeComparator::class,
+        ValuesResolver::class,
     ];
 
     /**
@@ -19,5 +21,6 @@ class UtilityProvider extends AbstractServiceProvider
     public function register()
     {
         $this->container->add(TypeComparator::class, TypeComparator::class, true/* $shared */);
+        $this->container->add(ValuesResolver::class, ValuesResolver::class, true/* $shared */);
     }
 }

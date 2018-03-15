@@ -68,13 +68,15 @@ function parseType($source, array $options = []): NodeInterface
 
 /**
  * @param string $source
+ * @param array  $resolverMap
  * @param array  $options
  * @return SchemaInterface
  * @throws InvariantException
+ * @throws SyntaxErrorException
  */
-function buildSchema(string $source, array $options = []): SchemaInterface
+function buildSchema(string $source, array $resolverMap = [], array $options = []): SchemaInterface
 {
-    return GraphQL::get(SchemaBuilderInterface::class)->build(parse($source, $options));
+    return GraphQL::get(SchemaBuilderInterface::class)->build(parse($source, $options), $resolverMap);
 }
 
 /**
