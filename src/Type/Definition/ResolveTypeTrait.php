@@ -12,11 +12,15 @@ trait ResolveTypeTrait
 
     /**
      * @param array ...$args
-     * @return TypeInterface|null
+     * @return TypeInterface|string|null
      */
-    public function resolveType(...$args): ?TypeInterface
+    public function resolveType(...$args)
     {
-        return \call_user_func_array($this->resolveTypeFunction, $args);
+        if(isset($this->resolveTypeFunction)) {
+            return \call_user_func_array($this->resolveTypeFunction, $args);
+        }
+
+        return null;
     }
 
     /**
