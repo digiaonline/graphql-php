@@ -8,10 +8,15 @@ use function Digia\GraphQL\Test\Functional\Validation\duplicateArgument;
 
 class UniqueArgumentNamesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return UniqueArgumentNamesRule::class;
+    }
+
     public function testNoArgumentsOnField()
     {
         $this->expectPassesRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field
@@ -23,7 +28,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testNoArgumentsOnDirective()
     {
         $this->expectPassesRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field @directive
@@ -35,7 +40,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testArgumentOnField()
     {
         $this->expectPassesRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg: "value")
@@ -47,7 +52,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testArgumentOnDirective()
     {
         $this->expectPassesRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field @directive(arg: "value")
@@ -59,7 +64,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testSameArgumentOnTwoFields()
     {
         $this->expectPassesRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               one: field(arg: "value")
@@ -72,7 +77,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testSameArgumentOnFieldAndDirective()
     {
         $this->expectPassesRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg: "value") @directive(arg: "value")
@@ -84,7 +89,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testSameArgumentOnTwoDirectives()
     {
         $this->expectPassesRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field @directive1(arg: "value") @directive2(arg: "value")
@@ -96,7 +101,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testMultipleFieldArguments()
     {
         $this->expectPassesRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field @directive(arg1: "value", arg2: "value", arg3: "value")
@@ -108,7 +113,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testDuplicateFieldArguments()
     {
         $this->expectFailsRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg1: "value", arg1: "value")
@@ -121,7 +126,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testManyDuplicateFieldArguments()
     {
         $this->expectFailsRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg1: "value", arg1: "value", arg1: "value")
@@ -137,7 +142,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testDuplicateDirectiveArguments()
     {
         $this->expectFailsRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field @directive(arg1: "value", arg1: "value")
@@ -150,7 +155,7 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
     public function testManyDuplicateDirectiveArguments()
     {
         $this->expectFailsRule(
-            new UniqueArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               field @directive(arg1: "value", arg1: "value", arg1: "value")

@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Test\Functional\Validation\duplicateOperation;
 use Digia\GraphQL\Validation\Rule\UniqueOperationNamesRule;
 use function Digia\GraphQL\Language\dedent;
+use function Digia\GraphQL\Test\Functional\Validation\duplicateOperation;
 
 class UniqueOperationNamesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return UniqueOperationNamesRule::class;
+    }
+
     public function testNoOperations()
     {
         $this->expectPassesRule(
-            new UniqueOperationNamesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Type {
               field
@@ -23,7 +28,7 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
     public function testOneAnonymousOperation()
     {
         $this->expectPassesRule(
-            new UniqueOperationNamesRule(),
+            $this->rule,
             dedent('
             {
               field
@@ -35,7 +40,7 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
     public function testOneNamedOperation()
     {
         $this->expectPassesRule(
-            new UniqueOperationNamesRule(),
+            $this->rule,
             dedent('
             query Foo {
               field
@@ -47,7 +52,7 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
     public function testMultipleOperations()
     {
         $this->expectPassesRule(
-            new UniqueOperationNamesRule(),
+            $this->rule,
             dedent('
             query Foo {
               field
@@ -63,7 +68,7 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
     public function testMultipleOperationsOfDifferentTypes()
     {
         $this->expectPassesRule(
-            new UniqueOperationNamesRule(),
+            $this->rule,
             dedent('
             query Foo {
               field
@@ -83,7 +88,7 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
     public function testFragmentAndOperationWithTheSameName()
     {
         $this->expectPassesRule(
-            new UniqueOperationNamesRule(),
+            $this->rule,
             dedent('
             query Foo {
               ...Foo
@@ -99,7 +104,7 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
     public function testMultipleOperationWithTheSameName()
     {
         $this->expectFailsRule(
-            new UniqueOperationNamesRule(),
+            $this->rule,
             dedent('
             query Foo {
               fieldA
@@ -116,7 +121,7 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
     public function testMultipleOperationsWithTheSameNameOfDifferentTypesMutation()
     {
         $this->expectFailsRule(
-            new UniqueOperationNamesRule(),
+            $this->rule,
             dedent('
             query Foo {
               fieldA
@@ -133,7 +138,7 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
     public function testMultipleOperationsWithTheSameNameOfDifferentTypesSubscription()
     {
         $this->expectFailsRule(
-            new UniqueOperationNamesRule(),
+            $this->rule,
             dedent('
             query Foo {
               fieldA

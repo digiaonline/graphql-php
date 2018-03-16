@@ -31,9 +31,9 @@ class PossibleFragmentSpreadsRule extends AbstractRule
     /**
      * PossibleFragmentSpreadsRule constructor.
      */
-    public function __construct()
+    public function __construct(TypeComparator $typeComparator)
     {
-        $this->typeComparator = new TypeComparator();
+        $this->typeComparator = $typeComparator;
     }
 
     /**

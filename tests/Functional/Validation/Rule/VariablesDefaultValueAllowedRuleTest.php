@@ -8,10 +8,15 @@ use function Digia\GraphQL\Test\Functional\Validation\variableDefaultValueNotAll
 
 class VariablesDefaultValueAllowedRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return VariablesDefaultValueAllowedRule::class;
+    }
+
     public function testVariablesWithNoDefaultValues()
     {
         $this->expectPassesRule(
-            new VariablesDefaultValueAllowedRule(),
+            $this->rule,
             dedent('
             query NullableValues($a: Int, $b: String, $c: ComplexInput) {
               dog { name }
@@ -23,7 +28,7 @@ class VariablesDefaultValueAllowedRuleTest extends RuleTestCase
     public function testRequiredVariablesWithoutDefaultValues()
     {
         $this->expectPassesRule(
-            new VariablesDefaultValueAllowedRule(),
+            $this->rule,
             dedent('
             query RequiredValues($a: Int!, $b: String!) {
               dog { name }
@@ -35,7 +40,7 @@ class VariablesDefaultValueAllowedRuleTest extends RuleTestCase
     public function testVariablesWithValidDefaultValues()
     {
         $this->expectPassesRule(
-            new VariablesDefaultValueAllowedRule(),
+            $this->rule,
             dedent('
             query WithDefaultValues(
               $a: Int = 1,
@@ -51,7 +56,7 @@ class VariablesDefaultValueAllowedRuleTest extends RuleTestCase
     public function testVariablesWithValidNullDefaultValues()
     {
         $this->expectPassesRule(
-            new VariablesDefaultValueAllowedRule(),
+            $this->rule,
             dedent('
             query WithDefaultValues(
               $a: Int = null,
@@ -67,7 +72,7 @@ class VariablesDefaultValueAllowedRuleTest extends RuleTestCase
     public function testNoRequiredVariablesWithDefaultValues()
     {
         $this->expectFailsRule(
-            new VariablesDefaultValueAllowedRule(),
+            $this->rule,
             dedent('
             query UnreachableDefaultValues($a: Int! = 3, $b: String! = "default") {
               dog { name }
@@ -83,7 +88,7 @@ class VariablesDefaultValueAllowedRuleTest extends RuleTestCase
     public function testVariablesWithInvalidDefaultNullValues()
     {
         $this->expectFailsRule(
-            new VariablesDefaultValueAllowedRule(),
+            $this->rule,
             dedent('
             query WithDefaultValues($a: Int! = null, $b: String! = null) {
               dog { name }

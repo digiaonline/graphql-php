@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
+use Digia\GraphQL\Validation\Rule\UniqueFragmentNamesRule;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\duplicateFragment;
-use Digia\GraphQL\Validation\Rule\UniqueFragmentNamesRule;
 
 class UniqueFragmentNamesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return UniqueFragmentNamesRule::class;
+    }
+
     public function testNoFragments()
     {
         $this->expectPassesRule(
-            new UniqueFragmentNamesRule(),
+            $this->rule,
             dedent('
             {
               field
@@ -23,7 +28,7 @@ class UniqueFragmentNamesRuleTest extends RuleTestCase
     public function testOneFragment()
     {
         $this->expectPassesRule(
-            new UniqueFragmentNamesRule(),
+            $this->rule,
             dedent('
             {
               ...fragA
@@ -38,7 +43,7 @@ class UniqueFragmentNamesRuleTest extends RuleTestCase
     public function testManyFragments()
     {
         $this->expectPassesRule(
-            new UniqueFragmentNamesRule(),
+            $this->rule,
             dedent('
             {
               ...fragA
@@ -61,7 +66,7 @@ class UniqueFragmentNamesRuleTest extends RuleTestCase
     public function testInlineFragmentsAreAlwaysUnique()
     {
         $this->expectPassesRule(
-            new UniqueFragmentNamesRule(),
+            $this->rule,
             dedent('
             {
               ...on Type {
@@ -78,7 +83,7 @@ class UniqueFragmentNamesRuleTest extends RuleTestCase
     public function testFragmentsNamedTheSame()
     {
         $this->expectFailsRule(
-            new UniqueFragmentNamesRule(),
+            $this->rule,
             dedent('
             {
               ...fragA
@@ -97,7 +102,7 @@ class UniqueFragmentNamesRuleTest extends RuleTestCase
     public function testFragmentsNamedTheSameWithoutBeingReferenced()
     {
         $this->expectFailsRule(
-            new UniqueFragmentNamesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Type {
               fieldA

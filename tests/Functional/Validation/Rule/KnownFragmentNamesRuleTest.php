@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\KnownFragmentNamesRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\unknownFragment;
 
 class KnownFragmentNamesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return KnownFragmentNamesRule::class;
+    }
+
     public function testKnownFragmentNamesAreValid()
     {
         $this->expectPassesRule(
-            new KnownFragmentNamesRule(),
+            $this->rule,
             dedent('
             {
               human(id: 4) {
@@ -41,7 +46,7 @@ class KnownFragmentNamesRuleTest extends RuleTestCase
     public function testUnknownFragmentNamesAreInvalid()
     {
         $this->expectFailsRule(
-            new KnownFragmentNamesRule(),
+            $this->rule,
             dedent('
             {
               human(id: 4) {

@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
+use Digia\GraphQL\GraphQL;
+
 class SupportedRules
 {
     /**
@@ -36,15 +38,16 @@ class SupportedRules
     ];
 
     /**
+     * Rules maintain state so they should always new instances.
+     *
      * @return array
      */
     public static function build(): array
     {
         $rules = [];
 
-        // Rules maintain state so they should always be re-instantiated.
         foreach (self::$supportedRules as $className) {
-            $rules[] = new $className();
+            $rules[] = GraphQL::get($className);
         }
 
         return $rules;

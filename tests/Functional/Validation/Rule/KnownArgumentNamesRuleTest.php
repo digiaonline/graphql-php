@@ -9,10 +9,15 @@ use function Digia\GraphQL\Test\Functional\Validation\unknownDirectiveArgument;
 
 class KnownArgumentNamesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return KnownArgumentNamesRule::class;
+    }
+
     public function testSingleArgumentIsKnown()
     {
         $this->expectPassesRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             fragment argOnRequiredArg on Dog {
               doesKnownCommand(dogCommand: SIT)
@@ -24,7 +29,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testMultipleArgumentsAreKnown()
     {
         $this->expectPassesRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             fragment multipleArgs on ComplicatedArgs {
               multipleReqs(req1: 1, req2: 2)
@@ -36,7 +41,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testIgnoresArgumentsOfUnknownFields()
     {
         $this->expectPassesRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             fragment argOnUnknownField on Dog {
               unknownField(unknownArg: SIT)
@@ -48,7 +53,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testMultipleArgumentsInReverseOrderAreKnown()
     {
         $this->expectPassesRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             fragment multipleArgsReverseOrder on ComplicatedArgs {
               multipleReqs(req2: 2, req1: 1)
@@ -60,7 +65,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testNoArgumentsOnOptionalArguments()
     {
         $this->expectPassesRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             fragment noArgOnOptionalArg on Dog {
               isHouseTrained
@@ -72,7 +77,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testArgumentsAreKnownDeeply()
     {
         $this->expectPassesRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -93,7 +98,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testDirectiveArgumentsAreKnown()
     {
         $this->expectPassesRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               dog @skip(if: true)
@@ -105,7 +110,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testUndirectArgumentsAreInvalid()
     {
         $this->expectFailsRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               dog @skip(unless: true)
@@ -118,7 +123,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testMisspelledDirectiveArgumentsAreReported()
     {
         $this->expectFailsRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               dog @skip(iff: true)
@@ -131,7 +136,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testInvalidArgumentName()
     {
         $this->expectFailsRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             fragment invalidArgName on Dog {
               doesKnowCommand(unknown: true)
@@ -144,7 +149,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testMisspelledArgumentNameIsReported()
     {
         $this->expectFailsRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             fragment invalidArgName on Dog {
               doesKnowCommand(dogcommand: true)
@@ -157,7 +162,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testUnknownArgumentsAmongstKnownArguments()
     {
         $this->expectFailsRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             fragment oneGoodArgOneInvalidArg on Dog {
               doesKnowCommand(whoknows: 1, dogCommand: SIT, unknown: true)
@@ -173,7 +178,7 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
     public function testUnknownArgumentsDeeply()
     {
         $this->expectFailsRule(
-            new KnownArgumentNamesRule(),
+            $this->rule,
             dedent('
             {
               dog {

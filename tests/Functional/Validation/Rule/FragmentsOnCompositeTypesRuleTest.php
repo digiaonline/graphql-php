@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\fragmentOnNonComposite;
 
 class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return FragmentsOnCompositeTypesRule::class;
+    }
+
     public function testObjectIsValidFragmentType()
     {
         $this->expectPassesRule(
-            new FragmentsOnCompositeTypesRule(),
+            $this->rule,
             dedent('
             fragment validFragment on Dog {
               barks
@@ -23,7 +28,7 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
     public function testInterfaceIsValidFragmentType()
     {
         $this->expectPassesRule(
-            new FragmentsOnCompositeTypesRule(),
+            $this->rule,
             dedent('
             fragment validFragment on Pet {
               name
@@ -35,7 +40,7 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
     public function testObjectIsValidInlineFragmentType()
     {
         $this->expectPassesRule(
-            new FragmentsOnCompositeTypesRule(),
+            $this->rule,
             dedent('
             fragment validFragment on Pet {
               ... on Dog {
@@ -49,7 +54,7 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
     public function testInlineFragmentWithoutTypeIsValid()
     {
         $this->expectPassesRule(
-            new FragmentsOnCompositeTypesRule(),
+            $this->rule,
             dedent('
             fragment validFragment on Pet {
               ... {
@@ -63,7 +68,7 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
     public function testUnionIsValidFragmentType()
     {
         $this->expectPassesRule(
-            new FragmentsOnCompositeTypesRule(),
+            $this->rule,
             dedent('
             fragment validFragment on CatOrDog {
               __typename
@@ -75,7 +80,7 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
     public function testScalarIsInvalidFragmentType()
     {
         $this->expectFailsRule(
-            new FragmentsOnCompositeTypesRule(),
+            $this->rule,
             dedent('
             fragment scalarFragment on Boolean {
               bad

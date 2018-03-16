@@ -2,17 +2,22 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\typeIncompatibleAnonymousSpread;
 use function Digia\GraphQL\Test\Functional\Validation\typeIncompatibleSpread;
 
 class PossibleFragmentSpreadsRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return PossibleFragmentSpreadsRule::class;
+    }
+
     public function testOfTheSameObject()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment objectWithinObject on Dog { ...dogFragment }
             fragment dogFragment on Dog { barkVolume }
@@ -23,7 +28,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testOfTheSameObjectWithInlineFragment()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment objectWithinObjectAnon on Dog { ... on Dog { barkVolume } }
             ')
@@ -33,7 +38,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testObjectIntoAnImplementedInterface()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment objectWithinInterface on Pet { ...dogFragment }
             fragment dogFragment on Dog { barkVolume }
@@ -44,7 +49,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testObjectIntoContainingUnion()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment objectWithinUnion on CatOrDog { ...dogFragment }
             fragment dogFragment on Dog { barkVolume }
@@ -55,7 +60,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testUnionIntoContainedObject()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment unionWithinObject on Dog { ...catOrDogFragment }
             fragment catOrDogFragment on CatOrDog { __typename }
@@ -66,7 +71,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testUnionIntoOverlappingInterface()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment unionWithinInterface on Pet { ...catOrDogFragment }
             fragment catOrDogFragment on CatOrDog { __typename }
@@ -77,7 +82,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testUnionIntoOverlappingUnion()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment unionWithinUnion on DogOrHuman { ...catOrDogFragment }
             fragment catOrDogFragment on CatOrDog { __typename }
@@ -88,7 +93,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testInterfaceIntoImplementedObject()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment interfaceWithinObject on Dog { ...petFragment }
             fragment petFragment on Pet { name }
@@ -99,7 +104,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testInterfaceIntoOverlappingInterface()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment interfaceWithinInterface on Pet { ...beingFragment }
             fragment beingFragment on Being { name }
@@ -110,7 +115,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testInterfaceIntoOverlappingInterfaceInInlineFragment()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment interfaceWithinInterface on Pet { ... on Being { name } }
             ')
@@ -120,7 +125,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testInterfaceIntoOverlappingUnion()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment interfaceWithinUnion on CatOrDog { ...petFragment }
             fragment petFragment on Pet { name }
@@ -131,7 +136,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testIgnoresIncorrectType()
     {
         $this->expectPassesRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment petFragment on Pet { ...badInADifferentWay }
             fragment badInADifferentWay on String { name }
@@ -142,7 +147,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testDifferentObjectIntoObject()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidObjectWithinObject on Cat { ...dogFragment }
             fragment dogFragment on Dog { barkVolume }
@@ -154,7 +159,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testDifferentObjectIntoObjectInInlineFragment()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidObjectWithinObjectAnon on Cat {
               ... on Dog { barkVolume }
@@ -167,7 +172,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testObjectIntoNotImplementingInterface()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidObjectWithinInterface on Pet { ...humanFragment }
             fragment humanFragment on Human { pets { name } }
@@ -179,7 +184,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testObjectIntoNotContainingUnion()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidObjectWithinUnion on CatOrDog { ...humanFragment }
             fragment humanFragment on Human { pets { name } }
@@ -191,7 +196,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testUnionIntoNotContainedObject()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidUnionWithinObject on Human { ...catOrDogFragment }
             fragment catOrDogFragment on CatOrDog { __typename }
@@ -203,7 +208,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testUnionIntoNonOverlappingInterface()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidUnionWithinInterface on Pet { ...humanOrAlienFragment }
             fragment humanOrAlienFragment on HumanOrAlien { __typename }
@@ -215,7 +220,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testUnionIntoNonOverlappingUnion()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidUnionWithinUnion on CatOrDog { ...humanOrAlienFragment }
             fragment humanOrAlienFragment on HumanOrAlien { __typename }
@@ -227,7 +232,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testInterfaceIntoNonImplementingObject()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidInterfaceWithinObject on Cat { ...intelligentFragment }
             fragment intelligentFragment on Intelligent { iq }
@@ -239,7 +244,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testInterfaceIntoNonOverlappingInterface()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidInterfaceWithinInterface on Pet {
               ...intelligentFragment
@@ -253,7 +258,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testInterfaceIntoNonOverlappingInterfaceInInlineFragment()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidInterfaceWithinInterfaceAnon on Pet {
               ...on Intelligent { iq }
@@ -266,7 +271,7 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
     public function testInterfaceIntoNonOverlappingUnion()
     {
         $this->expectFailsRule(
-            new PossibleFragmentSpreadsRule(),
+            $this->rule,
             dedent('
             fragment invalidInterfaceWithinUnion on HumanOrAlien { ...petFragment }
             fragment petFragment on Pet { name }

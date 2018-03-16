@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 use Digia\GraphQL\Error\GraphQLError;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Test\TestCase;
+use Digia\GraphQL\Validation\Rule\RuleInterface;
 use Digia\GraphQL\Validation\ValidatorInterface;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Test\Functional\Validation\testSchema;
@@ -16,9 +17,17 @@ abstract class RuleTestCase extends TestCase
      */
     protected $validator;
 
+    /**
+     * @var RuleInterface
+     */
+    protected $rule;
+
+    abstract protected function getRuleClassName(): string;
+
     public function setUp()
     {
         $this->validator = GraphQL::get(ValidatorInterface::class);
+        $this->rule      = GraphQL::get($this->getRuleClassName());
     }
 
     protected function expectPassesRule($rule, $query)

@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\NoFragmentCyclesRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\fragmentCycle;
 
 class NoFragmentCyclesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return NoFragmentCyclesRule::class;
+    }
+
     public function testSingleReferenceIsValid()
     {
         $this->expectPassesRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Dog { ...fragB }
             fragment fragB on Dog { name }
@@ -22,7 +27,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testSpreadingTwiceIsNotCircular()
     {
         $this->expectPassesRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Dog { ...fragB, ...fragB }
             fragment fragB on Dog { name }
@@ -33,7 +38,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testSpreadingTwiceIndirectlyIsNotCircular()
     {
         $this->expectPassesRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Dog { ...fragB, ...fragC }
             fragment fragB on Dog { ...fragC }
@@ -45,7 +50,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testDoubleSpreadWithinAbstractTypes()
     {
         $this->expectPassesRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment nameFragment on Pet {
               ... on Dog { name }
@@ -62,7 +67,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testDoesNotFalsePositiveOnUnknownFragment()
     {
         $this->expectPassesRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment nameFragment on Pet {
               ...UnknownFragment
@@ -74,7 +79,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testSpreadingRecursivelyWithinFieldsFails()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Human { relatives { ...fragA } },
             '),
@@ -85,7 +90,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testNoSpreadingItselfDirectly()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Dog { ...fragA }
             '),
@@ -96,7 +101,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testNoSpreadingItselfDirectlyWithinInlineFragment()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Pet {
               ... on Dog {
@@ -111,7 +116,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testNoSpreadingItselfIndirectly()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Dog { ...fragB }
             fragment fragB on Dog { ...fragA }
@@ -123,7 +128,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testNoSpreadingItselfIndirectlyInOppositeOrder()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragB on Dog { ...fragA }
             fragment fragA on Dog { ...fragB }
@@ -135,7 +140,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testNoSpreadingItselfIndirectlyWithinInlineFragment()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Pet {
               ... on Dog {
@@ -155,7 +160,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testNoSpreadingItselfDeeply()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Dog { ...fragB }
             fragment fragB on Dog { ...fragC }
@@ -184,7 +189,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testNoSpreadingItselfDeeplyTwoPaths()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Dog { ...fragB, ...fragC }
             fragment fragB on Dog { ...fragA }
@@ -200,7 +205,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testNoSpreadingItselfDeeplyTwoPathsOppositeOrder()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Dog { ...fragC }
             fragment fragB on Dog { ...fragC }
@@ -216,7 +221,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
     public function testNoSpreadingItselfDeeplyAndImmediately()
     {
         $this->expectFailsRule(
-            new NoFragmentCyclesRule(),
+            $this->rule,
             dedent('
             fragment fragA on Dog { ...fragB }
             fragment fragB on Dog { ...fragB, ...fragC }
