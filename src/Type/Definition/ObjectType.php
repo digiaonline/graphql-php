@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use function Digia\GraphQL\Type\resolveThunk;
@@ -46,9 +47,9 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type\Definition
  * @property ObjectTypeDefinitionNode $astNode
  */
-class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface
+class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterface, CompositeTypeInterface,
+    OutputTypeInterface, NodeAwareInterface
 {
-
     use NameTrait;
     use DescriptionTrait;
     use FieldsTrait;

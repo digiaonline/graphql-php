@@ -2,7 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class FragmentDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface, DirectivesInterface
+class FragmentDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface,
+    DirectivesAwareInterface, NameAwareInterface
 {
     use NameTrait;
     use VariableDefinitionsTrait;

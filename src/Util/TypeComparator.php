@@ -12,6 +12,34 @@ use Digia\GraphQL\Type\SchemaInterface;
 class TypeComparator
 {
     /**
+     * Provided two types, return true if the types are equal (invariant).
+     *
+     * @param TypeInterface $typeA
+     * @param TypeInterface $typeB
+     * @return bool
+     */
+    public function isEqualType(TypeInterface $typeA, TypeInterface $typeB): bool
+    {
+        // Equivalent types are equal.
+        if ($typeA === $typeB) {
+            return true;
+        }
+
+        // If either type is non-null, the other must also be non-null.
+        if ($typeA instanceof NonNullType && $typeB instanceof NonNullType) {
+            return $this->isEqualType($typeA->getOfType(), $typeB->getOfType());
+        }
+
+        // If either type is a list, the other must also be a list.
+        if ($typeA instanceof ListType && $typeB instanceof ListType) {
+            return $this->isEqualType($typeA->getOfType(), $typeB->getOfType());
+        }
+
+        // Otherwise the types are not equal.
+        return false;
+    }
+
+    /**
      * Provided a type and a super type, return true if the first type is either
      * equal or a subset of the second super type (covariant).
      *

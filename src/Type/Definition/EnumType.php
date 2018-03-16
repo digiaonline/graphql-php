@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
@@ -36,9 +37,9 @@ use function Digia\GraphQL\Util\toString;
  * @package Digia\GraphQL\Type\Definition\Enum
  * @property EnumTypeDefinitionNode $astNode
  */
-class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface, LeafTypeInterface, OutputTypeInterface
+class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface,
+    LeafTypeInterface, OutputTypeInterface, NodeAwareInterface
 {
-
     use NameTrait;
     use DescriptionTrait;
     use NodeTrait;

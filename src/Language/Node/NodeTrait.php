@@ -4,11 +4,18 @@ namespace Digia\GraphQL\Language\Node;
 
 trait NodeTrait
 {
-
     /**
      * @var ?NodeInterface
      */
     private $astNode;
+
+    /**
+     * @return bool
+     */
+    public function hasAstNode(): bool
+    {
+        return null !== $this->astNode;
+    }
 
     /**
      * @return NodeInterface|null

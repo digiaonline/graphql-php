@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class OperationDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface, DirectivesInterface
+class OperationDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface, DirectivesAwareInterface
 {
     use NameTrait;
     use DirectivesTrait;

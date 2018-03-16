@@ -56,6 +56,7 @@
     "autoload-dev": {
         "files": [
             "./tests/Functional/Language/SchemaParserTest.php",
+            "./tests/Functional/SchemaValidator/ValidationTest.php",
             "./tests/Functional/Validation/errors.php",
             "./tests/Functional/Validation/harness.php",
             "./tests/Functional/QueryTest.php",

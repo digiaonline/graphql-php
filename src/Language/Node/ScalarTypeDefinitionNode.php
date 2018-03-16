@@ -2,7 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class ScalarTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface, DirectivesInterface
+class ScalarTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface, DirectivesAwareInterface,
+    NameAwareInterface
 {
     use DescriptionTrait;
     use NameTrait;

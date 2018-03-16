@@ -5,6 +5,8 @@ namespace Digia\GraphQL\Error;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
+use Digia\GraphQL\Util\JsonEncodeArrayTrait;
+use Digia\GraphQL\Util\SerializationInterface;
 
 /**
  * An GraphQLException describes an exception thrown during the execute
@@ -12,8 +14,9 @@ use Digia\GraphQL\Language\SourceLocation;
  * and stack trace, it also includes information about the locations in a
  * GraphQL document and/or execution result that correspond to the Error.
  */
-class GraphQLException extends AbstractException
+class GraphQLException extends AbstractException implements SerializationInterface
 {
+    use JsonEncodeArrayTrait;
 
     /**
      * An array of { line, column } locations within the source GraphQL document
@@ -184,9 +187,13 @@ class GraphQLException extends AbstractException
      */
     protected function resolveNodes(?array $nodes)
     {
-        $this->nodes = is_array($nodes)
-            ? (!empty($nodes) ? $nodes : null)
-            : (null !== $nodes ? [$nodes] : null);
+        $nodes = \is_array($nodes)
+            ? (!empty($nodes) ? $nodes : [])
+            : (null !== $nodes ? [$nodes] : []);
+
+        $this->nodes = \array_filter($nodes, function ($node) {
+            return null !== $node;
+        });
 
         return $this;
     }
@@ -198,7 +205,7 @@ class GraphQLException extends AbstractException
     protected function resolveSource(?Source $source)
     {
         if (null === $source && !empty($this->nodes)) {
-            $firstNode = $this->nodes[0];
+            $firstNode = $this->nodes[0] ?? null;
             $location  = null !== $firstNode ? $firstNode->getLocation() : null;
             $source    = null !== $location ? $location->getSource() : null;
         }
@@ -215,10 +222,12 @@ class GraphQLException extends AbstractException
     protected function resolvePositions(?array $positions)
     {
         if (null === $positions && !empty($this->nodes)) {
-            $positions = array_reduce($this->nodes, function (array $list, NodeInterface $node) {
-                $location = $node->getLocation();
-                if (null !== $location) {
-                    $list[] = $location->getStart();
+            $positions = array_reduce($this->nodes, function (array $list, ?NodeInterface $node) {
+                if (null !== $node) {
+                    $location = $node->getLocation();
+                    if (null !== $location) {
+                        $list[] = $location->getStart();
+                    }
                 }
                 return $list;
             }, []);
@@ -259,6 +268,17 @@ class GraphQLException extends AbstractException
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'message'   => $this->message,
+            'locations' => $this->getLocationsAsArray(),
+        ];
     }
 
     /**

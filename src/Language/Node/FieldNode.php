@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class FieldNode extends AbstractNode implements SelectionNodeInterface, DirectivesInterface
+class FieldNode extends AbstractNode implements SelectionNodeInterface, DirectivesAwareInterface, NameAwareInterface
 {
     use AliasTrait;
     use NameTrait;

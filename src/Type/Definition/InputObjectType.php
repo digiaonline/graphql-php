@@ -21,6 +21,7 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\resolveThunk;
@@ -32,9 +33,8 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type\Definition
  * @property InputObjectTypeDefinitionNode $astNode
  */
-class InputObjectType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface
+class InputObjectType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface, NodeAwareInterface
 {
-
     use NameTrait;
     use DescriptionTrait;
     use NodeTrait;

@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Type;
 
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
@@ -10,21 +12,20 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 
 interface SchemaInterface
 {
+    /**
+     * @return TypeInterface|null
+     */
+    public function getQuery(): ?TypeInterface;
 
     /**
-     * @return ObjectType
+     * @return TypeInterface|null
      */
-    public function getQuery(): ObjectType;
+    public function getMutation(): ?TypeInterface;
 
     /**
-     * @return ObjectType|null
+     * @return TypeInterface|null
      */
-    public function getMutation(): ?ObjectType;
-
-    /**
-     * @return ObjectType|null
-     */
-    public function getSubscription(): ?ObjectType;
+    public function getSubscription(): ?TypeInterface;
 
     /**
      * @param string $name
@@ -33,7 +34,7 @@ interface SchemaInterface
     public function getDirective(string $name): ?Directive;
 
     /**
-     * @return array
+     * @return Directive[]
      */
     public function getDirectives(): array;
 
@@ -65,4 +66,14 @@ interface SchemaInterface
      * @return TypeInterface|null
      */
     public function getType(string $name): ?TypeInterface;
+
+    /**
+     * @return bool
+     */
+    public function hasAstNode(): bool;
+
+    /**
+     * @return NodeInterface
+     */
+    public function getAstNode(): ?NodeInterface;
 }

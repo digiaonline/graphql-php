@@ -11,6 +11,7 @@ class UtilityProvider extends AbstractServiceProvider
      * @var array
      */
     protected $provides = [
+        NameValidator::class,
         TypeComparator::class,
         ValuesResolver::class,
     ];
@@ -20,6 +21,7 @@ class UtilityProvider extends AbstractServiceProvider
      */
     public function register()
     {
+        $this->container->add(NameValidator::class, NameValidator::class, true/* $shared */);
         $this->container->add(TypeComparator::class, TypeComparator::class, true/* $shared */);
         $this->container->add(ValuesResolver::class, ValuesResolver::class, true/* $shared */);
     }
