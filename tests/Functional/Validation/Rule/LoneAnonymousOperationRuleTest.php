@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\LoneAnonymousOperationRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\anonymousOperationNotAlone;
 
 class LoneAnonymousOperationRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return LoneAnonymousOperationRule::class;
+    }
+
     public function testNoOperations()
     {
         $this->expectPassesRule(
-            new LoneAnonymousOperationRule(),
+            $this->rule,
             dedent('
             fragment fragA on Type {
               field
@@ -23,7 +28,7 @@ class LoneAnonymousOperationRuleTest extends RuleTestCase
     public function testOneAnonymousOperation()
     {
         $this->expectPassesRule(
-            new LoneAnonymousOperationRule(),
+            $this->rule,
             dedent('
             {
               field
@@ -35,7 +40,7 @@ class LoneAnonymousOperationRuleTest extends RuleTestCase
     public function testMultipleNamedOperations()
     {
         $this->expectPassesRule(
-            new LoneAnonymousOperationRule(),
+            $this->rule,
             dedent('
             query Foo {
               field
@@ -51,7 +56,7 @@ class LoneAnonymousOperationRuleTest extends RuleTestCase
     public function testAnonymousOperationWithFragment()
     {
         $this->expectPassesRule(
-            new LoneAnonymousOperationRule(),
+            $this->rule,
             dedent('
             {
               ...Foo
@@ -66,7 +71,7 @@ class LoneAnonymousOperationRuleTest extends RuleTestCase
     public function testMultipleAnonymousOperations()
     {
         $this->expectFailsRule(
-            new LoneAnonymousOperationRule(),
+            $this->rule,
             dedent('
             {
               fieldA
@@ -85,7 +90,7 @@ class LoneAnonymousOperationRuleTest extends RuleTestCase
     public function testAnonymousOperationWithAMutation()
     {
         $this->expectFailsRule(
-            new LoneAnonymousOperationRule(),
+            $this->rule,
             dedent('
             {
               fieldA
@@ -101,7 +106,7 @@ class LoneAnonymousOperationRuleTest extends RuleTestCase
     public function testAnonymousOperationWithASubscription()
     {
         $this->expectFailsRule(
-            new LoneAnonymousOperationRule(),
+            $this->rule,
             dedent('
             {
               fieldA

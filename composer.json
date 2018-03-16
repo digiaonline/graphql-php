@@ -57,7 +57,6 @@
         "files": [
             "./tests/Functional/Language/SchemaParserTest.php",
             "./tests/Functional/Validation/errors.php",
-            "./tests/Functional/Validation/Rule/OverlappingFieldsCanBeMergedRuleTest.php",
             "./tests/Functional/Validation/harness.php"
         ],
         "psr-4": {

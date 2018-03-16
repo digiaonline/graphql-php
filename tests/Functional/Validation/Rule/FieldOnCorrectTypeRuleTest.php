@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\undefinedField;
 
 class FieldOnCorrectTypeRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return FieldOnCorrectTypeRule::class;
+    }
+
     public function testObjectFieldSelection()
     {
         $this->expectPassesRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment objectFieldSelection on Dog {
               __typename
@@ -24,7 +29,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testAliasedObjectFieldSelection()
     {
         $this->expectPassesRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment objectFieldSelection on Dog {
               otherName : name
@@ -37,7 +42,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testInterfaceFieldSelection()
     {
         $this->expectPassesRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment interfaceFieldSelection on Pet {
               __typename
@@ -50,7 +55,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testAliasedInterfaceFieldSelection()
     {
         $this->expectPassesRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment interfaceFieldSelection on Pet {
               otherName : name
@@ -62,7 +67,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testLyingAliasSelection()
     {
         $this->expectPassesRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment lyingAliasSelection on Dog {
               name : nickname
@@ -74,7 +79,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testIgnoresFieldOnUnknownType()
     {
         $this->expectPassesRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment unknownSelection on UnknownType {
               unknownField
@@ -86,7 +91,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testReportsErrorWhenTypeIsKnownAgain()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment typeKnownAgain on Pet {
               unknown_pet_field {
@@ -106,7 +111,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testFieldNotDefinedOnFragment()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment fieldNotDefined on Dog {
               meowVolume
@@ -119,7 +124,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testIgnoresDeeplyUnknownField()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment deepFieldNotDefined on Dog {
               unknown_field {
@@ -134,7 +139,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testSubFieldNotDefined()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment subFieldNotDefined on Human {
               pets {
@@ -149,7 +154,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testFieldNotDefinedOnInlineFragment()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment fieldNotDefined on Pet {
               ... on Dog {
@@ -164,7 +169,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testAliasedFieldTargetNotDefined()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment aliasedFieldTargetNotDefined on Dog {
               volume: mooVolume
@@ -177,7 +182,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testAliasedLyingFieldTargetNotDefined()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment aliasedLyingFieldTargetNotDefined on Dog {
               barkVolume: kawVolume
@@ -190,7 +195,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testNotDefinedOnInterface()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment notDefinedOnInterface on Pet {
               tailLength
@@ -203,7 +208,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testDefinedOnImplementorsButNotOnInterface()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment definedOnImplementorsButNotInterface on Pet {
               nickname
@@ -216,7 +221,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testMetaFieldSelectionOnUnion()
     {
         $this->expectPassesRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment directFieldSelectionOnUnion on CatOrDog {
               __typename
@@ -228,7 +233,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testDirectFieldSelectionOnUnion()
     {
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment directFieldSelectionOnUnion on CatOrDog {
               directField
@@ -245,7 +250,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
         );
 
         $this->expectFailsRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment definedOnImplementorsQueriedOnUnion on CatOrDog {
               name
@@ -266,7 +271,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
     public function testValidFieldInInlineFragment()
     {
         $this->expectPassesRule(
-            new FieldOnCorrectTypeRule(),
+            $this->rule,
             dedent('
             fragment objectFieldSelection on Pet {
               ... on Dog {

@@ -8,10 +8,15 @@ use function Digia\GraphQL\Test\Functional\Validation\duplicateInputField;
 
 class UniqueInputFieldNamesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return UniqueInputFieldNamesRule::class;
+    }
+
     public function testInputObjectWithFields()
     {
         $this->expectPassesRule(
-            new UniqueInputFieldNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg: { f: true })
@@ -23,7 +28,7 @@ class UniqueInputFieldNamesRuleTest extends RuleTestCase
     public function testSameInputObjectWithTwoArguments()
     {
         $this->expectPassesRule(
-            new UniqueInputFieldNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg1: { f: true }, arg2: { f: true })
@@ -35,7 +40,7 @@ class UniqueInputFieldNamesRuleTest extends RuleTestCase
     public function testMultipleInputObjectFields()
     {
         $this->expectPassesRule(
-            new UniqueInputFieldNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg: { f1: "value", f2: "value", f3: "value" })
@@ -47,7 +52,7 @@ class UniqueInputFieldNamesRuleTest extends RuleTestCase
     public function testAllowsForNestedInputObjectsWithSimilarFields()
     {
         $this->expectPassesRule(
-            new UniqueInputFieldNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg: {
@@ -67,7 +72,7 @@ class UniqueInputFieldNamesRuleTest extends RuleTestCase
     public function testDuplicateInputObjectFields()
     {
         $this->expectFailsRule(
-            new UniqueInputFieldNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg: { f1: "value", f1: "value" })
@@ -80,7 +85,7 @@ class UniqueInputFieldNamesRuleTest extends RuleTestCase
     public function testManyDuplicateInputObjectFields()
     {
         $this->expectFailsRule(
-            new UniqueInputFieldNamesRule(),
+            $this->rule,
             dedent('
             {
               field(arg: { f1: "value", f1: "value", f1: "value" })

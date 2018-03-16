@@ -2,17 +2,22 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Test\Functional\Validation\noSubselectionAllowed;
-use function Digia\GraphQL\Test\Functional\Validation\requiredSubselection;
 use Digia\GraphQL\Validation\Rule\ScalarLeafsRule;
 use function Digia\GraphQL\Language\dedent;
+use function Digia\GraphQL\Test\Functional\Validation\noSubselectionAllowed;
+use function Digia\GraphQL\Test\Functional\Validation\requiredSubselection;
 
 class ScalarLeafsRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return ScalarLeafsRule::class;
+    }
+
     public function testValidScalarSelection()
     {
         $this->expectPassesRule(
-            new ScalarLeafsRule(),
+            $this->rule,
             dedent('
             fragment scalarSelection on Dog {
               barks
@@ -24,7 +29,7 @@ class ScalarLeafsRuleTest extends RuleTestCase
     public function testObjectTypeMissingSelection()
     {
         $this->expectFailsRule(
-            new ScalarLeafsRule(),
+            $this->rule,
             dedent('
             query directQueryOnObjectWithoutSubFields {
               human
@@ -37,7 +42,7 @@ class ScalarLeafsRuleTest extends RuleTestCase
     public function testInterfaceTypeMissingSelection()
     {
         $this->expectFailsRule(
-            new ScalarLeafsRule(),
+            $this->rule,
             dedent('
             {
               human { pets }
@@ -50,7 +55,7 @@ class ScalarLeafsRuleTest extends RuleTestCase
     public function testValidScalarSelectionWithArguments()
     {
         $this->expectPassesRule(
-            new ScalarLeafsRule(),
+            $this->rule,
             dedent('
             fragment scalarSelectionWithArgs on Dog {
               doesKnowCommand(dogCommand: SIT)
@@ -62,7 +67,7 @@ class ScalarLeafsRuleTest extends RuleTestCase
     public function testScalarSelectionNotAllowedOnBoolean()
     {
         $this->expectFailsRule(
-            new ScalarLeafsRule(),
+            $this->rule,
             dedent('
             fragment scalarSelectionsNotAllowedOnBoolean on Dog {
               barks { sinceWhen }
@@ -75,7 +80,7 @@ class ScalarLeafsRuleTest extends RuleTestCase
     public function testScalarSelectionNotAllowedOnEnum()
     {
         $this->expectFailsRule(
-            new ScalarLeafsRule(),
+            $this->rule,
             dedent('
             fragment scalarSelectionsNotAllowedOnEnum on Cat {
               furColor { inHexdec }
@@ -88,7 +93,7 @@ class ScalarLeafsRuleTest extends RuleTestCase
     public function testScalarSelectionNotAllowedWithArguments()
     {
         $this->expectFailsRule(
-            new ScalarLeafsRule(),
+            $this->rule,
             dedent('
             fragment scalarSelectionsNotAllowedWithArgs on Dog {
               doesKnowCommand(dogCommand: SIT) { sinceWhen }
@@ -101,7 +106,7 @@ class ScalarLeafsRuleTest extends RuleTestCase
     public function testScalarSelectionNotAllowedWithDirectives()
     {
         $this->expectFailsRule(
-            new ScalarLeafsRule(),
+            $this->rule,
             dedent('
             fragment scalarSelectionsNotAllowedWithDirectives on Dog {
               name @include(if: true) { isAlsoHumanName }
@@ -114,7 +119,7 @@ class ScalarLeafsRuleTest extends RuleTestCase
     public function testScalarSelectionNotAllowedWithDirectivesAndArguments()
     {
         $this->expectFailsRule(
-            new ScalarLeafsRule(),
+            $this->rule,
             dedent('
             fragment scalarSelectionsNotAllowedWithDirectivesAndArgs on Dog {
               doesKnowCommand(dogCommand: SIT) @include(if: true) { sinceWhen }

@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Test\Functional\Validation\nonInputTypeOnVariable;
 use Digia\GraphQL\Validation\Rule\VariablesAreInputTypesRule;
 use function Digia\GraphQL\Language\dedent;
+use function Digia\GraphQL\Test\Functional\Validation\nonInputTypeOnVariable;
 
 class VariablesAreInputTypesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return VariablesAreInputTypesRule::class;
+    }
+
     public function testInputTypesAreValid()
     {
         $this->expectPassesRule(
-            new VariablesAreInputTypesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: [Boolean!]!, $c: ComplexInput) {
               field(a: $a, b: $b, c: $c)
@@ -23,7 +28,7 @@ class VariablesAreInputTypesRuleTest extends RuleTestCase
     public function testOutputTypesAreInvalid()
     {
         $this->expectFailsRule(
-            new VariablesAreInputTypesRule(),
+            $this->rule,
             dedent('
             query Foo($a: Dog, $b: [[CatOrDog!]]!, $c: Pet) {
               field(a: $a, b: $b, c: $c)

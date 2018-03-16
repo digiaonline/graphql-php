@@ -2,17 +2,22 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\KnownDirectivesRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\misplacedDirective;
 use function Digia\GraphQL\Test\Functional\Validation\unknownDirective;
 
 class KnownDirectivesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return KnownDirectivesRule::class;
+    }
+
     public function testWithNoDirectives()
     {
         $this->expectPassesRule(
-            new KnownDirectivesRule(),
+            $this->rule,
             dedent('
             query Foo {
               name
@@ -28,7 +33,7 @@ class KnownDirectivesRuleTest extends RuleTestCase
     public function testWithKnownDirectives()
     {
         $this->expectPassesRule(
-            new KnownDirectivesRule(),
+            $this->rule,
             dedent('
             {
               dog @include(if: true) {
@@ -45,7 +50,7 @@ class KnownDirectivesRuleTest extends RuleTestCase
     public function testWithUnknownDirective()
     {
         $this->expectFailsRule(
-            new KnownDirectivesRule(),
+            $this->rule,
             dedent('
             {
               dog @unknown(directive: "value") {
@@ -60,7 +65,7 @@ class KnownDirectivesRuleTest extends RuleTestCase
     public function testWithManyUnknownDirectives()
     {
         $this->expectFailsRule(
-            new KnownDirectivesRule(),
+            $this->rule,
             dedent('
             {
               dog @unknown(directive: "value") {
@@ -85,7 +90,7 @@ class KnownDirectivesRuleTest extends RuleTestCase
     public function testWithWellPlacedDirectives()
     {
         $this->expectPassesRule(
-            new KnownDirectivesRule(),
+            $this->rule,
             dedent('
             query Foo @onQuery {
               name @include(if: true)
@@ -103,7 +108,7 @@ class KnownDirectivesRuleTest extends RuleTestCase
     public function testWithMisplacedDirectives()
     {
         $this->expectFailsRule(
-            new KnownDirectivesRule(),
+            $this->rule,
             dedent('
             query Foo @include(if: true) {
               name @onQuery
@@ -126,7 +131,7 @@ class KnownDirectivesRuleTest extends RuleTestCase
     public function testWithinSchemaLanguageWithWellPlacedDirectives()
     {
         $this->expectPassesRule(
-            new KnownDirectivesRule(),
+            $this->rule,
             dedent('
             type MyObj implements MyInterface @onObject {
               myField(myArg: Int @onArgumentDefinition): String @onFieldDefinition
@@ -170,7 +175,7 @@ class KnownDirectivesRuleTest extends RuleTestCase
     public function testWithinSchemaLanguageWithMisplacedDirectives()
     {
         $this->expectFailsRule(
-            new KnownDirectivesRule(),
+            $this->rule,
             dedent('
             type MyObj implements MyInterface @onInterface {
               myField(myArg: Int @onInputFieldDefinition): String @onInputFieldDefinition

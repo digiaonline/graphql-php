@@ -2,17 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Test\Functional\Validation\badVariablePosition;
-use function Digia\GraphQL\Validation\badVariablePositionMessage;
 use Digia\GraphQL\Validation\Rule\VariablesInAllowedPositionRule;
 use function Digia\GraphQL\Language\dedent;
+use function Digia\GraphQL\Test\Functional\Validation\badVariablePosition;
 
 class VariablesInAllowedPositionRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return VariablesInAllowedPositionRule::class;
+    }
+
     public function testBooleanAllowsBoolean()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($booleanArg: Boolean)
             {
@@ -27,7 +31,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testBooleanAllowsBooleanWithinFragment()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             fragment booleanArgFrag on ComplicatedArgs {
               booleanArgField(booleanArg: $booleanArg)
@@ -41,7 +45,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
         );
 
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($booleanArg: Boolean) {
               complicatedArgs {
@@ -58,7 +62,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testBooleanAllowsNonNullBoolean()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($nonNullBooleanArg: Boolean!) {
               complicatedArgs {
@@ -72,7 +76,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testNonNullBooleanAllowsBooleanWithinFragment()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             fragment booleanArgFrag on ComplicatedArgs {
               booleanArgField(booleanArg: $nonNullBooleanArg)
@@ -90,7 +94,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testNonNullIntAllowsIntWithDefaultValue()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($intArg: Int = 1) {
               complicatedArgs {
@@ -104,7 +108,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testListOfStringsAllowsListOfStrings()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($stringListVar: [String]) {
               complicatedArgs {
@@ -118,7 +122,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testListOfNonNullStringsAllowsListOfStrings()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($stringListVar: [String!]) {
               complicatedArgs {
@@ -132,7 +136,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testStringAllowsListOfStrings()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($stringVar: String) {
               complicatedArgs {
@@ -146,7 +150,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testNonNullStringAllowsListOfStrings()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($stringVar: String!) {
               complicatedArgs {
@@ -160,7 +164,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testComplexInputAllowsComplexInput()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($complexVar: ComplexInput) {
               complicatedArgs {
@@ -174,7 +178,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testComplexInputAllowsComplexInputInField()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($boolVar: Boolean = false) {
               complicatedArgs {
@@ -188,7 +192,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testNonNullBooleanAllowsNonNullBooleanInDirective()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($boolVar: Boolean!) {
               dog @include(if: $boolVar)
@@ -200,7 +204,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testBooleanAllowsNonNullBooleanInDirectiveWithDefaultValue()
     {
         $this->expectPassesRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($boolVar: Boolean = false) {
               dog @include(if: $boolVar)
@@ -212,7 +216,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testIntDisallowsNonNullInt()
     {
         $this->expectFailsRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($intArg: Int) {
               complicatedArgs {
@@ -227,7 +231,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testIntDisallowsNonNullIntWithinFragment()
     {
         $this->expectFailsRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             fragment nonNullIntArgFieldFrag on ComplicatedArgs {
               nonNullIntArgField(nonNullIntArg: $intArg)
@@ -246,7 +250,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testIntDisallowsNonNullIntWithinNestedFragment()
     {
         $this->expectFailsRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             fragment outerFrag on ComplicatedArgs {
               ...nonNullIntArgFieldFrag
@@ -269,7 +273,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testBooleanDisallowsString()
     {
         $this->expectFailsRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($stringVar: String) {
               complicatedArgs {
@@ -284,7 +288,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testStringDisallowsListOfStrings()
     {
         $this->expectFailsRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($stringVar: String) {
               complicatedArgs {
@@ -299,7 +303,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testBooleanDisallowsNonNullBooleanInDirective()
     {
         $this->expectFailsRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($boolVar: Boolean) {
               dog @include(if: $boolVar)
@@ -312,7 +316,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testStringDisallowsNonNullBooleanInDirective()
     {
         $this->expectFailsRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($stringVar: String) {
               dog @include(if: $stringVar)
@@ -325,7 +329,7 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
     public function testStringDisallowsListOfNonNullStrings()
     {
         $this->expectFailsRule(
-            new VariablesInAllowedPositionRule(),
+            $this->rule,
             dedent('
             query Query($stringListVar: [String]) {
               complicatedArgs {

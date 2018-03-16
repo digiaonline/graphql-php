@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Test\Functional\Validation\duplicateVariable;
 use Digia\GraphQL\Validation\Rule\UniqueVariableNamesRule;
 use function Digia\GraphQL\Language\dedent;
+use function Digia\GraphQL\Test\Functional\Validation\duplicateVariable;
 
 class UniqueVariableNamesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return UniqueVariableNamesRule::class;
+    }
+
     public function testUniqueVariableNames()
     {
         $this->expectPassesRule(
-            new UniqueVariableNamesRule(),
+            $this->rule,
             dedent('
             query A($x: Int, $y: String) { __typename }
             query B($x: String, $y: Int) { __typename }
@@ -22,7 +27,7 @@ class UniqueVariableNamesRuleTest extends RuleTestCase
     public function testDuplicateVariableNames()
     {
         $this->expectFailsRule(
-            new UniqueVariableNamesRule(),
+            $this->rule,
             dedent('
             query A($x: Int, $x: Int, $x: String) { __typename }
             query B($x: String, $x: Int) { __typename }
