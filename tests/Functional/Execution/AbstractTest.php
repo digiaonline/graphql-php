@@ -79,7 +79,7 @@ class Human
 
     public function __construct(string $name)
     {
-        $this->name;
+        $this->name = $name;
     }
 }
 
@@ -98,7 +98,7 @@ class Dog
 class Cat
 {
     public $name;
-    public $woofs;
+    public $meows;
 
     public function __construct(string $name, bool $meows)
     {
