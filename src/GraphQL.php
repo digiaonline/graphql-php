@@ -5,6 +5,7 @@ namespace Digia\GraphQL;
 use Digia\GraphQL\Cache\CacheProvider;
 use Digia\GraphQL\Execution\ExecutionProvider;
 use Digia\GraphQL\Language\LanguageProvider;
+use Digia\GraphQL\SchemaBuilder\SchemaBuilderProvider;
 use Digia\GraphQL\SchemaValidator\SchemaValidatorProvider;
 use Digia\GraphQL\Type\DirectivesProvider;
 use Digia\GraphQL\Type\IntrospectionTypesProvider;
@@ -43,6 +44,7 @@ class GraphQL
     private static $providers = [
         CacheProvider::class,
         LanguageProvider::class,
+        SchemaBuilderProvider::class,
         SchemaValidatorProvider::class,
         IntrospectionTypesProvider::class,
         ScalarTypesProvider::class,

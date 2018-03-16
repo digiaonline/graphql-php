@@ -2,18 +2,12 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Execution\ValuesResolver;
 use Digia\GraphQL\Language\NodeBuilder\NodeBuilder;
 use Digia\GraphQL\Language\NodeBuilder\NodeBuilderInterface;
 use Digia\GraphQL\Language\NodeBuilder\SupportedBuilders;
 use Digia\GraphQL\Language\Reader\SupportedReaders;
-use Digia\GraphQL\Language\SchemaBuilder\DefinitionBuilder;
-use Digia\GraphQL\Language\SchemaBuilder\DefinitionBuilderInterface;
-use Digia\GraphQL\Language\SchemaBuilder\SchemaBuilder;
-use Digia\GraphQL\Language\SchemaBuilder\SchemaBuilderInterface;
 use Digia\GraphQL\Language\Writer\SupportedWriters;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use Psr\SimpleCache\CacheInterface;
 
 class LanguageProvider extends AbstractServiceProvider
 {
@@ -25,8 +19,6 @@ class LanguageProvider extends AbstractServiceProvider
         LexerInterface::class,
         ParserInterface::class,
         PrinterInterface::class,
-        DefinitionBuilderInterface::class,
-        SchemaBuilderInterface::class,
     ];
 
     /**
@@ -47,12 +39,5 @@ class LanguageProvider extends AbstractServiceProvider
 
         $this->container->add(PrinterInterface::class, Printer::class, true/* $shared */)
             ->withArgument(SupportedWriters::get());
-
-        $this->container->add(DefinitionBuilderInterface::class, DefinitionBuilder::class)
-            ->withArgument(CacheInterface::class)
-            ->withArgument(ValuesResolver::class);
-
-        $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class)
-            ->withArgument(DefinitionBuilderInterface::class);
     }
 }
