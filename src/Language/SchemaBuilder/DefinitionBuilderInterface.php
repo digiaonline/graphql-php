@@ -9,7 +9,6 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 
 interface DefinitionBuilderInterface
 {
-
     /**
      * @param NodeInterface $node
      * @return TypeInterface
@@ -27,4 +26,10 @@ interface DefinitionBuilderInterface
      * @return $this
      */
     public function setTypeDefinitionMap(array $typeDefinitionMap);
+
+    /**
+     * @param array $resolverMap
+     * @return $this
+     */
+    public function setResolverMap(array $resolverMap);
 }

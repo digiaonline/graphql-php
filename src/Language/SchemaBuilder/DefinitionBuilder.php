@@ -52,16 +52,27 @@ use function Digia\GraphQL\Util\keyValMap;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
-
-    /**
-     * @var ?callable
-     */
-    protected $resolveTypeFunction;
+    private const CACHE_PREFIX = 'GraphQL_DefinitionBuilder_';
 
     /**
      * @var CacheInterface
      */
     protected $cache;
+
+    /**
+     * @var ValuesResolver
+     */
+    protected $valuesResolver;
+
+    /**
+     * @var callable
+     */
+    protected $resolveTypeFunction;
+
+    /**
+     * @var array
+     */
+    protected $resolverMap;
 
     /**
      * @var array
@@ -75,10 +86,14 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @param CacheInterface $cache
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function __construct(callable $resolveTypeFunction, CacheInterface $cache)
-    {
+    public function __construct(
+        CacheInterface $cache,
+        ValuesResolver $valuesResolver,
+        ?callable $resolveTypeFunction = null
+    ) {
+        $this->valuesResolver      = $valuesResolver;
+        $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
         $this->typeDefinitionsMap  = [];
-        $this->resolveTypeFunction = $resolveTypeFunction;
 
         $builtInTypes = keyMap(
             array_merge(specifiedScalarTypes(), introspectionTypes()),
@@ -88,7 +103,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         );
 
         foreach ($builtInTypes as $name => $type) {
-            $cache->set($name, $type);
+            $cache->set($this->getCacheKey($name), $type);
         }
 
         $this->cache = $cache;
@@ -97,9 +112,19 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @inheritdoc
      */
-    public function setTypeDefinitionMap(array $typeDefinitionMap)
+    public function setTypeDefinitionMap(array $typeDefinitionMap): DefinitionBuilder
     {
         $this->typeDefinitionsMap = $typeDefinitionMap;
+        return $this;
+    }
+
+    /**
+     * @param array $resolverMap
+     * @return DefinitionBuilder
+     */
+    public function setResolverMap(array $resolverMap): DefinitionBuilder
+    {
+        $this->resolverMap = $resolverMap;
         return $this;
     }
 
@@ -111,20 +136,20 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     {
         $typeName = $node->getNameValue();
 
-        if (!$this->cache->has($typeName)) {
+        if (!$this->cache->has($this->getCacheKey($typeName))) {
             if ($node instanceof NamedTypeNode) {
                 $definition = $this->getTypeDefinition($typeName);
 
                 $this->cache->set(
-                    $typeName,
+                    $this->getCacheKey($typeName),
                     null !== $definition ? $this->buildNamedType($definition) : $this->resolveType($node)
                 );
             } else {
-                $this->cache->set($typeName, $this->buildNamedType($node));
+                $this->cache->set($this->getCacheKey($typeName), $this->buildNamedType($node));
             }
         }
 
-        return $this->cache->get($typeName);
+        return $this->cache->get($this->getCacheKey($typeName));
     }
 
     /**
@@ -151,7 +176,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildWrappedType(TypeNodeInterface $typeNode): TypeInterface
     {
-        $typeDefinition = $this->buildType(getNamedTypeNode($typeNode));
+        $typeDefinition = $this->buildType($this->getNamedTypeNode($typeNode));
         return buildWrappedType($typeDefinition, $typeNode);
     }
 
@@ -162,13 +187,14 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @throws InvalidTypeException
      * @throws InvariantException
      */
-    protected function buildField($node): array
+    protected function buildField($node, array $resolverMap): array
     {
         return [
             'type'              => $this->buildWrappedType($node->getType()),
             'description'       => $node->getDescriptionValue(),
             'arguments'         => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
-            'deprecationReason' => getDeprecationReason($node),
+            'deprecationReason' => $this->getDeprecationReason($node),
+            'resolve'           => $resolverMap[$node->getNameValue()] ?? null,
             'astNode'           => $node,
         ];
     }
@@ -237,7 +263,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                 return $this->buildFields($node);
             },
             'interfaces'  => function () use ($node) {
-                return $node->hasInterfaces() ? array_map(function (InterfaceTypeDefinitionNode $interface) {
+                return $node->hasInterfaces() ? array_map(function (NodeInterface $interface) {
                     return $this->buildType($interface);
                 }, $node->getInterfaces()) : [];
             },
@@ -250,14 +276,16 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildFields($node): array
     {
+        $resolverMap = $this->resolverMap[$node->getNameValue()] ?? [];
+
         return $node->hasFields() ? keyValMap(
             $node->getFields(),
             function ($value) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 return $value->getNameValue();
             },
-            function ($value) {
-                return $this->buildField($value);
+            function ($value) use ($resolverMap) {
+                return $this->buildField($value, $resolverMap);
             }
         ) : [];
     }
@@ -295,7 +323,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                 function (EnumValueDefinitionNode $value): array {
                     return [
                         'description'       => $value->getDescriptionValue(),
-                        'deprecationReason' => getDeprecationReason($value),
+                        'deprecationReason' => $this->getDeprecationReason($value),
                         'astNode'           => $value,
                     ];
                 }
@@ -304,6 +332,10 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         ]);
     }
 
+    /**
+     * @param UnionTypeDefinitionNode $node
+     * @return UnionType
+     */
     protected function buildUnionType(UnionTypeDefinitionNode $node): UnionType
     {
         return GraphQLUnionType([
@@ -362,9 +394,19 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @inheritdoc
      */
-    protected function resolveType(NodeInterface $node): TypeInterface
+    protected function resolveType(NamedTypeNode $node): ?NamedTypeInterface
     {
         return \call_user_func($this->resolveTypeFunction, $node);
+    }
+
+    /**
+     * @param NamedTypeNode $node
+     * @return NamedTypeInterface|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function defaultTypeResolver(NamedTypeNode $node): ?NamedTypeInterface
+    {
+        return $this->cache->get($this->getCacheKey($node->getNameValue())) ?? null;
     }
 
     /**
@@ -375,21 +417,43 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     {
         return $this->typeDefinitionsMap[$typeName] ?? null;
     }
-}
 
-/**
- * @param TypeNodeInterface $typeNode
- * @return NamedTypeNode
- */
-function getNamedTypeNode(TypeNodeInterface $typeNode): NamedTypeNode
-{
-    $namedType = $typeNode;
+    /**
+     * @param TypeNodeInterface $typeNode
+     * @return NamedTypeNode
+     */
+    protected function getNamedTypeNode(TypeNodeInterface $typeNode): NamedTypeNode
+    {
+        $namedType = $typeNode;
 
-    while ($namedType instanceof ListTypeNode || $namedType instanceof NonNullTypeNode) {
-        $namedType = $namedType->getType();
+        while ($namedType instanceof ListTypeNode || $namedType instanceof NonNullTypeNode) {
+            $namedType = $namedType->getType();
+        }
+
+        return $namedType;
     }
 
-    return $namedType;
+    /**
+     * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
+     * @return null|string
+     * @throws InvariantException
+     * @throws ExecutionException
+     * @throws InvalidTypeException
+     */
+    protected function getDeprecationReason(NodeInterface $node): ?string
+    {
+        $deprecated = $this->valuesResolver->getDirectiveValues(GraphQLDeprecatedDirective(), $node);
+        return $deprecated['reason'] ?? null;
+    }
+
+    /**
+     * @param string $key
+     * @return string
+     */
+    protected function getCacheKey(string $key): string
+    {
+        return self::CACHE_PREFIX . $key;
+    }
 }
 
 /**
@@ -410,17 +474,4 @@ function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputType
     }
 
     return $innerType;
-}
-
-/**
- * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
- * @return null|string
- * @throws InvariantException
- * @throws ExecutionException
- * @throws InvalidTypeException
- */
-function getDeprecationReason(NodeInterface $node): ?string
-{
-    $deprecated = (new ValuesResolver())->getDirectiveValues(GraphQLDeprecatedDirective(), $node);
-    return $deprecated['reason'] ?? null;
 }

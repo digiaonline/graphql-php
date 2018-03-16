@@ -2,8 +2,7 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\InvalidTypeException;
-use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Execution\ValuesResolver;
 use Digia\GraphQL\Language\NodeBuilder\NodeBuilder;
 use Digia\GraphQL\Language\NodeBuilder\NodeBuilderInterface;
 use Digia\GraphQL\Language\NodeBuilder\SupportedBuilders;
@@ -50,12 +49,8 @@ class LanguageProvider extends AbstractServiceProvider
             ->withArgument(SupportedWriters::get());
 
         $this->container->add(DefinitionBuilderInterface::class, DefinitionBuilder::class, true/* $shared */)
-            ->withArguments([
-                function (NamedTypeNode $node) {
-                    throw new InvalidTypeException(sprintf('Type "%s" not found in document.', $node->getNameValue()));
-                },
-                CacheInterface::class,
-            ]);
+            ->withArgument(CacheInterface::class)
+            ->withArgument(ValuesResolver::class);
 
         $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class, true/* $shared */)
             ->withArgument(DefinitionBuilderInterface::class);

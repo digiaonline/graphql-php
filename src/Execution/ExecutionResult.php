@@ -61,10 +61,13 @@ class ExecutionResult implements SerializationInterface
      */
     public function toArray(): array
     {
-        return [
-            'data'   => $this->getData(),
-            'errors' => $this->getErrors(),
-        ];
+        $array = ['data' => $this->data];
+
+        if (!empty($this->errors)) {
+            $array['errors'] = $this->errors;
+        }
+
+        return $array;
     }
 
     /**

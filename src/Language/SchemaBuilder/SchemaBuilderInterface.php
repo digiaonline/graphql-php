@@ -8,9 +8,10 @@ use Digia\GraphQL\Type\SchemaInterface;
 interface SchemaBuilderInterface
 {
     /**
-     * @param DocumentNode $documentNode
+     * @param DocumentNode $document
+     * @param array        $resolverMap
      * @param array        $options
      * @return SchemaInterface
      */
-    public function build(DocumentNode $documentNode, array $options = []): SchemaInterface;
+    public function build(DocumentNode $document, array $resolverMap = [], array $options = []): SchemaInterface;
 }
