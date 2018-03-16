@@ -8,10 +8,15 @@ use function Digia\GraphQL\Test\Functional\Validation\nonExecutableDefinition;
 
 class ExecutableDefinitionsRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return ExecutableDefinitionsRule::class;
+    }
+
     public function testWithOnlyOperation()
     {
         $this->expectPassesRule(
-            new ExecutableDefinitionsRule(),
+            $this->rule,
             dedent('
             query Foo {
               dog {
@@ -25,7 +30,7 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
     public function testWithOperationAndFragment()
     {
         $this->expectPassesRule(
-            new ExecutableDefinitionsRule(),
+            $this->rule,
             dedent('
             query Foo {
               dog {
@@ -44,7 +49,7 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
     public function testWithTypeDefinition()
     {
         $this->expectFailsRule(
-            new ExecutableDefinitionsRule(),
+            $this->rule,
             dedent('
             query Foo {
               dog {
@@ -70,7 +75,7 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
     public function testWithSchemaDefinition()
     {
         $this->expectFailsRule(
-            new ExecutableDefinitionsRule(),
+            $this->rule,
             dedent('
             schema {
               query: Query

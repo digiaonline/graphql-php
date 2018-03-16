@@ -3,18 +3,23 @@
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
 use Digia\GraphQL\Error\GraphQLException;
-use function Digia\GraphQL\Test\Functional\Validation\requiredField;
-use function Digia\GraphQL\Test\Functional\Validation\unknownField;
 use Digia\GraphQL\Validation\Rule\ValuesOfCorrectTypeRule;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\badValue;
+use function Digia\GraphQL\Test\Functional\Validation\requiredField;
+use function Digia\GraphQL\Test\Functional\Validation\unknownField;
 
 class ValuesOfCorrectTypeRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return ValuesOfCorrectTypeRule::class;
+    }
+
     public function testGoodIntValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -28,7 +33,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testGoodNegativeIntValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -42,7 +47,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testGoodBooleanValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -56,7 +61,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testGoodStringValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -70,7 +75,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testGoodFloatValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -84,7 +89,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testGoodNegativeFloatValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -98,7 +103,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testIntIntoFloat()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -112,7 +117,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testStringIntoID()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -126,7 +131,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testGoodEnumValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -140,7 +145,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testEnumWithUndefinedValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -154,7 +159,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testEnumWithNullValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -168,7 +173,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testNullIntoNullableType()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -179,7 +184,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
         );
 
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog(a: null, b: null, c:{ requiredField: true, intField: null }) {
@@ -193,7 +198,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testIntIntoString()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -208,7 +213,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testFloatIntoString()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -223,7 +228,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testBooleanIntoString()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -238,7 +243,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testUnquotedStringIntoString()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -253,7 +258,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testStringIntoInt()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -269,7 +274,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testBigIntIntoInt()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -284,7 +289,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testUnquotedStringIntoInt()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -299,7 +304,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testSimpleFloatIntoInt()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -314,7 +319,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testFloatIntoInt()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -329,7 +334,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testStringIntoFloat()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -344,7 +349,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testBooleanIntoFloat()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -359,7 +364,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testUnquotedStringIntoFloat()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -374,7 +379,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testIntIntoBoolean()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -389,7 +394,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testFloatIntoBoolean()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -404,7 +409,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testStringIntoBoolean()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -419,7 +424,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testUnquotedStringIntoBoolean()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -434,7 +439,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testFloatIntoID()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -449,7 +454,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testBooleanIntoID()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -464,7 +469,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testUnquotedStringIntoID()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -479,7 +484,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testIntIntoEnum()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -494,7 +499,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testFloatIntoEnum()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -509,7 +514,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testStringIntoEnum()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -524,7 +529,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testBooleanIntoEnum()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -539,7 +544,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testEnumValueIntoEnum()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -554,7 +559,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testDifferentCaseEnumValueIntoEnum()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -569,7 +574,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testGoodListValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -583,7 +588,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testEmptyListValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -597,7 +602,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testNullValue()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -611,7 +616,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testSingleValueIntoList()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -625,7 +630,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testInvalidListValueWithIncorrectItemType()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -640,7 +645,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testIntValueIntoListOfStrings()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -655,7 +660,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testValidNonNullableValueOnOptionalArgument()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -669,7 +674,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testNoValueOnOptionalArgument()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -683,7 +688,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testMultipleArguments()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -697,7 +702,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testMultipleArgumentsInReverseOrder()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -711,7 +716,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testNoArgumentsOnMultipleOptionalArguments()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -725,7 +730,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testNoArgumentOnMultipleOptionalArguments()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -739,7 +744,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testOneArgumentOnMultipleOptionalArguments()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -753,7 +758,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testSecondArgumentOnMultipleOptionalArguments()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -767,7 +772,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testMultipleRequiredArgumentsOnMixedList()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -781,7 +786,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testAllRequiredAndOptionalArgumentsOnMixedList()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -795,7 +800,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testInvalidNonNullableValueWithIncorrectValueType()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -813,7 +818,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testIncorrectValueAndMissingArgument()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -828,7 +833,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testInvalidNonNullableValueWithNullValue()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -843,7 +848,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testOptionalArgumentsDespiteRequiredFieldInType()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -857,7 +862,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testPartialObjectOnlyRequired()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -871,7 +876,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testParitalObjectRequiredFieldCanBeFalsey()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -885,7 +890,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testPartialObjectIncludingRequired()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -899,7 +904,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testFullObject()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -919,7 +924,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testFullObjectWithFieldsInDifferentOrder()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -939,7 +944,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testPartialObjectWithMissingRequiredArgument()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -954,7 +959,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testParitalObjectWithInvalidFieldType()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -972,7 +977,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testPartialObjectUnknownFieldArgument()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -991,7 +996,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     {
         /** @var GraphQLException[] $errors */
         $errors = $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               invalidArg(arg: 123)
@@ -1005,7 +1010,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testAllowsCustomScalarToAcceptComplexLiterals()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               test1: anyArg(arg: 123)
@@ -1020,7 +1025,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testDirectiveArgumentsWithDirectivesOfValidTypes()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog @include(if: true) {
@@ -1037,7 +1042,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testDirectiveArgumentsWithDirectiveWithIncorrectTypes()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             {
               dog @include(if: "yes") {
@@ -1055,7 +1060,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testVariablesWithValidDefaultValues()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             query WithDefaultValues(
               $a: Int = 1,
@@ -1071,7 +1076,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testVariablesWithValidDefaultNullValues()
     {
         $this->expectPassesRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             query WithDefaultValues(
               $a: Int = null,
@@ -1087,7 +1092,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testVariablesWithInvalidDefaultNullValues()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             query WithDefaultValues(
               $a: Int! = null,
@@ -1108,7 +1113,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testVariablesWithInvalidDefaultValues()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             query InvalidDefaultValues(
               $a: Int = "one",
@@ -1129,7 +1134,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testVariablesWithComplexInvalidDefaultValues()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             query WithDefaultValues(
               $a: ComplexInput = { requiredField: 123, intField: "abc" }
@@ -1147,7 +1152,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testComplexVariablesMissingRequiredField()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             query MissingRequiredField($a: ComplexInput = {intField: 3}) {
               dog { name }
@@ -1160,7 +1165,7 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
     public function testListVariablesWithInvalidItem()
     {
         $this->expectFailsRule(
-            new ValuesOfCorrectTypeRule(),
+            $this->rule,
             dedent('
             query InvalidItem($a: [String] = ["one", 2]) {
               dog { name }

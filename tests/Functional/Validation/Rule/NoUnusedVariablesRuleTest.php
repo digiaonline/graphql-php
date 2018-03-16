@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\NoUnusedVariablesRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\unusedVariable;
 
 class NoUnusedVariablesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return NoUnusedVariablesRule::class;
+    }
+
     public function testUsesAllVariables()
     {
         $this->expectPassesRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query ($a: String, $b: String, $c: String) {
               field(a: $a, b: $b, c: $c)
@@ -23,7 +28,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testUsesAllVariablesDeeply()
     {
         $this->expectPassesRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               field(a: $a) {
@@ -39,7 +44,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testUsesAllVariablesDeeplyInInlineFragments()
     {
         $this->expectPassesRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               ... on Type {
@@ -59,7 +64,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testUsesAllVariablesInFragments()
     {
         $this->expectPassesRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               ...FragA
@@ -84,7 +89,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testVariableUsedByFragmentInMultipleOperations()
     {
         $this->expectPassesRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String) {
               ...FragA
@@ -105,7 +110,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testVariableUsedByRecursiveFragment()
     {
         $this->expectPassesRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String) {
               ...FragA
@@ -122,7 +127,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testVariableNotUsed()
     {
         $this->expectFailsRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query ($a: String, $b: String, $c: String) {
               field(a: $a, b: $b)
@@ -135,7 +140,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testMultipleVariablesNotUsed()
     {
         $this->expectFailsRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               field(b: $b)
@@ -151,7 +156,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testVariableNotUsedInFragments()
     {
         $this->expectFailsRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               ...FragA
@@ -177,7 +182,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testMultipleVariablesNotUsedInFragments()
     {
         $this->expectFailsRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               ...FragA
@@ -206,7 +211,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testVariableNotUsedByUnreferencedFragment()
     {
         $this->expectFailsRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($b: String) {
               ...FragA
@@ -225,7 +230,7 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
     public function testVariableNotUsedByFragmentUsedByOtherOperation()
     {
         $this->expectFailsRule(
-            new NoUnusedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($b: String) {
               ...FragA

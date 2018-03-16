@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\NoUndefinedVariablesRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\undefinedVariable;
 
 class NoUndefinedVariablesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return NoUndefinedVariablesRule::class;
+    }
+
     public function testAllVariablesDefined()
     {
         $this->expectPassesRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               field(a: $a, b: $b, c: $c)
@@ -23,7 +28,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testAllVariablesDeeplyDefined()
     {
         $this->expectPassesRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               field(a: $a) {
@@ -39,7 +44,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testAllVariablesDeeplyInInlineFragmentsDefined()
     {
         $this->expectPassesRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               ... on Type {
@@ -59,7 +64,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testAllVariablesInFragmentsDeeplyDefined()
     {
         $this->expectPassesRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               ...FragA
@@ -84,7 +89,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testVariablesWithinSingleFragmentDefinedInMultipleOperations()
     {
         $this->expectPassesRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String) {
               ...FragA
@@ -102,7 +107,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testVariableWithinFragmentsDefinedInOperations()
     {
         $this->expectPassesRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String) {
               ...FragA
@@ -123,7 +128,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testVariableWithinRecursiveFragmentDefined()
     {
         $this->expectPassesRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String) {
               ...FragA
@@ -140,7 +145,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testVariableNotDefined()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String, $c: String) {
               field(a: $a, b: $b, c: $c, d: $d)
@@ -153,8 +158,8 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testVariableNotDefinedByAnonymousQuery()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
-            dedent( '
+            $this->rule,
+            dedent('
             {
               field(a: $a)
             }
@@ -166,7 +171,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testMultipleVariablesNotDefined()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($b: String) {
               field(a: $a, b: $b, c: $c)
@@ -182,7 +187,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testVariableInFragmentNotDefinedByAnonymousQuery()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             {
               ...FragA
@@ -198,7 +203,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testVariableInFragmentNotDefinedByOperation()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String, $b: String) {
               ...FragA
@@ -224,7 +229,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testMultipleVariablesInFragmentsNotDefined()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($b: String) {
               ...FragA
@@ -253,7 +258,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testSingleVariableInFragmentNotDefinedByMultipleOperations()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($a: String) {
               ...FragAB
@@ -275,7 +280,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testVariablesInFragmentNotDefinedByMultipleOperations()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($b: String) {
               ...FragAB
@@ -297,7 +302,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testVariableInFragmentUsedByOtherOperation()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($b: String) {
               ...FragA
@@ -322,7 +327,7 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
     public function testMultipleUndefinedVariablesProduceMultipleErrors()
     {
         $this->expectFailsRule(
-            new NoUndefinedVariablesRule(),
+            $this->rule,
             dedent('
             query Foo($b: String) {
               ...FragAB

@@ -14,64 +14,66 @@ use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
-function SomeBox()
+class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
 {
-    static $instance = null;
-    return $instance ??
-        $instance = GraphQLObjectType([
+    protected $someBox;
+    protected $stringBox;
+    protected $intBox;
+    protected $nonNullStringBox1;
+    protected $nonNullStringBox1Impl;
+    protected $nonNullStringBox2;
+    protected $nonNullStringBox2Impl;
+    protected $connection;
+    protected $schema;
+
+    protected function getRuleClassName(): string
+    {
+        return OverlappingFieldsCanBeMergedRule::class;
+    }
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->someBox = GraphQLObjectType([
             'name'   => 'SomeBox',
             'fields' => function () {
                 return [
-                    'deepBox'        => ['type' => SomeBox()],
+                    'deepBox'        => ['type' => $this->someBox],
                     'unrelatedField' => ['type' => GraphQLString()],
                 ];
             },
         ]);
-}
 
-function StringBox()
-{
-    static $instance = null;
-    return $instance ??
-        $instance = GraphQLObjectType([
+        $this->stringBox = GraphQLObjectType([
             'name'   => 'StringBox',
             'fields' => function () {
                 return [
                     'scalar'         => ['type' => GraphQLString()],
-                    'deepBox'        => ['type' => StringBox()],
+                    'deepBox'        => ['type' => $this->stringBox],
                     'unrelatedField' => ['type' => GraphQLString()],
-                    'listStringBox'  => ['type' => GraphQLList(StringBox())],
-                    'stringBox'      => ['type' => StringBox()],
-                    'intBox'         => ['type' => IntBox()],
+                    'listStringBox'  => ['type' => GraphQLList($this->stringBox)],
+                    'stringBox'      => ['type' => $this->stringBox],
+                    'intBox'         => ['type' => $this->intBox],
                 ];
             },
         ]);
-}
 
-function IntBox()
-{
-    static $instance = null;
-    return $instance ??
-        $instance = GraphQLObjectType([
+        $this->intBox = GraphQLObjectType([
             'name'   => 'IntBox',
             'fields' => function () {
                 return [
                     'scalar'         => ['type' => GraphQLInt()],
-                    'deepBox'        => ['type' => IntBox()],
+                    'deepBox'        => ['type' => $this->intBox],
                     'unrelatedField' => ['type' => GraphQLString()],
-                    'listStringBox'  => ['type' => GraphQLList(StringBox())],
-                    'stringBox'      => ['type' => StringBox()],
-                    'intBox'         => ['type' => IntBox()],
+                    'listStringBox'  => ['type' => GraphQLList($this->stringBox)],
+                    'stringBox'      => ['type' => $this->stringBox],
+                    'intBox'         => ['type' => $this->intBox],
                 ];
             },
         ]);
-}
 
-function NonNullStringBox1()
-{
-    static $instance = null;
-    return $instance ??
-        $instance = GraphQLInterfaceType([
+        $this->nonNullStringBox1 = GraphQLInterfaceType([
             'name'   => 'NonNullStringBox1',
             'fields' => function () {
                 return [
@@ -79,30 +81,20 @@ function NonNullStringBox1()
                 ];
             },
         ]);
-}
 
-function NonNullStringBox1Impl()
-{
-    static $instance = null;
-    return $instance ??
-        $instance = GraphQLObjectType([
+        $this->nonNullStringBox1Impl = GraphQLObjectType([
             'name'       => 'NonNullStringBox1Impl',
-            'interfaces' => [SomeBox(), NonNullStringBox1()],
+            'interfaces' => [$this->someBox, $this->nonNullStringBox1],
             'fields'     => function () {
                 return [
                     'scalar'         => ['type' => GraphQLNonNull(GraphQLString())],
                     'unrelatedField' => ['type' => GraphQLString()],
-                    'deepBox'        => ['type' => SomeBox()],
+                    'deepBox'        => ['type' => $this->someBox],
                 ];
             },
         ]);
-}
 
-function NonNullStringBox2()
-{
-    static $instance = null;
-    return $instance ??
-        $instance = GraphQLInterfaceType([
+        $this->nonNullStringBox2 = GraphQLInterfaceType([
             'name'   => 'NonNullStringBox2',
             'fields' => function () {
                 return [
@@ -110,30 +102,20 @@ function NonNullStringBox2()
                 ];
             },
         ]);
-}
 
-function NonNullStringBox2Impl()
-{
-    static $instance = null;
-    return $instance ??
-        $instance = GraphQLObjectType([
+        $this->nonNullStringBox2Impl = GraphQLObjectType([
             'name'       => 'NonNullStringBox2Impl',
-            'interfaces' => [SomeBox(), NonNullStringBox2()],
+            'interfaces' => [$this->someBox, $this->nonNullStringBox2],
             'fields'     => function () {
                 return [
                     'scalar'         => ['type' => GraphQLNonNull(GraphQLString())],
                     'unrelatedField' => ['type' => GraphQLString()],
-                    'deepBox'        => ['type' => SomeBox()],
+                    'deepBox'        => ['type' => $this->someBox],
                 ];
             },
         ]);
-}
 
-function Connection()
-{
-    static $instance = null;
-    return $instance ??
-        $instance = GraphQLObjectType([
+        $this->connection = GraphQLObjectType([
             'name'   => 'Connection',
             'fields' => function () {
                 return [
@@ -158,32 +140,25 @@ function Connection()
                 ];
             },
         ]);
-}
 
-function schema()
-{
-    static $instance = null;
-    return $instance ??
-        $instance = GraphQLSchema([
+        $this->schema = GraphQLSchema([
             'query' => GraphQLObjectType([
                 'name'   => 'QueryRoot',
                 'fields' => function () {
                     return [
-                        'someBox'    => ['type' => SomeBox()],
-                        'connection' => ['type' => Connection()],
+                        'someBox'    => ['type' => $this->someBox],
+                        'connection' => ['type' => $this->connection],
                     ];
                 },
             ]),
-            'types' => [IntBox(), StringBox(), NonNullStringBox1Impl(), NonNullStringBox2Impl()],
+            'types' => [$this->intBox, $this->stringBox, $this->nonNullStringBox1Impl, $this->nonNullStringBox2Impl],
         ]);
-}
+    }
 
-class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
-{
     public function testUniqueFields()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment uniqueFields on Dog {
               name
@@ -196,7 +171,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testIdenticalFields()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment mergeIdenticalFields on Dog {
               name
@@ -209,7 +184,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testIdenticalFieldsWithIdenticalArguments()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment mergeIdenticalFieldsWithIdenticalArgs on Dog {
               doesKnowCommand(dogCommand: SIT)
@@ -222,7 +197,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testIdenticalFieldsWithIdenticalDirectives()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment mergeSameFieldsWithSameDirectives on Dog {
             name @include(if: true)
@@ -235,7 +210,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDifferentArgumentsWithDifferentAliases()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment differentArgsWithDifferentAliases on Dog {
               knowsSit: doesKnowCommand(dogCommand: SIT)
@@ -248,7 +223,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDifferentDirectivesWithDifferentAliases()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment differentDirectivesWithDifferentAliases on Dog {
               nameIfTrue: name @include(if: true)
@@ -264,7 +239,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
         // value and are acceptable in conditions where differing runtime values
         // may have the same desired effect of including or skipping a field.
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment differentDirectivesWithDifferentAliases on Dog {
               name @include(if: true)
@@ -277,7 +252,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testSameAliasesWithDifferentFieldTargets()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment sameAliasesWithDifferentFieldTargets on Dog {
               fido: name
@@ -293,7 +268,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
         // This is valid since no object can be both a "Dog" and a "Cat", thus
         // these fields can never overlap.
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment sameAliasesWithDifferentFieldTargets on Pet {
               ... on Dog {
@@ -310,7 +285,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testAliasMaskingDirectFieldAccess()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment aliasMaskingDirectFieldAccess on Dog {
               name: nickname
@@ -324,7 +299,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDifferentArgumentsSecondAddsAnArgument()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment conflictingArgs on Dog {
               doesKnowCommand
@@ -338,7 +313,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDifferentArgsSecondMissingAnArgument()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment conflictingArgs on Dog {
               doesKnowCommand(dogCommand: SIT)
@@ -352,7 +327,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testConflictingArguments()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment conflictingArgs on Dog {
               doesKnowCommand(dogCommand: SIT)
@@ -368,7 +343,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
         // This is valid since no object can be both a "Dog" and a "Cat", thus
         // these fields can never overlap.
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment conflictingArgs on Pet {
               ... on Dog {
@@ -385,7 +360,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testEncountersConflictInFragments()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             {
               ...A
@@ -405,7 +380,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testReportsEachConlictOnce()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             {
               f1 {
@@ -440,7 +415,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDeepConflict()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             {
               field {
@@ -464,7 +439,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDeepConflictWithMultipleIssues()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             {
               field {
@@ -493,7 +468,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testVeryDeepConflict()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             {
               field {
@@ -521,7 +496,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testReportsDeepConflictToNearestCommonAncestor()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             {
               field {
@@ -552,7 +527,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testReportsDeepConflictToNearestCommonAncestorInFragments()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             {
               field {
@@ -591,7 +566,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testReportsDeepConflictsInNestedFragments()
     {
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             {
               field {
@@ -632,7 +607,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testIgnoresUnknownFragments()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             {
               field
@@ -654,8 +629,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
         // condition does not exist in the current schema, the schema could
         // expand in the future to allow this. Thus it is invalid.
         $this->expectFailsRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -684,8 +659,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
         // `StringBox` in the second usage. These return types are not the same!
         // however this is valid because the return *shapes* are compatible.
         $this->expectPassesRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -708,8 +683,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDisallowsDifferingReturnTypesDespiteNoOverlap()
     {
         $this->expectFailsRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -735,8 +710,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testReportsCorrectlyWhenANonExclusiveFollowsAnExclusive()
     {
         $this->expectFailsRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -794,8 +769,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDisallowsDifferingReturnTypeNullabilityDespiteNoOverlap()
     {
         $this->expectFailsRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             '
 {
   someBox {
@@ -821,8 +796,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDisallowsDifferingReturnTypeListDespiteNoOverlap()
     {
         $this->expectFailsRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -849,8 +824,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
         );
 
         $this->expectFailsRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -880,8 +855,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDisallowsDifferingSubfields()
     {
         $this->expectFailsRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -912,8 +887,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDisallowsDifferingDeepReturnTypesDespiteNoOverlap()
     {
         $this->expectFailsRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -943,8 +918,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testAllowsNonConflictingOverlappingTypes()
     {
         $this->expectPassesRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -963,8 +938,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testSameWrappedScalarReturnTypes()
     {
         $this->expectPassesRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -983,8 +958,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testAllowsInlineTypelessFragments()
     {
         $this->expectPassesRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               a
@@ -999,8 +974,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testComparesDeepTypesIncludingList()
     {
         $this->expectFailsRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               connection {
@@ -1034,8 +1009,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testIgnoresUnknownTypes()
     {
         $this->expectPassesRuleWithSchema(
-            schema(),
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->schema,
+            $this->rule,
             dedent('
             {
               someBox {
@@ -1054,7 +1029,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDoesNotInfiniteLoopOnRecursiveFragment()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment fragA on Human { name, relatives { name, ...fragA } }
             ')
@@ -1064,7 +1039,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDoesNotInfiniteLoopOnImmediatelyRecursiveFragments()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment fragA on Human { name, ...fragA }
             ')
@@ -1074,7 +1049,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     public function testDoesNotInfiniteLoopOnTransitivelyRecursiveFragments()
     {
         $this->expectPassesRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment fragA on Human { name, ...fragB }
             fragment fragB on Human { name, ...fragC }
@@ -1088,7 +1063,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
         $this->markTestIncomplete('BUG: Finds three conflicts, but should only find one.');
 
         $this->expectFailsRule(
-            new OverlappingFieldsCanBeMergedRule(),
+            $this->rule,
             dedent('
             fragment sameAliasesWithDifferentFieldTargets on Dog {
               ...sameAliasesWithDifferentFieldTargets

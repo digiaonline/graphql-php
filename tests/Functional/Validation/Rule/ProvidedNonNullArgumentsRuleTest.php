@@ -9,10 +9,15 @@ use function Digia\GraphQL\Test\Functional\Validation\missingFieldArgument;
 
 class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return ProvidedNonNullArgumentsRule::class;
+    }
+
     public function testIgnoresUnknownArguments()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -26,7 +31,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testValidNonNullableValue()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -40,7 +45,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testNoArgumentOnOptionalArgument()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               dog {
@@ -54,7 +59,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testMultipleArguments()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -68,7 +73,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testMultipleArgumentsInReverseOrder()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -82,7 +87,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testNoArgumentsOnMultipleOptional()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -96,7 +101,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testOneArgumentOnMultipleOptional()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -110,7 +115,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testSecondArgumentOnMultipleOptional()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -124,7 +129,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testMultipleRequiredOnMixedList()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -138,7 +143,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testMultipleRequiredAndOneOptionalOnMixedList()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -152,7 +157,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testAllRequiredAndOptinalOnMixedList()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -166,7 +171,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testMissingOneNonNullableArgument()
     {
         $this->expectFailsRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -181,7 +186,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testMultipleNonNullableArguments()
     {
         $this->expectFailsRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -199,7 +204,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testIncorrectValueAndMissingArgument()
     {
         $this->expectFailsRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               complicatedArgs {
@@ -214,7 +219,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testIgnoresUnknownDirectives()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               dog @unknown
@@ -226,7 +231,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testDirectivesOfValidTypes()
     {
         $this->expectPassesRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               dog @include(if: true) {
@@ -243,7 +248,7 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
     public function testDirectiveWithMissingTypes()
     {
         $this->expectFailsRule(
-            new ProvidedNonNullArgumentsRule(),
+            $this->rule,
             dedent('
             {
               dog @include {

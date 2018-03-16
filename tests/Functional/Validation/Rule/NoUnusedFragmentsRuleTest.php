@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\NoUnusedFragmentsRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\unusedFragment;
 
 class NoUnusedFragmentsRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return NoUnusedFragmentsRule::class;
+    }
+
     public function testAllFragmentNamesAreUsed()
     {
         $this->expectPassesRule(
-            new NoUnusedFragmentsRule(),
+            $this->rule,
             dedent('
             {
               human(id: 4) {
@@ -38,7 +43,7 @@ class NoUnusedFragmentsRuleTest extends RuleTestCase
     public function testContainsUnknownFragments()
     {
         $this->expectFailsRule(
-            new NoUnusedFragmentsRule(),
+            $this->rule,
             dedent('
             query Foo {
               human(id: 4) {
@@ -77,7 +82,7 @@ class NoUnusedFragmentsRuleTest extends RuleTestCase
     public function testContainsUnknownFragmentsWithReferenceCycle()
     {
         $this->expectFailsRule(
-            new NoUnusedFragmentsRule(),
+            $this->rule,
             dedent('
             query Foo {
               human(id: 4) {
@@ -118,7 +123,7 @@ class NoUnusedFragmentsRuleTest extends RuleTestCase
     public function testContainsUnknownAndUndefinedFragments()
     {
         $this->expectFailsRule(
-            new NoUnusedFragmentsRule(),
+            $this->rule,
             dedent('
             query Foo {
               human(id: 4) {

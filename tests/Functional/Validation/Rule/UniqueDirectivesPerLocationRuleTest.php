@@ -8,10 +8,15 @@ use function Digia\GraphQL\Test\Functional\Validation\duplicateDirective;
 
 class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return UniqueDirectivesPerLocationRule::class;
+    }
+
     public function testNoDirectives()
     {
         $this->expectPassesRule(
-            new UniqueDirectivesPerLocationRule(),
+            $this->rule,
             dedent('
             fragment Test on Type {
               field
@@ -23,7 +28,7 @@ class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
     public function testUniqueDirectivesInDifferentLocations()
     {
         $this->expectPassesRule(
-            new UniqueDirectivesPerLocationRule(),
+            $this->rule,
             dedent('
             fragment Test on Type @directiveA {
               field @directiveB
@@ -35,7 +40,7 @@ class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
     public function testUniqueDirectivesInSameLocations()
     {
         $this->expectPassesRule(
-            new UniqueDirectivesPerLocationRule(),
+            $this->rule,
             dedent('
             fragment Test on Type @directiveA @directiveB {
               field @directiveA @directiveB
@@ -47,7 +52,7 @@ class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
     public function testSameDirectivesInDifferentLocations()
     {
         $this->expectPassesRule(
-            new UniqueDirectivesPerLocationRule(),
+            $this->rule,
             dedent('
             fragment Test on Type @directiveA {
               field @directiveA
@@ -59,7 +64,7 @@ class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
     public function testSameDirectivesInSimilarLocations()
     {
         $this->expectPassesRule(
-            new UniqueDirectivesPerLocationRule(),
+            $this->rule,
             dedent('
             fragment Test on Type {
               field @directive
@@ -72,7 +77,7 @@ class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
     public function testDuplicateDirectivesInOneLocation()
     {
         $this->expectFailsRule(
-            new UniqueDirectivesPerLocationRule(),
+            $this->rule,
             dedent('
             fragment Test on Type {
               field @directive @directive
@@ -85,7 +90,7 @@ class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
     public function testManyDuplicateDirectivesInOneLocation()
     {
         $this->expectFailsRule(
-            new UniqueDirectivesPerLocationRule(),
+            $this->rule,
             dedent('
             fragment Test on Type {
               field @directive @directive @directive
@@ -101,7 +106,7 @@ class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
     public function testDifferentDuplicateDirectivesInOneLocations()
     {
         $this->expectFailsRule(
-            new UniqueDirectivesPerLocationRule(),
+            $this->rule,
             dedent('
             fragment Test on Type {
               field @directiveA @directiveB @directiveA @directiveB
@@ -117,7 +122,7 @@ class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
     public function testDuplicateDirectivesInManyLocations()
     {
         $this->expectFailsRule(
-            new UniqueDirectivesPerLocationRule(),
+            $this->rule,
             dedent('
             fragment Test on Type @directive @directive {
               field @directive @directive

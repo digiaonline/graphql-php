@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Validation\Rule\KnownTypeNamesRule;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\unknownType;
 
 class KnownTypeNamesRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return KnownTypeNamesRule::class;
+    }
+
     public function testKnownTypeNamesAreValid()
     {
         $this->expectPassesRule(
-            new KnownTypeNamesRule(),
+            $this->rule,
             dedent('
             query Foo($var: String, $required: [String!]!) {
               user(id: 4) {
@@ -28,7 +33,7 @@ class KnownTypeNamesRuleTest extends RuleTestCase
     public function testUnknownTypeNamesAreInvalid()
     {
         $this->expectFailsRule(
-            new KnownTypeNamesRule(),
+            $this->rule,
             dedent('
             query Foo($var: JumbledUpLetters) {
               user(id: 4) {
@@ -51,7 +56,7 @@ class KnownTypeNamesRuleTest extends RuleTestCase
     public function testIgnoresTypeDefinitions()
     {
         $this->expectFailsRule(
-            new KnownTypeNamesRule(),
+            $this->rule,
             dedent('
             type NotInTheSchema {
               field: FooBar

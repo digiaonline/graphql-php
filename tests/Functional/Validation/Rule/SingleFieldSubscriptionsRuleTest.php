@@ -2,16 +2,21 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use function Digia\GraphQL\Test\Functional\Validation\singleFieldOnly;
 use Digia\GraphQL\Validation\Rule\SingleFieldSubscriptionsRule;
 use function Digia\GraphQL\Language\dedent;
+use function Digia\GraphQL\Test\Functional\Validation\singleFieldOnly;
 
 class SingleFieldSubscriptionsRuleTest extends RuleTestCase
 {
+    protected function getRuleClassName(): string
+    {
+        return SingleFieldSubscriptionsRule::class;
+    }
+
     public function testValidSubscription()
     {
         $this->expectPassesRule(
-            new SingleFieldSubscriptionsRule(),
+            $this->rule,
             dedent('
             subscription ImportantEmails {
               importantEmails
@@ -23,7 +28,7 @@ class SingleFieldSubscriptionsRuleTest extends RuleTestCase
     public function testFailsWithMoreThanOneRootField()
     {
         $this->expectFailsRule(
-            new SingleFieldSubscriptionsRule(),
+            $this->rule,
             dedent('
             subscription ImportantEmails {
               importantEmails
@@ -37,7 +42,7 @@ class SingleFieldSubscriptionsRuleTest extends RuleTestCase
     public function testFailsWithMoreThanOneRootFieldIncludingIntrospection()
     {
         $this->expectFailsRule(
-            new SingleFieldSubscriptionsRule(),
+            $this->rule,
             dedent('
             subscription ImportantEmails {
               importantEmails
@@ -51,7 +56,7 @@ class SingleFieldSubscriptionsRuleTest extends RuleTestCase
     public function testFailsWithManyMoreThanOneRootField()
     {
         $this->expectFailsRule(
-            new SingleFieldSubscriptionsRule(),
+            $this->rule,
             dedent('
             subscription ImportantEmails {
               importantEmails
@@ -66,7 +71,7 @@ class SingleFieldSubscriptionsRuleTest extends RuleTestCase
     public function testFailsWithMoreThanOneRootFieldInAnonymousSubscription()
     {
         $this->expectFailsRule(
-            new SingleFieldSubscriptionsRule(),
+            $this->rule,
             dedent('
             subscription {
               importantEmails
