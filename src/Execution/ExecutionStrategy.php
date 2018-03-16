@@ -189,9 +189,7 @@ abstract class ExecutionStrategy
 
         $conditionalType = typeFromAST($this->context->getSchema(), $typeConditionNode);
 
-        // @TODO Find a better way to compare two objects
-        // $conditionalType === $type doesn't work
-        if (get_class($conditionalType) === get_class($type) && $conditionalType->getName() === $type->getName()) {
+        if ($conditionalType === $type) {
             return true;
         }
 
@@ -595,15 +593,18 @@ abstract class ExecutionStrategy
         $runtimeType = $returnType->resolveType($result, $this->context, $info);
 
         if (null === $runtimeType) {
-            throw new ExecutionException(
-                sprintf(
-                    "GraphQL Interface Type `%s` returned `null` from it`s `resolveType` function for value: %s",
-                    $returnType->getName(), toString($result)
-                )
-            );
+            //@TODO Show warning
+            $runtimeType = $this->defaultTypeResolver($result, $this->context->getContextValue(), $info, $returnType);
         }
 
-        //@TODO Check if $runtimeType is a valid runtime type
+        $runtimeType = $this->ensureValidRuntimeType(
+            $runtimeType,
+            $returnType,
+            $fieldNodes,
+            $info,
+            $result
+        );
+
         return $this->completeObjectValue(
             $runtimeType,
             $fieldNodes,
@@ -611,6 +612,81 @@ abstract class ExecutionStrategy
             $path,
             $result
         );
+    }
+
+    /**
+     * @param                       $runtimeTypeOrName
+     * @param AbstractTypeInterface $returnType
+     * @param                       $fieldNodes
+     * @param ResolveInfo           $info
+     * @param                       $result
+     * @return TypeInterface|null
+     * @throws ExecutionException
+     */
+    private function ensureValidRuntimeType(
+        $runtimeTypeOrName,
+        AbstractTypeInterface $returnType,
+        $fieldNodes,
+        ResolveInfo $info,
+        &$result
+    ) {
+        $runtimeType = is_string($runtimeTypeOrName)
+            ? $this->context->getSchema()->getType($runtimeTypeOrName)
+            : $runtimeTypeOrName;
+
+        $runtimeTypeName = is_string($runtimeType) ?: $runtimeType->getName();
+        $returnTypeName  = $returnType->getName();
+
+        if (!$runtimeType instanceof ObjectType) {
+            $parentTypeName = $info->getParentType()->getName();
+            $fieldName      = $info->getFieldName();
+
+            throw new ExecutionException(
+                "Abstract type {$returnTypeName} must resolve to an Object type at runtime " .
+                "for field {$parentTypeName}.{$fieldName} with " .
+                'value "' . $result . '", received "{$runtimeTypeName}".'
+            );
+        }
+
+        if (!$this->context->getSchema()->isPossibleType($returnType, $runtimeType)) {
+            throw new ExecutionException(
+                "Runtime Object type \"{$runtimeTypeName}\" is not a possible type for \"{$returnTypeName}\"."
+            );
+        }
+
+        if ($runtimeType !== $this->context->getSchema()->getType($runtimeType->getName())) {
+            throw new ExecutionException(
+                "Schema must contain unique named types but contains multiple types named \"{$runtimeTypeName}\". " .
+                "Make sure that `resolveType` function of abstract type \"{$returnTypeName}\" returns the same " .
+                "type instance as referenced anywhere else within the schema."
+            );
+        }
+
+        return $runtimeType;
+    }
+
+    /**
+     * @param                       $value
+     * @param                       $context
+     * @param ResolveInfo           $info
+     * @param AbstractTypeInterface $abstractType
+     * @return TypeInterface|null
+     */
+    private function defaultTypeResolver($value, $context, ResolveInfo $info, AbstractTypeInterface $abstractType)
+    {
+        $possibleTypes = $info->getSchema()->getPossibleTypes($abstractType);
+
+        foreach ($possibleTypes as $type) {
+            $isTypeOfResult = $type->isTypeOf($value, $context, $info);
+
+            if (null !== $isTypeOfResult) {
+                if ($isTypeOfResult) {
+                    return $type;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -768,7 +844,7 @@ abstract class ExecutionStrategy
         $path,
         &$result
     ) {
-        $subFields = [];
+        $subFields            = [];
         $visitedFragmentNames = [];
 
         foreach ($fieldNodes as $fieldNode) {
