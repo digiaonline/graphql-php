@@ -2,11 +2,12 @@
 
 namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Util\ArrayToJsonTrait;
 use Digia\GraphQL\Util\SerializationInterface;
-use function Digia\GraphQL\Util\jsonEncode;
 
 class Token implements SerializationInterface
 {
+    use ArrayToJsonTrait;
 
     /**
      * @var string
@@ -167,16 +168,10 @@ class Token implements SerializationInterface
     /**
      * @return string
      */
-    public function toJSON(): string
-    {
-        return jsonEncode($this->toArray());
-    }
-
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
-        return $this->value !== null ? sprintf('%s "%s"', $this->kind, $this->value) : $this->kind;
+        return $this->value !== null
+            ? sprintf('%s "%s"', $this->kind, $this->value)
+            : $this->kind;
     }
 }

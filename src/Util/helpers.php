@@ -2,6 +2,92 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Error\InvariantException;
+
+/**
+ * @param bool   $condition
+ * @param string $message
+ * @throws InvariantException
+ */
+function invariant(bool $condition, string $message)
+{
+    if (!$condition) {
+        throw new InvariantException($message);
+    }
+}
+
+/**
+ * Given `[A, B, C]` returns `'A, B or C'`.
+ *
+ * @param array $items
+ * @return string
+ */
+function orList(array $items): string
+{
+    static $MAX_LENGTH = 5;
+
+    $selected = \array_slice($items, 0, $MAX_LENGTH);
+    $count    = \count($selected);
+    $index    = 0;
+
+    return $count === 1
+        ? $selected[0]
+        : \array_reduce($selected, function ($list, $item) use ($count, &$index) {
+            $list .= ($index > 0 && $index < ($count - 1) ? ', ' : '') . ($index === ($count - 1) ? ' or ' : '') .
+                $item;
+            $index++;
+            return $list;
+        }, '');
+}
+
+/**
+ * Given an invalid input string and a list of valid options, returns a filtered
+ * list of valid options sorted based on their similarity with the input.
+ *
+ * @param string $input
+ * @param array  $options
+ * @return array
+ */
+function suggestionList(string $input, array $options): array
+{
+    $optionsByDistance = [];
+    $oLength = \count($options);
+    $inputThreshold = \strlen($input) / 2;
+
+    /** @noinspection ForeachInvariantsInspection */
+    for ($i = 0; $i < $oLength; $i++) {
+        // Comparison must be case-insenstive.
+        $distance = \levenshtein(\strtolower($input), \strtolower($options[$i]));
+        $threshold = \max($inputThreshold, \strlen($options[$i]) / 2, 1);
+        if ($distance <= $threshold) {
+            $optionsByDistance[$options[$i]] = $distance;
+        }
+    }
+
+    $result = \array_keys($optionsByDistance);
+
+    \usort($result, function ($a, $b) use ($optionsByDistance) {
+        return $optionsByDistance[$a] - $optionsByDistance[$b];
+    });
+
+    return $result;
+}
+
+/**
+ * Given `[A, B, C]` returns `'"A", "B" or "C"'`.
+ *
+ * @param array $items
+ * @return string
+ */
+function quotedOrList(array $items): string
+{
+    return orList(array_map(function ($item) {
+        return '"' . $item . '"';
+    }, $items));
+}
+
+
+
 /**
  * @param array    $array
  * @param callable $fn
@@ -61,7 +147,7 @@ function keyMap(array $array, callable $keyFn): array
  * @param callable $valFn
  * @return array
  */
-function keyValMap(array $array, callable $keyFn, callable $valFn): array
+function keyValueMap(array $array, callable $keyFn, callable $valFn): array
 {
     return array_reduce($array, function ($map, $item) use ($keyFn, $valFn) {
         $map[$keyFn($item)] = $valFn($item);
@@ -106,22 +192,4 @@ function toString($value): string
         return (string)$value;
     }
     return \gettype($value);
-}
-
-/**
- * @param $value
- * @return string
- */
-function jsonEncode($value): string
-{
-    return json_encode($value, JSON_UNESCAPED_UNICODE);
-}
-
-/**
- * @param string $path
- * @return string
- */
-function readFile(string $path): string
-{
-    return mb_convert_encoding(file_get_contents($path), 'UTF-8');
 }

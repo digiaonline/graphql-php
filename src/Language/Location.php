@@ -2,11 +2,12 @@
 
 namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Util\ArrayToJsonTrait;
 use Digia\GraphQL\Util\SerializationInterface;
-use function Digia\GraphQL\Util\jsonEncode;
 
 class Location implements SerializationInterface
 {
+    use ArrayToJsonTrait;
 
     /**
      * @var int
@@ -70,14 +71,6 @@ class Location implements SerializationInterface
             'start' => $this->start,
             'end'   => $this->end,
         ];
-    }
-
-    /**
-     * @return string
-     */
-    public function toJSON(): string
-    {
-        return jsonEncode($this->toArray());
     }
 
     /**

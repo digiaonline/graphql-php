@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Util;
 
-trait JsonEncodeArrayTrait
+trait ArrayToJsonTrait
 {
     /**
      * @return array

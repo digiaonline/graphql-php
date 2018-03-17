@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -24,7 +23,6 @@ use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
-use function Digia\GraphQL\validateSchema;
 
 /**
  * @param $thunk
@@ -41,23 +39,14 @@ function resolveThunk($thunk): ?array
  */
 function isAssocArray($value): bool
 {
-    if (!is_array($value)) {
+    if (!\is_array($value)) {
         return false;
     }
     if (empty($value)) {
         return true;
     }
-    $keys = array_keys($value);
-    return $keys !== array_keys($keys);
-}
-
-/**
- * @param $resolver
- * @return bool
- */
-function isValidResolver($resolver): bool
-{
-    return $resolver === null || \is_callable($resolver);
+    $keys = \array_keys($value);
+    return $keys !== \array_keys($keys);
 }
 
 /**
@@ -68,7 +57,7 @@ function assertType($type)
 {
     invariant(
         $type instanceof TypeInterface,
-        sprintf(sprintf('Expected %s to be a GraphQL type.', $type), toString($type))
+        \sprintf('Expected %s to be a GraphQL type.', toString($type))
     );
 }
 
@@ -80,7 +69,7 @@ function assertScalarType(TypeInterface $type)
 {
     invariant(
         $type instanceof ScalarType,
-        sprintf('Expected %s to be a GraphQL Scalar type.', $type)
+        \sprintf('Expected %s to be a GraphQL Scalar type.', toString($type))
     );
 }
 
@@ -92,7 +81,7 @@ function assertObjectType(TypeInterface $type)
 {
     invariant(
         $type instanceof ObjectType,
-        sprintf('Expected %s to be a GraphQL Object type.', $type)
+        \sprintf('Expected %s to be a GraphQL Object type.', toString($type))
     );
 }
 
@@ -104,7 +93,7 @@ function assertInterfaceType(TypeInterface $type)
 {
     invariant(
         $type instanceof InterfaceType,
-        sprintf('Expected %s to be a GraphQL Interface type.', $type)
+        \sprintf('Expected %s to be a GraphQL Interface type.', toString($type))
     );
 }
 
@@ -116,7 +105,7 @@ function assertUnionType(TypeInterface $type)
 {
     invariant(
         $type instanceof UnionType,
-        sprintf('Expected %s to be a GraphQL Union type.', $type)
+        \sprintf('Expected %s to be a GraphQL Union type.', toString($type))
     );
 }
 
@@ -128,7 +117,7 @@ function assertEnumType(TypeInterface $type)
 {
     invariant(
         $type instanceof EnumType,
-        sprintf('Expected %s to be a GraphQL Enum type.', $type)
+        \sprintf('Expected %s to be a GraphQL Enum type.', toString($type))
     );
 }
 
@@ -140,7 +129,7 @@ function assertInputObjectType(TypeInterface $type)
 {
     invariant(
         $type instanceof InputObjectType,
-        sprintf('Expected %s to be a GraphQL InputObject type.', $type)
+        \sprintf('Expected %s to be a GraphQL InputObject type.', toString($type))
     );
 }
 
@@ -152,7 +141,7 @@ function assertListType(TypeInterface $type)
 {
     invariant(
         $type instanceof ListType,
-        sprintf('Expected %s to be a GraphQL List type.', $type)
+        \sprintf('Expected %s to be a GraphQL List type.', toString($type))
     );
 }
 
@@ -164,11 +153,14 @@ function assertNonNullType(TypeInterface $type)
 {
     invariant(
         $type instanceof NonNullType,
-        sprintf('Expected %s to be a GraphQL NonNull type.', $type)
+        \sprintf('Expected %s to be a GraphQL NonNull type.', toString($type))
     );
 }
 
 /**
+ * Whether a type is an input type cannot be determined with `instanceof`
+ * because lists and non-nulls can also be output types if the wrapped type is an output type.
+ *
  * @param TypeInterface|null $type
  * @return bool
  */
@@ -185,11 +177,14 @@ function assertInputType(TypeInterface $type)
 {
     invariant(
         isInputType($type),
-        sprintf('Expected %s to be a GraphQL input type.', $type)
+        \sprintf('Expected %s to be a GraphQL input type.', toString($type))
     );
 }
 
 /**
+ * Whether a type is an output type cannot be determined with `instanceof`
+ * because lists and non-nulls can also be output types if the wrapped type is an output type.
+ *
  * @param TypeInterface|null $type
  * @return bool
  */
@@ -206,7 +201,7 @@ function assertOutputType(TypeInterface $type)
 {
     invariant(
         isOutputType($type),
-        sprintf('Expected %s to be a GraphQL output type.', $type)
+        \sprintf('Expected %s to be a GraphQL output type.', toString($type))
     );
 }
 
@@ -218,7 +213,7 @@ function assertLeafType(TypeInterface $type)
 {
     invariant(
         $type instanceof LeafTypeInterface,
-        sprintf('Expected %s to be a GraphQL leaf type.', $type)
+        \sprintf('Expected %s to be a GraphQL leaf type.', toString($type))
     );
 }
 
@@ -230,7 +225,7 @@ function assertCompositeType(TypeInterface $type)
 {
     invariant(
         $type instanceof CompositeTypeInterface,
-        sprintf('Expected %s to be a GraphQL composite type.', $type)
+        \sprintf('Expected %s to be a GraphQL composite type.', toString($type))
     );
 }
 
@@ -242,7 +237,7 @@ function assertAbstractType(TypeInterface $type)
 {
     invariant(
         $type instanceof AbstractTypeInterface,
-        sprintf('Expected %s to be a GraphQL abstract type.', $type)
+        \sprintf('Expected %s to be a GraphQL abstract type.', toString($type))
     );
 }
 
@@ -254,7 +249,7 @@ function assertWrappingType(TypeInterface $type)
 {
     invariant(
         $type instanceof WrappingTypeInterface,
-        sprintf('Expected %s to be a GraphQL wrapping type.', $type)
+        \sprintf('Expected %s to be a GraphQL wrapping type.', toString($type))
     );
 }
 
@@ -276,7 +271,7 @@ function assertNullableType(TypeInterface $type): TypeInterface
 {
     invariant(
         isNullableType($type),
-        sprintf('Expected %s to be a GraphQL nullable type.', $type)
+        \sprintf('Expected %s to be a GraphQL nullable type.', toString($type))
     );
 
     return $type;
@@ -303,7 +298,7 @@ function assertNamedType(TypeInterface $type)
 {
     invariant(
         $type instanceof NamedTypeInterface,
-        sprintf('Expected %s to be a GraphQL named type.', $type)
+        \sprintf('Expected %s to be a GraphQL named type.', toString($type))
     );
 }
 
