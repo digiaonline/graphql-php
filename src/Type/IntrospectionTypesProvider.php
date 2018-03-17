@@ -3,9 +3,10 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
-use Digia\GraphQL\Type\Definition\AbstractType;
+use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
@@ -242,8 +243,9 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                             'args'    => [
                                 'includeDeprecated' => ['type' => GraphQLBoolean(), 'defaultValue' => false],
                             ],
-                            'resolve' => function (TypeInterface $type, array $args): ?array {
-                                [$includeDeprecated] = $args;
+                            'resolve' => function (TypeInterface $type, array $args):
+                            ?array {
+                                $includeDeprecated = $args[0] ?? null;
 
                                 if ($type instanceof ObjectType || $type instanceof InterfaceType) {
                                     $fields = array_values($type->getFields());
@@ -268,11 +270,13 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                         ],
                         'possibleTypes' => [
                             'type'    => GraphQLList(GraphQLNonNull(__Type())),
-                            'resolve' => function (TypeInterface $type, $args, $context, $info): ?array {
+                            'resolve' => function (TypeInterface $type, array $args, array $context, ResolveInfo
+                            $info):
+                            ?array {
                                 /** @var SchemaInterface $schema */
-                                [$schema] = $info;
+                                $schema = $info->getSchema();
                                 /** @noinspection PhpParamsInspection */
-                                return $type instanceof AbstractType ? $schema->getPossibleTypes($type) : null;
+                                return $type instanceof AbstractTypeInterface ? $schema->getPossibleTypes($type) : null;
                             },
                         ],
                         'enumValues'    => [

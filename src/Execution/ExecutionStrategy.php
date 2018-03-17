@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\UndefinedException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
@@ -111,9 +112,6 @@ abstract class ExecutionStrategy
             // Collect fields
             if ($selection instanceof FieldNode) {
                 $fieldName = $this->getFieldNameKey($selection);
-                if (!isset($runtimeType->getFields()[$selection->getNameValue()])) {
-                    continue;
-                }
 
                 if (!isset($fields[$fieldName])) {
                     $fields[$fieldName] = [];
@@ -234,12 +232,11 @@ abstract class ExecutionStrategy
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
 
-            $result = $this->resolveField(
-                $objectType,
-                $rootValue,
-                $fieldNodes,
-                $fieldPath
-            );
+            try {
+                $result = $this->resolveField($objectType, $rootValue, $fieldNodes, $fieldPath);
+            } catch (UndefinedException $ex) {
+                continue;
+            }
 
             $finalResults[$fieldName] = $result;
         }
@@ -273,12 +270,11 @@ abstract class ExecutionStrategy
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
 
-            $result = $this->resolveField(
-                $objectType,
-                $rootValue,
-                $fieldNodes,
-                $fieldPath
-            );
+            try {
+                $result = $this->resolveField($objectType, $rootValue, $fieldNodes, $fieldPath);
+            } catch (UndefinedException $ex) {
+                continue;
+            }
 
             $finalResults[$fieldName] = $result;
         }
@@ -342,8 +338,8 @@ abstract class ExecutionStrategy
 
         $field = $this->getFieldDefinition($this->context->getSchema(), $parentType, $fieldNode->getNameValue());
 
-        if (!$field) {
-            return null;
+        if (null === $field) {
+            throw new UndefinedException('Undefined field definition.');
         }
 
         $info = $this->buildResolveInfo($fieldNodes, $fieldNode, $field, $parentType, $path, $this->context);
@@ -590,7 +586,7 @@ abstract class ExecutionStrategy
         $path,
         &$result
     ) {
-        $runtimeType = $returnType->resolveType($result, $this->context, $info);
+        $runtimeType = $returnType->resolveType($result, $this->context->getContextValue(), $info);
 
         if (null === $runtimeType) {
             //@TODO Show warning
@@ -812,11 +808,9 @@ abstract class ExecutionStrategy
 
         if (is_object($rootValue)) {
             $getter = 'get' . ucfirst($fieldName);
-            if (method_exists($rootValue, $fieldName)) {
+            if (method_exists($rootValue, $getter)) {
                 $property = $rootValue->{$getter}();
-            }
-
-            if (property_exists($rootValue, $fieldName)) {
+            } elseif (property_exists($rootValue, $fieldName)) {
                 $property = $rootValue->{$fieldName};
             }
         }

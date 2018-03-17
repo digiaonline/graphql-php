@@ -522,37 +522,3 @@ class AbstractTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 }
-
-class Human
-{
-    public $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
-}
-
-class Dog
-{
-    public $name;
-    public $woofs;
-
-    public function __construct(string $name, bool $woofs)
-    {
-        $this->name  = $name;
-        $this->woofs = $woofs;
-    }
-}
-
-class Cat
-{
-    public $name;
-    public $meows;
-
-    public function __construct(string $name, bool $meows)
-    {
-        $this->name  = $name;
-        $this->meows = $meows;
-    }
-}

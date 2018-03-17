@@ -103,7 +103,7 @@ class ExecutionContext
      */
     public function getContextValue()
     {
-        return $this->contextValue;
+        return $this->contextValue ?? [];
     }
 
     /**

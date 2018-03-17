@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
@@ -84,8 +85,8 @@ function SchemaMetaFieldDefinition(): Field
         'name'        => '__schema',
         'type'        => GraphQLNonNull(__Schema()),
         'description' => 'Access the current type schema of this server.',
-        'resolve'     => function ($source, $args, $context, $info): SchemaInterface {
-            [$schema] = $info;
+        'resolve'     => function ($source, $args, $context, ResolveInfo $info): SchemaInterface {
+            $schema = $info->getSchema();
             return $schema;
         }
     ]);
@@ -104,10 +105,10 @@ function TypeMetaFieldDefinition(): Field
         'args'        => [
             'name' => ['type' => GraphQLNonNull(GraphQLString())],
         ],
-        'resolve'     => function ($source, $args, $context, $info): TypeInterface {
+        'resolve'     => function ($source, $args, $context, ResolveInfo $info): TypeInterface {
             /** @var SchemaInterface $schema */
-            [$name] = $args;
-            [$schema] = $info;
+            $name   = $args['name'];
+            $schema = $info->getSchema();
             return $schema->getType($name);
         }
     ]);
@@ -123,9 +124,9 @@ function TypeNameMetaFieldDefinition(): Field
         'name'        => '__typename',
         'type'        => GraphQLNonNull(GraphQLString()),
         'description' => 'The name of the current Object type at runtime.',
-        'resolve'     => function ($source, $args, $context, $info): string {
+        'resolve'     => function ($source, $args, $context, ResolveInfo $info): string {
             /** @var NamedTypeInterface $parentType */
-            [$parentType] = $info;
+            $parentType = $info->getParentType();
             return $parentType->getName();
         }
     ]);
