@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
-use Digia\GraphQL\Error\UndefinedFieldException;
+use Digia\GraphQL\Error\UndefinedException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
@@ -234,7 +234,7 @@ abstract class ExecutionStrategy
 
             try {
                 $result = $this->resolveField($objectType, $rootValue, $fieldNodes, $fieldPath);
-            } catch (UndefinedFieldException $ex) {
+            } catch (UndefinedException $ex) {
                 continue;
             }
 
@@ -272,7 +272,7 @@ abstract class ExecutionStrategy
 
             try {
                 $result = $this->resolveField($objectType, $rootValue, $fieldNodes, $fieldPath);
-            } catch (UndefinedFieldException $ex) {
+            } catch (UndefinedException $ex) {
                 continue;
             }
 
@@ -339,7 +339,7 @@ abstract class ExecutionStrategy
         $field = $this->getFieldDefinition($this->context->getSchema(), $parentType, $fieldNode->getNameValue());
 
         if (null === $field) {
-            throw new UndefinedFieldException('Undefined field definition.');
+            throw new UndefinedException('Undefined field definition.');
         }
 
         $info = $this->buildResolveInfo($fieldNodes, $fieldNode, $field, $parentType, $path, $this->context);
@@ -810,10 +810,8 @@ abstract class ExecutionStrategy
             $getter = 'get' . ucfirst($fieldName);
             if (method_exists($rootValue, $getter)) {
                 $property = $rootValue->{$getter}();
-            } else {
-                if (property_exists($rootValue, $fieldName)) {
-                    $property = $rootValue->{$fieldName};
-                }
+            } elseif (property_exists($rootValue, $fieldName)) {
+                $property = $rootValue->{$fieldName};
             }
         }
 
