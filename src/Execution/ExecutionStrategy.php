@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\UndefinedFieldException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
@@ -64,9 +65,6 @@ abstract class ExecutionStrategy
      * @var array
      */
     protected static $defaultFieldResolver = [__CLASS__, 'defaultFieldResolver'];
-
-
-    private const UNDEFINED = '__undefined__';
 
     /**
      * AbstractStrategy constructor.
@@ -234,15 +232,9 @@ abstract class ExecutionStrategy
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
 
-            $result = $this->resolveField(
-                $objectType,
-                $rootValue,
-                $fieldNodes,
-                $fieldPath
-            );
-
-            // does not include illegal fields in output
-            if ($result === self::UNDEFINED) {
+            try {
+                $result = $this->resolveField($objectType, $rootValue, $fieldNodes, $fieldPath);
+            } catch (UndefinedFieldException $ex) {
                 continue;
             }
 
@@ -278,15 +270,9 @@ abstract class ExecutionStrategy
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
 
-            $result = $this->resolveField(
-                $objectType,
-                $rootValue,
-                $fieldNodes,
-                $fieldPath
-            );
-
-            // does not include illegal fields in output
-            if ($result === self::UNDEFINED) {
+            try {
+                $result = $this->resolveField($objectType, $rootValue, $fieldNodes, $fieldPath);
+            } catch (UndefinedFieldException $ex) {
                 continue;
             }
 
@@ -335,7 +321,7 @@ abstract class ExecutionStrategy
      * @param            $rootValue
      * @param            $fieldNodes
      * @param            $path
-     * @return array|null|string|\Throwable
+     * @return array|null|\Throwable
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvariantException
@@ -349,12 +335,11 @@ abstract class ExecutionStrategy
     ) {
         /** @var FieldNode $fieldNode */
         $fieldNode = $fieldNodes[0];
-        $fieldName = $fieldNode->getNameValue();
 
         $field = $this->getFieldDefinition($this->context->getSchema(), $parentType, $fieldNode->getNameValue());
 
-        if (!$field) {
-            return self::UNDEFINED;
+        if (null === $field) {
+            throw new UndefinedFieldException('Undefined field definition.');
         }
 
         $info = $this->buildResolveInfo($fieldNodes, $fieldNode, $field, $parentType, $path, $this->context);
@@ -825,8 +810,10 @@ abstract class ExecutionStrategy
             $getter = 'get' . ucfirst($fieldName);
             if (method_exists($rootValue, $getter)) {
                 $property = $rootValue->{$getter}();
-            } else if (property_exists($rootValue, $fieldName)) {
-                $property = $rootValue->{$fieldName};
+            } else {
+                if (property_exists($rootValue, $fieldName)) {
+                    $property = $rootValue->{$fieldName};
+                }
             }
         }
 

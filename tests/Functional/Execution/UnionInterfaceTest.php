@@ -354,7 +354,7 @@ class UnionInterfaceTest extends TestCase
 
         $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
     }
-    
+
     /**
      * gets execution info in resolver
      *
