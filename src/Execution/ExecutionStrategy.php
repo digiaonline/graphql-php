@@ -65,6 +65,9 @@ abstract class ExecutionStrategy
      */
     protected static $defaultFieldResolver = [__CLASS__, 'defaultFieldResolver'];
 
+
+    private const UNDEFINED = '__undefined__';
+
     /**
      * AbstractStrategy constructor.
      * @param ExecutionContext        $context
@@ -111,9 +114,6 @@ abstract class ExecutionStrategy
             // Collect fields
             if ($selection instanceof FieldNode) {
                 $fieldName = $this->getFieldNameKey($selection);
-                if (!isset($runtimeType->getFields()[$selection->getNameValue()])) {
-                    continue;
-                }
 
                 if (!isset($fields[$fieldName])) {
                     $fields[$fieldName] = [];
@@ -241,6 +241,11 @@ abstract class ExecutionStrategy
                 $fieldPath
             );
 
+            // does not include illegal fields in output
+            if ($result === self::UNDEFINED) {
+                continue;
+            }
+
             $finalResults[$fieldName] = $result;
         }
 
@@ -279,6 +284,11 @@ abstract class ExecutionStrategy
                 $fieldNodes,
                 $fieldPath
             );
+
+            // does not include illegal fields in output
+            if ($result === self::UNDEFINED) {
+                continue;
+            }
 
             $finalResults[$fieldName] = $result;
         }
@@ -325,7 +335,7 @@ abstract class ExecutionStrategy
      * @param            $rootValue
      * @param            $fieldNodes
      * @param            $path
-     * @return array|null|\Throwable
+     * @return array|null|string|\Throwable
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvariantException
@@ -343,7 +353,7 @@ abstract class ExecutionStrategy
         $field = $this->getFieldDefinition($this->context->getSchema(), $parentType, $fieldNode->getNameValue());
 
         if (!$field) {
-            return null;
+            return self::UNDEFINED;
         }
 
         $info = $this->buildResolveInfo($fieldNodes, $fieldNode, $field, $parentType, $path, $this->context);

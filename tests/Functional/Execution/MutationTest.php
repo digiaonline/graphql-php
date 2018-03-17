@@ -50,6 +50,10 @@ class MutationTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
         $schema = GraphQLSchema([

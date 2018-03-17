@@ -14,45 +14,6 @@ use function Digia\GraphQL\Type\GraphQLString;
 use function Digia\GraphQL\Type\GraphQLUnionType;
 
 
-class Person
-{
-    public $name;
-    public $pets;
-    public $friends;
-
-    public function __construct(string $name, array $pets = [], array $friends = [])
-    {
-        $this->name    = $name;
-        $this->friends = $friends;
-        $this->pets    = $pets;
-    }
-}
-
-class Dog
-{
-    public $name;
-    public $woofs;
-
-    public function __construct(string $name, bool $woofs)
-    {
-        $this->name  = $name;
-        $this->woofs = $woofs;
-    }
-}
-
-class Cat
-{
-    public $name;
-    public $meows;
-
-    public function __construct(string $name, bool $meows)
-    {
-        $this->name  = $name;
-        $this->meows = $meows;
-    }
-}
-
-
 class UnionInterfaceTest extends TestCase
 {
     private $schema;
@@ -61,7 +22,7 @@ class UnionInterfaceTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        
+
         $NamedType = GraphQLInterfaceType([
             'name'   => 'Named',
             'fields' => [
