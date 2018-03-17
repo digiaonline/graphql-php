@@ -31,7 +31,6 @@
             "./src/Util/coercers.php",
             "./src/Util/helpers.php",
             "./src/Util/typeFromAST.php",
-            "./src/Util/valueFromAST.php",
             "./src/Validation/comparators.php",
             "./src/Validation/messages.php",
             "./src/api.php"

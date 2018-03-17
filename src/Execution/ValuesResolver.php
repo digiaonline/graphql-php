@@ -2,20 +2,22 @@
 
 namespace Digia\GraphQL\Execution;
 
+use Digia\GraphQL\Error\CoercingException;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectivesTrait;
 use Digia\GraphQL\Language\Node\FieldNode;
-use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use function Digia\GraphQL\Language\valueFromAST;
+use Digia\GraphQL\Util\ValueNodeCoercer;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\keyMap;
 
@@ -25,6 +27,20 @@ use function Digia\GraphQL\Util\keyMap;
  */
 class ValuesResolver
 {
+    /**
+     * @var ValueNodeCoercer
+     */
+    protected $valueNodeCoercer;
+
+    /**
+     * ValuesResolver constructor.
+     * @param ValueNodeCoercer $valueNodeCoercer
+     */
+    public function __construct(ValueNodeCoercer $valueNodeCoercer)
+    {
+        $this->valueNodeCoercer = $valueNodeCoercer;
+    }
+
     /**
      * @see http://facebook.github.io/graphql/October2016/#CoerceArgumentValues()
      *
@@ -75,12 +91,27 @@ class ValuesResolver
                     $defaultValue
                 );
             } else {
-                $coercedValues[$argumentName] = $this->coerceValueForASTNode(
-                    $argumentNode,
-                    $argumentType,
-                    $argumentName,
-                    $variableValues
-                );
+                $coercedValue = null;
+
+                try {
+                    $coercedValue = $this->coerceValueFromAST($argumentNode->getValue(), $argumentType,
+                        $variableValues);
+                } catch (CoercingException $ex) {
+                    // Value nodes that cannot be resolved should be treated as invalid values
+                    // therefore we catch the exception and leave the `$coercedValue` as `null`.
+                }
+
+                if (null === $coercedValue) {
+                    // Note: ValuesOfCorrectType validation should catch this before
+                    // execution. This is a runtime check to ensure execution does not
+                    // continue with an invalid argument value.
+                    throw new ExecutionException(
+                        sprintf('Argument "%s" has invalid value %s.', $argumentName, $argumentNode),
+                        [$argumentNode->getValue()]
+                    );
+                }
+
+                $coercedValues[$argumentName] = $coercedValue;
             }
         }
 
@@ -88,36 +119,48 @@ class ValuesResolver
     }
 
     /**
-     * @param NodeInterface $argumentNode
-     * @param TypeInterface $argumentType
-     * @param string        $argumentName
-     * @param               $variableValues
-     * @return mixed|null
+     * @param DirectiveInterface            $directive
+     * @param NodeInterface|DirectivesTrait $node
+     * @param array                         $variableValues
+     * @return array|null
      * @throws ExecutionException
      * @throws InvalidTypeException
      * @throws InvariantException
      */
-    protected function coerceValueForASTNode(
-        NodeInterface $argumentNode,
-        TypeInterface $argumentType,
-        string $argumentName,
-        $variableValues
-    ) {
-        $valueNode = $argumentNode->getValue();
+    public function getDirectiveValues(
+        DirectiveInterface $directive,
+        NodeInterface $node,
+        array $variableValues = []
+    ): ?array {
+        $directiveNode = $node->hasDirectives()
+            ? find($node->getDirectives(), function (NameAwareInterface $value) use ($directive) {
+                return $value->getNameValue() === $directive->getName();
+            }) : null;
 
-        $coercedValue = valueFromAST($valueNode, $argumentType, $variableValues);
-
-        if (null === $coercedValue) {
-            // Note: ValuesOfCorrectType validation should catch this before
-            // execution. This is a runtime check to ensure execution does not
-            // continue with an invalid argument value.
-            throw new ExecutionException(
-                sprintf('Argument "%s" has invalid value %s.', $argumentName, $valueNode),
-                [$argumentNode->getValue()]
-            );
+        if (null !== $directiveNode) {
+            return $this->coerceArgumentValues($directive, $directiveNode, $variableValues);
         }
 
-        return $coercedValue;
+        return null;
+    }
+
+    /**
+     * @param ValueNodeInterface|null $valueNode
+     * @param TypeInterface           $type
+     * @param string                  $argumentName
+     * @param array                   $variableValues
+     * @return mixed|null
+     * @throws ExecutionException
+     * @throws InvalidTypeException
+     * @throws InvariantException
+     * @throws CoercingException
+     */
+    public function coerceValueFromAST(
+        ?ValueNodeInterface $valueNode,
+        TypeInterface $type,
+        $variableValues = []
+    ) {
+        return $this->valueNodeCoercer->coerce($valueNode, $type, $variableValues);
     }
 
     /**
@@ -160,31 +203,5 @@ class ValuesResolver
                 [$variableNode->getValue()]
             );
         }
-    }
-
-    /**
-     * @param DirectiveInterface            $directive
-     * @param NodeInterface|DirectivesTrait $node
-     * @param array                         $variableValues
-     * @return array|null
-     * @throws ExecutionException
-     * @throws InvalidTypeException
-     * @throws InvariantException
-     */
-    public function getDirectiveValues(
-        DirectiveInterface $directive,
-        NodeInterface $node, array
-        $variableValues = []
-    ): ?array {
-        $directiveNode = $node->hasDirectives()
-            ? find($node->getDirectives(), function ($value) use ($directive) {
-                return $value->getNameValue() === $directive->getName();
-            }) : null;
-
-        if (null !== $directiveNode) {
-            return $this->coerceArgumentValues($directive, $directiveNode, $variableValues);
-        }
-
-        return null;
     }
 }

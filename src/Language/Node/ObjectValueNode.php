@@ -2,12 +2,10 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class ObjectValueNode extends AbstractNode implements ValueNodeInterface
 {
-
     /**
      * @var string
      */

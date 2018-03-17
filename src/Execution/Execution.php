@@ -13,6 +13,20 @@ use Digia\GraphQL\Type\Schema;
 class Execution implements ExecutionInterface
 {
     /**
+     * @var ExecutionContextBuilder
+     */
+    protected $contextBuilder;
+
+    /**
+     * Execution constructor.
+     * @param $contextBuilder
+     */
+    public function __construct(ExecutionContextBuilder $contextBuilder)
+    {
+        $this->contextBuilder = $contextBuilder;
+    }
+
+    /**
      * @param Schema        $schema
      * @param DocumentNode  $documentNode
      * @param null          $rootValue
@@ -32,10 +46,7 @@ class Execution implements ExecutionInterface
         callable $fieldResolver = null
     ) : ExecutionResult {
         try {
-            //@TODO Get context builder from container?
-            $contextBuilder = new ExecutionContextBuilder();
-
-            $context = $contextBuilder->buildContext(
+            $context = $this->contextBuilder->buildContext(
                 $schema,
                 $documentNode,
                 $rootValue,
