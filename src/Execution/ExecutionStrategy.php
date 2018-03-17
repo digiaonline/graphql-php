@@ -349,6 +349,7 @@ abstract class ExecutionStrategy
     ) {
         /** @var FieldNode $fieldNode */
         $fieldNode = $fieldNodes[0];
+        $fieldName = $fieldNode->getNameValue();
 
         $field = $this->getFieldDefinition($this->context->getSchema(), $parentType, $fieldNode->getNameValue());
 
@@ -600,7 +601,7 @@ abstract class ExecutionStrategy
         $path,
         &$result
     ) {
-        $runtimeType = $returnType->resolveType($result, $this->context, $info);
+        $runtimeType = $returnType->resolveType($result, $this->context->getContextValue(), $info);
 
         if (null === $runtimeType) {
             //@TODO Show warning
@@ -822,11 +823,9 @@ abstract class ExecutionStrategy
 
         if (is_object($rootValue)) {
             $getter = 'get' . ucfirst($fieldName);
-            if (method_exists($rootValue, $fieldName)) {
+            if (method_exists($rootValue, $getter)) {
                 $property = $rootValue->{$getter}();
-            }
-
-            if (property_exists($rootValue, $fieldName)) {
+            } else if (property_exists($rootValue, $fieldName)) {
                 $property = $rootValue->{$fieldName};
             }
         }
