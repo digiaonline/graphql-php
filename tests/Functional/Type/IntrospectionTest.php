@@ -11,10 +11,6 @@ use function Digia\GraphQL\Util\readFile;
 
 class IntrospectionTest extends TestCase
 {
-
-    /**
-     * @var string
-     */
     protected $introspectionQuery;
 
     public function setUp()
@@ -33,6 +29,7 @@ class IntrospectionTest extends TestCase
             ]),
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         graphql($emptySchema, $this->introspectionQuery);
 
         $this->addToAssertionCount(1);

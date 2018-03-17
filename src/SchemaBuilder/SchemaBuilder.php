@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Language\SchemaBuilder;
+namespace Digia\GraphQL\SchemaBuilder;
 
 use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
