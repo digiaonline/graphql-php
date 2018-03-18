@@ -241,9 +241,7 @@ abstract class ExecutionStrategy
                 continue;
             }
 
-            if (!$isContainsPromise && $this->isPromise($result)) {
-                $isContainsPromise = true;
-            }
+            $isContainsPromise = $isContainsPromise || $this->isPromise($result);
 
             $finalResults[$fieldName] = $result;
         }
@@ -472,6 +470,15 @@ abstract class ExecutionStrategy
                 $result
             );
 
+            if ($this->isPromise($completed)) {
+                $context = $this->context;
+                /** @var ExtendedPromiseInterface $completed */
+                return $completed->then(null, function ($error) use ($context) {
+                    $context->addError($error);
+                    return new \React\Promise\FulfilledPromise(null);
+                });
+            }
+
             return $completed;
         } catch (\Exception $ex) {
             $this->context->addError(new ExecutionException($ex->getMessage()));
@@ -502,6 +509,7 @@ abstract class ExecutionStrategy
                 $path,
                 $result
             );
+
             return $completed;
         } catch (\Exception $ex) {
             //@TODO throw located error
@@ -618,14 +626,13 @@ abstract class ExecutionStrategy
         }
 
         if ($this->isPromise($runtimeType)) {
-            /** @var PromiseInterface $runtimeType */
+            /** @var ExtendedPromiseInterface $runtimeType */
             return $runtimeType->then(function ($resolvedRuntimeType) use (
                 $returnType,
                 $fieldNodes,
                 $info,
                 $path,
-                &
-                $result
+                &$result
             ) {
                 return $this->completeObjectValue(
                     $this->ensureValidRuntimeType(
@@ -720,7 +727,6 @@ abstract class ExecutionStrategy
     {
         $possibleTypes           = $info->getSchema()->getPossibleTypes($abstractType);
         $promisedIsTypeOfResults = [];
-        $type                    = null;
 
         foreach ($possibleTypes as $index => $type) {
             $isTypeOfResult = $type->isTypeOf($value, $context, $info);
@@ -774,9 +780,7 @@ abstract class ExecutionStrategy
             $fieldPath[]      = $key;
             $completedItem    = $this->completeValueCatchingError($itemType, $fieldNodes, $info, $fieldPath, $item);
             $completedItems[] = $completedItem;
-            if (!$containsPromise && $this->isPromise($completedItem)) {
-                $containsPromise = true;
-            }
+            $containsPromise  = $containsPromise || $this->isPromise($completedItem);
         }
 
         return $containsPromise ? \React\Promise\all($completedItems) : $completedItems;
