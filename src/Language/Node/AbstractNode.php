@@ -6,12 +6,13 @@ use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Visitor\AcceptsVisitorsInterface;
 use Digia\GraphQL\Language\Visitor\AcceptsVisitorsTrait;
+use Digia\GraphQL\Util\ArrayToJsonTrait;
 use Digia\GraphQL\Util\SerializationInterface;
-use function Digia\GraphQL\Util\jsonEncode;
 
 abstract class AbstractNode extends ConfigObject implements SerializationInterface, AcceptsVisitorsInterface
 {
     use AcceptsVisitorsTrait;
+    use ArrayToJsonTrait;
 
     /**
      * @var string
@@ -53,18 +54,11 @@ abstract class AbstractNode extends ConfigObject implements SerializationInterfa
     public function toArray(): array
     {
         // TODO: Remove this method when every node implement its own toArray-method.
+
         return [
             'kind' => $this->kind,
             'loc'  => $this->getLocationAsArray(),
         ];
-    }
-
-    /**
-     * @return string
-     */
-    public function toJSON(): string
-    {
-        return jsonEncode($this->toArray());
     }
 
     /**

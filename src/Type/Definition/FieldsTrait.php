@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Error\InvariantException;
 use function Digia\GraphQL\Type\isAssocArray;
-use function Digia\GraphQL\Type\isValidResolver;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
@@ -97,7 +96,7 @@ trait FieldsTrait
 
             if (isset($fieldConfig['resolve'])) {
                 invariant(
-                    isValidResolver($fieldConfig['resolve']),
+                    $this->isValidResolver($fieldConfig['resolve']),
                     sprintf(
                         '%s.%s field resolver must be a function if provided, but got: %s',
                         $this->getName(),
@@ -113,4 +112,12 @@ trait FieldsTrait
         return $fieldMap;
     }
 
+    /**
+     * @param $resolver
+     * @return bool
+     */
+    protected function isValidResolver($resolver): bool
+    {
+        return $resolver === null || \is_callable($resolver);
+    }
 }

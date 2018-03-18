@@ -7,7 +7,7 @@ use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Util\readFile;
+use function Digia\GraphQL\Test\readFileContents;
 
 class IntrospectionTest extends TestCase
 {
@@ -15,7 +15,7 @@ class IntrospectionTest extends TestCase
 
     public function setUp()
     {
-        $this->introspectionQuery = readFile(__DIR__ . '/introspection.graphql');
+        $this->introspectionQuery = readFileContents(__DIR__ . '/introspection.graphql');
     }
 
     public function testExecutesAnIntrospectionQuery()

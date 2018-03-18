@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Error;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
-use Digia\GraphQL\Util\JsonEncodeArrayTrait;
+use Digia\GraphQL\Util\ArrayToJsonTrait;
 use Digia\GraphQL\Util\SerializationInterface;
 
 /**
@@ -16,7 +16,7 @@ use Digia\GraphQL\Util\SerializationInterface;
  */
 class GraphQLException extends AbstractException implements SerializationInterface
 {
-    use JsonEncodeArrayTrait;
+    use ArrayToJsonTrait;
 
     /**
      * An array of { line, column } locations within the source GraphQL document

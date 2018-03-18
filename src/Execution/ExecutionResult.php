@@ -3,11 +3,12 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Util\ArrayToJsonTrait;
 use Digia\GraphQL\Util\SerializationInterface;
-use function Digia\GraphQL\Util\jsonEncode;
 
 class ExecutionResult implements SerializationInterface
 {
+    use ArrayToJsonTrait;
 
     /**
      * @var ExecutionException[]
@@ -68,13 +69,5 @@ class ExecutionResult implements SerializationInterface
         }
 
         return $array;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function toJSON(): string
-    {
-        return jsonEncode($this->toArray());
     }
 }

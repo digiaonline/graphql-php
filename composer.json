@@ -30,9 +30,6 @@
             "./src/Type/scalars.php",
             "./src/Util/coercers.php",
             "./src/Util/helpers.php",
-            "./src/Util/invariant.php",
-            "./src/Util/orList.php",
-            "./src/Util/suggestionList.php",
             "./src/Util/typeFromAST.php",
             "./src/Util/valueFromAST.php",
             "./src/Validation/comparators.php",
@@ -62,7 +59,8 @@
             "./tests/Functional/Validation/harness.php",
             "./tests/Functional/QueryTest.php",
             "./tests/Functional/starWarsData.php",
-            "./tests/Functional/starWarsSchema.php"
+            "./tests/Functional/starWarsSchema.php",
+            "./tests/helpers.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\Test\\": "./tests"

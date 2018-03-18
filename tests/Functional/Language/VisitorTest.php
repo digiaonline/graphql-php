@@ -20,7 +20,7 @@ use Digia\GraphQL\Util\TypeInfo;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Test\Functional\Validation\testSchema;
 use function Digia\GraphQL\Type\getNamedType;
-use function Digia\GraphQL\Util\readFile;
+use function Digia\GraphQL\Test\readFileContents;
 
 class VisitorTest extends TestCase
 {
@@ -429,7 +429,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
-        $kitchenSink = readFile(__DIR__ . '/kitchen-sink.graphql');
+        $kitchenSink = readFileContents(__DIR__ . '/kitchen-sink.graphql');
 
         $ast = parse($kitchenSink);
 

@@ -48,7 +48,7 @@ use function Digia\GraphQL\Type\GraphQLUnionType;
 use function Digia\GraphQL\Type\introspectionTypes;
 use function Digia\GraphQL\Type\specifiedScalarTypes;
 use function Digia\GraphQL\Util\keyMap;
-use function Digia\GraphQL\Util\keyValMap;
+use function Digia\GraphQL\Util\keyValueMap;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
@@ -205,7 +205,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildArguments(array $nodes): array
     {
-        return keyValMap(
+        return keyValueMap(
             $nodes,
             function (InputValueDefinitionNode $value) {
                 return $value->getNameValue();
@@ -278,7 +278,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     {
         $resolverMap = $this->resolverMap[$node->getNameValue()] ?? [];
 
-        return $node->hasFields() ? keyValMap(
+        return $node->hasFields() ? keyValueMap(
             $node->getFields(),
             function ($value) {
                 /** @noinspection PhpUndefinedMethodInspection */
@@ -315,7 +315,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         return GraphQLEnumType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'values'      => $node->hasValues() ? keyValMap(
+            'values'      => $node->hasValues() ? keyValueMap(
                 $node->getValues(),
                 function (EnumValueDefinitionNode $value): string {
                     return $value->getNameValue();
@@ -374,7 +374,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'fields'      => $node->hasFields() ? function () use ($node) {
-                return keyValMap(
+                return keyValueMap(
                     $node->getFields(),
                     function (InputValueDefinitionNode $value): string {
                         return $value->getNameValue();
