@@ -6,11 +6,10 @@ use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
-use Digia\GraphQL\Type\Coercer\CoercerInterface;
 use function Digia\GraphQL\Util\invariant;
 
 class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterface, LeafTypeInterface,
-    InputTypeInterface, OutputTypeInterface, NodeAwareInterface, CoercerInterface
+    InputTypeInterface, OutputTypeInterface, NodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

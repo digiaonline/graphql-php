@@ -8,7 +8,6 @@ use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
-use Digia\GraphQL\Type\Coercer\CoercerInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
@@ -35,7 +34,7 @@ use function Digia\GraphQL\Util\toString;
  * will be used as its internal value.
  */
 class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface,
-    LeafTypeInterface, OutputTypeInterface, NodeAwareInterface, CoercerInterface
+    LeafTypeInterface, OutputTypeInterface, NodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

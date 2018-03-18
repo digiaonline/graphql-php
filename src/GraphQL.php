@@ -7,6 +7,7 @@ use Digia\GraphQL\Execution\ExecutionProvider;
 use Digia\GraphQL\Language\LanguageProvider;
 use Digia\GraphQL\SchemaBuilder\SchemaBuilderProvider;
 use Digia\GraphQL\SchemaValidator\SchemaValidatorProvider;
+use Digia\GraphQL\Type\CoercerProvider;
 use Digia\GraphQL\Type\DirectivesProvider;
 use Digia\GraphQL\Type\IntrospectionTypesProvider;
 use Digia\GraphQL\Type\ScalarTypesProvider;
@@ -46,6 +47,7 @@ class GraphQL
         LanguageProvider::class,
         SchemaBuilderProvider::class,
         SchemaValidatorProvider::class,
+        CoercerProvider::class,
         IntrospectionTypesProvider::class,
         ScalarTypesProvider::class,
         DirectivesProvider::class,
