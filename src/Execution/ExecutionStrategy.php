@@ -24,12 +24,12 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Schema;
 use React\Promise\ExtendedPromiseInterface;
+use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
 use function Digia\GraphQL\Util\toString;
 use function Digia\GraphQL\Util\typeFromAST;
-use React\Promise\PromiseInterface;
 
 /**
  * Class AbstractStrategy
@@ -249,13 +249,13 @@ abstract class ExecutionStrategy
         }
 
         if ($isContainsPromise) {
-            foreach ($finalResults as $key => $result) {
-                if ($this->isPromise($result)) {
-                    $result->then(function ($values) use ($key, &$finalResults) {
-                        $finalResults[$key] = $values;
-                    });
+            $keys    = array_keys($finalResults);
+            $promise = \React\Promise\all(array_values($finalResults));
+            $promise->then(function ($values) use ($keys, &$finalResults) {
+                foreach ($values as $i => $value) {
+                    $finalResults[$keys[$i]] = $value;
                 }
-            }
+            });
         }
 
         return $finalResults;
@@ -597,7 +597,7 @@ abstract class ExecutionStrategy
      * @param ResolveInfo           $info
      * @param                       $path
      * @param                       $result
-     * @return array
+     * @return array|PromiseInterface
      * @throws ExecutionException
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\InvariantException
@@ -619,7 +619,14 @@ abstract class ExecutionStrategy
 
         if ($this->isPromise($runtimeType)) {
             /** @var PromiseInterface $runtimeType */
-            return $runtimeType->then(function($resolvedRuntimeType) use ($returnType, $fieldNodes, $info, $path, &$result) {
+            return $runtimeType->then(function ($resolvedRuntimeType) use (
+                $returnType,
+                $fieldNodes,
+                $info,
+                $path,
+                &
+                $result
+            ) {
                 return $this->completeObjectValue(
                     $this->ensureValidRuntimeType(
                         $resolvedRuntimeType,
@@ -748,7 +755,7 @@ abstract class ExecutionStrategy
      * @param ResolveInfo $info
      * @param             $path
      * @param             $result
-     * @return array
+     * @return array|\React\Promise\Promise
      * @throws \Throwable
      */
     private function completeListValue(
@@ -760,16 +767,19 @@ abstract class ExecutionStrategy
     ) {
         $itemType = $returnType->getOfType();
 
-        $completedItems = [];
-
+        $completedItems  = [];
+        $containsPromise = false;
         foreach ($result as $key => $item) {
             $fieldPath        = $path;
             $fieldPath[]      = $key;
             $completedItem    = $this->completeValueCatchingError($itemType, $fieldNodes, $info, $fieldPath, $item);
             $completedItems[] = $completedItem;
+            if (!$containsPromise && $this->isPromise($completedItem)) {
+                $containsPromise = true;
+            }
         }
 
-        return $completedItems;
+        return $containsPromise ? \React\Promise\all($completedItems) : $completedItems;
     }
 
     /**

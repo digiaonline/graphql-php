@@ -43,9 +43,7 @@ class AbstractPromiseTest extends TestCase
                 'woofs' => ['type' => GraphQLBoolean()],
             ],
             'isTypeOf'   => function ($obj) {
-                return \React\Promise\resolve(function ($obj) {
-                    return $obj instanceof Dog;
-                });
+                return \React\Promise\resolve($obj instanceof Dog);
             }
         ]);
 
@@ -57,9 +55,7 @@ class AbstractPromiseTest extends TestCase
                 'meows' => ['type' => GraphQLBoolean()],
             ],
             'isTypeOf'   => function ($obj) {
-                return \React\Promise\resolve(function ($obj) {
-                    return $obj instanceof Cat;
-                });
+                return \React\Promise\resolve($obj instanceof Cat);
             }
         ]);
 
