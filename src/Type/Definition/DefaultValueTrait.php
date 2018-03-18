@@ -4,11 +4,10 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait DefaultValueTrait
 {
-
     /**
      * @var mixed
      */
-    private $defaultValue;
+    protected $defaultValue;
 
     /**
      * @return mixed
@@ -25,7 +24,6 @@ trait DefaultValueTrait
     protected function setDefaultValue($defaultValue)
     {
         $this->defaultValue = $defaultValue;
-
         return $this;
     }
 }

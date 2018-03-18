@@ -162,7 +162,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             'locations'   => \array_map(function (NameNode $node) {
                 return $node->getValue();
             }, $node->getLocations()),
-            'arguments'   => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
+            'args'        => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
             'astNode'     => $node,
         ]);
     }
@@ -192,7 +192,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         return [
             'type'              => $this->buildWrappedType($node->getType()),
             'description'       => $node->getDescriptionValue(),
-            'arguments'         => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
+            'args'              => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
             'deprecationReason' => $this->getDeprecationReason($node),
             'resolve'           => $resolverMap[$node->getNameValue()] ?? null,
             'astNode'           => $node,

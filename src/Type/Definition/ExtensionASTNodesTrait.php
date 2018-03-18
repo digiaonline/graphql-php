@@ -6,11 +6,10 @@ use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 
 trait ExtensionASTNodesTrait
 {
-
     /**
      * @var ObjectTypeExtensionNode[]
      */
-    private $extensionAstNodes;
+    protected $extensionAstNodes;
 
     /**
      * @return bool
@@ -29,26 +28,12 @@ trait ExtensionASTNodesTrait
     }
 
     /**
-     * @param ObjectTypeExtensionNode $astNode
-     * @return $this
-     */
-    protected function addExtensionASTNode(ObjectTypeExtensionNode $astNode)
-    {
-        $this->extensionAstNodes[] = $astNode;
-
-        return $this;
-    }
-
-    /**
      * @param ObjectTypeExtensionNode[] $extensionAstNodes
      * @return $this
      */
     protected function setExtensionAstNodes(array $extensionAstNodes)
     {
-        foreach ($extensionAstNodes as $astNode) {
-            $this->addExtensionASTNode($astNode);
-        }
-
+        $this->extensionAstNodes = $extensionAstNodes;
         return $this;
     }
 }

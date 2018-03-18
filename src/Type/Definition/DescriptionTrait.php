@@ -4,11 +4,10 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait DescriptionTrait
 {
-
     /**
-     * @var ?string
+     * @var string|null
      */
-    private $description;
+    protected $description;
 
     /**
      * @return null|string
@@ -25,7 +24,6 @@ trait DescriptionTrait
     protected function setDescription(?string $description)
     {
         $this->description = $description;
-
         return $this;
     }
 }

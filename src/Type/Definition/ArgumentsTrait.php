@@ -8,18 +8,17 @@ use function Digia\GraphQL\Util\invariant;
 
 trait ArgumentsTrait
 {
-
     /**
      * @var Argument[]
      */
-    private $_arguments = [];
+    protected $arguments = [];
 
     /**
      * @return bool
      */
     public function hasArguments(): bool
     {
-        return !empty($this->_arguments);
+        return !empty($this->arguments);
     }
 
     /**
@@ -27,10 +26,13 @@ trait ArgumentsTrait
      */
     public function getArguments(): array
     {
-        return $this->_arguments;
+        return $this->arguments;
     }
 
     /**
+     * Arguments are created using the `ConfigAwareTrait` constructor which will automatically
+     * call this method when setting arguments from `$config['args']`.
+     *
      * @param Argument[] $arguments
      * @return $this
      * @throws InvariantException
@@ -42,8 +44,9 @@ trait ArgumentsTrait
             'Args must be an associative array with argument names as keys.'
         );
 
-        foreach ($arguments as $argName => $argConfig) {
-            $this->_arguments[] = new Argument(array_merge($argConfig, ['name' => $argName]));
+        foreach ($arguments as $argumentName => $argumentConfig) {
+            $argumentConfig['name'] = $argumentName;
+            $this->arguments[] = new Argument($argumentConfig);
         }
 
         return $this;

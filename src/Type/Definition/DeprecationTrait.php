@@ -4,16 +4,15 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait DeprecationTrait
 {
-
     /**
-     * @var ?string
+     * @var string|null
      */
-    private $deprecationReason;
+    protected $deprecationReason;
 
     /**
      * @var bool
      */
-    private $isDeprecated = false;
+    protected $isDeprecated = false;
 
     /**
      * @return null|string
@@ -37,12 +36,11 @@ trait DeprecationTrait
      */
     protected function setDeprecationReason(?string $deprecationReason)
     {
-        if ($deprecationReason) {
+        if (null !== $deprecationReason) {
             $this->isDeprecated = true;
         }
 
         $this->deprecationReason = $deprecationReason;
-
         return $this;
     }
 }
