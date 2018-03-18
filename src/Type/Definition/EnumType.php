@@ -91,7 +91,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
      */
     public function parseValue($value)
     {
-        if (is_string($value)) {
+        if (\is_string($value)) {
             /** @var EnumValue $enumValue */
             $enumValue = $this->getValueByName($value);
 
@@ -104,16 +104,16 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     }
 
     /**
-     * @param NodeInterface $astNode
+     * @param NodeInterface $node
      * @return mixed|null
      * @throws InvariantException
      */
-    public function parseLiteral(NodeInterface $astNode)
+    public function parseLiteral(NodeInterface $node)
     {
-        if ($astNode->getKind() === NodeKindEnum::ENUM) {
+        if ($node->getKind() === NodeKindEnum::ENUM) {
             /** @var EnumValue $enumValue */
             /** @noinspection PhpUndefinedMethodInspection */
-            $enumValue = $this->getValueByName($astNode->getValue());
+            $enumValue = $this->getValueByName($node->getValue());
 
             if ($enumValue !== null) {
                 return $enumValue->getValue();
@@ -193,7 +193,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     protected function defineEnumValuesIfNecessary(): void
     {
         if (!$this->_isValuesDefined) {
-            $this->_values = array_merge($this->defineEnumValues($this->_valueMap), $this->_values);
+            $this->_values = \array_merge($this->defineEnumValues($this->_valueMap), $this->_values);
 
             $this->_isValuesDefined = true;
         }
@@ -208,7 +208,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     {
         invariant(
             isAssocArray($valueMap),
-            sprintf('%s values must be an associative array with value names as keys.', $this->getName())
+            \sprintf('%s values must be an associative array with value names as keys.', $this->getName())
         );
 
         $values = [];
@@ -216,7 +216,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
         foreach ($valueMap as $valueName => $valueConfig) {
             invariant(
                 isAssocArray($valueConfig),
-                sprintf(
+                \sprintf(
                     '%s.%s must refer to an object with a "value" key representing an internal value but got: %s',
                     $this->getName(),
                     $valueName,
@@ -226,14 +226,14 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
 
             invariant(
                 !isset($valueConfig['isDeprecated']),
-                sprintf(
+                \sprintf(
                     '%s.%s should provided "deprecationReason" instead of "isDeprecated".',
                     $this->getName(),
                     $valueName
                 )
             );
 
-            $values[] = new EnumValue(array_merge($valueConfig, ['name' => $valueName]));
+            $values[] = new EnumValue(\array_merge($valueConfig, ['name' => $valueName]));
         }
 
         return $values;

@@ -90,7 +90,8 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 'parseLiteral' => function (NodeInterface $node) {
                     if ($node instanceof IntValueNode) {
                         $value = (int)$node->getValue();
-                        if ($node->getValue() === (string)$value && $value <= PHP_INT_MAX && $value >= PHP_INT_MIN) {
+                        if ((string)$node->getValue() === (string)$value &&
+                            $value <= PHP_INT_MAX && $value >= PHP_INT_MIN) {
                             return $value;
                         }
                     }

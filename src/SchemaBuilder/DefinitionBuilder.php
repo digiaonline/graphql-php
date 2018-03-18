@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\SchemaBuilder;
 
+use Digia\GraphQL\Error\CoercingException;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
@@ -34,7 +35,6 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Psr\SimpleCache\CacheInterface;
-use function Digia\GraphQL\Language\valueFromAST;
 use function Digia\GraphQL\Type\assertNullableType;
 use function Digia\GraphQL\Type\GraphQLDirective;
 use function Digia\GraphQL\Type\GraphQLEnumType;
@@ -96,7 +96,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         $this->typeDefinitionsMap  = [];
 
         $builtInTypes = keyMap(
-            array_merge(specifiedScalarTypes(), introspectionTypes()),
+            \array_merge(specifiedScalarTypes(), introspectionTypes()),
             function (NamedTypeInterface $type) {
                 return $type->getName();
             }
@@ -140,10 +140,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             if ($node instanceof NamedTypeNode) {
                 $definition = $this->getTypeDefinition($typeName);
 
-                $this->cache->set(
-                    $this->getCacheKey($typeName),
-                    null !== $definition ? $this->buildNamedType($definition) : $this->resolveType($node)
-                );
+                $type = null !== $definition ? $this->buildNamedType($definition) : $this->resolveType($node);
+
+                $this->cache->set($this->getCacheKey($typeName), $type);
             } else {
                 $this->cache->set($this->getCacheKey($typeName), $this->buildNamedType($node));
             }
@@ -160,7 +159,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         return GraphQLDirective([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'locations'   => array_map(function (NameNode $node) {
+            'locations'   => \array_map(function (NameNode $node) {
                 return $node->getValue();
             }, $node->getLocations()),
             'arguments'   => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
@@ -186,6 +185,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @throws ExecutionException
      * @throws InvalidTypeException
      * @throws InvariantException
+     * @throws CoercingException
      */
     protected function buildField($node, array $resolverMap): array
     {
@@ -202,6 +202,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param array $nodes
      * @return array
+     * @throws CoercingException
      */
     protected function buildArguments(array $nodes): array
     {
@@ -211,11 +212,14 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                 return $value->getNameValue();
             },
             function (InputValueDefinitionNode $value): array {
-                $type = $this->buildWrappedType($value->getType());
+                $type         = $this->buildWrappedType($value->getType());
+                $defaultValue = $value->getDefaultValue();
                 return [
                     'type'         => $type,
                     'description'  => $value->getDescriptionValue(),
-                    'defaultValue' => valueFromAST($value->getDefaultValue(), $type),
+                    'defaultValue' => null !== $defaultValue
+                        ? $this->valuesResolver->coerceValueFromAST($defaultValue, $type)
+                        : null,
                     'astNode'      => $value,
                 ];
             });
@@ -247,7 +251,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             return $this->buildInputObjectType($node);
         }
 
-        throw new LanguageException(sprintf('Type kind "%s" not supported.', $node->getKind()));
+        throw new LanguageException(\sprintf('Type kind "%s" not supported.', $node->getKind()));
     }
 
     /**
@@ -263,7 +267,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                 return $this->buildFields($node);
             },
             'interfaces'  => function () use ($node) {
-                return $node->hasInterfaces() ? array_map(function (NodeInterface $interface) {
+                return $node->hasInterfaces() ? \array_map(function (NodeInterface $interface) {
                     return $this->buildType($interface);
                 }, $node->getInterfaces()) : [];
             },
@@ -341,7 +345,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         return GraphQLUnionType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'types'       => $node->hasTypes() ? array_map(function (TypeNodeInterface $type) {
+            'types'       => $node->hasTypes() ? \array_map(function (TypeNodeInterface $type) {
                 return $this->buildType($type);
             }, $node->getTypes()) : [],
             'astNode'     => $node,
@@ -384,7 +388,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                         return [
                             'type'         => $type,
                             'description'  => $value->getDescriptionValue(),
-                            'defaultValue' => valueFromAST($value->getDefaultValue(), $type),
+                            'defaultValue' => $this->valuesResolver->coerceValueFromAST($value->getDefaultValue(),
+                                $type),
                             'astNode'      => $value,
                         ];
                     }

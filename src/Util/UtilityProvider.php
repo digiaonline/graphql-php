@@ -13,7 +13,7 @@ class UtilityProvider extends AbstractServiceProvider
     protected $provides = [
         NameValidator::class,
         TypeComparator::class,
-        ValuesResolver::class,
+        ValueNodeCoercer::class,
     ];
 
     /**
@@ -23,6 +23,6 @@ class UtilityProvider extends AbstractServiceProvider
     {
         $this->container->add(NameValidator::class, NameValidator::class, true/* $shared */);
         $this->container->add(TypeComparator::class, TypeComparator::class, true/* $shared */);
-        $this->container->add(ValuesResolver::class, ValuesResolver::class, true/* $shared */);
+        $this->container->add(ValueNodeCoercer::class, ValueNodeCoercer::class, true/* $shared */);
     }
 }

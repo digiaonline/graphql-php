@@ -28,6 +28,7 @@ use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
 use function Digia\GraphQL\Util\toString;
 use function Digia\GraphQL\Util\typeFromAST;
+use Digia\GraphQL\Util\ValueNodeCoercer;
 
 /**
  * Class AbstractStrategy
@@ -80,7 +81,8 @@ abstract class ExecutionStrategy
         $this->context        = $context;
         $this->operation      = $operation;
         $this->rootValue      = $rootValue;
-        $this->valuesResolver = new ValuesResolver();
+        // TODO: Inject the ValuesResolver instance by using a builder for this class.
+        $this->valuesResolver = new ValuesResolver(new ValueNodeCoercer());
     }
 
     /**

@@ -6,7 +6,6 @@ use Digia\GraphQL\Error\InvalidTypeException;
 
 class NonNullType implements TypeInterface, WrappingTypeInterface
 {
-
     use NameTrait;
     use DescriptionTrait;
     use OfTypeTrait;
