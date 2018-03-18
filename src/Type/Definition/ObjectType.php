@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\NodeTrait;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
+use React\Promise\PromiseInterface;
 
 /**
  * Object Type Definition
@@ -99,9 +100,9 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
      * @param mixed $value
      * @param mixed context
      * @param mixed $info
-     * @return bool
+     * @return bool|PromiseInterface
      */
-    public function isTypeOf($value, $context, $info): bool
+    public function isTypeOf($value, $context, $info)
     {
         return null !== $this->isTypeOfFunction
             ? \call_user_func($this->isTypeOfFunction, $value, $context, $info)

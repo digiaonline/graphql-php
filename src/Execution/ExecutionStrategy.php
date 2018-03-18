@@ -23,11 +23,13 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Schema;
+use React\Promise\ExtendedPromiseInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
 use function Digia\GraphQL\Util\toString;
 use function Digia\GraphQL\Util\typeFromAST;
+use React\Promise\PromiseInterface;
 
 /**
  * Class AbstractStrategy
@@ -226,7 +228,8 @@ abstract class ExecutionStrategy
         $path,
         $fields
     ): array {
-        $finalResults = [];
+        $finalResults      = [];
+        $isContainsPromise = false;
 
         foreach ($fields as $fieldName => $fieldNodes) {
             $fieldPath   = $path;
@@ -238,7 +241,21 @@ abstract class ExecutionStrategy
                 continue;
             }
 
+            if (!$isContainsPromise && $this->isPromise($result)) {
+                $isContainsPromise = true;
+            }
+
             $finalResults[$fieldName] = $result;
+        }
+
+        if ($isContainsPromise) {
+            foreach ($finalResults as $key => $result) {
+                if ($this->isPromise($result)) {
+                    $result->then(function ($values) use ($key, &$finalResults) {
+                        $finalResults[$key] = $values;
+                    });
+                }
+            }
         }
 
         return $finalResults;
@@ -512,6 +529,13 @@ abstract class ExecutionStrategy
         $path,
         &$result
     ) {
+        if ($this->isPromise($result)) {
+            /** @var ExtendedPromiseInterface $result */
+            return $result->then(function (&$value) use ($returnType, $fieldNodes, $info, $path) {
+                return $this->completeValue($returnType, $fieldNodes, $info, $path, $value);
+            });
+        }
+
         if ($result instanceof \Throwable) {
             throw $result;
         }
@@ -593,16 +617,33 @@ abstract class ExecutionStrategy
             $runtimeType = $this->defaultTypeResolver($result, $this->context->getContextValue(), $info, $returnType);
         }
 
-        $runtimeType = $this->ensureValidRuntimeType(
-            $runtimeType,
-            $returnType,
-            $fieldNodes,
-            $info,
-            $result
-        );
+        if ($this->isPromise($runtimeType)) {
+            /** @var PromiseInterface $runtimeType */
+            return $runtimeType->then(function($resolvedRuntimeType) use ($returnType, $fieldNodes, $info, $path, &$result) {
+                return $this->completeObjectValue(
+                    $this->ensureValidRuntimeType(
+                        $resolvedRuntimeType,
+                        $returnType,
+                        $fieldNodes,
+                        $info,
+                        $result
+                    ),
+                    $fieldNodes,
+                    $info,
+                    $path,
+                    $result
+                );
+            });
+        }
 
         return $this->completeObjectValue(
-            $runtimeType,
+            $this->ensureValidRuntimeType(
+                $runtimeType,
+                $returnType,
+                $fieldNodes,
+                $info,
+                $result
+            ),
             $fieldNodes,
             $info,
             $path,
@@ -616,7 +657,7 @@ abstract class ExecutionStrategy
      * @param                       $fieldNodes
      * @param ResolveInfo           $info
      * @param                       $result
-     * @return TypeInterface|null
+     * @return TypeInterface|ObjectType|null
      * @throws ExecutionException
      */
     private function ensureValidRuntimeType(
@@ -670,16 +711,32 @@ abstract class ExecutionStrategy
      */
     private function defaultTypeResolver($value, $context, ResolveInfo $info, AbstractTypeInterface $abstractType)
     {
-        $possibleTypes = $info->getSchema()->getPossibleTypes($abstractType);
+        $possibleTypes           = $info->getSchema()->getPossibleTypes($abstractType);
+        $promisedIsTypeOfResults = [];
+        $type                    = null;
 
-        foreach ($possibleTypes as $type) {
+        foreach ($possibleTypes as $index => $type) {
             $isTypeOfResult = $type->isTypeOf($value, $context, $info);
 
             if (null !== $isTypeOfResult) {
-                if ($isTypeOfResult) {
+                if ($this->isPromise($isTypeOfResult)) {
+                    $promisedIsTypeOfResults[$index] = $isTypeOfResult;
+                } elseif ($isTypeOfResult) {
                     return $type;
                 }
             }
+        }
+
+        if (!empty($promisedIsTypeOfResults)) {
+            return \React\Promise\all($promisedIsTypeOfResults)
+                ->then(function ($isTypeOfResults) use ($possibleTypes) {
+                    foreach ($isTypeOfResults as $index => $result) {
+                        if ($result) {
+                            return $possibleTypes[$index];
+                        }
+                    }
+                    return null;
+                });
         }
 
         return null;
@@ -858,5 +915,14 @@ abstract class ExecutionStrategy
         }
 
         return $result;
+    }
+
+    /**
+     * @param $value
+     * @return bool
+     */
+    protected function isPromise($value): bool
+    {
+        return $value instanceof ExtendedPromiseInterface;
     }
 }
