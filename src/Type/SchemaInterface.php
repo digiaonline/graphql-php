@@ -15,17 +15,17 @@ interface SchemaInterface
     /**
      * @return TypeInterface|null
      */
-    public function getQuery(): ?TypeInterface;
+    public function getQueryType(): ?TypeInterface;
 
     /**
      * @return TypeInterface|null
      */
-    public function getMutation(): ?TypeInterface;
+    public function getMutationType(): ?TypeInterface;
 
     /**
      * @return TypeInterface|null
      */
-    public function getSubscription(): ?TypeInterface;
+    public function getSubscriptionType(): ?TypeInterface;
 
     /**
      * @param string $name

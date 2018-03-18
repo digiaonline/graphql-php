@@ -62,7 +62,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                             'description' => 'The type that query operations will be rooted at.',
                             'type'        => GraphQLNonNull(__Type()),
                             'resolve'     => function (SchemaInterface $schema): ObjectType {
-                                return $schema->getQuery();
+                                return $schema->getQueryType();
                             },
                         ],
                         'mutationType'     => [
@@ -71,7 +71,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                                 'mutation operations will be rooted at.',
                             'type'        => __Type(),
                             'resolve'     => function (SchemaInterface $schema): ObjectType {
-                                return $schema->getMutation();
+                                return $schema->getMutationType();
                             },
                         ],
                         'subscriptionType' => [
@@ -80,7 +80,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                                 'subscription operations will be rooted at.',
                             'type'        => __Type(),
                             'resolve'     => function (SchemaInterface $schema): ObjectType {
-                                return $schema->getSubscription();
+                                return $schema->getSubscriptionType();
                             },
                         ],
                         'directives'       => [

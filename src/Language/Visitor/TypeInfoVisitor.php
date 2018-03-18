@@ -80,11 +80,11 @@ class TypeInfoVisitor implements VisitorInterface
             $type      = null;
             $operation = $node->getOperation();
             if ($operation === 'query') {
-                $type = $schema->getQuery();
+                $type = $schema->getQueryType();
             } elseif ($operation === 'mutation') {
-                $type = $schema->getMutation();
+                $type = $schema->getMutationType();
             } elseif ($operation === 'subscription') {
-                $type = $schema->getSubscription();
+                $type = $schema->getSubscriptionType();
             }
             $this->typeInfo->pushType($type instanceof ObjectType ? $type : null);
         } elseif ($node instanceof InlineFragmentNode || $node instanceof FragmentDefinitionNode) {

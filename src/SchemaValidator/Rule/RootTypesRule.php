@@ -22,9 +22,9 @@ class RootTypesRule extends AbstractRule
         $schema = $this->context->getSchema();
 
         $rootTypes = [
-            'query'        => $schema->getQuery(),
-            'mutation'     => $schema->getMutation(),
-            'subscription' => $schema->getSubscription(),
+            'query'        => $schema->getQueryType(),
+            'mutation'     => $schema->getMutationType(),
+            'subscription' => $schema->getSubscriptionType(),
         ];
 
         foreach ($rootTypes as $operation => $rootType) {

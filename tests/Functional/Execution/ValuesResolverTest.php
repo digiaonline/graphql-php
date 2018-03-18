@@ -52,7 +52,7 @@ class ValuesResolverTest extends TestCase
         $documentNode = parse('query Hello($name: String) { Greeting(name: $name) }');
         $operation  = $documentNode->getDefinitions()[0];
         $node       = $documentNode->getDefinitions()[0]->getSelectionSet()->getSelections()[0];
-        $definition = $schema->getQuery()->getFields()['greeting'];
+        $definition = $schema->getQueryType()->getFields()['greeting'];
 
         $context = new ExecutionContext(
             $schema, [], null, null, ['name' => 'Han Solo'], null, $operation, []

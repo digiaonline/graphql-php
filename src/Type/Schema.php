@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
@@ -54,52 +55,52 @@ class Schema extends ConfigObject implements SchemaInterface
     /**
      * @var TypeInterface|null
      */
-    private $query;
+    protected $query;
 
     /**
      * @var TypeInterface|null
      */
-    private $mutation;
+    protected $mutation;
 
     /**
      * @var TypeInterface|null
      */
-    private $subscription;
+    protected $subscription;
 
     /**
      * @var TypeInterface
      */
-    private $types = [];
+    protected $types = [];
 
     /**
      * @var array
      */
-    private $directives = [];
+    protected $directives = [];
 
     /**
      * @var bool
      */
-    private $assumeValid = false;
+    protected $assumeValid = false;
 
     /**
      * @var array
      */
-    private $_typeMap = [];
+    protected $typeMap = [];
 
     /**
      * @var array
      */
-    private $_implementations = [];
+    protected $implementations = [];
 
     /**
      * @var array
      */
-    private $_possibleTypeMap = [];
+    protected $possibleTypesMap = [];
 
     /**
      * @inheritdoc
      */
-    public function getQuery(): ?TypeInterface
+    public function getQueryType(): ?TypeInterface
     {
         return $this->query;
     }
@@ -107,7 +108,7 @@ class Schema extends ConfigObject implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getMutation(): ?TypeInterface
+    public function getMutationType(): ?TypeInterface
     {
         return $this->mutation;
     }
@@ -115,7 +116,7 @@ class Schema extends ConfigObject implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getSubscription(): ?TypeInterface
+    public function getSubscriptionType(): ?TypeInterface
     {
         return $this->subscription;
     }
@@ -143,7 +144,7 @@ class Schema extends ConfigObject implements SchemaInterface
      */
     public function getTypeMap(): array
     {
-        return $this->_typeMap;
+        return $this->typeMap;
     }
 
     /**
@@ -164,12 +165,12 @@ class Schema extends ConfigObject implements SchemaInterface
         /** @noinspection PhpUndefinedMethodInspection */
         $possibleTypeName = $possibleType->getName();
 
-        if (!isset($this->_possibleTypeMap[$abstractTypeName])) {
+        if (!isset($this->possibleTypesMap[$abstractTypeName])) {
             $possibleTypes = $this->getPossibleTypes($abstractType);
 
             invariant(
-                is_array($possibleTypes),
-                sprintf(
+                \is_array($possibleTypes),
+                \sprintf(
                     'Could not find possible implementing types for %s ' .
                     'in schema. Check that schema.types is defined and is an array of ' .
                     'all possible types in the schema.',
@@ -177,14 +178,15 @@ class Schema extends ConfigObject implements SchemaInterface
                 )
             );
 
-            $this->_possibleTypeMap[$abstractTypeName] = array_reduce($possibleTypes,
+            $this->possibleTypesMap[$abstractTypeName] = \array_reduce($possibleTypes,
                 function (array $map, TypeInterface $type) {
+                    /** @var NameAwareInterface $type */
                     $map[$type->getName()] = true;
                     return $map;
                 }, []);
         }
 
-        return isset($this->_possibleTypeMap[$abstractTypeName][$possibleTypeName]);
+        return isset($this->possibleTypesMap[$abstractTypeName][$possibleTypeName]);
     }
 
     /**
@@ -196,7 +198,7 @@ class Schema extends ConfigObject implements SchemaInterface
             return $abstractType->getTypes();
         }
 
-        return $this->_implementations[$abstractType->getName()] ?? null;
+        return $this->implementations[$abstractType->getName()] ?? null;
     }
 
     /**
@@ -204,7 +206,7 @@ class Schema extends ConfigObject implements SchemaInterface
      */
     public function getType(string $name): ?TypeInterface
     {
-        return $this->_typeMap[$name] ?? null;
+        return $this->typeMap[$name] ?? null;
     }
 
     /**
@@ -236,20 +238,20 @@ class Schema extends ConfigObject implements SchemaInterface
         ];
 
         if ($this->types) {
-            $initialTypes = array_merge($initialTypes, $this->types);
+            $initialTypes = \array_merge($initialTypes, $this->types);
         }
 
         // Keep track of all types referenced within the schema.
         $typeMap = [];
 
         // First by deeply visiting all initial types.
-        $typeMap = array_reduce($initialTypes, 'Digia\GraphQL\Type\typeMapReducer', $typeMap);
+        $typeMap = \array_reduce($initialTypes, [$this, 'typeMapReducer'], $typeMap);
 
         // Then by deeply visiting all directive types.
-        $typeMap = array_reduce($this->directives, 'Digia\GraphQL\Type\typeMapDirectiveReducer', $typeMap);
+        $typeMap = \array_reduce($this->directives, [$this, 'typeMapDirectiveReducer'], $typeMap);
 
         // Storing the resulting map for reference by the schema.
-        $this->_typeMap = $typeMap;
+        $this->typeMap = $typeMap;
     }
 
     /**
@@ -260,7 +262,7 @@ class Schema extends ConfigObject implements SchemaInterface
         $implementations = [];
 
         // Keep track of all implementations by interface name.
-        foreach ($this->_typeMap as $typeName => $type) {
+        foreach ($this->typeMap as $typeName => $type) {
             if ($type instanceof ObjectType) {
                 foreach ($type->getInterfaces() as $interface) {
                     $interfaceName = $interface->getName();
@@ -274,7 +276,7 @@ class Schema extends ConfigObject implements SchemaInterface
             }
         }
 
-        $this->_implementations = $implementations;
+        $this->implementations = $implementations;
     }
 
     /**
@@ -284,7 +286,6 @@ class Schema extends ConfigObject implements SchemaInterface
     protected function setQuery(?TypeInterface $query): Schema
     {
         $this->query = $query;
-
         return $this;
     }
 
@@ -295,7 +296,6 @@ class Schema extends ConfigObject implements SchemaInterface
     protected function setMutation(?TypeInterface $mutation): Schema
     {
         $this->mutation = $mutation;
-
         return $this;
     }
 
@@ -306,7 +306,6 @@ class Schema extends ConfigObject implements SchemaInterface
     protected function setSubscription(?TypeInterface $subscription): Schema
     {
         $this->subscription = $subscription;
-
         return $this;
     }
 
@@ -317,7 +316,6 @@ class Schema extends ConfigObject implements SchemaInterface
     protected function setTypes(array $types): Schema
     {
         $this->types = $types;
-
         return $this;
     }
 
@@ -328,7 +326,6 @@ class Schema extends ConfigObject implements SchemaInterface
     protected function setDirectives(array $directives): Schema
     {
         $this->directives = $directives;
-
         return $this;
     }
 
@@ -339,91 +336,91 @@ class Schema extends ConfigObject implements SchemaInterface
     protected function setAssumeValid(bool $assumeValid): Schema
     {
         $this->assumeValid = $assumeValid;
-
         return $this;
     }
-}
 
-/**
- * @param array              $map
- * @param null|TypeInterface $type
- * @return array
- * @throws InvariantException
- */
-function typeMapReducer(array $map, ?TypeInterface $type): array
-{
-    if (null === $type) {
-        return $map;
-    }
+    /**
+     * @param array              $map
+     * @param TypeInterface|NameAwareInterface|null $type
+     * @return array
+     * @throws InvariantException
+     */
+    protected function typeMapReducer(array $map, ?TypeInterface $type): array
+    {
+        if (null === $type) {
+            return $map;
+        }
 
-    if ($type instanceof WrappingTypeInterface) {
-        return typeMapReducer($map, $type->getOfType());
-    }
+        if ($type instanceof WrappingTypeInterface) {
+            return $this->typeMapReducer($map, $type->getOfType());
+        }
 
-    $typeName = $type->getName();
+        $typeName = $type->getName();
 
-    if (isset($map[$typeName])) {
-        invariant(
-            $map[$typeName] === $type,
-            sprintf(
-                'Schema must contain unique named types but contains multiple types named "%s".',
-                $type->getName()
-            )
-        );
+        if (isset($map[$typeName])) {
+            invariant(
+                $type === $map[$typeName],
+                \sprintf(
+                    'Schema must contain unique named types but contains multiple types named "%s".',
+                    $type->getName()
+                )
+            );
 
-        return $map;
-    }
+            return $map;
+        }
 
-    $map[$typeName] = $type;
+        $map[$typeName] = $type;
 
-    $reducedMap = $map;
+        $reducedMap = $map;
 
-    if ($type instanceof UnionType) {
-        $reducedMap = array_reduce($type->getTypes(), 'Digia\GraphQL\Type\typeMapReducer', $reducedMap);
-    }
+        if ($type instanceof UnionType) {
+            $reducedMap = \array_reduce($type->getTypes(), [$this, 'typeMapReducer'], $reducedMap);
+        }
 
-    if ($type instanceof ObjectType) {
-        $reducedMap = array_reduce($type->getInterfaces(), 'Digia\GraphQL\Type\typeMapReducer', $reducedMap);
-    }
+        if ($type instanceof ObjectType) {
+            $reducedMap = \array_reduce($type->getInterfaces(), [$this, 'typeMapReducer'], $reducedMap);
+        }
 
-    if ($type instanceof ObjectType || $type instanceof InterfaceType) {
-        foreach ($type->getFields() as $field) {
-            if ($field->hasArguments()) {
-                $fieldArgTypes = array_map(function (Argument $argument) {
-                    return $argument->getType();
-                }, $field->getArguments());
+        if ($type instanceof ObjectType || $type instanceof InterfaceType) {
+            foreach ($type->getFields() as $field) {
+                if ($field->hasArguments()) {
+                    $fieldArgTypes = \array_map(function (Argument $argument) {
+                        return $argument->getType();
+                    }, $field->getArguments());
 
-                $reducedMap = array_reduce($fieldArgTypes, 'Digia\GraphQL\Type\typeMapReducer', $reducedMap);
+                    $reducedMap = \array_reduce($fieldArgTypes, [$this, 'typeMapReducer'], $reducedMap);
+                }
+
+                $reducedMap = $this->typeMapReducer($reducedMap, $field->getType());
             }
-
-            $reducedMap = typeMapReducer($reducedMap, $field->getType());
         }
-    }
 
-    if ($type instanceof InputObjectType) {
-        foreach ($type->getFields() as $field) {
-            $reducedMap = typeMapReducer($reducedMap, $field->getType());
+        if ($type instanceof InputObjectType) {
+            foreach ($type->getFields() as $field) {
+                $reducedMap = $this->typeMapReducer($reducedMap, $field->getType());
+            }
         }
+
+        return $reducedMap;
     }
 
-    return $reducedMap;
-}
+    /**
+     * Note: We do not type-hint the `$directive`, because we want the `SchemaValidator` to catch these errors.
+     *
+     * @param array      $map
+     * @param mixed|null $directive
+     * @return array
+     */
+    protected function typeMapDirectiveReducer(array $map, $directive): array
+    {
+        if (!($directive instanceof Directive) ||
+            ($directive instanceof Directive && !$directive->hasArguments())) {
+            return $map;
+        }
 
-/**
- * Note: We do not type-hint the `$directive`, because we want the `SchemaValidator` to catch these errors.
- *
- * @param array      $map
- * @param mixed|null $directive
- * @return array
- */
-function typeMapDirectiveReducer(array $map, $directive): array
-{
-    if (!($directive instanceof DirectiveInterface) ||
-        ($directive instanceof DirectiveInterface && !$directive->hasArguments())) {
-        return $map;
+        return \array_reduce($directive->getArguments(), function ($map, Argument $argument) {
+            return $this->typeMapReducer($map, $argument->getType());
+        }, $map);
     }
 
-    return array_reduce($directive->getArguments(), function ($map, Argument $argument) {
-        return typeMapReducer($map, $argument->getType());
-    }, $map);
 }
