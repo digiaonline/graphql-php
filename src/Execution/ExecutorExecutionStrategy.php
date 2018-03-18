@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
+use React\Promise\ExtendedPromiseInterface;
 
 class ExecutorExecutionStrategy extends ExecutionStrategy
 {
@@ -32,7 +33,7 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
                 $visitedFragmentNames
             );
 
-            $data = ($operation === 'mutation')
+            $result = ($operation === 'mutation')
                 ? $this->executeFieldsSerially($objectType, $this->rootValue, $path, $fields)
                 : $this->executeFields($objectType, $this->rootValue, $path, $fields);
 
@@ -45,6 +46,6 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
             return [$ex->getMessage()];
         }
 
-        return $data;
+        return $result;
     }
 }
