@@ -315,11 +315,11 @@ abstract class ExecutionStrategy
         $typeMetaFieldDefinition     = TypeMetaFieldDefinition();
         $typeNameMetaFieldDefinition = TypeNameMetaFieldDefinition();
 
-        if ($fieldName === $schemaMetaFieldDefinition->getName() && $schema->getQuery() === $parentType) {
+        if ($fieldName === $schemaMetaFieldDefinition->getName() && $schema->getQueryType() === $parentType) {
             return $schemaMetaFieldDefinition;
         }
 
-        if ($fieldName === $typeMetaFieldDefinition->getName() && $schema->getQuery() === $parentType) {
+        if ($fieldName === $typeMetaFieldDefinition->getName() && $schema->getQueryType() === $parentType) {
             return $typeMetaFieldDefinition;
         }
 

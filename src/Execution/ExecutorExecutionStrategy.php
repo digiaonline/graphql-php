@@ -20,8 +20,8 @@ class ExecutorExecutionStrategy extends ExecutionStrategy
         $path = [];
 
         $objectType = ($operation === 'mutation')
-            ? $schema->getMutation()
-            : $schema->getQuery();
+            ? $schema->getMutationType()
+            : $schema->getQueryType();
 
         $fields = [];
         $visitedFragmentNames = [];

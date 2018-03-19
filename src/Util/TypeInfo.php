@@ -290,12 +290,12 @@ function getFieldDefinition(SchemaInterface $schema, TypeInterface $parentType, 
     $name = $fieldNode->getNameValue();
 
     $schemaDefinition = SchemaMetaFieldDefinition();
-    if ($name === $schemaDefinition->getName() && $schema->getQuery() === $parentType) {
+    if ($name === $schemaDefinition->getName() && $schema->getQueryType() === $parentType) {
         return $schemaDefinition;
     }
 
     $typeDefinition = TypeMetaFieldDefinition();
-    if ($name === $typeDefinition->getName() && $schema->getQuery() === $parentType) {
+    if ($name === $typeDefinition->getName() && $schema->getQueryType() === $parentType) {
         return $typeDefinition;
     }
 

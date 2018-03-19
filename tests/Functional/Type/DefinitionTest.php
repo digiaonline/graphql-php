@@ -233,7 +233,7 @@ class DefinitionTest extends TestCase
             'query' => $this->blogQuery,
         ]);
 
-        $this->assertEquals($this->blogQuery, $schema->getQuery());
+        $this->assertEquals($this->blogQuery, $schema->getQueryType());
 
         $articleField = $this->blogQuery->getFields()['article'];
 
@@ -272,7 +272,7 @@ class DefinitionTest extends TestCase
             'mutation' => $this->blogMutation,
         ]);
 
-        $this->assertEquals($this->blogMutation, $schema->getMutation());
+        $this->assertEquals($this->blogMutation, $schema->getMutationType());
 
         $writeArticleField = $this->blogMutation->getFields()['writeArticle'];
 
@@ -287,7 +287,7 @@ class DefinitionTest extends TestCase
             'subscription' => $this->blogSubscription,
         ]);
 
-        $this->assertEquals($this->blogSubscription, $schema->getSubscription());
+        $this->assertEquals($this->blogSubscription, $schema->getSubscriptionType());
 
         $articleSubscribeField = $this->blogSubscription->getFields()['articleSubscribe'];
 
