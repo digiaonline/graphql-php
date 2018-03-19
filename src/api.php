@@ -25,9 +25,9 @@ use Digia\GraphQL\Validation\ValidatorInterface;
  * @return SchemaInterface
  * @throws InvariantException
  */
-function buildSchema(string $source, array $options = []): SchemaInterface
+function buildSchema(string $source, array $resolverMaps = [], array $options = []): SchemaInterface
 {
-    return GraphQL::get(SchemaBuilderInterface::class)->build(parse($source, $options));
+    return GraphQL::get(SchemaBuilderInterface::class)->build(parse($source, $options), $resolverMaps, $options);
 }
 
 /**
