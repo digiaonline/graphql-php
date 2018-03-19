@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Util\ArrayToJsonTrait;
 use Digia\GraphQL\Util\SerializationInterface;
 
@@ -65,7 +66,9 @@ class ExecutionResult implements SerializationInterface
         $array = ['data' => $this->data];
 
         if (!empty($this->errors)) {
-            $array['errors'] = $this->errors;
+            $array['errors'] = array_map(function (GraphQLException $error) {
+                return $error->toArray();
+            }, $this->errors);
         }
 
         return $array;

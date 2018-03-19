@@ -13,6 +13,7 @@ interface Character {
     name: String
     friends: [Character]
     appearsIn: [Episode]
+    secretBackstory: String
 }
 
 type Human implements Character {
@@ -21,6 +22,7 @@ type Human implements Character {
     friends: [Character]
     appearsIn: [Episode]
     homePlanet: String
+    secretBackstory: String
 }
 
 type Droid implements Character {
@@ -28,6 +30,7 @@ type Droid implements Character {
     name: String
     friends: [Character]
     appearsIn: [Episode]
+    secretBackstory: String
     primaryFunction: String
 }
 
