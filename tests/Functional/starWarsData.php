@@ -9,7 +9,7 @@ function luke()
         'id'         => '1000',
         'name'       => 'Luke Skywalker',
         'friends'    => ['1002', '1003', '2000', '2001'],
-        'appearsIn'  => [4, 5, 6],
+        'appearsIn'  => ['NEWHOPE', 'EMPIRE', 'JEDI'],
         'homePlanet' => 'Tatooine',
     ];
 }
@@ -21,7 +21,7 @@ function vader()
         'id'         => '1001',
         'name'       => 'Darth Vader',
         'friends'    => ['1004'],
-        'appearsIn'  => [4, 5, 6],
+        'appearsIn'  => ['NEWHOPE', 'EMPIRE', 'JEDI'],
         'homePlanet' => 'Tatooine',
     ];
 }
@@ -33,7 +33,7 @@ function han()
         'id'        => '1002',
         'name'      => 'Han Solo',
         'friends'   => ['1000', '1003', '2001'],
-        'appearsIn' => [4, 5, 6],
+        'appearsIn' => ['NEWHOPE', 'EMPIRE', 'JEDI'],
     ];
 }
 
@@ -44,7 +44,7 @@ function leia()
         'id'         => '1003',
         'name'       => 'Leia Organa',
         'friends'    => ['1000', '1002', '2000', '2001'],
-        'appearsIn'  => [4, 5, 6],
+        'appearsIn'  => ['NEWHOPE', 'EMPIRE', 'JEDI'],
         'homePlanet' => 'Alderaan',
     ];
 }
@@ -56,7 +56,7 @@ function tarkin()
         'id'        => '1004',
         'name'      => 'Wilhuff Tarkin',
         'friends'   => ['1001'],
-        'appearsIn' => [4],
+        'appearsIn' => ['NEWHOPE'],
     ];
 }
 
@@ -117,7 +117,7 @@ function getFriends($character)
 
 function getHero($episode)
 {
-    if ($episode === 5) {
+    if ($episode === 'EMPIRE') {
         return luke();
     }
 

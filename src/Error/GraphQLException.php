@@ -278,6 +278,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
         return [
             'message'   => $this->message,
             'locations' => $this->getLocationsAsArray(),
+            'path'      => $this->path,
         ];
     }
 

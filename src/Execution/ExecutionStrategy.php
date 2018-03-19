@@ -748,7 +748,6 @@ abstract class ExecutionStrategy
                     if (isset($value['type']) && $value['type'] === $type->getName()) {
                         return $type;
                     }
-                    throw new ExecutionException('Could not resolve type for array value.');
                 }
             }
         }
