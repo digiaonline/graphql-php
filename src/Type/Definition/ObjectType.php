@@ -6,47 +6,47 @@ use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
-use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
 use React\Promise\PromiseInterface;
 
 /**
  * Object Type Definition
+ *
  * Almost all of the GraphQL types you define will be object types. Object types
  * have a name, but most importantly describe their fields.
+ *
  * Example:
- *     const AddressType = new GraphQLObjectType({
- *       name: 'Address',
- *       fields: {
- *         street: { type: GraphQLString },
- *         number: { type: GraphQLInt },
- *         formatted: {
- *           type: GraphQLString,
- *           resolve(obj) {
- *             return obj.number + ' ' + obj.street
+ *
+ *     $AddressType = GraphQLObjectType([
+ *       'name'   => 'Address',
+ *       'fields' => [
+ *         'street'    => ['type' => GraphQLString()],
+ *         'number'    => ['type' => GraphQLInt()],
+ *         'formatted' => [
+ *           'type'    => GraphQLString(),
+ *           'resolve' => function ($obj) {
+ *             return $obj->number . ' ' . $obj->street
  *           }
- *         }
- *       }
- *     });
+ *         ]
+ *       ]
+ *     ]);
+ *
  * When two types need to refer to each other, or a type needs to refer to
  * itself in a field, you can use a function expression (aka a closure or a
  * thunk) to supply the fields lazily.
- * Example:
- *     const PersonType = new GraphQLObjectType({
- *       name: 'Person',
- *       fields: () => ({
- *         name: { type: GraphQLString },
- *         bestFriend: { type: PersonType },
- *       })
- *     });
- */
-
-/**
- * Class ObjectType
  *
- * @package Digia\GraphQL\Type\Definition
- * @property ObjectTypeDefinitionNode $astNode
+ * Example:
+ *
+ *     $PersonType = GraphQLObjectType([
+ *       'name' => 'Person',
+ *       'fields' => function () {
+ *         return [
+ *           'name'       => ['type' => GraphQLString()],
+ *           'bestFriend' => ['type' => $PersonType],
+ *         ];
+ *       }
+ *     ]);
  */
 class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterface, CompositeTypeInterface,
     OutputTypeInterface, NodeAwareInterface
@@ -61,37 +61,29 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
     /**
      * @var callable
      */
-    private $isTypeOfFunction;
+    protected $isTypeOfFunction;
 
     /**
      * @var array|callable
      */
-    private $_interfacesThunk;
+    protected $interfacesOrThunk;
 
     /**
-     * @var InterfaceType[]
+     * @var InterfaceType[]|null
      */
-    private $_interfaces = [];
-
-    /**
-     * @var bool
-     */
-    private $_isInterfacesDefined = false;
+    protected $interfaces;
 
     /**
      * @inheritdoc
      */
     protected function afterConfig(): void
     {
-        invariant(
-            $this->getName() !== null,
-            'Must provide name.'
-        );
+        invariant(null !== $this->getName(), 'Must provide name.');
 
         if ($this->getIsTypeOf() !== null) {
             invariant(
                 \is_callable($this->getIsTypeOf()),
-                sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
+                \sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
             );
         }
     }
@@ -104,7 +96,7 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
      */
     public function isTypeOf($value, $context, $info)
     {
-        return null !== $this->isTypeOfFunction
+        return isset($this->isTypeOfFunction)
             ? \call_user_func($this->isTypeOfFunction, $value, $context, $info)
             : false;
     }
@@ -115,9 +107,23 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
      */
     public function getInterfaces(): array
     {
-        $this->defineInterfacesIfNecessary();
+        if (!isset($this->interfaces)) {
+            $this->interfaces = $this->buildInterfaces($this->interfacesOrThunk ?? []);
+        }
+        return $this->interfaces;
+    }
 
-        return $this->_interfaces;
+    /**
+     * Objects are created using the `ConfigAwareTrait` constructor which will automatically
+     * call this method when setting arguments from `$config['interfaces']`.
+     *
+     * @param array|callable $interfacesOrThunk
+     * @return $this
+     */
+    protected function setInterfaces($interfacesOrThunk)
+    {
+        $this->interfacesOrThunk = $interfacesOrThunk;
+        return $this;
     }
 
     /**
@@ -129,52 +135,27 @@ class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterfa
     }
 
     /**
-     * @param array|callable $interfacesThunk
-     * @return $this
-     */
-    protected function setInterfaces($interfacesThunk)
-    {
-        $this->_interfacesThunk = $interfacesThunk;
-
-        return $this;
-    }
-
-    /**
      * @param null|callable $isTypeOfFunction
      * @return $this
      */
     protected function setIsTypeOf(?callable $isTypeOfFunction)
     {
         $this->isTypeOfFunction = $isTypeOfFunction;
-
         return $this;
     }
 
     /**
-     * @throws InvariantException
-     */
-    protected function defineInterfacesIfNecessary()
-    {
-        // Interfaces are built lazily to avoid concurrency issues.
-        if (!$this->_isInterfacesDefined) {
-            $this->_interfaces = array_merge($this->defineInterfaces($this->_interfacesThunk), $this->_interfaces);
-
-            $this->_isInterfacesDefined = true;
-        }
-    }
-
-    /**
-     * @param array|callable $interfacesThunk
+     * @param array|callable $interfacesOrThunk
      * @return array
      * @throws InvariantException
      */
-    protected function defineInterfaces($interfacesThunk): array
+    protected function buildInterfaces($interfacesOrThunk): array
     {
-        $interfaces = resolveThunk($interfacesThunk) ?: [];
+        $interfaces = resolveThunk($interfacesOrThunk);
 
         invariant(
-            is_array($interfaces),
-            sprintf('%s interfaces must be an array or a function which returns an array.', $this->getName())
+            \is_array($interfaces),
+            \sprintf('%s interfaces must be an array or a function which returns an array.', $this->getName())
         );
 
         return $interfaces;

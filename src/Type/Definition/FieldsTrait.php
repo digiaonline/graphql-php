@@ -10,68 +10,54 @@ use function Digia\GraphQL\Util\toString;
 
 trait FieldsTrait
 {
-
     /**
      * @var array|callable
      */
-    private $_fieldsThunk;
+    protected $fieldsOrThunk;
 
     /**
      * @var Field[]
      */
-    private $_fieldMap = [];
-
-    /**
-     * @var bool
-     */
-    private $_isFieldMapDefined = false;
+    protected $fieldMap;
 
     /**
      * @return Field[]
+     * @throws InvariantException
      */
     public function getFields(): array
     {
-        $this->defineFieldMapIfNecessary();
-
-        return $this->_fieldMap;
-    }
-
-    /**
-     *
-     */
-    protected function defineFieldMapIfNecessary(): void
-    {
         // Fields are built lazily to avoid concurrency issues.
-        if (!$this->_isFieldMapDefined) {
-            $this->_fieldMap = array_merge($this->defineFieldMap($this->_fieldsThunk), $this->_fieldMap);
-
-            $this->_isFieldMapDefined = true;
+        if (!isset($this->fieldMap)) {
+            $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk ?? []);
         }
+        return $this->fieldMap;
     }
 
     /**
-     * @param array|callable $fieldsThunk
+     * Fields are created using the `ConfigAwareTrait` constructor which will automatically
+     * call this method when setting arguments from `$config['fields']`.
+     *
+     * @param array|callable $fieldsOrThunk
      * @return $this
      */
-    protected function setFields($fieldsThunk)
+    protected function setFields($fieldsOrThunk)
     {
-        $this->_fieldsThunk = $fieldsThunk;
-
+        $this->fieldsOrThunk = $fieldsOrThunk;
         return $this;
     }
 
     /**
-     * @param mixed $fieldsThunk
+     * @param mixed $fieldsOrThunk
      * @return array
      * @throws InvariantException
      */
-    protected function defineFieldMap($fieldsThunk): array
+    protected function buildFieldMap($fieldsOrThunk): array
     {
-        $fields = resolveThunk($fieldsThunk) ?: [];
+        $fields = resolveThunk($fieldsOrThunk);
 
         invariant(
             isAssocArray($fields),
-            sprintf(
+            \sprintf(
                 '%s fields must be an associative array with field names as key or a callable which returns such an array.',
                 $this->getName()
             )
@@ -81,13 +67,13 @@ trait FieldsTrait
 
         foreach ($fields as $fieldName => $fieldConfig) {
             invariant(
-                is_array($fieldConfig),
-                sprintf('%s.%s field config must be an array', $this->getName(), $fieldName)
+                \is_array($fieldConfig),
+                \sprintf('%s.%s field config must be an array', $this->getName(), $fieldName)
             );
 
             invariant(
                 !isset($fieldConfig['isDeprecated']),
-                sprintf(
+                \sprintf(
                     '%s.%s should provide "deprecationReason" instead of "isDeprecated".',
                     $this->getName(),
                     $fieldName
@@ -96,8 +82,8 @@ trait FieldsTrait
 
             if (isset($fieldConfig['resolve'])) {
                 invariant(
-                    $this->isValidResolver($fieldConfig['resolve']),
-                    sprintf(
+                    null === $fieldConfig['resolve'] || \is_callable($fieldConfig['resolve']),
+                    \sprintf(
                         '%s.%s field resolver must be a function if provided, but got: %s',
                         $this->getName(),
                         $fieldName,
@@ -106,18 +92,10 @@ trait FieldsTrait
                 );
             }
 
-            $fieldMap[$fieldName] = new Field(array_merge($fieldConfig, ['name' => $fieldName]));
+            $fieldConfig['name'] = $fieldName;
+            $fieldMap[$fieldName] = new Field($fieldConfig);
         }
 
         return $fieldMap;
-    }
-
-    /**
-     * @param $resolver
-     * @return bool
-     */
-    protected function isValidResolver($resolver): bool
-    {
-        return $resolver === null || \is_callable($resolver);
     }
 }

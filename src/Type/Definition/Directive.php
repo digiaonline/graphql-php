@@ -16,7 +16,7 @@ class Directive extends ConfigObject implements DirectiveInterface, NodeAwareInt
     /**
      * @var string[]
      */
-    private $locations;
+    protected $locations;
 
     /**
      * @return string[]
@@ -27,26 +27,12 @@ class Directive extends ConfigObject implements DirectiveInterface, NodeAwareInt
     }
 
     /**
-     * @param string $location
-     * @return $this
-     */
-    protected function addLocation(string $location)
-    {
-        $this->locations[] = $location;
-
-        return $this;
-    }
-
-    /**
      * @param string[] $locations
      * @return $this
      */
     protected function setLocations(array $locations)
     {
-        foreach ($locations as $location) {
-            $this->addLocation($location);
-        }
-
+        $this->locations = $locations;
         return $this;
     }
 }

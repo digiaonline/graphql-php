@@ -4,11 +4,10 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait TypeTrait
 {
-
     /**
      * @var TypeInterface
      */
-    private $type;
+    protected $type;
 
     /**
      * @return TypeInterface
@@ -25,7 +24,6 @@ trait TypeTrait
     protected function setType(TypeInterface $type)
     {
         $this->type = $type;
-
         return $this;
     }
 }

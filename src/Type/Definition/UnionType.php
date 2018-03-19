@@ -12,29 +12,25 @@ use function Digia\GraphQL\Util\invariant;
 
 /**
  * Union Type Definition
+ *
  * When a field can return one of a heterogeneous set of types, a Union type
  * is used to describe what types are possible as well as providing a function
  * to determine which type is actually used when the field is resolved.
+ *
  * Example:
- *     const PetType = new GraphQLUnionType({
- *       name: 'Pet',
- *       types: [ DogType, CatType ],
- *       resolveType(value) {
- *         if (value instanceof Dog) {
- *           return DogType;
+ *
+ *     $PetType = GraphQLUnionType([
+ *       'name' => 'Pet',
+ *       'types' => [$DogType, $CatType],
+ *       'resolveType' => function ($value) {
+ *         if ($value instanceof Dog) {
+ *           return $DogType;
  *         }
- *         if (value instanceof Cat) {
- *           return CatType;
+ *         if ($value instanceof Cat) {
+ *           return $CatType;
  *         }
  *       }
- *     });
- */
-
-/**
- * Class UnionType
- *
- * @package Digia\GraphQL\Type\Definition
- * @property UnionTypeDefinitionNode $astNode
+ *     ]);
  */
 class UnionType extends ConfigObject implements AbstractTypeInterface, NamedTypeInterface, CompositeTypeInterface,
     OutputTypeInterface, NodeAwareInterface
@@ -47,24 +43,19 @@ class UnionType extends ConfigObject implements AbstractTypeInterface, NamedType
     /**
      * @var array|callable
      */
-    private $_typesThunk;
+    protected $typesOrThunk;
 
     /**
      * @var TypeInterface[]
      */
-    private $_typeMap = [];
-
-    /**
-     * @var bool
-     */
-    private $_isTypesDefines = false;
+    protected $typeMap;
 
     /**
      * @inheritdoc
      */
-    protected function beforeConfig(): void
+    protected function afterConfig(): void
     {
-        $this->setName(TypeNameEnum::UNION);
+        invariant(null !== $this->getName(), 'Must provide name.');
     }
 
     /**
@@ -73,52 +64,43 @@ class UnionType extends ConfigObject implements AbstractTypeInterface, NamedType
      */
     public function getTypes(): array
     {
-        $this->defineTypesIfNecessary();
-
-        return $this->_typeMap;
+        // Types are built lazily to avoid concurrency issues.
+        if (!isset($this->typeMap)) {
+            $this->typeMap = $this->buildTypeMap($this->typesOrThunk ?? []);
+        }
+        return $this->typeMap;
     }
 
     /**
-     * @param array|callable $typesThunk
+     * Unions are created using the `ConfigAwareTrait` constructor which will automatically
+     * call this method when setting arguments from `$config['types']`.
+     *
+     * @param array|callable $typesOrThunk
      * @return UnionType
      */
-    protected function setTypes($typesThunk): UnionType
+    protected function setTypes($typesOrThunk): UnionType
     {
-        $this->_typesThunk = $typesThunk;
-
+        $this->typesOrThunk = $typesOrThunk;
         return $this;
     }
 
     /**
-     * @throws InvariantException
-     */
-    protected function defineTypesIfNecessary()
-    {
-        // Types are built lazily to avoid concurrency issues.
-        if (!$this->_isTypesDefines) {
-            $this->_typeMap = array_merge($this->defineTypes($this->_typesThunk), $this->_typeMap);
-
-            $this->_isTypesDefines = true;
-        }
-    }
-
-    /**
-     * @param array|callable $typesThunk
+     * @param array|callable $typesOrThunk
      * @return array
      * @throws InvariantException
      */
-    protected function defineTypes($typesThunk): array
+    protected function buildTypeMap($typesOrThunk): array
     {
-        $types = resolveThunk($typesThunk);
+        $typeMap = resolveThunk($typesOrThunk);
 
         invariant(
-            is_array($types),
-            sprintf(
+            \is_array($typeMap),
+            \sprintf(
                 'Must provide Array of types or a function which returns such an array for Union %s.',
                 $this->getName()
             )
         );
 
-        return $types;
+        return $typeMap;
     }
 }

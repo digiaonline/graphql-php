@@ -4,11 +4,10 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait NameTrait
 {
-
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @return string
@@ -25,12 +24,11 @@ trait NameTrait
     protected function setName(string $name)
     {
         $this->name = $name;
-
         return $this;
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function __toString(): string
     {

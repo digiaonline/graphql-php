@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Type\Definition;
 
 class TypeNameEnum
 {
-
     public const INT       = 'Int';
     public const FLOAT     = 'Float';
     public const STRING    = 'String';

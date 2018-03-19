@@ -4,11 +4,10 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait OfTypeTrait
 {
-
     /**
      * @var TypeInterface
      */
-    private $ofType;
+    protected $ofType;
 
     /**
      * @return mixed
@@ -25,7 +24,6 @@ trait OfTypeTrait
     protected function setOfType(TypeInterface $ofType)
     {
         $this->ofType = $ofType;
-
         return $this;
     }
 }

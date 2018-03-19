@@ -800,7 +800,7 @@ abstract class ExecutionStrategy
 
         if ($serializedResult === null) {
             throw new ExecutionException(
-                sprintf('Expected a value of type "%s" but received: %s', toString($returnType), toString($result))
+                sprintf('Expected a value of type "%s" but received: %s', (string)$returnType, toString($result))
             );
         }
 

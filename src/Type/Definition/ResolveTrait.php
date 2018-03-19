@@ -8,7 +8,7 @@ trait ResolveTrait
     /**
      * @var ?callable
      */
-    private $_resolveFunction;
+    protected $resolveFunction;
 
     /**
      * @param array ...$args
@@ -16,15 +16,9 @@ trait ResolveTrait
      */
     public function resolve(...$args)
     {
-        return $this->_resolveFunction !== null ? \call_user_func_array($this->_resolveFunction, $args) : null;
-    }
-
-    /**
-     * @return callable|null
-     */
-    public function getResolve(): ?callable
-    {
-        return $this->_resolveFunction;
+        return isset($this->resolveFunction)
+            ? \call_user_func_array($this->resolveFunction, $args)
+            : null;
     }
 
     /**
@@ -32,18 +26,27 @@ trait ResolveTrait
      */
     public function hasResolve()
     {
-        return $this->_resolveFunction !== null;
+        return null !== $this->resolveFunction;
     }
 
     /**
-     * Because of the use of ConfigTrait, setter name must match with attribute in $config array
+     * @return callable|null
+     */
+    public function getResolve(): ?callable
+    {
+        return $this->resolveFunction;
+    }
+
+    /**
+     * Classes that use the `ResolveTrait` are created using the `ConfigAwareTrait` constructor which will automatically
+     * call this method when setting arguments from `$config['resolve']`.
      *
      * @param callable|null $resolveFunction
      * @return $this
      */
     protected function setResolve(?callable $resolveFunction)
     {
-        $this->_resolveFunction = $resolveFunction;
+        $this->resolveFunction = $resolveFunction;
         return $this;
     }
 }

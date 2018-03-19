@@ -3,16 +3,9 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
-use Digia\GraphQL\Language\Node\EnumValueDefinitionNode;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 
-/**
- * Class EnumValue
- *
- * @package Digia\GraphQL\Type\Definition\Enum
- * @property EnumValueDefinitionNode $astNode
- */
 class EnumValue extends ConfigObject implements NodeAwareInterface
 {
     use NameTrait;
@@ -26,6 +19,7 @@ class EnumValue extends ConfigObject implements NodeAwareInterface
      */
     protected function afterConfig(): void
     {
+        // By default, enum values use their value as their name.
         if ($this->value === null) {
             $this->value = $this->getName();
         }

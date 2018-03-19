@@ -4,41 +4,38 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Type\Coercer\CoercerInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
 /**
  * Enum Type Definition
+ *
  * Some leaf values of requests and input values are Enums. GraphQL serializes
  * Enum values as strings, however internally Enums can be represented by any
  * kind of type, often integers.
+ *
  * Example:
- *     const RGBType = new GraphQLEnumType({
- *       name: 'RGB',
- *       values: {
- *         RED: { value: 0 },
- *         GREEN: { value: 1 },
- *         BLUE: { value: 2 }
- *       }
- *     });
+ *
+ *     $RGBType = new GraphQLEnumType([
+ *       'name'   => 'RGB',
+ *       'values' => [
+ *         'RED'   => ['value' => 0],
+ *         'GREEN' => ['value' => 1],
+ *         'BLUE'  => ['value' => 2]
+ *       ]
+ *     ]);
+ *
  * Note: If a value is not provided in a definition, the name of the enum value
  * will be used as its internal value.
  */
-
-/**
- * Class EnumType
- *
- * @package Digia\GraphQL\Type\Definition\Enum
- * @property EnumTypeDefinitionNode $astNode
- */
 class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface,
-    LeafTypeInterface, OutputTypeInterface, NodeAwareInterface
+    LeafTypeInterface, OutputTypeInterface, NodeAwareInterface, CoercerInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -47,24 +44,19 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     /**
      * @var array
      */
-    private $_valueMap = [];
+    protected $valueMap;
 
     /**
      * @var EnumValue[]
      */
-    private $_values = [];
-
-    /**
-     * @var bool
-     */
-    private $_isValuesDefined = false;
+    protected $values;
 
     /**
      * @inheritdoc
      */
-    protected function beforeConfig(): void
+    protected function afterConfig(): void
     {
-        $this->setName(TypeNameEnum::ENUM);
+        invariant(null !== $this->getName(), 'Must provide name.');
     }
 
     /**
@@ -74,7 +66,6 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
      */
     public function serialize($value)
     {
-        /** @var EnumValue $enumValue */
         $enumValue = $this->getValueByValue($value);
 
         if ($enumValue) {
@@ -92,7 +83,6 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
     public function parseValue($value)
     {
         if (\is_string($value)) {
-            /** @var EnumValue $enumValue */
             $enumValue = $this->getValueByName($value);
 
             if ($enumValue !== null) {
@@ -110,9 +100,7 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
      */
     public function parseLiteral(NodeInterface $node)
     {
-        if ($node->getKind() === NodeKindEnum::ENUM) {
-            /** @var EnumValue $enumValue */
-            /** @noinspection PhpUndefinedMethodInspection */
+        if ($node instanceof EnumValueNode) {
             $enumValue = $this->getValueByName($node->getValue());
 
             if ($enumValue !== null) {
@@ -139,9 +127,20 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
      */
     public function getValues(): array
     {
-        $this->defineEnumValuesIfNecessary();
+        if (!isset($this->values)) {
+            $this->values = $this->buildValues($this->valueMap ?? []);
+        }
+        return $this->values;
+    }
 
-        return $this->_values;
+    /**
+     * @param array $valueMap
+     * @return $this
+     */
+    protected function setValues(array $valueMap): EnumType
+    {
+        $this->valueMap = $valueMap;
+        return $this;
     }
 
     /**
@@ -178,33 +177,10 @@ class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface
 
     /**
      * @param array $valueMap
-     * @return $this
-     */
-    protected function setValues(array $valueMap): EnumType
-    {
-        $this->_valueMap = $valueMap;
-
-        return $this;
-    }
-
-    /**
-     * @throws InvariantException
-     */
-    protected function defineEnumValuesIfNecessary(): void
-    {
-        if (!$this->_isValuesDefined) {
-            $this->_values = \array_merge($this->defineEnumValues($this->_valueMap), $this->_values);
-
-            $this->_isValuesDefined = true;
-        }
-    }
-
-    /**
-     * @param array $valueMap
      * @return array
      * @throws InvariantException
      */
-    protected function defineEnumValues(array $valueMap): array
+    protected function buildValues(array $valueMap): array
     {
         invariant(
             isAssocArray($valueMap),

@@ -410,9 +410,9 @@ class DefinitionTest extends TestCase
     {
         $this->assertEquals(TypeNameEnum::INT, (string)GraphQLInt());
         $this->assertEquals('Article', (string)$this->blogArticle);
-        $this->assertEquals('Interface', (string)GraphQLInterfaceType());
-        $this->assertEquals('Union', (string)GraphQLUnionType());
-        $this->assertEquals('Enum', (string)GraphQLEnumType());
+        $this->assertEquals('Interface', (string)GraphQLInterfaceType(['name' => 'Interface']));
+        $this->assertEquals('Union', (string)GraphQLUnionType(['name' => 'Union']));
+        $this->assertEquals('Enum', (string)GraphQLEnumType(['name' => 'Enum']));
         $this->assertEquals(TypeNameEnum::INT, (string)GraphQLInt());
         $this->assertEquals('Int!', (string)GraphQLNonNull(GraphQLInt()));
         $this->assertEquals('[Int]!', (string)GraphQLNonNull(GraphQLList(GraphQLInt())));
@@ -438,10 +438,10 @@ class DefinitionTest extends TestCase
         return [
             [GraphQLInt(), true],
             [GraphQLObjectType(['name' => 'Object']), true],
-            [GraphQLInterfaceType(), true],
-            [GraphQLUnionType(), true],
-            [GraphQLEnumType(), true],
-            [GraphQLInputObjectType(), false],
+            [GraphQLInterfaceType(['name' => 'Interface']), true],
+            [GraphQLUnionType(['name' => 'Union']), true],
+            [GraphQLEnumType(['name' => 'Enum']), true],
+            [GraphQLInputObjectType(['name' => 'InputObjectType']), false],
         ];
     }
 
@@ -918,9 +918,6 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testRejectsAnUnionWithoutTypes()
     {
         $this->schemaWithField(
