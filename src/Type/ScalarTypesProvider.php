@@ -8,12 +8,12 @@ use Digia\GraphQL\Language\Node\FloatValueNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\StringValueNode;
+use Digia\GraphQL\Type\Coercer\BooleanCoercer;
+use Digia\GraphQL\Type\Coercer\FloatCoercer;
+use Digia\GraphQL\Type\Coercer\IntCoercer;
+use Digia\GraphQL\Type\Coercer\StringCoercer;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use function Digia\GraphQL\Util\coerceBoolean;
-use function Digia\GraphQL\Util\coerceFloat;
-use function Digia\GraphQL\Util\coerceInt;
-use function Digia\GraphQL\Util\coerceString;
 
 class ScalarTypesProvider extends AbstractServiceProvider
 {
@@ -33,17 +33,16 @@ class ScalarTypesProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(GraphQL::BOOLEAN, function () {
+        $this->container->add(GraphQL::BOOLEAN, function (BooleanCoercer $coercer) {
             return GraphQLScalarType([
-                'name'        => TypeNameEnum::BOOLEAN,
-                'description' => 'The `Boolean` scalar type represents `true` or `false`.',
-                'serialize'   => function ($value) {
-                    return coerceBoolean($value);
+                'name'         => TypeNameEnum::BOOLEAN,
+                'description'  => 'The `Boolean` scalar type represents `true` or `false`.',
+                'serialize'    => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
-                'parseValue'  => function ($value) {
-                    return coerceBoolean($value);
+                'parseValue'   => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
-
                 'parseLiteral' => function (NodeInterface $node) {
                     if ($node instanceof BooleanValueNode) {
                         return $node->getValue();
@@ -51,20 +50,21 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return null;
                 },
             ]);
-        }, true/* $shared */);
+        }, true/* $shared */)
+            ->withArgument(BooleanCoercer::class);
 
-        $this->container->add(GraphQL::FLOAT, function () {
+        $this->container->add(GraphQL::FLOAT, function (FloatCoercer $coercer) {
             return GraphQLScalarType([
                 'name'         => TypeNameEnum::FLOAT,
                 'description'  =>
                     'The `Float` scalar type represents signed double-precision fractional ' .
                     'values as specified by ' .
                     '[IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point).',
-                'serialize'    => function ($value) {
-                    return coerceFloat($value);
+                'serialize'    => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
-                'parseValue'   => function ($value) {
-                    return coerceFloat($value);
+                'parseValue'   => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
                 'parseLiteral' => function (NodeInterface $node) {
                     if ($node instanceof FloatValueNode || $node instanceof IntValueNode) {
@@ -73,19 +73,20 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return null;
                 },
             ]);
-        }, true/* $shared */);
+        }, true/* $shared */)
+            ->withArgument(FloatCoercer::class);
 
-        $this->container->add(GraphQL::INT, function () {
+        $this->container->add(GraphQL::INT, function (IntCoercer $coercer) {
             return GraphQLScalarType([
                 'name'         => TypeNameEnum::INT,
                 'description'  =>
                     'The `Int` scalar type represents non-fractional signed whole numeric ' .
                     'values. Int can represent values between -(2^31) and 2^31 - 1.',
-                'serialize'    => function ($value) {
-                    return coerceInt($value);
+                'serialize'    => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
-                'parseValue'   => function ($value) {
-                    return coerceInt($value);
+                'parseValue'   => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
                 'parseLiteral' => function (NodeInterface $node) {
                     if ($node instanceof IntValueNode) {
@@ -98,9 +99,10 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return null;
                 },
             ]);
-        }, true/* $shared */);
+        }, true/* $shared */)
+            ->withArgument(IntCoercer::class);
 
-        $this->container->add(GraphQL::ID, function () {
+        $this->container->add(GraphQL::ID, function (StringCoercer $coercer) {
             return GraphQLScalarType([
                 'name'         => TypeNameEnum::ID,
                 'description'  =>
@@ -109,11 +111,11 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     'response as a String; however, it is not intended to be human-readable. ' .
                     'When expected as an input type, any string (such as `"4"`) or integer ' .
                     '(such as `4`) input value will be accepted as an ID.',
-                'serialize'    => function ($value) {
-                    return coerceString($value);
+                'serialize'    => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
-                'parseValue'   => function ($value) {
-                    return coerceString($value);
+                'parseValue'   => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
                 'parseLiteral' => function (NodeInterface $node) {
                     if ($node instanceof StringValueNode || $node instanceof IntValueNode) {
@@ -122,20 +124,21 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return null;
                 },
             ]);
-        }, true/* $shared */);
+        }, true/* $shared */)
+            ->withArgument(StringCoercer::class);
 
-        $this->container->add(GraphQL::STRING, function () {
+        $this->container->add(GraphQL::STRING, function (StringCoercer $coercer) {
             return GraphQLScalarType([
                 'name'         => TypeNameEnum::STRING,
                 'description'  =>
                     'The `String` scalar type represents textual data, represented as UTF-8 ' .
                     'character sequences. The String type is most often used by GraphQL to ' .
                     'represent free-form human-readable text.',
-                'serialize'    => function ($value) {
-                    return coerceString($value);
+                'serialize'    => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
-                'parseValue'   => function ($value) {
-                    return coerceString($value);
+                'parseValue'   => function ($value) use ($coercer) {
+                    return $coercer->coerce($value);
                 },
                 'parseLiteral' => function (NodeInterface $node) {
                     if ($node instanceof StringValueNode) {
@@ -144,6 +147,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
                     return null;
                 },
             ]);
-        }, true/* $shared */);
+        }, true/* $shared */)
+            ->withArgument(StringCoercer::class);
     }
 }
