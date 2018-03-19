@@ -6,7 +6,6 @@ use Psr\SimpleCache\CacheInterface;
 
 class RuntimeCache implements CacheInterface
 {
-
     /**
      * @var array
      */
