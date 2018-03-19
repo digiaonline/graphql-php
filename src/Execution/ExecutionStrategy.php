@@ -23,6 +23,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Schema;
+use Digia\GraphQL\Util\ValueNodeCoercer;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
@@ -30,7 +31,6 @@ use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
 use function Digia\GraphQL\Util\toString;
 use function Digia\GraphQL\Util\typeFromAST;
-use Digia\GraphQL\Util\ValueNodeCoercer;
 
 /**
  * Class AbstractStrategy
@@ -80,9 +80,9 @@ abstract class ExecutionStrategy
         OperationDefinitionNode $operation,
         $rootValue
     ) {
-        $this->context        = $context;
-        $this->operation      = $operation;
-        $this->rootValue      = $rootValue;
+        $this->context   = $context;
+        $this->operation = $operation;
+        $this->rootValue = $rootValue;
         // TODO: Inject the ValuesResolver instance by using a builder for this class.
         $this->valuesResolver = new ValuesResolver(new ValueNodeCoercer());
     }
@@ -724,6 +724,7 @@ abstract class ExecutionStrategy
      * @param ResolveInfo           $info
      * @param AbstractTypeInterface $abstractType
      * @return TypeInterface|null
+     * @throws ExecutionException
      */
     private function defaultTypeResolver($value, $context, ResolveInfo $info, AbstractTypeInterface $abstractType)
     {
@@ -732,12 +733,22 @@ abstract class ExecutionStrategy
 
         foreach ($possibleTypes as $index => $type) {
             $isTypeOfResult = $type->isTypeOf($value, $context, $info);
-
             if (null !== $isTypeOfResult) {
                 if ($this->isPromise($isTypeOfResult)) {
                     $promisedIsTypeOfResults[$index] = $isTypeOfResult;
-                } elseif ($isTypeOfResult) {
+                    continue;
+                }
+
+                if ($isTypeOfResult === true) {
                     return $type;
+                }
+
+                if (\is_array($value)) {
+                    //@TODO Make `type` configurable
+                    if (isset($value['type']) && $value['type'] === $type->getName()) {
+                        return $type;
+                    }
+                    throw new ExecutionException('Could not resolve type for array value.');
                 }
             }
         }

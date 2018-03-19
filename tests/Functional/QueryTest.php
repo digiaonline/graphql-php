@@ -20,7 +20,6 @@ class QueryTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $result = graphql(starWarsSchema(), $query);
 
-        $this->markTestIncomplete('INCOMPLETE: We cannot yet resolve data for interface types.');
 
         $this->assertEquals([
             'data' => [
