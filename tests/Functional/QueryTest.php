@@ -433,8 +433,6 @@ class QueryTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $result = graphql(starWarsSchema(), $query);
 
-        $this->markTestIncomplete('MISSING FEATURE: Error location and path are not yet supported (#138)');
-
         $this->assertEquals([
             'data'   => [
                 'hero' => [
@@ -470,8 +468,6 @@ class QueryTest extends TestCase
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $result = graphql(starWarsSchema(), $query);
-
-        $this->markTestIncomplete('MISSING FEATURE: Error location and path are not yet supported (#138).');
 
         $this->assertEquals([
             'data'   => [
@@ -528,8 +524,6 @@ class QueryTest extends TestCase
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $result = graphql(starWarsSchema(), $query);
-
-        $this->markTestIncomplete('MISSING FEATURE: Error location and path are not yet supported (#138)');
 
         $this->assertEquals([
             'data'   => [
