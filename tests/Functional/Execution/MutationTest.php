@@ -18,6 +18,10 @@ use function Digia\GraphQL\Type\GraphQLString;
 class MutationTest extends TestCase
 {
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
     public function testSimpleMutation()
     {
         $schema = GraphQLSchema([

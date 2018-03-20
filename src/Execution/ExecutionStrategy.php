@@ -280,34 +280,42 @@ abstract class ExecutionStrategy
         $path,
         $fields
     ) {
-        //@TODO execute fields serially
-        $finalResults      = [];
-        $isContainsPromise = false;
 
-        foreach ($fields as $fieldName => $fieldNodes) {
+        $finalResults = [];
+
+        $promise = new \React\Promise\FulfilledPromise([]);
+
+        $resolve = function ($results, $fieldName, $path, $objectType, $rootValue, $fieldNodes) {
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
-
             try {
                 $result = $this->resolveField($objectType, $rootValue, $fieldNodes, $fieldPath);
             } catch (UndefinedException $ex) {
-                continue;
+                return null;
             }
 
-            $isContainsPromise = $isContainsPromise || $this->isPromise($result);
+            if ($this->isPromise($result)) {
+                /** @var ExtendedPromiseInterface $result */
+                return $result->then(function ($resolvedResult) use ($fieldName, $results) {
+                    $results[$fieldName] = $resolvedResult;
+                    return $results;
+                });
+            }
 
-            $finalResults[$fieldName] = $result;
-        }
+            $results[$fieldName] = $result;
 
-        if ($isContainsPromise) {
-            $keys    = array_keys($finalResults);
-            $promise = \React\Promise\all(array_values($finalResults));
-            $promise->then(function ($values) use ($keys, &$finalResults) {
-                foreach ($values as $i => $value) {
-                    $finalResults[$keys[$i]] = $value;
-                }
+            return $results;
+        };
+
+        foreach ($fields as $fieldName => $fieldNodes) {
+            $promise = $promise->then(function ($resolvedResults) use ($resolve, $fieldName, $path, $objectType, $rootValue, $fieldNodes) {
+                return $resolve($resolvedResults, $fieldName, $path, $objectType, $rootValue, $fieldNodes);
             });
         }
+
+        $promise->then(function ($resolvedResults) use (&$finalResults) {
+            $finalResults = $resolvedResults ?? [];
+        });
 
         return $finalResults;
     }
@@ -318,6 +326,7 @@ abstract class ExecutionStrategy
      * @param string     $fieldName
      * @return \Digia\GraphQL\Type\Definition\Field|null
      * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function getFieldDefinition(
         Schema $schema,
