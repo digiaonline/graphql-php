@@ -266,4 +266,82 @@ class ListTest extends TestCase
             ]
         );
     }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testArrayPromiseContainsValues()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            [
+                \React\Promise\resolve(1),
+                \React\Promise\resolve(2)
+            ],
+            [
+                'data' => [
+                    'nest' => [
+                        'test' => [1, 2]
+                    ]
+                ]
+            ]
+        );
+    }
+
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testArrayPromiseContainsNull()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            [
+                \React\Promise\resolve(1),
+                \React\Promise\resolve(null),
+                \React\Promise\resolve(2)
+            ],
+            [
+                'data' => [
+                    'nest' => [
+                        'test' => [1, null, 2]
+                    ]
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testArrayPromiseContainsReject()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            [
+                \React\Promise\resolve(1),
+                \React\Promise\reject(new \Exception('Bad')),
+                \React\Promise\resolve(2)
+            ],
+            [
+                'data'   => [
+                    'nest' => [
+                        'test' => [1, null, 2]
+                    ]
+                ],
+                'errors' => [
+                    [
+                        'message'   => 'Bad',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 10
+                            ]
+                        ],
+                        'path'      => ['nest', 'test', 1]
+                    ]
+                ]
+            ]
+        );
+    }
 }
