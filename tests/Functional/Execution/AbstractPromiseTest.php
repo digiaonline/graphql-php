@@ -490,10 +490,16 @@ class AbstractPromiseTest extends TestCase
                 null
             ]
         ], [
-            new ExecutionException('Runtime Object type "Human" is not a possible type for "Pet".'),
+            new ExecutionException(
+                'Runtime Object type "Human" is not a possible type for "Pet".',
+                null,
+                null,
+                null,
+                ['pets', 2]
+            ),
         ]);
 
-        $this->assertEquals($expected, $result);
+        $this->assertArraySubset($expected->toArray(), $result->toArray());
     }
 
     /**

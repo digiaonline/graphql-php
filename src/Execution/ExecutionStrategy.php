@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\UndefinedException;
 use Digia\GraphQL\Execution\Resolver\ResolveInfo;
@@ -504,6 +505,9 @@ abstract class ExecutionStrategy
             }
 
             return $completed;
+        } catch (ExecutionException $ex) {
+            $this->context->addError($ex);
+            return null;
         } catch (\Exception $ex) {
             $this->context->addError(new ExecutionException($ex->getMessage()));
             return null;
@@ -536,8 +540,7 @@ abstract class ExecutionStrategy
 
             return $completed;
         } catch (\Exception $ex) {
-            //@TODO throw located error
-            throw $ex;
+            throw $this->buildLocatedError($ex, $fieldNodes, $path);
         } catch (\Throwable $ex) {
             //@TODO throw located error
             throw $ex;
@@ -972,5 +975,23 @@ abstract class ExecutionStrategy
     protected function isPromise($value): bool
     {
         return $value instanceof ExtendedPromiseInterface;
+    }
+
+    /**
+     * @param \Exception   $originalException
+     * @param array        $nodes
+     * @param string|array $path
+     * @return GraphQLException
+     */
+    protected function buildLocatedError(\Exception $originalException, array $nodes, $path): ExecutionException
+    {
+        return new ExecutionException(
+            $originalException->getMessage(),
+            $originalException instanceof GraphQLException ? $originalException->getNodes() : $nodes,
+            $originalException instanceof GraphQLException ? $originalException->getSource() : null,
+            $originalException instanceof GraphQLException ? $originalException->getPositions() : null,
+            $path,
+            $originalException
+        );
     }
 }

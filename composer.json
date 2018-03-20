@@ -21,8 +21,7 @@
     },
     "autoload": {
         "files": [
-            "./src/Error/formatError.php",
-            "./src/Error/printError.php",
+            "./src/Error/helpers.php",
             "./src/Language/blockStringValue.php",
             "./src/Language/helpers.php",
             "./src/Type/definition.php",
