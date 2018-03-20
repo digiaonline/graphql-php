@@ -307,7 +307,7 @@ class DefinitionTest extends TestCase
         $enumValue = $enumWithDeprecatedValue->getValues()[0];
 
         $this->assertEquals('foo', $enumValue->getName());
-        $this->assertTrue($enumValue->isDeprecated());
+        $this->assertTrue($enumValue->getIsDeprecated());
         $this->assertEquals('Just because', $enumValue->getDeprecationReason());
         $this->assertEquals('foo', $enumValue->getValue());
     }
@@ -330,7 +330,7 @@ class DefinitionTest extends TestCase
 
         $this->assertEquals(GraphQLString(), $field->getType());
         $this->assertEquals('A terrible reason', $field->getDeprecationReason());
-        $this->assertTrue($field->isDeprecated());
+        $this->assertTrue($field->getIsDeprecated());
         $this->assertEquals('bar', $field->getName());
         $this->assertEmpty($field->getArguments());
     }

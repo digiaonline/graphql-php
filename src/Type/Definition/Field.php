@@ -6,7 +6,7 @@ use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 
-class Field extends ConfigObject implements NodeAwareInterface
+class Field extends ConfigObject implements NodeAwareInterface, ArgumentsAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

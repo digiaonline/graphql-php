@@ -7,6 +7,7 @@ use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\ArgumentsAwareInterface;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
@@ -61,7 +62,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                         'queryType'        => [
                             'description' => 'The type that query operations will be rooted at.',
                             'type'        => GraphQLNonNull(__Type()),
-                            'resolve'     => function (SchemaInterface $schema): ObjectType {
+                            'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
                                 return $schema->getQueryType();
                             },
                         ],
@@ -70,7 +71,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                                 'If this server supports mutation, the type that ' .
                                 'mutation operations will be rooted at.',
                             'type'        => __Type(),
-                            'resolve'     => function (SchemaInterface $schema): ObjectType {
+                            'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
                                 return $schema->getMutationType();
                             },
                         ],
@@ -79,7 +80,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                                 'If this server support subscription, the type that ' .
                                 'subscription operations will be rooted at.',
                             'type'        => __Type(),
-                            'resolve'     => function (SchemaInterface $schema): ObjectType {
+                            'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
                                 return $schema->getSubscriptionType();
                             },
                         ],
@@ -252,7 +253,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
 
                                     if (!$includeDeprecated) {
                                         $fields = array_filter($fields, function (Field $field) {
-                                            return !$field->isDeprecated();
+                                            return !$field->getIsDeprecated();
                                         });
                                     }
 
@@ -292,7 +293,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
 
                                     if (!$includeDeprecated) {
                                         $values = array_filter($values, function (Field $field) {
-                                            return !$field->isDeprecated();
+                                            return !$field->getIsDeprecated();
                                         });
                                     }
 
@@ -327,8 +328,8 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                         'description'       => ['type' => GraphQLString()],
                         'args'              => [
                             'type'    => GraphQLNonNull(GraphQLList(GraphQLNonNull(__InputValue()))),
-                            'resolve' => function ($directive): array {
-                                return $directive->getArguments() ?: [];
+                            'resolve' => function (ArgumentsAwareInterface $directive): array {
+                                return $directive->getArguments() ?? [];
                             },
                         ],
                         'type'              => ['type' => GraphQLNonNull(__Type())],
