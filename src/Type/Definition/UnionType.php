@@ -2,11 +2,11 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Config\ConfigAwareInterface;
+use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
-use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
 
@@ -32,9 +32,10 @@ use function Digia\GraphQL\Util\invariant;
  *       }
  *     ]);
  */
-class UnionType extends ConfigObject implements AbstractTypeInterface, NamedTypeInterface, CompositeTypeInterface,
-    OutputTypeInterface, NodeAwareInterface
+class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
+    ConfigAwareInterface, NodeAwareInterface
 {
+    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use ResolveTypeTrait;

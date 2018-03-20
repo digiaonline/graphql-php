@@ -2,7 +2,8 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Config\ConfigAwareInterface;
+use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
@@ -22,23 +23,28 @@ use function Digia\GraphQL\Util\invariant;
 
 /**
  * Schema Definition
+ *
  * A Schema is created by supplying the root types of each type of operation,
  * query and mutation (optional). A schema definition is then supplied to the
  * validator and executor.
+ *
  * Example:
- *     const MyAppSchema = new GraphQLSchema({
- *       query: MyAppQueryRootType,
- *       mutation: MyAppMutationRootType,
- *     })
+ *
+ *     $MyAppSchema = GraphQLSchema([
+ *       'query'    => $MyAppQueryRootType,
+ *       'mutation' => $MyAppMutationRootType,
+ *     ])
+ *
  * Note: If an array of `directives` are provided to GraphQLSchema, that will be
  * the exact list of directives represented and allowed. If `directives` is not
  * provided then a default set of the specified directives (e.g. @include and
  * @skip) will be used. If you wish to provide *additional* directives to these
  * specified directives, you must explicitly declare them. Example:
- *     const MyAppSchema = new GraphQLSchema({
+ *
+ *     $MyAppSchema = GraphQLSchema([
  *       ...
- *       directives: specifiedDirectives.concat([ myCustomDirective ]),
- *     })
+ *       'directives' => \array_merge(specifiedDirectives(), [$myCustomDirective]),
+ *     ])
  */
 
 /**
@@ -47,9 +53,9 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type
  * @property SchemaDefinitionNode $astNode
  */
-class Schema extends ConfigObject implements SchemaInterface
+class Schema implements SchemaInterface, ConfigAwareInterface
 {
-
+    use ConfigAwareTrait;
     use NodeTrait;
 
     /**

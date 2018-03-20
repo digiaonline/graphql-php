@@ -2,13 +2,14 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Config\ConfigAwareInterface;
+use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
+use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
-use React\Promise\PromiseInterface;
 
 /**
  * Object Type Definition
@@ -48,9 +49,10 @@ use React\Promise\PromiseInterface;
  *       }
  *     ]);
  */
-class ObjectType extends ConfigObject implements TypeInterface, NamedTypeInterface, CompositeTypeInterface,
-    OutputTypeInterface, NodeAwareInterface
+class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
+    ConfigAwareInterface, NodeAwareInterface
 {
+    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use FieldsTrait;

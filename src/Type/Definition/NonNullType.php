@@ -21,14 +21,6 @@ class NonNullType implements TypeInterface, WrappingTypeInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function __toString(): string
-    {
-        return (string)$this->getOfType() . '!';
-    }
-
-    /**
      * @param TypeInterface $ofType
      * @return $this
      * @throws InvalidTypeException
@@ -42,5 +34,13 @@ class NonNullType implements TypeInterface, WrappingTypeInterface
         $this->ofType = $ofType;
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString(): string
+    {
+        return (string)$this->getOfType() . '!';
     }
 }
