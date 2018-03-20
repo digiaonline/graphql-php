@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Execution;
 
-use Digia\GraphQL\Execution\Resolver\ResolveInfo;
+use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;

@@ -1,8 +1,7 @@
 <?php
 
-namespace Digia\GraphQL\Execution\Resolver;
+namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Execution\ResponsePath;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Type\Definition\ObjectType;
@@ -133,9 +132,9 @@ class ResolveInfo
     }
 
     /**
-     * @return ResponsePath
+     * @return array
      */
-    public function getPath(): ResponsePath
+    public function getPath(): ?array
     {
         return $this->path;
     }
