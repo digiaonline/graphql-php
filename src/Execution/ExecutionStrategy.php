@@ -280,21 +280,42 @@ abstract class ExecutionStrategy
         $path,
         $fields
     ) {
-        //@TODO execute fields serially
+
         $finalResults = [];
 
-        foreach ($fields as $fieldName => $fieldNodes) {
+        $promise = new \React\Promise\FulfilledPromise([]);
+
+        $resolve = function ($results, $fieldName, $path, $objectType, $rootValue, $fieldNodes) {
             $fieldPath   = $path;
             $fieldPath[] = $fieldName;
-
             try {
                 $result = $this->resolveField($objectType, $rootValue, $fieldNodes, $fieldPath);
             } catch (UndefinedException $ex) {
-                continue;
+                return null;
             }
 
-            $finalResults[$fieldName] = $result;
+            if ($this->isPromise($result)) {
+                /** @var ExtendedPromiseInterface $result */
+                return $result->then(function ($resolvedResult) use ($fieldName, $results) {
+                    $results[$fieldName] = $resolvedResult;
+                    return $results;
+                });
+            }
+
+            $results[$fieldName] = $result;
+
+            return $results;
+        };
+
+        foreach ($fields as $fieldName => $fieldNodes) {
+            $promise = $promise->then(function ($resolvedResults) use ($resolve, $fieldName, $path, $objectType, $rootValue, $fieldNodes) {
+                return $resolve($resolvedResults, $fieldName, $path, $objectType, $rootValue, $fieldNodes);
+            });
         }
+
+        $promise->then(function ($resolvedResults) use (&$finalResults) {
+            $finalResults = $resolvedResults ?? [];
+        });
 
         return $finalResults;
     }
@@ -305,6 +326,7 @@ abstract class ExecutionStrategy
      * @param string     $fieldName
      * @return \Digia\GraphQL\Type\Definition\Field|null
      * @throws InvalidTypeException
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function getFieldDefinition(
         Schema $schema,
