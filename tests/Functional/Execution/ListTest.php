@@ -181,4 +181,59 @@ class ListTest extends TestCase
             ]
         );
     }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testPromiseContainsValues()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            \React\Promise\resolve([1, 2]),
+            [
+                'data'   => [
+                    'nest' => [
+                        'test' => [1, 2]
+                    ]
+                ]
+            ]
+        );
+    }
+
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testPromiseContainsNull()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            \React\Promise\resolve([1, null, 2]),
+            [
+                'data'   => [
+                    'nest' => [
+                        'test' => [1, null, 2]
+                    ]
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testPromiseReturnsNull()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            \React\Promise\resolve(null),
+            [
+                'data'   => [
+                    'nest' => [
+                        'test' => null
+                    ]
+                ]
+            ]
+        );
+    }
 }
