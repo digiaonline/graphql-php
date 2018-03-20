@@ -504,8 +504,8 @@ abstract class ExecutionStrategy
             if ($this->isPromise($completed)) {
                 $context = $this->context;
                 /** @var ExtendedPromiseInterface $completed */
-                return $completed->then(null, function ($error) use ($context) {
-                    $context->addError($error);
+                return $completed->then(null, function ($error) use ($context, $fieldNodes, $path) {
+                    $context->addError($this->buildLocatedError($error, $fieldNodes, $path));
                     return new \React\Promise\FulfilledPromise(null);
                 });
             }

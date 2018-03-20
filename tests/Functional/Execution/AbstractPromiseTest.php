@@ -180,17 +180,28 @@ class AbstractPromiseTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $result = execute($schema, parse($source));
 
-        $expected = new ExecutionResult([
-            'pets' => [
-                null,
-                null
+        $expected = [
+            'data'   => [
+                'pets' => [
+                    null,
+                    null
+                ]
+            ],
+            'errors' => [
+                [
+                    'message'   => 'We are testing this error',
+                    'locations' => null,
+                    'path'      => ['pets', 0]
+                ],
+                [
+                    'message'   => 'We are testing this error',
+                    'locations' => null,
+                    'path'      => ['pets', 1]
+                ]
             ]
-        ], [
-            new ExecutionException('We are testing this error'),
-            new ExecutionException('We are testing this error')
-        ]);
+        ];
 
-        $this->assertEquals($expected, $result);
+        $this->assertEquals($expected, $result->toArray());
     }
 
     /**
@@ -365,23 +376,30 @@ class AbstractPromiseTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $result = execute($schema, parse($source));
 
-        $expected = new ExecutionResult([
-            'pets' => [
+        $expected = [
+            'data'   => [
+                'pets' => [
+                    [
+                        'name'  => 'Odie',
+                        'woofs' => true,
+                    ],
+                    [
+                        'name'  => 'Garfield',
+                        'meows' => false,
+                    ],
+                    null
+                ]
+            ],
+            'errors' => [
                 [
-                    'name'  => 'Odie',
-                    'woofs' => true,
+                    'message'   => 'Runtime Object type "Human" is not a possible type for "Pet".',
+                    'locations' => null,
+                    'path'      => ['pets', 2]
                 ],
-                [
-                    'name'  => 'Garfield',
-                    'meows' => false,
-                ],
-                null
             ]
-        ], [
-            new ExecutionException('Runtime Object type "Human" is not a possible type for "Pet".'),
-        ]);
+        ];
 
-        $this->assertEquals($expected, $result);
+        $this->assertEquals($expected, $result->toArray());
     }
 
     /**
@@ -477,29 +495,30 @@ class AbstractPromiseTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $result = execute($schema, parse($source));
 
-        $expected = new ExecutionResult([
-            'pets' => [
+        $expected = [
+            'data'   => [
+                'pets' => [
+                    [
+                        'name'  => 'Odie',
+                        'woofs' => true,
+                    ],
+                    [
+                        'name'  => 'Garfield',
+                        'meows' => false,
+                    ],
+                    null
+                ]
+            ],
+            'errors' => [
                 [
-                    'name'  => 'Odie',
-                    'woofs' => true,
+                    'message'   => 'Runtime Object type "Human" is not a possible type for "Pet".',
+                    'locations' => null,
+                    'path'      => ['pets', 2]
                 ],
-                [
-                    'name'  => 'Garfield',
-                    'meows' => false,
-                ],
-                null
             ]
-        ], [
-            new ExecutionException(
-                'Runtime Object type "Human" is not a possible type for "Pet".',
-                null,
-                null,
-                null,
-                ['pets', 2]
-            ),
-        ]);
+        ];
 
-        $this->assertArraySubset($expected->toArray(), $result->toArray());
+        $this->assertArraySubset($expected, $result->toArray());
     }
 
     /**
@@ -660,13 +679,27 @@ class AbstractPromiseTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $result = execute($schema, parse($source));
 
-        $expected = new ExecutionResult([
-            'pets' => [null, null]
-        ], [
-            new ExecutionException('We are testing this error'),
-            new ExecutionException('We are testing this error')
-        ]);
+        $expected = [
+            'data'   => [
+                'pets' => [
+                    null,
+                    null
+                ]
+            ],
+            'errors' => [
+                [
+                    'message'   => 'We are testing this error',
+                    'locations' => null,
+                    'path'      => ['pets', 0]
+                ],
+                [
+                    'message'   => 'We are testing this error',
+                    'locations' => null,
+                    'path'      => ['pets', 1]
+                ]
+            ]
+        ];
 
-        $this->assertEquals($expected, $result);
+        $this->assertEquals($expected, $result->toArray());
     }
 }

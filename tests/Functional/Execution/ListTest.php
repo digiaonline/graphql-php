@@ -136,7 +136,7 @@ class ListTest extends TestCase
         $this->makeTest(GraphQLList(GraphQLInt()),
             [1, 2],
             [
-                'data'   => [
+                'data' => [
                     'nest' => [
                         'test' => [1, 2]
                     ]
@@ -155,7 +155,7 @@ class ListTest extends TestCase
         $this->makeTest(GraphQLList(GraphQLInt()),
             [1, null, 2],
             [
-                'data'   => [
+                'data' => [
                     'nest' => [
                         'test' => [1, null, 2]
                     ]
@@ -173,7 +173,7 @@ class ListTest extends TestCase
         $this->makeTest(GraphQLList(GraphQLInt()),
             null,
             [
-                'data'   => [
+                'data' => [
                     'nest' => [
                         'test' => null
                     ]
@@ -191,7 +191,7 @@ class ListTest extends TestCase
         $this->makeTest(GraphQLList(GraphQLInt()),
             \React\Promise\resolve([1, 2]),
             [
-                'data'   => [
+                'data' => [
                     'nest' => [
                         'test' => [1, 2]
                     ]
@@ -210,7 +210,7 @@ class ListTest extends TestCase
         $this->makeTest(GraphQLList(GraphQLInt()),
             \React\Promise\resolve([1, null, 2]),
             [
-                'data'   => [
+                'data' => [
                     'nest' => [
                         'test' => [1, null, 2]
                     ]
@@ -228,9 +228,39 @@ class ListTest extends TestCase
         $this->makeTest(GraphQLList(GraphQLInt()),
             \React\Promise\resolve(null),
             [
+                'data' => [
+                    'nest' => [
+                        'test' => null
+                    ]
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testPromiseReject()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            \React\Promise\reject(new \Exception('Bad')),
+            [
                 'data'   => [
                     'nest' => [
                         'test' => null
+                    ]
+                ],
+                'errors' => [
+                    [
+                        'message'   => 'Bad',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 10
+                            ]
+                        ],
+                        'path'      => ['nest', 'test']
                     ]
                 ]
             ]
