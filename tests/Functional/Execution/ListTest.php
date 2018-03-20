@@ -6,6 +6,7 @@ use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
+use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
@@ -60,8 +61,7 @@ class ListTest extends TestCase
      */
     public function testAcceptAnArrayObjectAsListValue()
     {
-        $this->makeTest(GraphQLList(
-            GraphQLString()),
+        $this->makeTest(GraphQLList(GraphQLString()),
             new \ArrayObject(['apple', 'banana', 'coconut']),
             [
                 'data' => [
@@ -80,8 +80,7 @@ class ListTest extends TestCase
      */
     public function testAcceptsAGeneratorAsFunctionValue()
     {
-        $this->makeTest(GraphQLList(
-            GraphQLString()),
+        $this->makeTest(GraphQLList(GraphQLString()),
             function () {
                 yield 'one';
                 yield 2;
@@ -103,8 +102,7 @@ class ListTest extends TestCase
      */
     public function testDoesNotAcceptStringAsIterable()
     {
-        $this->makeTest(GraphQLList(
-            GraphQLString()),
+        $this->makeTest(GraphQLList(GraphQLString()),
             'Singluar',
             [
                 'data'   => [
@@ -123,6 +121,61 @@ class ListTest extends TestCase
                             ]
                         ],
                         'path'      => ['nest', 'test']
+                    ]
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testArrayContainsValues()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            [1, 2],
+            [
+                'data'   => [
+                    'nest' => [
+                        'test' => [1, 2]
+                    ]
+                ]
+            ]
+        );
+    }
+
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testArrayContainsNull()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            [1, null, 2],
+            [
+                'data'   => [
+                    'nest' => [
+                        'test' => [1, null, 2]
+                    ]
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testArrayReturnsNull()
+    {
+        $this->makeTest(GraphQLList(GraphQLInt()),
+            null,
+            [
+                'data'   => [
+                    'nest' => [
+                        'test' => null
                     ]
                 ]
             ]
