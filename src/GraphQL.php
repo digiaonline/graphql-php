@@ -9,7 +9,7 @@ use Digia\GraphQL\SchemaBuilder\SchemaBuilderProvider;
 use Digia\GraphQL\SchemaValidator\SchemaValidatorProvider;
 use Digia\GraphQL\Type\CoercerProvider;
 use Digia\GraphQL\Type\DirectivesProvider;
-use Digia\GraphQL\Type\IntrospectionTypesProvider;
+use Digia\GraphQL\Type\IntrospectionProvider;
 use Digia\GraphQL\Type\ScalarTypesProvider;
 use Digia\GraphQL\Util\UtilityProvider;
 use Digia\GraphQL\Validation\RulesProvider;
@@ -30,14 +30,18 @@ class GraphQL
     public const INCLUDE_DIRECTIVE    = 'GraphQLIncludeDirective';
     public const SKIP_DIRECTIVE       = 'GraphQLSkipDirective';
 
-    public const INTROSPECTION_SCHEMA             = '__Schema';
-    public const INTROSPECTION_DIRECTIVE          = '__Directive';
-    public const INTROSPECTION_DIRECTIVE_LOCATION = '__DirectiveLocation';
-    public const INTROSPECTION_TYPE               = '__Type';
-    public const INTROSPECTION_FIELD              = '__Field';
-    public const INTROSPECTION_INPUT_VALUE        = '__InputValue';
-    public const INTROSPECTION_ENUM_VALUE         = '__EnumValue';
-    public const INTROSPECTION_TYPE_KIND          = '__TypeKind';
+    public const SCHEMA_INTROSPECTION             = '__Schema';
+    public const DIRECTIVE_INTROSPECTION          = '__Directive';
+    public const DIRECTIVE_LOCATION_INTROSPECTION = '__DirectiveLocation';
+    public const TYPE_INTROSPECTION               = '__Type';
+    public const FIELD_INTROSPECTION              = '__Field';
+    public const INPUT_VALUE_INTROSPECTION        = '__InputValue';
+    public const ENUM_VALUE_INTROSPECTION         = '__EnumValue';
+    public const TYPE_KIND_INTROSPECTION          = '__TypeKind';
+
+    public const SCHEMA_META_FIELD_DEFINITION    = 'SchemaMetaFieldDefinition';
+    public const TYPE_META_FIELD_DEFINITION      = 'TypeMetaFieldDefinition';
+    public const TYPE_NAME_META_FIELD_DEFINITION = 'TypeNameMetaFieldDefinition';
 
     /**
      * @var array
@@ -48,7 +52,7 @@ class GraphQL
         SchemaBuilderProvider::class,
         SchemaValidatorProvider::class,
         CoercerProvider::class,
-        IntrospectionTypesProvider::class,
+        IntrospectionProvider::class,
         ScalarTypesProvider::class,
         DirectivesProvider::class,
         RulesProvider::class,

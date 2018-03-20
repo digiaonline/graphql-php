@@ -2,20 +2,15 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-interface DirectiveInterface
+interface ArgumentsAwareInterface
 {
-    /**
-     * @return string|null
-     */
-    public function getName(): ?string;
-
     /**
      * @return bool
      */
     public function hasArguments(): bool;
 
     /**
-     * @return array
+     * @return Argument[]
      */
     public function getArguments(): array;
 }

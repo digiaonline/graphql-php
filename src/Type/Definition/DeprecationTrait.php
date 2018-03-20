@@ -25,7 +25,7 @@ trait DeprecationTrait
     /**
      * @return bool
      */
-    public function isDeprecated(): bool
+    public function getIsDeprecated(): bool
     {
         return $this->isDeprecated;
     }

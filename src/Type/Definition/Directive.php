@@ -6,7 +6,7 @@ use Digia\GraphQL\Config\ConfigObject;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 
-class Directive extends ConfigObject implements DirectiveInterface, NodeAwareInterface
+class Directive extends ConfigObject implements DirectiveInterface, NodeAwareInterface, ArgumentsAwareInterface
 {
     use NodeTrait;
     use NameTrait;

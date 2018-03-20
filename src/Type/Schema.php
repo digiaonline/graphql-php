@@ -235,6 +235,7 @@ class Schema extends ConfigObject implements SchemaInterface
             $this->query,
             $this->mutation,
             $this->subscription,
+            __Schema(), // Introspection
         ];
 
         if ($this->types) {

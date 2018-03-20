@@ -2,12 +2,9 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\Error\InvalidTypeException;
-use Digia\GraphQL\Execution\Resolver\ResolveInfo;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\arraySome;
@@ -17,7 +14,7 @@ use function Digia\GraphQL\Util\arraySome;
  */
 function __Schema(): ObjectType
 {
-    return GraphQL::get(GraphQL::INTROSPECTION_SCHEMA);
+    return GraphQL::get(GraphQL::SCHEMA_INTROSPECTION);
 }
 
 /**
@@ -25,7 +22,7 @@ function __Schema(): ObjectType
  */
 function __Directive(): ObjectType
 {
-    return GraphQL::get(GraphQL::INTROSPECTION_DIRECTIVE);
+    return GraphQL::get(GraphQL::DIRECTIVE_INTROSPECTION);
 
 }
 
@@ -34,7 +31,7 @@ function __Directive(): ObjectType
  */
 function __DirectiveLocation(): EnumType
 {
-    return GraphQL::get(GraphQL::INTROSPECTION_DIRECTIVE_LOCATION);
+    return GraphQL::get(GraphQL::DIRECTIVE_LOCATION_INTROSPECTION);
 
 }
 
@@ -43,7 +40,7 @@ function __DirectiveLocation(): EnumType
  */
 function __Type(): ObjectType
 {
-    return GraphQL::get(GraphQL::INTROSPECTION_TYPE);
+    return GraphQL::get(GraphQL::TYPE_INTROSPECTION);
 }
 
 /**
@@ -51,7 +48,7 @@ function __Type(): ObjectType
  */
 function __Field(): ObjectType
 {
-    return GraphQL::get(GraphQL::INTROSPECTION_FIELD);
+    return GraphQL::get(GraphQL::FIELD_INTROSPECTION);
 }
 
 /**
@@ -59,7 +56,7 @@ function __Field(): ObjectType
  */
 function __InputValue(): ObjectType
 {
-    return GraphQL::get(GraphQL::INTROSPECTION_INPUT_VALUE);
+    return GraphQL::get(GraphQL::INPUT_VALUE_INTROSPECTION);
 }
 
 /**
@@ -67,69 +64,39 @@ function __InputValue(): ObjectType
  */
 function __EnumValue(): ObjectType
 {
-    return GraphQL::get(GraphQL::INTROSPECTION_ENUM_VALUE);
+    return GraphQL::get(GraphQL::ENUM_VALUE_INTROSPECTION);
 }
 
+/**
+ * @return EnumType
+ */
 function __TypeKind(): EnumType
 {
-    return GraphQL::get(GraphQL::INTROSPECTION_TYPE_KIND);
+    return GraphQL::get(GraphQL::TYPE_KIND_INTROSPECTION);
 }
 
 /**
  * @return Field
- * @throws InvalidTypeException
  */
 function SchemaMetaFieldDefinition(): Field
 {
-    return new Field([
-        'name'        => '__schema',
-        'type'        => GraphQLNonNull(__Schema()),
-        'description' => 'Access the current type schema of this server.',
-        'resolve'     => function ($source, $args, $context, ResolveInfo $info): SchemaInterface {
-            $schema = $info->getSchema();
-            return $schema;
-        }
-    ]);
+    return GraphQL::get(GraphQL::SCHEMA_META_FIELD_DEFINITION);
 }
 
 /**
  * @return Field
- * @throws InvalidTypeException
  */
 function TypeMetaFieldDefinition(): Field
 {
-    return new Field([
-        'name'        => '__type',
-        'type'        => __Type(),
-        'description' => 'Request the type information of a single type.',
-        'args'        => [
-            'name' => ['type' => GraphQLNonNull(GraphQLString())],
-        ],
-        'resolve'     => function ($source, $args, $context, ResolveInfo $info): TypeInterface {
-            /** @var SchemaInterface $schema */
-            $name   = $args['name'];
-            $schema = $info->getSchema();
-            return $schema->getType($name);
-        }
-    ]);
+    return GraphQL::get(GraphQL::TYPE_META_FIELD_DEFINITION);
 }
 
 /**
  * @return Field
- * @throws InvalidTypeException
  */
 function TypeNameMetaFieldDefinition(): Field
 {
-    return new Field([
-        'name'        => '__typename',
-        'type'        => GraphQLNonNull(GraphQLString()),
-        'description' => 'The name of the current Object type at runtime.',
-        'resolve'     => function ($source, $args, $context, ResolveInfo $info): string {
-            /** @var NamedTypeInterface $parentType */
-            $parentType = $info->getParentType();
-            return $parentType->getName();
-        }
-    ]);
+    return GraphQL::get(GraphQL::TYPE_NAME_META_FIELD_DEFINITION);
 }
 
 /**
