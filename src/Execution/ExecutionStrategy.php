@@ -281,7 +281,8 @@ abstract class ExecutionStrategy
         $fields
     ) {
         //@TODO execute fields serially
-        $finalResults = [];
+        $finalResults      = [];
+        $isContainsPromise = false;
 
         foreach ($fields as $fieldName => $fieldNodes) {
             $fieldPath   = $path;
@@ -293,7 +294,19 @@ abstract class ExecutionStrategy
                 continue;
             }
 
+            $isContainsPromise = $isContainsPromise || $this->isPromise($result);
+
             $finalResults[$fieldName] = $result;
+        }
+
+        if ($isContainsPromise) {
+            $keys    = array_keys($finalResults);
+            $promise = \React\Promise\all(array_values($finalResults));
+            $promise->then(function ($values) use ($keys, &$finalResults) {
+                foreach ($values as $i => $value) {
+                    $finalResults[$keys[$i]] = $value;
+                }
+            });
         }
 
         return $finalResults;
