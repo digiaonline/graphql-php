@@ -459,9 +459,9 @@ SRC;
         $this->assertEquals($expected, $executionResult);
     }
 
-    //provides info about current execution state
-
     /**
+     * provides info about current execution state
+     *
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
@@ -504,5 +504,38 @@ SRC;
         $this->assertEquals($rootValue, $info->getRootValue());
         $this->assertEquals($ast->getDefinitions()[0], $info->getOperation());
         $this->assertEquals(['var' => 123], $info->getVariableValues());
+    }
+
+    /**
+     * Threads root value context correctly
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testThreadsRootValueContextCorrectly()
+    {
+        $resolvedRootValue   = null;
+        $schema = new Schema([
+            'query' =>
+                new ObjectType([
+                    'name'   => 'Test',
+                    'fields' => [
+                        'a' => [
+                            'type'    => GraphQLString(),
+                            'resolve' => function ($rootValue) use (&$resolvedRootValue) {
+                                $resolvedRootValue = $rootValue;
+                            }
+                        ]
+                    ]
+                ])
+        ]);
+
+        $data = ['contextThing' => 'thing'];
+
+        $ast = parse('query Example { a }');
+
+        execute($schema, $ast, $data);
+
+        $this->assertEquals('thing', $resolvedRootValue['contextThing']);
     }
 }
