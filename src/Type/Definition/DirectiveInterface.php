@@ -5,9 +5,9 @@ namespace Digia\GraphQL\Type\Definition;
 interface DirectiveInterface
 {
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName(): string;
+    public function getName(): ?string;
 
     /**
      * @return bool

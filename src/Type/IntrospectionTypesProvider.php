@@ -327,7 +327,7 @@ class IntrospectionTypesProvider extends AbstractServiceProvider
                         'description'       => ['type' => GraphQLString()],
                         'args'              => [
                             'type'    => GraphQLNonNull(GraphQLList(GraphQLNonNull(__InputValue()))),
-                            'resolve' => function (DirectiveInterface $directive): array {
+                            'resolve' => function ($directive): array {
                                 return $directive->getArguments() ?: [];
                             },
                         ],

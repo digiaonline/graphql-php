@@ -311,8 +311,6 @@ class Parser implements ParserInterface, DirectorInterface
      */
     protected function parseDefinition(LexerInterface $lexer): array
     {
-        // TODO: Consider adding experimental support for parsing schema definitions
-
         if ($this->peek($lexer, TokenKindEnum::NAME)) {
             switch ($lexer->getTokenValue()) {
                 case KeywordEnum::QUERY:
