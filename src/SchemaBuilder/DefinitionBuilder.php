@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\SchemaBuilder;
 
+use Digia\GraphQL\Cache\CacheAwareTrait;
 use Digia\GraphQL\Error\CoercingException;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
@@ -52,12 +53,9 @@ use function Digia\GraphQL\Util\keyValueMap;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
-    private const CACHE_PREFIX = 'GraphQL_DefinitionBuilder_';
+    use CacheAwareTrait;
 
-    /**
-     * @var CacheInterface
-     */
-    protected $cache;
+    private const CACHE_PREFIX = 'GraphQL_DefinitionBuilder_';
 
     /**
      * @var ValuesResolver
@@ -102,11 +100,11 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             }
         );
 
-        foreach ($builtInTypes as $name => $type) {
-            $cache->set($this->getCacheKey($name), $type);
-        }
-
         $this->cache = $cache;
+
+        foreach ($builtInTypes as $name => $type) {
+            $this->setInCache($name, $type);
+        }
     }
 
     /**
@@ -136,19 +134,19 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     {
         $typeName = $node->getNameValue();
 
-        if (!$this->cache->has($this->getCacheKey($typeName))) {
+        if (!$this->isInCache($typeName)) {
             if ($node instanceof NamedTypeNode) {
                 $definition = $this->getTypeDefinition($typeName);
 
                 $type = null !== $definition ? $this->buildNamedType($definition) : $this->resolveType($node);
 
-                $this->cache->set($this->getCacheKey($typeName), $type);
+                $this->setInCache($typeName, $type);
             } else {
-                $this->cache->set($this->getCacheKey($typeName), $this->buildNamedType($node));
+                $this->setInCache($typeName, $this->buildNamedType($node));
             }
         }
 
-        return $this->cache->get($this->getCacheKey($typeName));
+        return $this->getFromCache($typeName);
     }
 
     /**
@@ -414,7 +412,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     public function defaultTypeResolver(NamedTypeNode $node): ?NamedTypeInterface
     {
-        return $this->cache->get($this->getCacheKey($node->getNameValue())) ?? null;
+        return $this->getFromCache($node->getNameValue()) ?? null;
     }
 
     /**
@@ -455,12 +453,11 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @param string $key
      * @return string
      */
-    protected function getCacheKey(string $key): string
+    protected function getCachePrefix(): string
     {
-        return self::CACHE_PREFIX . $key;
+        return self::CACHE_PREFIX;
     }
 }
 
