@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\ExecutionResult;
+use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Schema;
@@ -456,5 +457,52 @@ SRC;
         ], []);
 
         $this->assertEquals($expected, $executionResult);
+    }
+
+    //provides info about current execution state
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testProvidesInfoAboutCurrentExecutionState()
+    {
+        $info   = null;
+        $schema = new Schema([
+            'query' =>
+                new ObjectType([
+                    'name'   => 'Test',
+                    'fields' => [
+                        'test' => [
+                            'type'    => GraphQLString(),
+                            'resolve' => function ($source, $args, $context, $_info) use (&$info) {
+                                $info = $_info;
+                            }
+                        ]
+                    ]
+                ])
+        ]);
+
+        $rootValue = [
+            'rootValue' => 'val'
+        ];
+
+        $ast = parse('query ($var: String) { result: test }');
+        execute($schema, $ast, $rootValue, null, ['var' => 123]);
+
+        /** @var ResolveInfo $info */
+        $this->assertEquals('test', $info->getFieldName());
+        $this->assertEquals(1, count($info->getFieldNodes()));
+        $this->assertEquals(
+            $ast->getDefinitions()[0]->getSelectionSet()->getSelections()[0],
+            $info->getFieldNodes()[0]
+        );
+        $this->assertEquals(GraphQLString(), $info->getReturnType());
+        $this->assertEquals($schema->getQueryType(), $info->getParentType());
+        $this->assertEquals(["result"], $info->getPath()); // { prev: undefined, key: 'result' }
+        $this->assertEquals($schema, $info->getSchema());
+        $this->assertEquals($rootValue, $info->getRootValue());
+        $this->assertEquals($ast->getDefinitions()[0], $info->getOperation());
+        $this->assertEquals(['var' => 123], $info->getVariableValues());
     }
 }
