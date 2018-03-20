@@ -32,7 +32,7 @@ class ResolveInfo
     protected $parentType;
 
     /**
-     * @var ResponsePath
+     * @var array|null
      */
     protected $path;
 
