@@ -514,8 +514,8 @@ SRC;
      */
     public function testThreadsRootValueContextCorrectly()
     {
-        $resolvedRootValue   = null;
-        $schema = new Schema([
+        $resolvedRootValue = null;
+        $schema            = new Schema([
             'query' =>
                 new ObjectType([
                     'name'   => 'Test',
@@ -537,5 +537,39 @@ SRC;
         execute($schema, $ast, $data);
 
         $this->assertEquals('thing', $resolvedRootValue['contextThing']);
+    }
+
+    /**
+     * Correctly threads arguments
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testCorrectlyThreadsArguments()
+    {
+        $resolvedArgs = null;
+
+        $schema = new Schema([
+            'query' =>
+                new ObjectType([
+                    'name'   => 'Type',
+                    'fields' => [
+                        'b' => [
+                            'type'    => GraphQLInt(),
+                            'args'    => [
+                                'numArg'    => ['type' => GraphQLInt()],
+                                'stringArg' => ['type' => GraphQLString()]
+                            ],
+                            'resolve' => function ($source, $args) use (&$resolvedArgs) {
+                                $resolvedArgs = $args;
+                            }
+                        ]
+                    ]
+                ])
+        ]);
+
+        execute($schema, parse('query Example { b(numArg: 123, stringArg: "foo") }'));
+
+        $this->assertEquals(['numArg' => 123, 'stringArg' => 'foo'], $resolvedArgs);
     }
 }
