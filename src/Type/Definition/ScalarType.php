@@ -2,15 +2,17 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Config\ConfigAwareInterface;
+use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 use function Digia\GraphQL\Util\invariant;
 
-class ScalarType extends ConfigObject implements TypeInterface, NamedTypeInterface, LeafTypeInterface,
-    InputTypeInterface, OutputTypeInterface, NodeAwareInterface
+class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface, InputTypeInterface,
+    OutputTypeInterface, ConfigAwareInterface, NodeAwareInterface
 {
+    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use NodeTrait;

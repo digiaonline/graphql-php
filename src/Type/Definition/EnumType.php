@@ -2,7 +2,8 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Config\ConfigAwareInterface;
+use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
@@ -33,9 +34,10 @@ use function Digia\GraphQL\Util\toString;
  * Note: If a value is not provided in a definition, the name of the enum value
  * will be used as its internal value.
  */
-class EnumType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface,
-    LeafTypeInterface, OutputTypeInterface, NodeAwareInterface
+class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
+    LeafTypeInterface, OutputTypeInterface, ConfigAwareInterface, NodeAwareInterface
 {
+    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use NodeTrait;

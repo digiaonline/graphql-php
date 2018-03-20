@@ -190,7 +190,7 @@ class MutationTest extends TestCase
                 [
                     'message'   => 'Cannot change the number',
                     'locations' => null,
-                    'path'      => null
+                    'path'      => ['third']
                 ],
                 [
                     'message'   => 'Cannot change the number',

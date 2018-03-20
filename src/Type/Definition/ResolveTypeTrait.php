@@ -6,7 +6,7 @@ trait ResolveTypeTrait
 {
 
     /**
-     * @var ?callable
+     * @var callable|null
      */
     protected $resolveTypeFunction;
 

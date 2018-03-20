@@ -2,7 +2,8 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Config\ConfigAwareInterface;
+use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
@@ -29,8 +30,10 @@ use function Digia\GraphQL\Util\invariant;
  *       ]
  *     ]);
  */
-class InputObjectType extends ConfigObject implements TypeInterface, NamedTypeInterface, InputTypeInterface, NodeAwareInterface
+class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInterface, ConfigAwareInterface,
+    NodeAwareInterface
 {
+    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use NodeTrait;
@@ -107,7 +110,7 @@ class InputObjectType extends ConfigObject implements TypeInterface, NamedTypeIn
                 )
             );
 
-            $fieldConfig['name'] = $fieldName;
+            $fieldConfig['name']  = $fieldName;
             $fieldMap[$fieldName] = new InputField($fieldConfig);
         }
 

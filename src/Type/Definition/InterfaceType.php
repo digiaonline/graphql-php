@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigObject;
-use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
+use Digia\GraphQL\Config\ConfigAwareInterface;
+use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 use function Digia\GraphQL\Util\invariant;
@@ -24,9 +24,10 @@ use function Digia\GraphQL\Util\invariant;
  *       ]
  *     ]);
  */
-class InterfaceType extends ConfigObject implements NamedTypeInterface, AbstractTypeInterface,
-    CompositeTypeInterface, OutputTypeInterface, NodeAwareInterface
+class InterfaceType implements NamedTypeInterface, AbstractTypeInterface, CompositeTypeInterface,
+    OutputTypeInterface, ConfigAwareInterface, NodeAwareInterface
 {
+    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use FieldsTrait;

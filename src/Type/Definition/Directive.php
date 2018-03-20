@@ -2,12 +2,14 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Config\ConfigAwareInterface;
+use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 
-class Directive extends ConfigObject implements DirectiveInterface, NodeAwareInterface, ArgumentsAwareInterface
+class Directive implements DirectiveInterface, ConfigAwareInterface, NodeAwareInterface, ArgumentsAwareInterface
 {
+    use ConfigAwareTrait;
     use NodeTrait;
     use NameTrait;
     use DescriptionTrait;

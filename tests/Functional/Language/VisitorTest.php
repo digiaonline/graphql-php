@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
-use Digia\GraphQL\Config\ConfigObject;
+use Digia\GraphQL\Config\ConfigAwareInterface;
 use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FieldNode;
@@ -19,8 +19,8 @@ use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Test\Functional\Validation\testSchema;
-use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Test\readFileContents;
+use function Digia\GraphQL\Type\getNamedType;
 
 class VisitorTest extends TestCase
 {
@@ -79,7 +79,7 @@ class VisitorTest extends TestCase
         /** @var DocumentNode $editedAst */
         $editedAst = $ast->acceptVisitor($visitor);
 
-        /** @var ConfigObject $editedNode */
+        /** @var ConfigAwareInterface $editedNode */
         $editedNode = $editedAst->getDefinitions()[0];
 
         $this->assertTrue($editedNode->getConfigValue('didEnter'));

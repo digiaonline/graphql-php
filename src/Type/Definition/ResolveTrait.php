@@ -6,7 +6,7 @@ trait ResolveTrait
 {
 
     /**
-     * @var ?callable
+     * @var callable|null
      */
     protected $resolveFunction;
 

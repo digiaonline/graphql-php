@@ -6,7 +6,7 @@ use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\UndefinedException;
-use Digia\GraphQL\Execution\Resolver\ResolveInfo;
+use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
@@ -411,7 +411,7 @@ abstract class ExecutionStrategy
      * @param FieldNode        $fieldNode
      * @param Field            $field
      * @param ObjectType       $parentType
-     * @param                  $path
+     * @param array|null       $path
      * @param ExecutionContext $context
      * @return ResolveInfo
      */
@@ -420,21 +420,21 @@ abstract class ExecutionStrategy
         FieldNode $fieldNode,
         Field $field,
         ObjectType $parentType,
-        $path,
+        ?array $path,
         ExecutionContext $context
     ) {
-        return new ResolveInfo([
-            'fieldName'      => $fieldNode->getNameValue(),
-            'fieldNodes'     => $fieldNodes,
-            'returnType'     => $field->getType(),
-            'parentType'     => $parentType,
-            'path'           => $path,
-            'schema'         => $context->getSchema(),
-            'fragments'      => $context->getFragments(),
-            'rootValue'      => $context->getRootValue(),
-            'operation'      => $context->getOperation(),
-            'variableValues' => $context->getVariableValues(),
-        ]);
+        return new ResolveInfo(
+            $fieldNode->getNameValue(),
+            $fieldNodes,
+            $field->getType(),
+            $parentType,
+            $path,
+            $context->getSchema(),
+            $context->getFragments(),
+            $context->getRootValue(),
+            $context->getOperation(),
+            $context->getVariableValues()
+        );
     }
 
     /**

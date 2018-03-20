@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Error\InvalidTypeException;
-use Digia\GraphQL\Execution\Resolver\ResolveInfo;
+use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
