@@ -12,7 +12,7 @@ class SchemaBuilderProvider extends AbstractServiceProvider
      * @var array
      */
     protected $provides = [
-        DefinitionBuilderInterface::class,
+        DefinitionBuilderCreatorInterface::class,
         SchemaBuilderInterface::class,
     ];
 
@@ -21,11 +21,11 @@ class SchemaBuilderProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(DefinitionBuilderInterface::class, DefinitionBuilder::class)
+        $this->container->add(DefinitionBuilderCreatorInterface::class, DefinitionBuilderCreator::class)
             ->withArgument(CacheInterface::class)
             ->withArgument(ValuesResolver::class);
 
         $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class)
-            ->withArgument(DefinitionBuilderInterface::class);
+            ->withArgument(DefinitionBuilderCreatorInterface::class);
     }
 }

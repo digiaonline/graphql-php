@@ -16,20 +16,19 @@ use function Digia\GraphQL\Util\arraySome;
 
 class SchemaBuilder implements SchemaBuilderInterface
 {
-
     /**
-     * @var DefinitionBuilderInterface
+     * @var DefinitionBuilderCreatorInterface
      */
-    protected $definitionBuilder;
+    protected $definitionBuilderCreator;
 
     /**
      * SchemaBuilder constructor.
      *
-     * @param DefinitionBuilderInterface $definitionBuilder
+     * @param DefinitionBuilderCreatorInterface $definitionBuilderCreator
      */
-    public function __construct(DefinitionBuilderInterface $definitionBuilder)
+    public function __construct(DefinitionBuilderCreatorInterface $definitionBuilderCreator)
     {
-        $this->definitionBuilder = $definitionBuilder;
+        $this->definitionBuilderCreator = $definitionBuilderCreator;
     }
 
     /**
@@ -41,8 +40,6 @@ class SchemaBuilder implements SchemaBuilderInterface
         $typeDefinitions      = [];
         $nodeMap              = [];
         $directiveDefinitions = [];
-
-        $this->definitionBuilder->setResolverMap($resolverMap);
 
         foreach ($document->getDefinitions() as $definition) {
             if ($definition instanceof SchemaDefinitionNode) {
@@ -75,14 +72,14 @@ class SchemaBuilder implements SchemaBuilderInterface
             'subscription' => $nodeMap['Subscription'] ?? null,
         ];
 
-        $this->definitionBuilder->setTypeDefinitionMap($nodeMap);
+        $definitionBuilder = $this->definitionBuilderCreator->create($nodeMap, $resolverMap);
 
-        $types = array_map(function (TypeDefinitionNodeInterface $definition) {
-            return $this->definitionBuilder->buildType($definition);
+        $types = array_map(function (TypeDefinitionNodeInterface $definition) use ($definitionBuilder) {
+            return $definitionBuilder->buildType($definition);
         }, $typeDefinitions);
 
-        $directives = array_map(function (DirectiveDefinitionNode $definition) {
-            return $this->definitionBuilder->buildDirective($definition);
+        $directives = array_map(function (DirectiveDefinitionNode $definition) use ($definitionBuilder) {
+            return $definitionBuilder->buildDirective($definition);
         }, $directiveDefinitions);
 
         if (!arraySome($directives, function (DirectiveInterface $directive) {
@@ -105,13 +102,13 @@ class SchemaBuilder implements SchemaBuilderInterface
 
         return GraphQLSchema([
             'query'        => isset($operationTypes['query'])
-                ? $this->definitionBuilder->buildType($operationTypes['query'])
+                ? $definitionBuilder->buildType($operationTypes['query'])
                 : null,
             'mutation'     => isset($operationTypes['mutation'])
-                ? $this->definitionBuilder->buildType($operationTypes['mutation'])
+                ? $definitionBuilder->buildType($operationTypes['mutation'])
                 : null,
             'subscription' => isset($operationTypes['subscription'])
-                ? $this->definitionBuilder->buildType($operationTypes['subscription'])
+                ? $definitionBuilder->buildType($operationTypes['subscription'])
                 : null,
             'types'        => $types,
             'directives'   => $directives,
