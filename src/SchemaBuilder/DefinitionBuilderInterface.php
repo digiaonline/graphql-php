@@ -20,16 +20,4 @@ interface DefinitionBuilderInterface
      * @return DirectiveInterface
      */
     public function buildDirective(DirectiveDefinitionNode $node): DirectiveInterface;
-
-    /**
-     * @param array $typeDefinitionMap
-     * @return $this
-     */
-    public function setTypeDefinitionMap(array $typeDefinitionMap);
-
-    /**
-     * @param array $resolverMap
-     * @return $this
-     */
-    public function setResolverMap(array $resolverMap);
 }
