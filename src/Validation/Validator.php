@@ -7,18 +7,17 @@ use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
 use Digia\GraphQL\Type\SchemaInterface;
-use function Digia\GraphQL\Util\invariant;
 use Digia\GraphQL\Util\TypeInfo;
 use Digia\GraphQL\Validation\Rule\RuleInterface;
-use Digia\GraphQL\Validation\Rule\RulesBuilderInterface;
 use Digia\GraphQL\Validation\Rule\SupportedRules;
+use function Digia\GraphQL\Util\invariant;
 
 class Validator implements ValidatorInterface
 {
     /**
-     * @var ContextBuilderInterface
+     * @var ValidationContextCreatorInterface
      */
-    protected $contextBuilder;
+    protected $contextCreator;
 
     /**
      * @var SchemaValidatorInterface
@@ -27,12 +26,14 @@ class Validator implements ValidatorInterface
 
     /**
      * Validator constructor.
-     * @param ContextBuilderInterface  $contextBuilder
-     * @param SchemaValidatorInterface $schemaValidator
+     * @param ValidationContextCreatorInterface $contextCreator
+     * @param SchemaValidatorInterface          $schemaValidator
      */
-    public function __construct(ContextBuilderInterface $contextBuilder, SchemaValidatorInterface $schemaValidator)
-    {
-        $this->contextBuilder  = $contextBuilder;
+    public function __construct(
+        ValidationContextCreatorInterface $contextCreator,
+        SchemaValidatorInterface $schemaValidator
+    ) {
+        $this->contextCreator  = $contextCreator;
         $this->schemaValidator = $schemaValidator;
     }
 
@@ -52,7 +53,7 @@ class Validator implements ValidatorInterface
         $typeInfo = $typeInfo ?? new TypeInfo($schema);
         $rules    = $rules ?? SupportedRules::build();
 
-        $context = $this->contextBuilder->build($schema, $document, $typeInfo);
+        $context = $this->contextCreator->create($schema, $document, $typeInfo);
 
         $visitors = \array_map(function (RuleInterface $rule) use ($context) {
             return $rule->setContext($context);

@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 
-class ContextBuilder implements ContextBuilderInterface
+interface ValidationContextCreatorInterface
 {
     /**
      * @param SchemaInterface $schema
@@ -14,11 +14,9 @@ class ContextBuilder implements ContextBuilderInterface
      * @param TypeInfo        $typeInfo
      * @return ValidationContextInterface
      */
-    public function build(
+    public function create(
         SchemaInterface $schema,
         DocumentNode $document,
         TypeInfo $typeInfo
-    ): ValidationContextInterface {
-        return new ValidationContext($schema, $document, $typeInfo);
-    }
+    ): ValidationContextInterface;
 }
