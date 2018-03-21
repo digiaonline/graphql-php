@@ -3,8 +3,6 @@
 namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
-use Digia\GraphQL\Validation\Rule\RulesBuilder;
-use Digia\GraphQL\Validation\Rule\RulesBuilderInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class ValidationProvider extends AbstractServiceProvider
@@ -13,7 +11,7 @@ class ValidationProvider extends AbstractServiceProvider
      * @var array
      */
     protected $provides = [
-        ContextBuilderInterface::class,
+        ValidationContextCreatorInterface::class,
         ValidatorInterface::class,
     ];
 
@@ -22,10 +20,14 @@ class ValidationProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(ContextBuilderInterface::class, ContextBuilder::class, true/* $shared */);
+        $this->container->add(
+            ValidationContextCreatorInterface::class,
+            ValidationContextCreator::class,
+            true/* $shared */
+        );
 
         $this->container->add(ValidatorInterface::class, Validator::class, true/* $shared */)
-            ->withArgument(ContextBuilderInterface::class)
+            ->withArgument(ValidationContextCreatorInterface::class)
             ->withArgument(SchemaValidatorInterface::class);
     }
 }

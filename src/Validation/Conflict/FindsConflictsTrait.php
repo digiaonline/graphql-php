@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Validation\Conflict;
 
 use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
@@ -103,6 +104,7 @@ trait FindsConflictsTrait
      * @param NamedTypeInterface|null $parentType
      * @return array|Conflict[]
      * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function findConflictsWithinSelectionSet(
         Map $cachedFieldsAndFragmentNames,
@@ -597,6 +599,7 @@ trait FindsConflictsTrait
      * @param NamedTypeInterface|null $parentType
      * @return ComparisonContext
      * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function getFieldsAndFragmentNames(
         SelectionSetNode $selectionSet,
@@ -642,6 +645,7 @@ trait FindsConflictsTrait
      * @param SelectionSetNode        $selectionSet
      * @param NamedTypeInterface|null $parentType
      * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function collectFieldsAndFragmentNames(
         ComparisonContext $context,
