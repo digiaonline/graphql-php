@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Util;
 
-use Digia\GraphQL\Error\CoercingException;
+use Digia\GraphQL\Error\ResolutionException;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
@@ -13,7 +13,7 @@ use Digia\GraphQL\Language\Node\ObjectValueNode;
 use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Util\ValueNodeCoercer;
+use Digia\GraphQL\Util\ValueNodeResolver;
 use function Digia\GraphQL\Type\GraphQLEnumType;
 use function Digia\GraphQL\Type\GraphQLInputObjectType;
 use function Digia\GraphQL\Type\GraphQLInt;
@@ -21,43 +21,43 @@ use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLNonNull;
 use function Digia\GraphQL\Type\GraphQLString;
 
-class ValueNodeCoercerTest extends TestCase
+class ValueNodeResolverTest extends TestCase
 {
     /**
-     * @var ValueNodeCoercer
+     * @var ValueNodeResolver
      */
-    protected $coercer;
+    protected $resolver;
 
     public function setUp()
     {
-        $this->coercer = new ValueNodeCoercer();
+        $this->resolver = new ValueNodeResolver();
     }
 
-    public function testCoerceNull()
+    public function testResolveNull()
     {
-        $this->expectException(CoercingException::class);
+        $this->expectException(ResolutionException::class);
         $this->expectExceptionMessage('Node is not defined.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->coercer->coerce(null, GraphQLString());
+        $this->resolver->resolve(null, GraphQLString());
     }
 
-    public function testCoerceNonNullWithStringValue()
+    public function testResolveNonNullWithStringValue()
     {
         $node = new StringValueNode(['value' => 'foo']);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->coercer->coerce($node, GraphQLNonNull(GraphQLString())));
+        $this->assertEquals('foo', $this->resolver->resolve($node, GraphQLNonNull(GraphQLString())));
     }
 
-    public function testCoerceNonNullWithNullValue()
+    public function testResolveNonNullWithNullValue()
     {
         $node = new NullValueNode();
-        $this->expectException(CoercingException::class);
-        $this->expectExceptionMessage('Cannot coerce non-null values from null value node');
+        $this->expectException(ResolutionException::class);
+        $this->expectExceptionMessage('Cannot resolve non-null values from null value node');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(null, $this->coercer->coerce($node, GraphQLNonNull(GraphQLString())));
+        $this->assertEquals(null, $this->resolver->resolve($node, GraphQLNonNull(GraphQLString())));
     }
 
-    public function testCoerceValidListOfStrings()
+    public function testResolveValidListOfStrings()
     {
         $node = new ListValueNode([
             'values' => [
@@ -67,10 +67,10 @@ class ValueNodeCoercerTest extends TestCase
             ],
         ]);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->coercer->coerce($node, GraphQLList(GraphQLString())));
+        $this->assertEquals(['A', 'B', 'C'], $this->resolver->resolve($node, GraphQLList(GraphQLString())));
     }
 
-    public function testCoerceListWithMissingVariableValue()
+    public function testResolveListWithMissingVariableValue()
     {
         $node      = new ListValueNode([
             'values' => [
@@ -80,13 +80,13 @@ class ValueNodeCoercerTest extends TestCase
             ],
         ]);
         $variables = ['$a' => 'A', '$c' => 'C'];
-        $this->expectException(CoercingException::class);
-        $this->expectExceptionMessage('Cannot coerce value for missing variable "$b".');
+        $this->expectException(ResolutionException::class);
+        $this->expectExceptionMessage('Cannot resolve value for missing variable "$b".');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->coercer->coerce($node, GraphQLList(GraphQLString()), $variables));
+        $this->assertEquals(['A', 'B', 'C'], $this->resolver->resolve($node, GraphQLList(GraphQLString()), $variables));
     }
 
-    public function testCoerceValidInputObject()
+    public function testResolveValidInputObject()
     {
         $node = new ObjectValueNode([
             'fields' => [
@@ -105,10 +105,10 @@ class ValueNodeCoercerTest extends TestCase
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['a' => 1], $this->coercer->coerce($node, $type));
+        $this->assertEquals(['a' => 1], $this->resolver->resolve($node, $type));
     }
 
-    public function testCoerceInputObjectWithNodeOfInvalidType()
+    public function testResolveInputObjectWithNodeOfInvalidType()
     {
         $node = new StringValueNode(['value' => null]);
 
@@ -119,13 +119,13 @@ class ValueNodeCoercerTest extends TestCase
             ],
         ]);
 
-        $this->expectException(CoercingException::class);
-        $this->expectExceptionMessage('Input object values can only be coerced form object value nodes.');
+        $this->expectException(ResolutionException::class);
+        $this->expectExceptionMessage('Input object values can only be resolved form object value nodes.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->coercer->coerce($node, $type));
+        $this->assertEquals(1, $this->resolver->resolve($node, $type));
     }
 
-    public function testCoerceInputObjectWithMissingNonNullField()
+    public function testResolveInputObjectWithMissingNonNullField()
     {
         $node = new ObjectValueNode([
             'fields' => [
@@ -144,13 +144,13 @@ class ValueNodeCoercerTest extends TestCase
             ],
         ]);
 
-        $this->expectException(CoercingException::class);
-        $this->expectExceptionMessage('Cannot coerce input object value for missing non-null field.');
+        $this->expectException(ResolutionException::class);
+        $this->expectExceptionMessage('Cannot resolve input object value for missing non-null field.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['a' => 1], $this->coercer->coerce($node, $type));
+        $this->assertEquals(['a' => 1], $this->resolver->resolve($node, $type));
     }
 
-    public function testCoerceEnumWithIntValue()
+    public function testResolveEnumWithIntValue()
     {
         $node = new EnumValueNode(['value' => 'FOO']);
         $type = GraphQLEnumType([
@@ -160,23 +160,23 @@ class ValueNodeCoercerTest extends TestCase
             ],
         ]);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->coercer->coerce($node, $type));
+        $this->assertEquals(1, $this->resolver->resolve($node, $type));
     }
 
-    public function testCoerceEnumWithNodeOfInvalidType()
+    public function testResolveEnumWithNodeOfInvalidType()
     {
         $node = new StringValueNode(['value' => null]);
         $type = GraphQLEnumType([
             'name'   => 'EnumType',
         ]);
 
-        $this->expectException(CoercingException::class);
-        $this->expectExceptionMessage('Enum values can only be coerced from enum value nodes.');
+        $this->expectException(ResolutionException::class);
+        $this->expectExceptionMessage('Enum values can only be resolved from enum value nodes.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->coercer->coerce($node, $type));
+        $this->assertEquals(1, $this->resolver->resolve($node, $type));
     }
 
-    public function testCoerceEnumWithMissingValue()
+    public function testResolveEnumWithMissingValue()
     {
         $node = new EnumValueNode(['value' => 'FOO']);
         $type = GraphQLEnumType([
@@ -185,25 +185,25 @@ class ValueNodeCoercerTest extends TestCase
                 'BAR' => ['value' => 'foo'],
             ],
         ]);
-        $this->expectException(CoercingException::class);
-        $this->expectExceptionMessage('Cannot coerce enum value for missing value "FOO".');
+        $this->expectException(ResolutionException::class);
+        $this->expectExceptionMessage('Cannot resolve enum value for missing value "FOO".');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->coercer->coerce($node, $type));
+        $this->assertEquals(1, $this->resolver->resolve($node, $type));
     }
 
-    public function testCoerceValidScalar()
+    public function testResolveValidScalar()
     {
         $node = new StringValueNode(['value' => 'foo']);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->coercer->coerce($node, GraphQLString()));
+        $this->assertEquals('foo', $this->resolver->resolve($node, GraphQLString()));
     }
 
-    public function testCoerceInvalidScalar()
+    public function testResolveInvalidScalar()
     {
         $node = new StringValueNode(['value' => null]);
 
-        $this->expectException(CoercingException::class);
+        $this->expectException(ResolutionException::class);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->coercer->coerce($node, GraphQLString()));
+        $this->assertEquals('foo', $this->resolver->resolve($node, GraphQLString()));
     }
 }
