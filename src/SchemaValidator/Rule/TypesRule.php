@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\SchemaValidator\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\FieldDefinitionNode;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
@@ -65,7 +65,7 @@ class TypesRule extends AbstractRule
         foreach ($typeMap as $type) {
             if (!($type instanceof NamedTypeInterface)) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf('Expected GraphQL named type but got: %s.', toString($type)),
                         $type instanceof NodeAwareInterface ? [$type->getAstNode()] : null
                     )
@@ -125,7 +125,7 @@ class TypesRule extends AbstractRule
         // Objects and Interfaces both must define one or more fields.
         if (empty($fields)) {
             $this->context->reportError(
-                new ValidationException(
+                new SchemaValidationException(
                     \sprintf('Type %s must define one or more fields.', $type->getName()),
                     $this->getAllObjectOrInterfaceNodes($type)
                 )
@@ -141,7 +141,7 @@ class TypesRule extends AbstractRule
 
             if (\count($fieldNodes) > 1) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf('Field %s.%s can only be defined once.', $type->getName(), $fieldName),
                         $fieldNodes
                     )
@@ -156,7 +156,7 @@ class TypesRule extends AbstractRule
             if (!isOutputType($fieldType)) {
                 $fieldTypeNode = $this->getFieldTypeNode($type, $fieldName);
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf(
                             'The type of %s.%s must be Output Type but got: %s.',
                             $type->getName(),
@@ -180,7 +180,7 @@ class TypesRule extends AbstractRule
                 // Ensure they are unique per field.
                 if (isset($argumentNames[$argumentName])) {
                     $this->context->reportError(
-                        new ValidationException(
+                        new SchemaValidationException(
                             \sprintf(
                                 'Field argument %s.%s(%s:) can only be defined once.',
                                 $type->getName(),
@@ -197,7 +197,7 @@ class TypesRule extends AbstractRule
                 // Ensure the type is an input type
                 if (!isInputType($argument->getType())) {
                     $this->context->reportError(
-                        new ValidationException(
+                        new SchemaValidationException(
                             \sprintf(
                                 'The type of %s.%s(%s:) must be Input Type but got: %s.',
                                 $type->getName(),
@@ -224,7 +224,7 @@ class TypesRule extends AbstractRule
         foreach ($objectType->getInterfaces() as $interface) {
             if (!($interface instanceof InterfaceType)) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf(
                             'Type %s must only implement Interface types, it cannot implement %s.',
                             toString($objectType),
@@ -243,7 +243,7 @@ class TypesRule extends AbstractRule
 
             if (isset($implementedTypeNames[$interfaceName])) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf('Type %s can only implement %s once.', $objectType->getName(), $interfaceName),
                         $this->getAllImplementsInterfaceNodes($objectType, $interfaceName)
                     )
@@ -276,7 +276,7 @@ class TypesRule extends AbstractRule
             // Assert interface field exists on object.
             if (null === $objectField) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf(
                             'Interface field %s.%s expected but %s does not provide it.',
                             $interfaceType->getName(),
@@ -295,7 +295,7 @@ class TypesRule extends AbstractRule
             if (!$this->typeComparator->isTypeSubtypeOf(
                 $this->context->getSchema(), $objectField->getType(), $interfaceField->getType())) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf(
                             'Interface field %s.%s expects type %s but %s.%s is type %s.',
                             $interfaceType->getName(),
@@ -323,7 +323,7 @@ class TypesRule extends AbstractRule
                 // Assert interface field arg exists on object field.
                 if (null === $objectArgument) {
                     $this->context->reportError(
-                        new ValidationException(
+                        new SchemaValidationException(
                             \sprintf(
                                 'Interface field argument %s.%s(%s:) expected but %s.%s does not provide it.',
                                 $interfaceType->getName(),
@@ -347,7 +347,7 @@ class TypesRule extends AbstractRule
                 // TODO: change to contravariant?
                 if (!$this->typeComparator->isEqualType($interfaceArgument->getType(), $objectArgument->getType())) {
                     $this->context->reportError(
-                        new ValidationException(
+                        new SchemaValidationException(
                             \sprintf(
                                 'Interface field argument %s.%s(%s:) expects type %s but %s.%s(%s:) is type %s.',
                                 $interfaceType->getName(),
@@ -382,7 +382,7 @@ class TypesRule extends AbstractRule
 
                     if (null === $interfaceArgument && $objectArgument->getType() instanceof NonNullType) {
                         $this->context->reportError(
-                            new ValidationException(
+                            new SchemaValidationException(
                                 \sprintf(
                                     'Object field argument %s.%s(%s:) is of required type %s ' .
                                     'but is not also provided by the Interface field %s.%s.',
@@ -418,7 +418,7 @@ class TypesRule extends AbstractRule
 
         if (empty($memberTypes)) {
             $this->context->reportError(
-                new ValidationException(
+                new SchemaValidationException(
                     sprintf('Union type %s must define one or more member types.', $unionType->getName()),
                     [$unionType->getAstNode()]
                 )
@@ -431,7 +431,7 @@ class TypesRule extends AbstractRule
             $memberTypeName = $memberType->getName();
             if (isset($includedTypeNames[$memberTypeName])) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf(
                             'Union type %s can only include type %s once.',
                             $unionType->getName(),
@@ -448,7 +448,7 @@ class TypesRule extends AbstractRule
 
             if (!($memberType instanceof ObjectType)) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf(
                             'Union type %s can only include Object types, it cannot include %s.',
                             $unionType->getName(),
@@ -474,7 +474,7 @@ class TypesRule extends AbstractRule
 
         if (empty($enumValues)) {
             $this->context->reportError(
-                new ValidationException(
+                new SchemaValidationException(
                     \sprintf('Enum type %s must define one or more values.', $enumType->getName()),
                     [$enumType->getAstNode()]
                 )
@@ -489,7 +489,7 @@ class TypesRule extends AbstractRule
 
             if (null !== $allNodes && \count($allNodes) > 1) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         sprintf('Enum type %s can include value %s only once.', $enumType->getName(), $valueName),
                         $allNodes
                     )
@@ -503,7 +503,7 @@ class TypesRule extends AbstractRule
 
             if ($valueName === 'true' || $valueName === 'false' || $valueName === 'null') {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         sprintf('Enum type %s cannot include value: %s.', $enumType->getName(), $valueName),
                         [$enumValue->getAstNode()]
                     )
@@ -525,7 +525,7 @@ class TypesRule extends AbstractRule
 
         if (empty($fields)) {
             $this->context->reportError(
-                new ValidationException(
+                new SchemaValidationException(
                     \sprintf('Input Object type %s must define one or more fields.', $inputObjectType->getName()),
                     [$inputObjectType->getAstNode()]
                 )
@@ -542,7 +542,7 @@ class TypesRule extends AbstractRule
             // Ensure the type is an input type
             if (!isInputType($field->getType())) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf(
                             'The type of %s.%s must be Input Type but got: %s.',
                             $inputObjectType->getName(),
