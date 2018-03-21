@@ -21,6 +21,7 @@ use Digia\GraphQL\SchemaBuilder\ResolverRegistryInterface;
 use Digia\GraphQL\SchemaBuilder\SchemaBuilderInterface;
 use Digia\GraphQL\SchemaBuilder\SchemaBuilderProvider;
 use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
+use Digia\GraphQL\SchemaBuilder\SchemaExtenderProvider;
 use Digia\GraphQL\SchemaValidator\SchemaValidatorProvider;
 use Digia\GraphQL\Type\CoercerProvider;
 use Digia\GraphQL\Type\DirectivesProvider;
@@ -67,6 +68,7 @@ class GraphQL
         CacheProvider::class,
         LanguageProvider::class,
         SchemaBuilderProvider::class,
+        SchemaExtenderProvider::class,
         SchemaValidatorProvider::class,
         CoercerProvider::class,
         IntrospectionProvider::class,
