@@ -30,6 +30,7 @@ use function Digia\GraphQL\Type\isInputType;
 use function Digia\GraphQL\Type\isIntrospectionType;
 use function Digia\GraphQL\Type\isOutputType;
 use function Digia\GraphQL\Util\find;
+use function Digia\GraphQL\Util\toString;
 
 class TypesRule extends AbstractRule
 {
@@ -65,7 +66,7 @@ class TypesRule extends AbstractRule
             if (!($type instanceof NamedTypeInterface)) {
                 $this->context->reportError(
                     new ValidationException(
-                        \sprintf('Expected GraphQL named type but got: %s.', (string)$type),
+                        \sprintf('Expected GraphQL named type but got: %s.', toString($type)),
                         $type instanceof NodeAwareInterface ? [$type->getAstNode()] : null
                     )
                 );
@@ -149,17 +150,20 @@ class TypesRule extends AbstractRule
                 return; // continue loop
             }
 
+            $fieldType = $field->getType();
+
             // Ensure the type is an output type
-            if (!isOutputType($field->getType())) {
+            if (!isOutputType($fieldType)) {
+                $fieldTypeNode = $this->getFieldTypeNode($type, $fieldName);
                 $this->context->reportError(
                     new ValidationException(
                         \sprintf(
-                            'The type of %s.%s must be Output Type but got: %s',
+                            'The type of %s.%s must be Output Type but got: %s.',
                             $type->getName(),
                             $fieldName,
-                            (string)$field->getType()
+                            toString($fieldType)
                         ),
-                        [$this->getFieldTypeNode($type, $fieldName)]
+                        [$fieldTypeNode]
                     )
                 );
             }
@@ -195,11 +199,11 @@ class TypesRule extends AbstractRule
                     $this->context->reportError(
                         new ValidationException(
                             \sprintf(
-                                'The type of %s.%s(%s:) must be Input Type but got: %s',
+                                'The type of %s.%s(%s:) must be Input Type but got: %s.',
                                 $type->getName(),
                                 $fieldName,
                                 $argumentName,
-                                (string)$argument->getType()
+                                toString($argument->getType())
                             ),
                             $this->getAllFieldArgumentNodes($type, $fieldName, $argumentName)
                         )
@@ -223,10 +227,12 @@ class TypesRule extends AbstractRule
                     new ValidationException(
                         \sprintf(
                             'Type %s must only implement Interface types, it cannot implement %s.',
-                            (string)$objectType,
-                            (string)$interface
+                            toString($objectType),
+                            toString($interface)
                         ),
-                        [$this->getImplementsInterfaceNode($objectType, $interface->getName())]
+                        null !== $interface
+                            ? [$this->getImplementsInterfaceNode($objectType, $interface->getName())]
+                            : null
                     )
                 );
 
@@ -255,6 +261,7 @@ class TypesRule extends AbstractRule
     /**
      * @param ObjectType    $objectType
      * @param InterfaceType $interfaceType
+     * @throws InvariantException
      */
     protected function validateObjectImplementsInterface(ObjectType $objectType, InterfaceType $interfaceType): void
     {
@@ -263,8 +270,8 @@ class TypesRule extends AbstractRule
 
         // Assert each interface field is implemented.
         foreach (\array_keys($interfaceFields) as $fieldName) {
-            $objectField    = $objectFields[$fieldName];
             $interfaceField = $interfaceFields[$fieldName];
+            $objectField    = $objectFields[$fieldName] ?? null;
 
             // Assert interface field exists on object.
             if (null === $objectField) {
@@ -293,10 +300,10 @@ class TypesRule extends AbstractRule
                             'Interface field %s.%s expects type %s but %s.%s is type %s.',
                             $interfaceType->getName(),
                             $fieldName,
-                            (string)$interfaceField->getType(),
+                            toString($interfaceField->getType()),
                             $objectType->getName(),
                             $fieldName,
-                            (string)$objectField->getType()
+                            toString($objectField->getType())
                         ),
                         [
                             $this->getFieldTypeNode($interfaceType, $fieldName),
@@ -346,11 +353,11 @@ class TypesRule extends AbstractRule
                                 $interfaceType->getName(),
                                 $fieldName,
                                 $argumentName,
-                                (string)$interfaceArgument->getType(),
+                                toString($interfaceArgument->getType()),
                                 $objectType->getName(),
                                 $fieldName,
                                 $argumentName,
-                                (string)$objectArgument->getType()
+                                toString($objectArgument->getType())
                             ),
                             [
                                 $this->getFieldArgumentTypeNode($interfaceType, $fieldName, $argumentName),
@@ -364,22 +371,25 @@ class TypesRule extends AbstractRule
 
                 // TODO: validate default values?
 
-                foreach ($objectFields as $objectArgument) {
+                foreach ($objectField->getArguments() as $objectArgument) {
                     $argumentName      = $objectArgument->getName();
-                    $interfaceArgument = find($interfaceField->getArguments(),
+                    $interfaceArgument = find(
+                        $interfaceField->getArguments(),
                         function (Argument $argument) use ($argumentName) {
                             return $argument->getName() === $argumentName;
-                        });
+                        }
+                    );
 
                     if (null === $interfaceArgument && $objectArgument->getType() instanceof NonNullType) {
                         $this->context->reportError(
                             new ValidationException(
                                 \sprintf(
-                                    'Object field argument %s.%s(%s:) is of required type %s but is not also provided by the Interface field %s.%s.',
+                                    'Object field argument %s.%s(%s:) is of required type %s ' .
+                                    'but is not also provided by the Interface field %s.%s.',
                                     $objectType->getName(),
                                     $fieldName,
                                     $argumentName,
-                                    (string)$objectArgument->getType(),
+                                    toString($objectArgument->getType()),
                                     $interfaceType->getName(),
                                     $fieldName
                                 ),
@@ -418,7 +428,7 @@ class TypesRule extends AbstractRule
         $includedTypeNames = [];
 
         foreach ($memberTypes as $memberType) {
-            $memberTypeName = (string)$memberType;
+            $memberTypeName = $memberType->getName();
             if (isset($includedTypeNames[$memberTypeName])) {
                 $this->context->reportError(
                     new ValidationException(
@@ -442,9 +452,11 @@ class TypesRule extends AbstractRule
                         \sprintf(
                             'Union type %s can only include Object types, it cannot include %s.',
                             $unionType->getName(),
-                            (string)$memberType
+                            toString($memberType)
                         ),
-                        $this->getUnionMemberTypeNodes($unionType, $memberTypeName)
+                        null !== $memberTypeName
+                            ? $this->getUnionMemberTypeNodes($unionType, $memberTypeName)
+                            : null
                     )
                 );
             }
@@ -535,7 +547,7 @@ class TypesRule extends AbstractRule
                             'The type of %s.%s must be Input Type but got: %s.',
                             $inputObjectType->getName(),
                             $fieldName,
-                            (string)$field->getType()
+                            toString($field->getType())
                         ),
                         [$field->getAstNode()]
                     )
@@ -569,7 +581,7 @@ class TypesRule extends AbstractRule
      */
     protected function getFieldTypeNode(NamedTypeInterface $type, string $fieldName): ?TypeNodeInterface
     {
-        $fieldNode = $this->getAllFieldNodes($type, $fieldName)[0];
+        $fieldNode = $this->getFieldNode($type, $fieldName);
         return null !== $fieldNode ? $fieldNode->getType() : null;
     }
 
