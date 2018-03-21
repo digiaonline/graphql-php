@@ -6,7 +6,6 @@ use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\UndefinedException;
-use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
@@ -309,7 +308,14 @@ abstract class ExecutionStrategy
         };
 
         foreach ($fields as $fieldName => $fieldNodes) {
-            $promise = $promise->then(function ($resolvedResults) use ($resolve, $fieldName, $path, $objectType, $rootValue, $fieldNodes) {
+            $promise = $promise->then(function ($resolvedResults) use (
+                $resolve,
+                $fieldName,
+                $path,
+                $objectType,
+                $rootValue,
+                $fieldNodes
+            ) {
                 return $resolve($resolvedResults, $fieldName, $path, $objectType, $rootValue, $fieldNodes);
             });
         }
@@ -498,8 +504,8 @@ abstract class ExecutionStrategy
             if ($this->isPromise($completed)) {
                 $context = $this->context;
                 /** @var ExtendedPromiseInterface $completed */
-                return $completed->then(null, function ($error) use ($context) {
-                    $context->addError($error);
+                return $completed->then(null, function ($error) use ($context, $fieldNodes, $path) {
+                    $context->addError($this->buildLocatedError($error, $fieldNodes, $path));
                     return new \React\Promise\FulfilledPromise(null);
                 });
             }
@@ -812,6 +818,17 @@ abstract class ExecutionStrategy
 
         $completedItems  = [];
         $containsPromise = false;
+
+        if (!is_array($result) && !($result instanceof \Traversable)) {
+            throw new \Exception(
+                sprintf(
+                    'Expected Array or Traversable, but did not find one for field %s.%s.',
+                    $info->getParentType()->getName(),
+                    $info->getFieldName()
+                )
+            );
+        }
+
         foreach ($result as $key => $item) {
             $fieldPath        = $path;
             $fieldPath[]      = $key;
