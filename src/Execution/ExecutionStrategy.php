@@ -23,7 +23,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Schema;
-use Digia\GraphQL\Util\ValueNodeCoercer;
+use Digia\GraphQL\Util\ValueNodeResolver;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
@@ -84,7 +84,7 @@ abstract class ExecutionStrategy
         $this->operation = $operation;
         $this->rootValue = $rootValue;
         // TODO: Inject the ValuesResolver instance by using a builder for this class.
-        $this->valuesResolver = new ValuesResolver(new ValueNodeCoercer());
+        $this->valuesResolver = new ValuesResolver(new ValueNodeResolver());
     }
 
     /**
