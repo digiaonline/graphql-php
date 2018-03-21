@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\SchemaValidator;
 
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\SchemaValidator\Rule\RuleInterface;
 use Digia\GraphQL\SchemaValidator\Rule\SupportedRules;
 use Digia\GraphQL\Type\SchemaInterface;
@@ -10,34 +10,32 @@ use Digia\GraphQL\Type\SchemaInterface;
 class SchemaValidator implements SchemaValidatorInterface
 {
     /**
-     * @var ContextBuilderInterface
+     * @var ValidationContextCreatorInterface
      */
-    protected $contextBuilder;
+    protected $contextCreator;
 
     /**
      * SchemaValidator constructor.
-     * @param ContextBuilderInterface $contextBuilder
+     * @param ValidationContextCreatorInterface $contextCreator
      */
-    public function __construct(ContextBuilderInterface $contextBuilder)
+    public function __construct(ValidationContextCreatorInterface $contextCreator)
     {
-        $this->contextBuilder = $contextBuilder;
+        $this->contextCreator = $contextCreator;
     }
 
     /**
      * @param SchemaInterface      $schema
      * @param RuleInterface[]|null $rules
-     * @return ValidationException[]
+     * @return SchemaValidationException[]
      */
     public function validate(SchemaInterface $schema, ?array $rules = null): array
     {
-        $context = $this->contextBuilder->build($schema);
+        $context = $this->contextCreator->create($schema);
 
         $rules = $rules ?? SupportedRules::build();
 
         foreach ($rules as $rule) {
-            $rule
-                ->setContext($context)
-                ->evaluate();
+            $rule->setContext($context)->evaluate();
         }
 
         return $context->getErrors();
@@ -45,18 +43,18 @@ class SchemaValidator implements SchemaValidatorInterface
 
     /**
      * @param SchemaInterface $schema
-     * @throws ValidationException
+     * @throws SchemaValidationException
      */
     public function assertValid(SchemaInterface $schema): void
     {
         $errors = $this->validate($schema);
 
         if (!empty($errors)) {
-            $message = \implode("\n", \array_map(function (ValidationException $error) {
+            $message = \implode("\n", \array_map(function (SchemaValidationException $error) {
                 return $error->getMessage();
             }, $errors));
 
-            throw new ValidationException($message);
+            throw new SchemaValidationException($message);
         }
     }
 }

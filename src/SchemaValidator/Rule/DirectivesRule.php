@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\SchemaValidator\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -37,7 +37,7 @@ class DirectivesRule extends AbstractRule
         foreach ($directives as $directive) {
             if (!($directive instanceof DirectiveInterface)) {
                 $this->context->reportError(
-                    new ValidationException(
+                    new SchemaValidationException(
                         \sprintf(
                             'Expected directive but got: %s.',
                             $directive instanceof NodeAwareInterface ? $directive->getAstNode() : $directive
@@ -65,7 +65,7 @@ class DirectivesRule extends AbstractRule
                 // Ensure they are unique per directive.
                 if (isset($argumentNames[$argumentName])) {
                     $this->context->reportError(
-                        new ValidationException(
+                        new SchemaValidationException(
                             \sprintf(
                                 'Argument @%s(%s:) can only be defined once.',
                                 $directive->getName(),
@@ -83,7 +83,7 @@ class DirectivesRule extends AbstractRule
                 // Ensure the type is an input type.
                 if (!isInputType($argument->getType())) {
                     $this->context->reportError(
-                        new ValidationException(
+                        new SchemaValidationException(
                             \sprintf(
                                 'The type of @%s(%s:) must be Input Type but got: %s.',
                                 $directive->getName(),

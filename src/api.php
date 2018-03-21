@@ -3,6 +3,7 @@
 namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Execution\ExecutionInterface;
@@ -32,7 +33,7 @@ function buildSchema(string $source, array $resolverMaps = [], array $options = 
 
 /**
  * @param SchemaInterface $schema
- * @return ValidationException[]
+ * @return SchemaValidationException[]
  */
 function validateSchema(SchemaInterface $schema): array
 {

@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\SchemaValidator;
 
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\SchemaValidator\Rule\RuleInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 
@@ -11,7 +11,7 @@ interface SchemaValidatorInterface
     /**
      * @param SchemaInterface      $schema
      * @param RuleInterface[]|null $rules
-     * @return ValidationException[]
+     * @return SchemaValidationException[]
      */
     public function validate(SchemaInterface $schema, ?array $rules = null): array;
 

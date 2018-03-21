@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\SchemaValidator;
 
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Type\SchemaInterface;
 
 class ValidationContext implements ValidationContextInterface
@@ -13,7 +13,7 @@ class ValidationContext implements ValidationContextInterface
     protected $schema;
 
     /**
-     * @var ValidationException[]
+     * @var SchemaValidationException[]
      */
     protected $errors = [];
 
@@ -29,7 +29,7 @@ class ValidationContext implements ValidationContextInterface
     /**
      * @inheritdoc
      */
-    public function reportError(ValidationException $error)
+    public function reportError(SchemaValidationException $error)
     {
         $this->errors[] = $error;
     }

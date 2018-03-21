@@ -4,12 +4,12 @@ namespace Digia\GraphQL\SchemaValidator;
 
 use Digia\GraphQL\Type\SchemaInterface;
 
-class ContextBuilder implements ContextBuilderInterface
+class ValidationContextCreator implements ValidationContextCreatorInterface
 {
     /**
      * @inheritdoc
      */
-    public function build(SchemaInterface $schema): ValidationContextInterface
+    public function create(SchemaInterface $schema): ValidationContextInterface
     {
         return new ValidationContext($schema);
     }

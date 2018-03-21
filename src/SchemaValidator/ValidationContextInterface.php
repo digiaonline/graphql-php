@@ -2,18 +2,18 @@
 
 namespace Digia\GraphQL\SchemaValidator;
 
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Type\SchemaInterface;
 
 interface ValidationContextInterface
 {
     /**
-     * @param ValidationException $error
+     * @param SchemaValidationException $error
      */
-    public function reportError(ValidationException $error);
+    public function reportError(SchemaValidationException $error);
 
     /**
-     * @return ValidationException[]
+     * @return SchemaValidationException[]
      */
     public function getErrors(): array;
 

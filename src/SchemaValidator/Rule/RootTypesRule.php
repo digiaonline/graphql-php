@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\SchemaValidator\Rule;
 
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
@@ -42,7 +42,7 @@ class RootTypesRule extends AbstractRule
 
         if ($operation === 'query' && null === $rootType) {
             $this->context->reportError(
-                new ValidationException(
+                new SchemaValidationException(
                     \sprintf('%s root type must be provided.', \ucfirst($operation)),
                     $schema->hasAstNode() ? [$schema->getAstNode()] : null
                 )
@@ -53,7 +53,7 @@ class RootTypesRule extends AbstractRule
 
         if (null !== $rootType && !($rootType instanceof ObjectType)) {
             $this->context->reportError(
-                new ValidationException(
+                new SchemaValidationException(
                     \sprintf(
                         $operation === 'query'
                             ? '%s root type must be Object type, it cannot be %s.'
