@@ -572,4 +572,220 @@ SRC;
 
         $this->assertEquals(['numArg' => 123, 'stringArg' => 'foo'], $resolvedArgs);
     }
+
+    /**
+     * Nulls out error subtrees
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testNullsOutErrorsSubTrees()
+    {
+        $source = '{
+          sync
+          syncError
+          syncRawError
+          syncReturnError
+          syncReturnErrorList
+          async
+          asyncReject
+          asyncRawReject
+          asyncEmptyReject
+          asyncError
+          asyncRawError
+          asyncReturnError
+        }';
+
+        $data = [
+            'sync'                => function () {
+                return 'sync';
+            },
+            'syncError'           => function () {
+                throw new \Exception('Error getting syncError');
+            },
+            'syncRawError'        => function () {
+                throw new \Exception('Error getting syncRawError');
+            },
+            'syncReturnError'     => function () {
+                return new \Exception('Error getting syncReturnError');
+            },
+            'syncReturnErrorList' => function () {
+                return [
+                    'sync0',
+                    new \Exception('Error getting syncReturnErrorList1'),
+                    'sync2',
+                    new \Exception('Error getting syncReturnErrorList3'),
+                ];
+            },
+            'async'               => function () {
+                return \React\Promise\resolve('async');
+            },
+            'asyncReject'         => function () {
+                return new \React\Promise\Promise(function ($resolve, $reject) {
+                    $reject(new \Exception('Error getting asyncReject'));
+                });
+            },
+            'asyncRawReject'      => function () {
+                return \React\Promise\reject('Error getting asyncRawReject');
+            },
+            'asyncEmptyReject'    => function () {
+                return \React\Promise\reject(null);
+            },
+            'asyncError'          => function () {
+                return new \React\Promise\Promise(function ($resolve, $reject) {
+                    throw new \Exception('Error getting asyncError');
+                });
+            },
+            'asyncRawError'       => function () {
+                return new \React\Promise\Promise(function () {
+                    throw new \Exception('Error getting asyncRawError');
+                });
+            },
+            'asyncReturnError'    => function () {
+                return \React\Promise\resolve(new \Exception('Error getting asyncReturnError'));
+            },
+        ];
+
+        $schema = new Schema([
+            'query' =>
+                new ObjectType([
+                    'name'   => 'Type',
+                    'fields' => [
+                        'sync'                => ['type' => GraphQLString()],
+                        'syncError'           => ['type' => GraphQLString()],
+                        'syncRawError'        => ['type' => GraphQLString()],
+                        'syncReturnError'     => ['type' => GraphQLString()],
+                        'syncReturnErrorList' => ['type' => GraphQLList(GraphQLString())],
+                        'async'               => ['type' => GraphQLString()],
+                        'asyncReject'         => ['type' => GraphQLString()],
+                        'asyncRawReject'      => ['type' => GraphQLString()],
+                        'asyncEmptyReject'    => ['type' => GraphQLString()],
+                        'asyncError'          => ['type' => GraphQLString()],
+                        'asyncRawError'       => ['type' => GraphQLString()],
+                        'asyncReturnError'    => ['type' => GraphQLString()],
+                    ]
+                ])
+        ]);
+
+        $result = execute($schema, parse($source), $data);
+
+        $this->assertEquals([
+            'data'   => [
+                'sync'                => 'sync',
+                'syncError'           => null,
+                'syncRawError'        => null,
+                'syncReturnError'     => null,
+                'syncReturnErrorList' => ['sync0', null, 'sync2', null],
+                'async'               => 'async',
+                'asyncReject'         => null,
+                'asyncRawReject'      => null,
+                'asyncEmptyReject'    => null,
+                'asyncError'          => null,
+                'asyncRawError'       => null,
+                'asyncReturnError'    => null,
+            ],
+            'errors' => [
+                [
+                    'message'   => 'Error getting syncError',
+                    'locations' => [
+                        [
+                            'line'   => 3,
+                            'column' => 11
+                        ]
+                    ],
+                    'path'      => ['syncError']
+                ],
+                [
+                    'message'   => 'Error getting syncRawError',
+                    'locations' => [
+                        [
+                            'line'   => 4,
+                            'column' => 11
+                        ]
+                    ],
+                    'path'      => ['syncRawError']
+                ],
+                [
+                    'message'   => 'Error getting syncReturnError',
+                    'locations' => [
+                        [
+                            'line'   => 5,
+                            'column' => 11
+                        ]
+                    ],
+                    'path'      => ['syncReturnError']
+                ],
+                [
+                    'message'   => 'Error getting syncReturnErrorList1',
+                    'locations' => [
+                        [
+                            'line'   => 6,
+                            'column' => 11
+                        ]
+                    ],
+                    'path'      => ['syncReturnErrorList', 1]
+                ],
+                [
+                    'message'   => 'Error getting syncReturnErrorList3',
+                    'locations' => [
+                        [
+                            'line'   => 6,
+                            'column' => 11
+                        ]
+                    ],
+                    'path'      => ['syncReturnErrorList', 3]
+                ],
+                [
+                    'message'   => 'Error getting asyncReject',
+                    'locations' => [
+                        [
+                            'line'   => 8,
+                            'column' => 11
+                        ]
+                    ],
+                    'path'      => ['asyncReject']
+                ],
+                [
+                    'message'   => 'Error getting asyncRawReject',
+                    'locations' => null, //@TODO This should not be null
+                    'path'      => ['asyncRawReject']
+                ],
+                [
+                    'message'   => 'An unknown error occurred.',
+                    'locations' => null, //@TODO This should not be null
+                    'path'      => ['asyncEmptyReject']
+                ],
+                [
+                    'message'   => 'Error getting asyncError',
+                    'locations' => [
+                        [
+                            'line'   => 11,
+                            'column' => 11
+                        ]
+                    ],
+                    'path'      => ['asyncError']
+                ],
+                [
+                    'message'   => 'Error getting asyncRawError',
+                    'locations' => [
+                        [
+                            'line'   => 12,
+                            'column' => 11
+                        ]
+                    ],
+                    'path'      => ['asyncRawError']
+                ],
+                [
+                    'message'   => 'Error getting asyncReturnError',
+                    'locations' => [
+                        [
+                            'line'   => 13,
+                            'column' => 11
+                        ]
+                    ],
+                    'path'      => ['asyncReturnError']
+                ],
+            ]
+        ], $result->toArray());
+    }
 }
