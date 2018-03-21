@@ -272,6 +272,10 @@ class Schema implements SchemaInterface, ConfigAwareInterface
         foreach ($this->typeMap as $typeName => $type) {
             if ($type instanceof ObjectType) {
                 foreach ($type->getInterfaces() as $interface) {
+                    if (!($interface instanceof InterfaceType)) {
+                        continue;
+                    }
+
                     $interfaceName = $interface->getName();
 
                     if (!isset($implementations[$interfaceName])) {

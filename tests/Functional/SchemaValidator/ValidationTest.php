@@ -20,33 +20,7 @@ use function Digia\GraphQL\Type\GraphQLScalarType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 use function Digia\GraphQL\Type\GraphQLUnionType;
-
-function withModifiers($types)
-{
-    return \array_merge(
-        $types,
-        array_map(function ($type) {
-            return GraphQLList($type);
-        }, $types),
-        array_map(function ($type) {
-            return GraphQLNonNull($type);
-        }, $types),
-        array_map(function ($type) {
-            return GraphQLNonNull(GraphQLList($type));
-        }, $types)
-    );
-}
-
-function schemaWithFieldType($type)
-{
-    return GraphQLSchema([
-        'query' => GraphQLObjectType([
-            'name'   => 'Query',
-            'fields' => ['f' => ['type' => $type]]
-        ]),
-        'types' => [$type],
-    ]);
-}
+use function Digia\GraphQL\Util\toString;
 
 class ValidationTest extends TestCase
 {
@@ -107,7 +81,7 @@ class ValidationTest extends TestCase
             ],
         ]);
 
-        $this->outputTypes = withModifiers([
+        $this->outputTypes = $this->withModifiers([
             GraphQLString(),
             $this->someScalarType,
             $this->someEnumType,
@@ -116,16 +90,16 @@ class ValidationTest extends TestCase
             $this->someInterfaceType,
         ]);
 
-        $this->noOutputTypes = withModifiers([$this->someInputObjectType]);
+        $this->noOutputTypes = $this->withModifiers([$this->someInputObjectType]);
 
-        $this->inputTypes = withModifiers([
+        $this->inputTypes = $this->withModifiers([
             GraphQLString(),
             $this->someScalarType,
             $this->someEnumType,
             $this->someInputObjectType,
         ]);
 
-        $this->noInputTypes = withModifiers([
+        $this->noInputTypes = $this->withModifiers([
             $this->someObjectType,
             $this->someUnionType,
             $this->someInterfaceType,
@@ -453,7 +427,7 @@ class ValidationTest extends TestCase
             ]
         ]);
 
-        $manualSchema = schemaWithFieldType(
+        $manualSchema = $this->schemaWithFieldType(
             GraphQLObjectType([
                 'name'   => 'IncompleteObject',
                 'fields' => [],
@@ -466,7 +440,7 @@ class ValidationTest extends TestCase
             ]
         ]);
 
-        $manualSchema2 = schemaWithFieldType(
+        $manualSchema2 = $this->schemaWithFieldType(
             GraphQLObjectType([
                 'name'   => 'IncompleteObject',
                 'fields' => function () {
@@ -486,7 +460,7 @@ class ValidationTest extends TestCase
 
     public function testRejectsAnObjectTypeWithIncorrectlyNamedFields()
     {
-        $schema = schemaWithFieldType(
+        $schema = $this->schemaWithFieldType(
             GraphQLObjectType([
                 'name'   => 'SomeObject',
                 'fields' => [
@@ -512,7 +486,7 @@ class ValidationTest extends TestCase
 
     public function testAcceptsFieldArgumentsWithValidNames()
     {
-        $schema = schemaWithFieldType(
+        $schema = $this->schemaWithFieldType(
             GraphQLObjectType([
                 'name'   => 'SomeObject',
                 'fields' => [
@@ -533,7 +507,7 @@ class ValidationTest extends TestCase
 
     public function testRejectsFieldArgumentsWithInvalidNames()
     {
-        $schema = schemaWithFieldType(
+        $schema = $this->schemaWithFieldType(
             GraphQLObjectType([
                 'name'   => 'SomeObject',
                 'fields' => [
@@ -677,7 +651,7 @@ class ValidationTest extends TestCase
         ];
 
         foreach ($badUnionMemberTypes as $memberType) {
-            $badSchema = schemaWithFieldType(
+            $badSchema = $this->schemaWithFieldType(
                 GraphQLUnionType(['name' => 'BadUnion', 'types' => [$memberType]])
             );
 
@@ -820,7 +794,7 @@ class ValidationTest extends TestCase
     public function testRejectsAnEnumTypeWithIncorrectlyNamedValues()
     {
         $schemaWithEnum = function ($name) {
-            return schemaWithFieldType(
+            return $this->schemaWithFieldType(
                 GraphQLEnumType([
                     'name'   => 'SomeEnum',
                     'values' => [
@@ -835,7 +809,7 @@ class ValidationTest extends TestCase
         foreach ($badEnumValues as $enumValue) {
             $this->expectInvalid($schemaWithEnum($enumValue), [
                 [
-                    'message' => sprintf('Names must match /^[_a-zA-Z][_a-zA-Z0-9]*$/ but "%s" does not.', $enumValue),
+                    'message' => sprintf('Names must match /^[_a-zA-Z][_a-zA-Z0-9]*$/ but "%s" does not.', $enumValue)
                 ]
             ]);
         }
@@ -845,7 +819,7 @@ class ValidationTest extends TestCase
         foreach ($forbiddenEnumValues as $enumValue) {
             $this->expectInvalid($schemaWithEnum($enumValue), [
                 [
-                    'message' => sprintf('Enum type SomeEnum cannot include value: %s.', $enumValue),
+                    'message' => sprintf('Enum type SomeEnum cannot include value: %s.', $enumValue)
                 ]
             ]);
         }
@@ -853,7 +827,858 @@ class ValidationTest extends TestCase
 
     // Type System: Object fields must have output types
 
-    // TODO: Implement the rest of the test cases.
+    // accepts an output type as an Object field type: ${type}
+
+    public function testAcceptsOutputTypesAsObjectFieldTypes()
+    {
+        foreach ($this->outputTypes as $outputType) {
+            $schema = $this->schemaWithFieldType(
+                $this->objectWithFieldOfType($outputType)
+            );
+            $this->expectValid($schema);
+        }
+    }
+
+    // rejects an empty Object field type
+
+    public function testRejectsAnEmptyObjectFieldType()
+    {
+        $schema = $this->schemaWithFieldType(
+            $this->objectWithFieldOfType(null)
+        );
+        $this->expectInvalid($schema, [
+            [
+                'message' => 'The type of BadObject.badField must be Output Type but got: (null).'
+            ]
+        ]);
+    }
+
+    // rejects a non-output type as an Object field type: ${type}
+
+    public function testRejectsNonOutputTypeAsObjectFieldTypes()
+    {
+        foreach ($this->noOutputTypes as $notOutputType) {
+            $schema = $this->schemaWithFieldType(
+                $this->objectWithFieldOfType($notOutputType)
+            );
+            $this->expectInvalid($schema, [
+                [
+                    'message' => \sprintf(
+                        'The type of BadObject.badField must be Output Type but got: %s.',
+                        toString($notOutputType)
+                    )
+                ]
+            ]);
+        }
+    }
+
+    // rejects with relevant locations for a non-output type as an Object field type
+
+    public function testRejectsWithLocationsForANonOutputTypeAsAnObjectFieldType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          field: [SomeInputObject]
+        }
+        
+        input SomeInputObject {
+          field: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message'   => 'The type of Query.field must be Output Type but got: [SomeInputObject].',
+                'locations' => [locationShorthandToArray([2, 10])]
+            ]
+        ]);
+    }
+
+    // Type System: Objects can only implement unique interfaces
+
+    // rejects an Object implementing a non-type values
+
+    public function testRejectsAnObjectImplementingANonTypeValues()
+    {
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'       => 'BadObject',
+                'fields'     => ['f' => ['type' => GraphQLString()]],
+                'interfaces' => [null],
+            ]),
+        ]);
+
+        $this->expectInvalid($schema, [
+            [
+                'message' => 'Type BadObject must only implement Interface types, it cannot implement (null).'
+            ]
+        ]);
+    }
+
+    // rejects an Object implementing a non-Interface type
+
+    public function testRejectsAnObjectImplementingANonInterfaceType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: BadObject
+        }
+        
+        input SomeInputObject {
+          field: String
+        }
+        
+        type BadObject implements SomeInputObject {
+          field: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message'   => 'Type BadObject must only implement Interface types, it cannot implement SomeInputObject.',
+                'locations' => [locationShorthandToArray([9, 27])]
+            ]
+        ]);
+    }
+
+    // rejects an Object implementing the same interface twice
+
+    public function testRejectsAnObjectImplementingTheSameInterfaceTwice()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: String
+        }
+        
+        type AnotherObject implements AnotherInterface & AnotherInterface {
+          field: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message'   => 'Type AnotherObject can only implement AnotherInterface once.',
+                'locations' => locationsShorthandToArray([[9, 31], [9, 50]]),
+            ]
+        ]);
+    }
+
+    // rejects an Object implementing the same interface twice due to extension
+
+    public function testRejectsAnObjectImplementingTheSameInterfaceTwiceDueToExtension()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: String
+        }
+        '));
+
+        $this->markTestIncomplete('INCOMPLETE: We do not have support schema extension.');
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+//        $extendedSchema = extendSchema($schema, parse('extend type AnotherObject implements AnotherInterface'))
+    }
+
+    // Type System: Interface extensions should be valid
+
+    // rejects an Object implementing the extended interface due to missing field
+
+    // rejects an Object implementing the extended interface due to missing field args
+
+    // rejects Objects implementing the extended interface due to mismatching interface type
+
+    // Type System: Interface fields must have output types
+
+    // accepts an output type as an Interface field type: ${type}
+
+    public function testAcceptsOutputTypesAsInterfaceFieldTypes()
+    {
+        foreach ($this->outputTypes as $outputType) {
+            $schema = $this->schemaWithFieldType(
+                $this->interfaceWithFieldOfType($outputType)
+            );
+            $this->expectValid($schema);
+        }
+    }
+
+    // rejects an empty Interface field type
+
+    public function testRejectsAnEmptyInterfaceFieldType()
+    {
+        $schema = $this->schemaWithFieldType(
+            $this->interfaceWithFieldOfType(null)
+        );
+        $this->expectInvalid($schema, [
+            [
+                'message' => 'The type of BadInterface.badField must be Output Type but got: (null).'
+            ]
+        ]);
+    }
+
+    // rejects a non-output type as an Interface field type: ${type}
+
+    public function testRejectsNonOutputTypesAsInterfaceFieldTypes()
+    {
+        foreach ($this->noOutputTypes as $notOutputType) {
+            $schema = $this->schemaWithFieldType(
+                $this->interfaceWithFieldOfType($notOutputType)
+            );
+            $this->expectInvalid($schema, [
+                [
+                    'message' => \sprintf(
+                        'The type of BadInterface.badField must be Output Type but got: %s.',
+                        toString($notOutputType)
+                    )
+                ]
+            ]);
+        }
+    }
+
+    // rejects a non-output type as an Interface field type with locations
+
+    public function testRejectsWithLocationsForANonOutputTypeAsAnInterfaceFieldType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: SomeInterface
+        }
+        
+        interface SomeInterface {
+          field: SomeInputObject
+        }
+        
+        input SomeInputObject {
+          foo: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message'   => 'The type of SomeInterface.field must be Output Type but got: SomeInputObject.',
+                'locations' => [locationShorthandToArray([6, 10])]
+            ]
+        ]);
+    }
+
+    // Type System: Field arguments must have input types
+
+    // accepts an input type as a field arg type: ${type}
+
+    public function testAcceptsInputTypesAsFieldArgumentTypes()
+    {
+        foreach ($this->inputTypes as $inputType) {
+            $schema = $this->schemaWithFieldType(
+                $this->objectWithFieldArgumentOfType($inputType)
+            );
+            $this->expectValid($schema);
+        }
+    }
+
+    // rejects an empty field arg type
+
+    public function testRejectsAnEmptyFieldArgumentType()
+    {
+        $schema = $this->schemaWithFieldType(
+            $this->objectWithFieldArgumentOfType(null)
+        );
+        $this->expectInvalid($schema, [
+            [
+                'message' => 'The type of BadObject.badField(badArg:) must be Input Type but got: (null).'
+            ]
+        ]);
+    }
+    
+    // rejects a non-input type as a field arg type: ${type}
+
+    public function testRejectsNonInputTypesAsFieldArgumentTypes()
+    {
+        foreach ($this->noInputTypes as $notInputType) {
+            $schema = $this->schemaWithFieldType(
+                $this->objectWithFieldArgumentOfType($notInputType)
+            );
+            $this->expectInvalid($schema, [
+                [
+                    'message' => \sprintf(
+                        'The type of BadObject.badField(badArg:) must be Input Type but got: %s.',
+                        toString($notInputType)
+                    )
+                ]
+            ]);
+        }
+    }
+
+    // rejects a non-input type as a field arg with locations
+
+    public function testRejectsWithLocationsForANonInputTypeAsAFieldArgumentType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test(arg: SomeObject): String
+        }
+        
+        type SomeObject {
+          foo: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message'   => 'The type of Query.test(arg:) must be Input Type but got: SomeObject.',
+                'locations' => [locationShorthandToArray([2, 8])]
+            ]
+        ]);
+    }
+
+    // Type System: Input Object fields must have input types
+
+    // accepts an input type as an input field type: ${type}
+
+    public function testAcceptsInputTypesAsInputFieldTypes()
+    {
+        foreach ($this->inputTypes as $inputType) {
+            $schema = $this->schemaWithFieldType(
+                $this->inputObjectWithFieldOfType($inputType)
+            );
+            $this->expectValid($schema);
+        }
+    }
+
+    // rejects an empty input field type
+
+    public function testRejectsAnEmptyInputFieldType()
+    {
+        $schema = $this->schemaWithFieldType(
+            $this->inputObjectWithFieldOfType(null)
+        );
+        $this->expectInvalid($schema, [
+            [
+                'message' => 'The type of BadInputObject.badField must be Input Type but got: (null).'
+            ]
+        ]);
+    }
+
+    // rejects a non-input type as an input field type: ${type}
+
+    public function testRejectsNonInputTypesAsInputFieldTypes()
+    {
+        foreach ($this->noInputTypes as $notInputType) {
+            $schema = $this->schemaWithFieldType(
+                $this->inputObjectWithFieldOfType($notInputType)
+            );
+            $this->expectInvalid($schema, [
+                [
+                    'message' => \sprintf(
+                        'The type of BadInputObject.badField must be Input Type but got: %s.',
+                        toString($notInputType)
+                    )
+                ]
+            ]);
+        }
+    }
+
+    // rejects a non-input type as an input object field with locations
+
+    public function testRejectsWithLocationsForANonInputTypeAsAInputFieldType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+        test(arg: SomeInputObject): String
+        }
+        
+        input SomeInputObject {
+          foo: SomeObject
+        }
+        
+        type SomeObject {
+          bar: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message'   => 'The type of SomeInputObject.foo must be Input Type but got: SomeObject.',
+                'locations' => [locationShorthandToArray([6, 3])]
+            ]
+        ]);
+    }
+
+    // Objects must adhere to Interface they implement
+
+    // accepts an Object which implements an Interface
+
+    public function testAcceptsAnObjectWhichImplementsAnInterface()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field(input: String): String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field(input: String): String
+        }
+        '));
+
+        $this->expectValid($schema);
+    }
+
+    // accepts an Object which implements an Interface along with more fields
+
+    public function testAcceptAnObjectWhichImplementsAnInterfaceAlongWithMoreFields()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field(input: String): String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field(input: String): String
+          anotherField: String
+        }
+        '));
+
+        $this->expectValid($schema);
+    }
+
+    // accepts an Object which implements an Interface field along with additional optional arguments
+
+    public function testAcceptsAnObjectWhichImplementsAnInterfaceFieldAlongWithAdditionalOptionalArguments()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field(input: String): String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field(input: String, anotherInput: String): String
+        }
+        '));
+
+        $this->expectValid($schema);
+    }
+
+    // rejects an Object missing an Interface field
+
+    public function testRejectsAnObjectMissingAnInterfaceField()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field(input: String): String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          anotherField: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' => 'Interface field AnotherInterface.field expected but AnotherObject does not provide it.',
+                'locations' => locationsShorthandToArray([[6, 3], [9, 1]])
+            ]
+        ]);
+    }
+
+    // rejects an Object with an incorrectly typed Interface field
+
+    public function testRejectsAnObjectWithIncorrectlyTypedInterfaceField()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field(input: String): String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field(input: String): Int
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' =>
+                    'Interface field AnotherInterface.field expects ' .
+                    'type String but AnotherObject.field is type Int.',
+                'locations' => locationsShorthandToArray([[6, 25], [10, 25]])
+            ]
+        ]);
+    }
+
+    // rejects an Object with a differently typed Interface field
+
+    public function testRejectsAnObjectWithADifferentlyTypedInterfaceField()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        type A { foo: String }
+        type B { foo: String }
+        
+        interface AnotherInterface {
+          field: A
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: B
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' => 'Interface field AnotherInterface.field expects type A but AnotherObject.field is type B.',
+                'locations' => locationsShorthandToArray([[9, 10], [13, 10]])
+            ]
+        ]);
+    }
+
+    // accepts an Object with a subtyped Interface field (interface)
+
+    public function testAcceptsAnObjectWithASubtypedInterfaceField()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: AnotherInterface
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: AnotherObject
+        }
+        '));
+
+        $this->expectValid($schema);
+    }
+
+    // accepts an Object with a subtyped Interface field (union)
+
+    public function testAcceptAnObjectWithASubtypedInterfaceField()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        type SomeObject {
+          field: String
+        }
+        
+        union SomeUnionType = SomeObject
+        
+        interface AnotherInterface {
+          field: SomeUnionType
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: SomeObject
+        }
+        '));
+
+        $this->expectValid($schema);
+    }
+
+    // rejects an Object missing an Interface argument
+
+    public function testRejectsAnObjectMissingAnInterfaceArgument()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field(input: String): String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' =>
+                    'Interface field argument AnotherInterface.field(input:) expected ' .
+                    'but AnotherObject.field does not provide it.',
+                'locations' => locationsShorthandToArray([[6, 9], [10, 3]])
+            ]
+        ]);
+    }
+
+    // rejects an Object with an incorrectly typed Interface argument
+
+    public function testRejectsAnObjectWithAnIncorrectlyTypedInterfaceArgument()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field(input: String): String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field(input: Int): String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' =>
+                    'Interface field argument AnotherInterface.field(input:) expects ' .
+                    'type String but AnotherObject.field(input:) is type Int.',
+                'locations' => locationsShorthandToArray([[6, 16], [10, 16]])
+            ]
+        ]);
+    }
+
+    // rejects an Object with both an incorrectly typed field and argument
+
+    public function testRejectsAnObjectWithBothAnIncorrectlyTypedFieldAndArgument()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field(input: String): String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field(input: Int): Int
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' =>
+                    'Interface field AnotherInterface.field expects type String but ' .
+                    'AnotherObject.field is type Int.',
+                'locations' => locationsShorthandToArray([[6, 25], [10, 22]])
+            ],
+            [
+                'message' =>
+                    'Interface field argument AnotherInterface.field(input:) expects ' .
+                    'type String but AnotherObject.field(input:) is type Int.',
+                'locations' => locationsShorthandToArray([[6, 16], [10, 16]])
+            ]
+        ]);
+    }
+
+    // rejects an Object which implements an Interface field along with additional required arguments
+
+    public function testRejectsAnObjectWhichImplementsAnInterfaceFieldAlongWithAdditionalRequiredArguments()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field(input: String): String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field(input: String, anotherInput: String!): String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' =>
+                    'Object field argument AnotherObject.field(anotherInput:) is of ' .
+                    'required type String! but is not also provided by the Interface ' .
+                    'field AnotherInterface.field.',
+                'locations' => locationsShorthandToArray([[10, 24], [6, 3]])
+            ]
+        ]);
+    }
+
+    // accepts an Object with an equivalently wrapped Interface field type
+
+    public function testAcceptsAnObjectWithAnEquivalentlyWrappedInterfaceFieldType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: [String]!
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: [String]!
+        }
+        '));
+
+        $this->expectValid($schema);
+    }
+
+    // rejects an Object with a non-list Interface field list type
+
+    public function testRejectsAnObjectWithANonListInterfaceFieldListType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: [String]
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' =>
+                    'Interface field AnotherInterface.field expects type [String] ' .
+                    'but AnotherObject.field is type String.',
+                'locations' => locationsShorthandToArray([[6, 10], [10, 10]])
+            ]
+        ]);
+    }
+
+    // rejects an Object with a list Interface field non-list type
+
+    public function testRejectsAnObjectWithAListInterfaceFieldNonListType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: [String]
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' =>
+                    'Interface field AnotherInterface.field expects type String but ' .
+                    'AnotherObject.field is type [String].',
+                'locations' => locationsShorthandToArray([[6, 10], [10, 10]])
+            ]
+        ]);
+    }
+
+    // accepts an Object with a subset non-null Interface field type
+
+    public function testAcceptsAnObjectWithASubsetNonNullInterfaceFieldType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: String!
+        }
+        '));
+
+        $this->expectValid($schema);
+    }
+
+    // rejects an Object with a superset nullable Interface field type
+
+    public function testRejectsAnObjectWithASupersetNullableInterfaceFieldType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: String!
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: String
+        }
+        '));
+
+        $this->expectInvalid($schema, [
+            [
+                'message' =>
+                    'Interface field AnotherInterface.field expects type String! ' .
+                    'but AnotherObject.field is type String.',
+                'locations' => locationsShorthandToArray([[6, 10], [10, 10]])
+            ]
+        ]);
+    }
 
     protected function expectValid($schema)
     {
@@ -867,5 +1692,89 @@ class ValidationTest extends TestCase
         $this->assertArraySubset($expectedErrors, \array_map(function (ValidationException $error) {
             return $error->toArray();
         }, $errors));
+    }
+
+    protected function withModifiers($types)
+    {
+        return \array_merge(
+            $types,
+            array_map(function ($type) {
+                return GraphQLList($type);
+            }, $types),
+            array_map(function ($type) {
+                return GraphQLNonNull($type);
+            }, $types),
+            array_map(function ($type) {
+                return GraphQLNonNull(GraphQLList($type));
+            }, $types)
+        );
+    }
+
+    protected function schemaWithFieldType($fieldType)
+    {
+        return GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Query',
+                'fields' => ['f' => ['type' => $fieldType]]
+            ]),
+            'types' => [$fieldType],
+        ]);
+    }
+
+    protected function objectWithFieldOfType($fieldType)
+    {
+        return GraphQLObjectType([
+            'name'   => 'BadObject',
+            'fields' => [
+                'badField' => ['type' => $fieldType],
+            ],
+        ]);
+    }
+
+    protected function interfaceWithFieldOfType($fieldType)
+    {
+        return GraphQLInterfaceType([
+            'name'   => 'BadInterface',
+            'fields' => [
+                'badField' => ['type' => $fieldType],
+            ],
+        ]);
+    }
+
+    protected function objectWithFieldArgumentOfType($argumentType)
+    {
+        return GraphQLObjectType([
+            'name'   => 'BadObject',
+            'fields' => [
+                'badField' => [
+                    'type' => GraphQLString(),
+                    'args' => [
+                        'badArg' => ['type' => $argumentType],
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    protected function inputObjectWithFieldOfType($fieldType)
+    {
+        return GraphQLObjectType([
+            'name'   => 'BadObject',
+            'fields' => [
+                'badField' => [
+                    'type' => GraphQLString(),
+                    'args' => [
+                        'badArg' => [
+                            'type' => GraphQLInputObjectType([
+                                'name'   => 'BadInputObject',
+                                'fields' => [
+                                    'badField' => ['type' => $fieldType],
+                                ],
+                            ])
+                        ],
+                    ],
+                ],
+            ],
+        ]);
     }
 }

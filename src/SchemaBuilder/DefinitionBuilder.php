@@ -269,6 +269,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                     return $this->buildType($interface);
                 }, $node->getInterfaces()) : [];
             },
+            'astNode'     => $node,
         ]);
     }
 
@@ -382,12 +383,14 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                         return $value->getNameValue();
                     },
                     function (InputValueDefinitionNode $value): array {
-                        $type = $this->buildWrappedType($value->getType());
+                        $type         = $this->buildWrappedType($value->getType());
+                        $defaultValue = $value->getDefaultValue();
                         return [
                             'type'         => $type,
                             'description'  => $value->getDescriptionValue(),
-                            'defaultValue' => $this->valuesResolver->coerceValueFromAST($value->getDefaultValue(),
-                                $type),
+                            'defaultValue' => null !== $defaultValue
+                                ? $this->valuesResolver->coerceValueFromAST($defaultValue, $type)
+                                : null,
                             'astNode'      => $value,
                         ];
                     }
