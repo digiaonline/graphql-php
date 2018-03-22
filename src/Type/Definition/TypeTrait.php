@@ -5,23 +5,25 @@ namespace Digia\GraphQL\Type\Definition;
 trait TypeTrait
 {
     /**
-     * @var TypeInterface
+     * @var mixed
      */
     protected $type;
 
     /**
-     * @return TypeInterface
+     * @return mixed
      */
-    public function getType(): TypeInterface
+    public function getType()
     {
         return $this->type;
     }
 
     /**
-     * @param TypeInterface $type
+     * Note: We do not type-hint the `$type`, because we want the `SchemaValidator` to catch these errors.
+     *
+     * @param mixed $type
      * @return $this
      */
-    protected function setType(TypeInterface $type)
+    protected function setType($type)
     {
         $this->type = $type;
         return $this;

@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Util\ValueNodeCoercer;
+use Digia\GraphQL\Util\ValueNodeResolver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 /**
@@ -29,6 +29,6 @@ class ExecutionProvider extends AbstractServiceProvider
         $this->container->add(ExecutionInterface::class, Execution::class, true/* $shared */)
             ->withArgument(ExecutionContextBuilder::class);
         $this->container->add(ValuesResolver::class, ValuesResolver::class, true/* $shared */)
-            ->withArgument(ValueNodeCoercer::class);
+            ->withArgument(ValueNodeResolver::class);
     }
 }

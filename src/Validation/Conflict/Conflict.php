@@ -27,7 +27,7 @@ class Conflict
     /**
      * Conflict constructor.
      * @param string     $responseName
-     * @param mixed     $reason
+     * @param mixed      $reason
      * @param array|null $fieldsA
      * @param array|null $fieldsB
      */
@@ -76,6 +76,6 @@ class Conflict
      */
     public function getAllFields(): array
     {
-        return array_merge($this->fieldsA, $this->fieldsB);
+        return \array_merge($this->fieldsA, $this->fieldsB);
     }
 }

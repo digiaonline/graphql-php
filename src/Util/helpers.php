@@ -3,6 +3,9 @@
 namespace Digia\GraphQL\Util;
 
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use function Digia\GraphQL\printNode;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 
 /**
  * @param bool   $condition
@@ -161,8 +164,11 @@ function keyValueMap(array $array, callable $keyFn, callable $valFn): array
  */
 function toString($value): string
 {
-    if (\is_object($value) && method_exists($value, '__toString')) {
-        return $value;
+    if ($value instanceof TypeInterface) {
+        return (string)$value;
+    }
+    if ($value instanceof NodeInterface) {
+        return printNode($value);
     }
     if (\is_object($value)) {
         return 'Object';
@@ -177,18 +183,18 @@ function toString($value): string
         return '(empty string)';
     }
     if ($value === null) {
-        return 'null';
+        return '(null)';
     }
     if ($value === true) {
-        return 'true';
+        return '(true)';
     }
     if ($value === false) {
-        return 'false';
+        return '(false)';
     }
     if (\is_string($value)) {
         return "\"{$value}\"";
     }
-    if (is_scalar($value)) {
+    if (\is_scalar($value)) {
         return (string)$value;
     }
     return \gettype($value);

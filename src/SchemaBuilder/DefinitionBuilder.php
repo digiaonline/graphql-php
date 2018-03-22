@@ -36,6 +36,7 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Type\assertNullableType;
 use function Digia\GraphQL\Type\GraphQLDirective;
 use function Digia\GraphQL\Type\GraphQLEnumType;
@@ -58,14 +59,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     private const CACHE_PREFIX = 'GraphQL_DefinitionBuilder_';
 
     /**
-     * @var ValuesResolver
+     * @var array
      */
-    protected $valuesResolver;
-
-    /**
-     * @var callable
-     */
-    protected $resolveTypeFunction;
+    protected $typeDefinitionsMap;
 
     /**
      * @var array
@@ -73,25 +69,36 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected $resolverMap;
 
     /**
-     * @var array
+     * @var callable
      */
-    protected $typeDefinitionsMap;
+    protected $resolveTypeFunction;
+
+    /**
+     * @var ValuesResolver
+     */
+    protected $valuesResolver;
 
     /**
      * DefinitionBuilder constructor.
-     *
-     * @param callable       $resolveTypeFunction
+     * @param array          $typeDefinitionsMap
+     * @param array          $resolverMap
      * @param CacheInterface $cache
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @param ValuesResolver $valuesResolver
+     * @param callable|null  $resolveTypeFunction
+     * @throws InvalidArgumentException
      */
     public function __construct(
+        array $typeDefinitionsMap,
+        array $resolverMap = [],
+        ?callable $resolveTypeFunction = null,
         CacheInterface $cache,
-        ValuesResolver $valuesResolver,
-        ?callable $resolveTypeFunction = null
+        ValuesResolver $valuesResolver
     ) {
+        $this->typeDefinitionsMap  = $typeDefinitionsMap;
+        $this->resolverMap         = $resolverMap;
+        $this->cache               = $cache;
         $this->valuesResolver      = $valuesResolver;
         $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
-        $this->typeDefinitionsMap  = [];
 
         $builtInTypes = keyMap(
             \array_merge(specifiedScalarTypes(), introspectionTypes()),
@@ -100,30 +107,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             }
         );
 
-        $this->cache = $cache;
-
         foreach ($builtInTypes as $name => $type) {
             $this->setInCache($name, $type);
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setTypeDefinitionMap(array $typeDefinitionMap): DefinitionBuilder
-    {
-        $this->typeDefinitionsMap = $typeDefinitionMap;
-        return $this;
-    }
-
-    /**
-     * @param array $resolverMap
-     * @return DefinitionBuilder
-     */
-    public function setResolverMap(array $resolverMap): DefinitionBuilder
-    {
-        $this->resolverMap = $resolverMap;
-        return $this;
     }
 
     /**
@@ -269,6 +255,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                     return $this->buildType($interface);
                 }, $node->getInterfaces()) : [];
             },
+            'astNode'     => $node,
         ]);
     }
 
@@ -382,12 +369,14 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                         return $value->getNameValue();
                     },
                     function (InputValueDefinitionNode $value): array {
-                        $type = $this->buildWrappedType($value->getType());
+                        $type         = $this->buildWrappedType($value->getType());
+                        $defaultValue = $value->getDefaultValue();
                         return [
                             'type'         => $type,
                             'description'  => $value->getDescriptionValue(),
-                            'defaultValue' => $this->valuesResolver->coerceValueFromAST($value->getDefaultValue(),
-                                $type),
+                            'defaultValue' => null !== $defaultValue
+                                ? $this->valuesResolver->coerceValueFromAST($defaultValue, $type)
+                                : null,
                             'astNode'      => $value,
                         ];
                     }

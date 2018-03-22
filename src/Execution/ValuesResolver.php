@@ -17,7 +17,7 @@ use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Util\ValueNodeCoercer;
+use Digia\GraphQL\Util\ValueNodeResolver;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\keyMap;
 
@@ -28,15 +28,15 @@ use function Digia\GraphQL\Util\keyMap;
 class ValuesResolver
 {
     /**
-     * @var ValueNodeCoercer
+     * @var ValueNodeResolver
      */
     protected $valueNodeCoercer;
 
     /**
      * ValuesResolver constructor.
-     * @param ValueNodeCoercer $valueNodeCoercer
+     * @param ValueNodeResolver $valueNodeCoercer
      */
-    public function __construct(ValueNodeCoercer $valueNodeCoercer)
+    public function __construct(ValueNodeResolver $valueNodeCoercer)
     {
         $this->valueNodeCoercer = $valueNodeCoercer;
     }
@@ -160,7 +160,7 @@ class ValuesResolver
         TypeInterface $type,
         $variableValues = []
     ) {
-        return $this->valueNodeCoercer->coerce($valueNode, $type, $variableValues);
+        return $this->valueNodeCoercer->resolve($valueNode, $type, $variableValues);
     }
 
     /**
