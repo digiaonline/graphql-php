@@ -12,6 +12,7 @@ use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLInt;
 use function Digia\GraphQL\Type\GraphQLList;
+use function Digia\GraphQL\Type\GraphQLNonNull;
 use function Digia\GraphQL\Type\GraphQLObjectType;
 use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
@@ -842,6 +843,97 @@ SRC;
                         ]
                     ],
                     'path'      => ['foods']
+                ]
+            ]
+        ], $result->toArray());
+    }
+
+    //Full response path is included for non-nullable fields
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testFullResponsePathIsIncludedForNonNullableFields()
+    {
+        $A = GraphQLObjectType([
+            'name'   => 'A',
+            'fields' => function () use (&$A) {
+                return [
+                    'nullableA' => [
+                        'type'    => $A,
+                        'resolve' => function () {
+                            return [];
+                        }
+                    ],
+                    'nonNullA'  => [
+                        'type'    => GraphQLNonNull($A),
+                        'resolve' => function () {
+                            return [];
+                        }
+                    ],
+                    'throws'    => [
+                        'type'    => GraphQLNonNull(GraphQLString()),
+                        'resolve' => function () {
+                            throw new \Exception('Catch me if you can!');
+                        }
+                    ]
+                ];
+            }
+        ]);
+
+        $queryType = GraphQLObjectType([
+            'name'   => 'query',
+            'fields' => function () use (&$A) {
+                return [
+                    'nullableA' => [
+                        'type'    => $A,
+                        'resolve' => function () {
+                            return [];
+                        }
+                    ]
+                ];
+            }
+        ]);
+
+        $schema = GraphQLSchema([
+            'query' => $queryType
+        ]);
+
+        $query = '
+          query {
+            nullableA {
+              aliasedA: nullableA {
+                nonNullA {
+                  anotherA: nonNullA {
+                    throws
+                  }
+                }
+              }
+            }
+          }';
+
+        $result = execute($schema, parse($query));
+
+        $this->assertEquals([
+            'data' => [
+                'nullableA' => [
+                    'aliasedA' => null
+                ]
+            ],
+            'errors' => [
+                [
+                    'message'   => 'Catch me if you can!',
+                    'locations' => [
+                        [
+                            'line'   => 7,
+                            'column' => 21
+                        ]
+                    ],
+                    'path'      => [
+                        'nullableA', 'aliasedA',
+                        //'nonNullA', 'anotherA', 'throws'
+                    ]
                 ]
             ]
         ], $result->toArray());
