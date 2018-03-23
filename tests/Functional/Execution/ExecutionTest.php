@@ -788,4 +788,62 @@ SRC;
             ]
         ], $result->toArray());
     }
+
+    //nulls error subtree for promise rejection
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testNullsErrorSubTreeForPromiseRejection()
+    {
+        $query = '
+          query {
+            foods {
+              name
+            }
+          }
+        ';
+
+        $schema = new Schema([
+            'query' => new ObjectType([
+                'name'   => 'Type',
+                'fields' => [
+                    'foods' => [
+                        'type'    => GraphQLList(GraphQLObjectType([
+                            'name'   => 'Food',
+                            'fields' => [
+                                'name' => [
+                                    'type' => GraphQLString()
+                                ]
+                            ]
+                        ])),
+                        'resolve' => function () {
+                            return \React\Promise\reject(new \Exception('Dangit'));
+                        }
+                    ],
+                ]
+            ])
+        ]);
+
+        $result = execute($schema, parse($query));
+
+        $this->assertEquals([
+            'data'   => [
+                'foods' => null
+            ],
+            'errors' => [
+                [
+                    'message'   => 'Dangit',
+                    'locations' => [
+                        [
+                            'line'   => 3,
+                            'column' => 13
+                        ]
+                    ],
+                    'path'      => ['foods']
+                ]
+            ]
+        ], $result->toArray());
+    }
 }
