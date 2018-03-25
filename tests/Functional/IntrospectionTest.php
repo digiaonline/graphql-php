@@ -50,7 +50,7 @@ class IntrospectionTest extends TestCase
                     ],
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows querying the schema for query type
@@ -78,7 +78,7 @@ class IntrospectionTest extends TestCase
                     ],
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows querying the schema for a specific type
@@ -102,7 +102,7 @@ class IntrospectionTest extends TestCase
                     'name' => 'Droid',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows querying the schema for an object kind
@@ -128,7 +128,7 @@ class IntrospectionTest extends TestCase
                     'kind' => 'OBJECT',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows querying the schema for an interface kind
@@ -154,7 +154,7 @@ class IntrospectionTest extends TestCase
                     'kind' => 'INTERFACE',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows querying the schema for object fields
@@ -229,7 +229,7 @@ class IntrospectionTest extends TestCase
                     ],
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows querying the schema for nested object fields
@@ -323,7 +323,7 @@ class IntrospectionTest extends TestCase
                     ],
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows querying the schema for field args
@@ -421,7 +421,7 @@ class IntrospectionTest extends TestCase
                     ],
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows querying the schema for documentation
@@ -447,6 +447,6 @@ class IntrospectionTest extends TestCase
                     'description' => 'A mechanical creature in the Star Wars universe.',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 }

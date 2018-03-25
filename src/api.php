@@ -6,29 +6,22 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionResult;
-use Digia\GraphQL\Language\LexerInterface;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\ParserInterface;
-use Digia\GraphQL\Language\PrinterInterface;
 use Digia\GraphQL\Language\Source;
-use Digia\GraphQL\SchemaBuilder\SchemaBuilderInterface;
-use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\SerializationInterface;
-use Digia\GraphQL\Validation\ValidatorInterface;
 
 /**
- * @param string $source
- * @param array  $options
+ * @param string|Source $source
+ * @param array         $options
  * @return SchemaInterface
  * @throws InvariantException
  */
-function buildSchema(string $source, array $resolverMaps = [], array $options = []): SchemaInterface
+function buildSchema($source, array $resolverMaps = [], array $options = []): SchemaInterface
 {
-    return GraphQL::get(SchemaBuilderInterface::class)->build(parse($source, $options), $resolverMaps, $options);
+    return GraphQL::buildSchema($source, $resolverMaps, $options);
 }
 
 /**
@@ -37,7 +30,7 @@ function buildSchema(string $source, array $resolverMaps = [], array $options = 
  */
 function validateSchema(SchemaInterface $schema): array
 {
-    return GraphQL::get(SchemaValidatorInterface::class)->validate($schema);
+    return GraphQL::validateSchema($schema);
 }
 
 /**
@@ -49,11 +42,7 @@ function validateSchema(SchemaInterface $schema): array
  */
 function parse($source, array $options = []): NodeInterface
 {
-    return GraphQL::get(ParserInterface::class)->parse(
-        GraphQL::get(LexerInterface::class)
-            ->setSource($source instanceof Source ? $source : new Source($source))
-            ->setOptions($options)
-    );
+    return GraphQL::parse($source, $options);
 }
 
 /**
@@ -65,11 +54,7 @@ function parse($source, array $options = []): NodeInterface
  */
 function parseValue($source, array $options = []): NodeInterface
 {
-    return GraphQL::get(ParserInterface::class)->parseValue(
-        GraphQL::get(LexerInterface::class)
-            ->setSource($source instanceof Source ? $source : new Source($source))
-            ->setOptions($options)
-    );
+    return GraphQL::parseValue($source, $options);
 }
 
 /**
@@ -81,11 +66,7 @@ function parseValue($source, array $options = []): NodeInterface
  */
 function parseType($source, array $options = []): NodeInterface
 {
-    return GraphQL::get(ParserInterface::class)->parseType(
-        GraphQL::get(LexerInterface::class)
-            ->setSource($source instanceof Source ? $source : new Source($source))
-            ->setOptions($options)
-    );
+    return GraphQL::parseType($source, $options);
 }
 
 /**
@@ -95,7 +76,7 @@ function parseType($source, array $options = []): NodeInterface
  */
 function validate(SchemaInterface $schema, DocumentNode $document): array
 {
-    return GraphQL::get(ValidatorInterface::class)->validate($schema, $document);
+    return GraphQL::validate($schema, $document);
 }
 
 /**
@@ -117,16 +98,15 @@ function execute(
     $operationName = null,
     callable $fieldResolver = null
 ): ExecutionResult {
-    return GraphQL::get(ExecutionInterface::class)
-        ->execute(
-            $schema,
-            $document,
-            $rootValue,
-            $contextValue,
-            $variableValues,
-            $operationName,
-            $fieldResolver
-        );
+    return GraphQL::execute(
+        $schema,
+        $document,
+        $rootValue,
+        $contextValue,
+        $variableValues,
+        $operationName,
+        $fieldResolver
+    );
 }
 
 /**
@@ -135,7 +115,7 @@ function execute(
  */
 function printNode(NodeInterface $node): string
 {
-    return GraphQL::get(PrinterInterface::class)->print($node);
+    return GraphQL::print($node);
 }
 
 /**
@@ -157,10 +137,10 @@ function graphql(
     array $variableValues = [],
     $operationName = null,
     callable $fieldResolver = null
-): ExecutionResult {
+): array {
     $schemaValidationErrors = validateSchema($schema);
     if (!empty($schemaValidationErrors)) {
-        return new ExecutionResult([], $schemaValidationErrors);
+        return (new ExecutionResult([], $schemaValidationErrors))->toArray();
     }
 
     $document = null;
@@ -168,15 +148,15 @@ function graphql(
     try {
         $document = parse($source);
     } catch (SyntaxErrorException $error) {
-        return new ExecutionResult([], [$error]);
+        return (new ExecutionResult([], [$error]))->toArray();
     }
 
     $validationErrors = validate($schema, $document);
     if (!empty($validationErrors)) {
-        return new ExecutionResult([], $validationErrors);
+        return (new ExecutionResult([], $validationErrors))->toArray();
     }
 
-    return execute(
+    $result = execute(
         $schema,
         $document,
         $rootValue,
@@ -185,4 +165,6 @@ function graphql(
         $operationName,
         $fieldResolver
     );
+
+    return $result->toArray();
 }

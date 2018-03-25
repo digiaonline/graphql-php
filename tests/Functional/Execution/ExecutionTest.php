@@ -79,9 +79,7 @@ class ExecutionTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $result = graphql($schema, $source, $rootValue);
 
-        $expected = new ExecutionResult(['a' => $rootValue], []);
-
-        $this->assertEquals($expected, $result);
+        $this->assertEquals(['data' => ['a' => $rootValue]], $result);
     }
 
     /**
@@ -107,9 +105,7 @@ class ExecutionTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, 'query Greeting {hello}');
 
-        $expected = new ExecutionResult(['hello' => 'world'], []);
-
-        $this->assertEquals($expected, $executionResult);
+        $this->assertEquals(['data' => ['hello' => 'world']], $executionResult);
     }
 
     /**
@@ -322,9 +318,7 @@ class ExecutionTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, $source, '', null, $variableValues);
 
-        $expected = new ExecutionResult(['greeting' => 'Hello Han Solo'], []);
-
-        $this->assertEquals($expected, $executionResult);
+        $this->assertEquals(['data' => ['greeting' => 'Hello Han Solo']], $executionResult);
     }
 
     /**
@@ -374,15 +368,15 @@ class ExecutionTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, 'query Human {id, type, friends, appearsIn, homePlanet}');
 
-        $expected = new ExecutionResult([
-            'id'         => 1000,
-            'type'       => 'Human',
-            'friends'    => ['1002', '1003', '2000', '2001'],
-            'appearsIn'  => [4, 5, 6],
-            'homePlanet' => 'Tatooine'
-        ], []);
-
-        $this->assertEquals($expected, $executionResult);
+        $this->assertEquals([
+            'data' => [
+                'id'         => 1000,
+                'type'       => 'Human',
+                'friends'    => ['1002', '1003', '2000', '2001'],
+                'appearsIn'  => [4, 5, 6],
+                'homePlanet' => 'Tatooine'
+            ]
+        ], $executionResult);
     }
 
     /**
@@ -441,20 +435,20 @@ SRC;
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, $source);
 
-        $expected = new ExecutionResult([
-            'a'    => 'Apple',
-            'b'    => 'Banana',
-            'c'    => 'Cherry',
-            'deep' => [
-                'b'      => 'Banana',
-                'c'      => 'Cherry',
-                'deeper' => [
-                    'b' => 'Banana',
-                    'c' => 'Cherry'
+        $this->assertEquals([
+            'data' => [
+                'a'    => 'Apple',
+                'b'    => 'Banana',
+                'c'    => 'Cherry',
+                'deep' => [
+                    'b'      => 'Banana',
+                    'c'      => 'Cherry',
+                    'deeper' => [
+                        'b' => 'Banana',
+                        'c' => 'Cherry'
+                    ]
                 ]
             ]
-        ], []);
-
-        $this->assertEquals($expected, $executionResult);
+        ], $executionResult);
     }
 }
