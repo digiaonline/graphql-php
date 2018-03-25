@@ -22,7 +22,7 @@ class ValidationTest extends TestCase
 
     public function setUp()
     {
-        $this->validator = GraphQL::get(ValidatorInterface::class);
+        $this->validator = GraphQL::make(ValidatorInterface::class);
     }
 
     public function testValidatesQueries()

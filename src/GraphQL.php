@@ -115,7 +115,7 @@ class GraphQL
      * @param array  $args
      * @return mixed
      */
-    public static function get(string $id, array $args = [])
+    public static function make(string $id, array $args = [])
     {
         return static::getInstance()
             ->getContainer()
@@ -131,7 +131,7 @@ class GraphQL
      */
     public static function buildSchema($source, array $resolverMaps = [], array $options = []): SchemaInterface
     {
-        return static::get(SchemaBuilderInterface::class)
+        return static::make(SchemaBuilderInterface::class)
             ->build(
                 static::parse($source, $options),
                 $resolverMaps,
@@ -145,7 +145,7 @@ class GraphQL
      */
     public static function validateSchema(SchemaInterface $schema): array
     {
-        return static::get(SchemaValidatorInterface::class)
+        return static::make(SchemaValidatorInterface::class)
             ->validate($schema);
     }
 
@@ -157,7 +157,7 @@ class GraphQL
      */
     public static function parse($source, array $options = []): DocumentNode
     {
-        return static::get(ParserInterface::class)
+        return static::make(ParserInterface::class)
             ->parse(static::lex($source, $options));
     }
 
@@ -169,7 +169,7 @@ class GraphQL
      */
     public static function parseValue($source, array $options = []): ValueNodeInterface
     {
-        return static::get(ParserInterface::class)
+        return static::make(ParserInterface::class)
             ->parseValue(static::lex($source, $options));
     }
 
@@ -181,7 +181,7 @@ class GraphQL
      */
     public static function parseType($source, array $options = []): TypeNodeInterface
     {
-        return static::get(ParserInterface::class)
+        return static::make(ParserInterface::class)
             ->parseType(static::lex($source, $options));
     }
 
@@ -192,7 +192,7 @@ class GraphQL
      */
     public static function validate(SchemaInterface $schema, DocumentNode $document): array
     {
-        return static::get(ValidatorInterface::class)
+        return static::make(ValidatorInterface::class)
             ->validate($schema, $document);
     }
 
@@ -215,7 +215,7 @@ class GraphQL
         $operationName = null,
         callable $fieldResolver = null
     ): ExecutionResult {
-        return static::get(ExecutionInterface::class)
+        return static::make(ExecutionInterface::class)
             ->execute(
                 $schema,
                 $document,
@@ -233,7 +233,7 @@ class GraphQL
      */
     public static function print(NodeInterface $node): string
     {
-        return static::get(PrinterInterface::class)->print($node);
+        return static::make(PrinterInterface::class)->print($node);
     }
 
     /**
@@ -244,7 +244,7 @@ class GraphQL
      */
     public static function lex($source, array $options = []): LexerInterface
     {
-        return static::get(LexerInterface::class)
+        return static::make(LexerInterface::class)
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options);
     }

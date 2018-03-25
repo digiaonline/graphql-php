@@ -42,7 +42,7 @@ class ValidationTest extends TestCase
 
     public function setUp()
     {
-        $this->schemaValidator = GraphQL::get(SchemaValidatorInterface::class);
+        $this->schemaValidator = GraphQL::make(SchemaValidatorInterface::class);
 
         $this->someScalarType = GraphQLScalarType([
             'name'         => 'SomeScalar',

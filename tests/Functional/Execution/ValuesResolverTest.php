@@ -20,7 +20,7 @@ class ValuesResolverTest extends TestCase
 
     public function setUp()
     {
-        $this->valuesResolver = GraphQL::get(ValuesResolver::class);
+        $this->valuesResolver = GraphQL::make(ValuesResolver::class);
     }
 
     /**
