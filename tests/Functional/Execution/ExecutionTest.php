@@ -938,4 +938,34 @@ SRC;
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Uses the inline operation if no operation name is provided
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testUsesTheInlineOperationIfNoOperationIsProvided()
+    {
+        $rootValue = ['a' => 'b'];
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name' => 'Type',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $result = execute($schema, parse('{ a }'), $rootValue);
+
+        $this->assertEquals([
+            'data' => [
+                'a' => 'b',
+            ]
+        ], $result->toArray());
+    }
 }
