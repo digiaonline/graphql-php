@@ -17,7 +17,7 @@ class ExecutionResult implements SerializationInterface
     protected $errors;
 
     /**
-     * @var mixed[]
+     * @var mixed[]|null
      */
     protected $data;
 
@@ -26,7 +26,7 @@ class ExecutionResult implements SerializationInterface
      * @param mixed[]              $data
      * @param ExecutionException[] $errors
      */
-    public function __construct(array $data, array $errors)
+    public function __construct(?array $data, array $errors)
     {
         $this->errors = $errors;
         $this->data   = $data;

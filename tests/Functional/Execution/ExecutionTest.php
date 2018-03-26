@@ -916,7 +916,7 @@ SRC;
         $result = execute($schema, parse($query));
 
         $this->assertEquals([
-            'data' => [
+            'data'   => [
                 'nullableA' => [
                     'aliasedA' => null
                 ]
@@ -931,8 +931,11 @@ SRC;
                         ]
                     ],
                     'path'      => [
-                        'nullableA', 'aliasedA',
-                        'nonNullA', 'anotherA', 'throws'
+                        'nullableA',
+                        'aliasedA',
+                        'nonNullA',
+                        'anotherA',
+                        'throws'
                     ]
                 ]
             ]
@@ -951,7 +954,7 @@ SRC;
 
         $schema = GraphQLSchema([
             'query' => GraphQLObjectType([
-                'name' => 'Type',
+                'name'   => 'Type',
                 'fields' => [
                     'a' => [
                         'type' => GraphQLString(),
@@ -981,7 +984,7 @@ SRC;
 
         $schema = GraphQLSchema([
             'query' => GraphQLObjectType([
-                'name' => 'Type',
+                'name'   => 'Type',
                 'fields' => [
                     'a' => [
                         'type' => GraphQLString(),
@@ -990,12 +993,48 @@ SRC;
             ])
         ]);
 
-        $query = 'query Example { first: a } query OtherExample { second: a }';
+        $query  = 'query Example { first: a } query OtherExample { second: a }';
         $result = execute($schema, parse($query), $rootValue, null, [], 'OtherExample');
 
         $this->assertEquals([
             'data' => [
                 'second' => 'b',
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Provides error if no operation is provided
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testProvidesErrorIfNoOperationIsProvided()
+    {
+        $rootValue = ['a' => 'b'];
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Type',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $query  = 'fragment Example on Type { a }';
+        $result = execute($schema, parse($query), $rootValue);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'  => 'Must provide an operation.',
+                    'locations' => null,
+                    'path'     => null
+                ]
             ]
         ], $result->toArray());
     }

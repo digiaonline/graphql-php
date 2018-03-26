@@ -63,6 +63,10 @@ class ExecutionContextBuilder
             }
         }
 
+        if(null === $operation) {
+            throw new ExecutionException('Must provide an operation.');
+        }
+
         $executionContext = new ExecutionContext(
             $schema,
             $fragments,
