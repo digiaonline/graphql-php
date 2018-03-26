@@ -968,4 +968,35 @@ SRC;
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Uses the named operation if operation name is provided
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testUsesTheNamedOperationIfOperationNameIsProvided()
+    {
+        $rootValue = ['a' => 'b'];
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name' => 'Type',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $query = 'query Example { first: a } query OtherExample { second: a }';
+        $result = execute($schema, parse($query), $rootValue, null, [], 'OtherExample');
+
+        $this->assertEquals([
+            'data' => [
+                'second' => 'b',
+            ]
+        ], $result->toArray());
+    }
 }
