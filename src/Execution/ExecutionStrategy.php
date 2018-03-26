@@ -522,7 +522,7 @@ abstract class ExecutionStrategy
             $this->context->addError($ex);
             return null;
         } catch (\Exception $ex) {
-            $this->context->addError(new ExecutionException($ex->getMessage()));
+            $this->context->addError($this->buildLocatedError($ex, $fieldNodes, $path));
             return null;
         }
     }
@@ -552,11 +552,8 @@ abstract class ExecutionStrategy
             );
 
             return $completed;
-        } catch (\Exception $ex) {
-            throw $this->buildLocatedError($ex, $fieldNodes, $path);
         } catch (\Throwable $ex) {
-            //@TODO throw located error
-            throw $ex;
+            throw $this->buildLocatedError($ex, $fieldNodes, $path);
         }
     }
 
@@ -1007,14 +1004,15 @@ abstract class ExecutionStrategy
      * @param string|array $path
      * @return GraphQLException
      */
-    protected function buildLocatedError(\Exception $originalException, array $nodes, $path): ExecutionException
+    protected function buildLocatedError(\Exception $originalException, array $nodes = [], array $path = []):
+    ExecutionException
     {
         return new ExecutionException(
             $originalException->getMessage(),
             $originalException instanceof GraphQLException ? $originalException->getNodes() : $nodes,
             $originalException instanceof GraphQLException ? $originalException->getSource() : null,
             $originalException instanceof GraphQLException ? $originalException->getPositions() : null,
-            $path,
+            $originalException instanceof GraphQLException ? ($originalException->getPath() ?? $path) : $path,
             $originalException
         );
     }

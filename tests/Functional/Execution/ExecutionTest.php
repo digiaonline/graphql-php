@@ -932,7 +932,7 @@ SRC;
                     ],
                     'path'      => [
                         'nullableA', 'aliasedA',
-                        //'nonNullA', 'anotherA', 'throws'
+                        'nonNullA', 'anotherA', 'throws'
                     ]
                 ]
             ]
