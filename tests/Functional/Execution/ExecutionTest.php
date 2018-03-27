@@ -1284,4 +1284,44 @@ SRC;
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Avoid recursions
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAvoidRecursions()
+    {
+        $rootValue = ['a' => 'b'];
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Type',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $query  = 'query Q {
+            a
+            ...Frag
+            ...Frag
+          }
+    
+          fragment Frag on Type {
+            a,
+            ...Frag
+          }';
+        $result = execute($schema, parse($query), $rootValue, [], [], 'Q');
+
+        $this->assertEquals([
+            'data' => [
+                'a' => 'b',
+            ]
+        ], $result->toArray());
+    }
 }
