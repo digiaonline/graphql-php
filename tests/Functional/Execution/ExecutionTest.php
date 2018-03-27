@@ -1111,4 +1111,52 @@ SRC;
             ]
         ], $result->toArray());
     }
+
+
+    /**
+     * Uses the query schema for queries
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testUsesTheQuerySchemaForQueries()
+    {
+        $rootValue = ['a' => 'b'];
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Q',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ]),
+            'mutation' => GraphQLObjectType([
+                'name'   => 'M',
+                'fields' => [
+                    'c' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ]),
+            'subscription' => GraphQLObjectType([
+                'name'   => 'S',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $query  = 'query Q { a } mutation M { c } subscription S { a }';
+        $result = execute($schema, parse($query), $rootValue, [], [], 'Q');
+
+        $this->assertEquals([
+            'data' => [
+                'a' => 'b',
+            ]
+        ], $result->toArray());
+    }
 }
