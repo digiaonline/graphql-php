@@ -1403,7 +1403,7 @@ SRC;
         $query  = '{ specials { value } }';
         $result = execute($schema, parse($query), $rootValue);
 
-        //$this->assertEquals(1, count($result->getErrors()));
+        $this->assertEquals(1, count($result->getErrors()));
         $this->assertEquals([
             'data'   => [
                 'specials' => [
@@ -1417,6 +1417,36 @@ SRC;
                     'locations' => null,
                     'path'      => ['specials', 1]
                 ],
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Executes ignoring invalid non-executable definitions
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testExecutesIgnoringInvalidNonExecutableDefinitions()
+    {
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Query',
+                'fields' => [
+                    'foo' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $query  = '{ foo } type Query { bar: String }';
+
+        $result = execute($schema, parse($query));
+
+        $this->assertEquals([
+            'data' => [
+                'foo' => null,
             ]
         ], $result->toArray());
     }

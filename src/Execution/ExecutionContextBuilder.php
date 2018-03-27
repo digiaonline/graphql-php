@@ -56,10 +56,6 @@ class ExecutionContextBuilder
                 case NodeKindEnum::FRAGMENT_SPREAD:
                     $fragments[$definition->getName()->getValue()] = $definition;
                     break;
-                default:
-                    throw new ExecutionException(
-                        "GraphQL cannot execute a request containing a {$definition->getKind()}."
-                    );
             }
         }
 
