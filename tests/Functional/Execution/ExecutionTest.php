@@ -1124,7 +1124,7 @@ SRC;
         $rootValue = ['a' => 'b'];
 
         $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+            'query'        => GraphQLObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
@@ -1132,7 +1132,7 @@ SRC;
                     ]
                 ]
             ]),
-            'mutation' => GraphQLObjectType([
+            'mutation'     => GraphQLObjectType([
                 'name'   => 'M',
                 'fields' => [
                     'c' => [
@@ -1171,7 +1171,7 @@ SRC;
         $rootValue = ['a' => 'b', 'c' => 'd'];
 
         $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+            'query'    => GraphQLObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
@@ -1210,7 +1210,7 @@ SRC;
         $rootValue = ['a' => 'b'];
 
         $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+            'query'        => GraphQLObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
@@ -1234,6 +1234,53 @@ SRC;
         $this->assertEquals([
             'data' => [
                 'a' => 'b',
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Correct field ordering despite execution order
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testCorrectFieldOrderingDespiteExecutionOrder()
+    {
+        $rootValue = [
+            'a' => 'a',
+            'b' => function () {
+                return \React\Promise\resolve('b');
+            },
+            'c' => 'c',
+            'd' => function () {
+                return \React\Promise\resolve('d');
+            },
+            'e' => 'e'
+        ];
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Q',
+                'fields' => [
+                    'a' => ['type' => GraphQLString()],
+                    'b' => ['type' => GraphQLString()],
+                    'c' => ['type' => GraphQLString()],
+                    'd' => ['type' => GraphQLString()],
+                    'e' => ['type' => GraphQLString()],
+                ]
+            ])
+        ]);
+
+        $query  = '{ a, b, c, d, e }';
+        $result = execute($schema, parse($query), $rootValue);
+
+        $this->assertEquals([
+            'data' => [
+                'a' => 'a',
+                'b' => 'b',
+                'c' => 'c',
+                'd' => 'd',
+                'e' => 'e',
             ]
         ], $result->toArray());
     }
