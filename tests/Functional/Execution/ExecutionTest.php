@@ -1440,13 +1440,47 @@ SRC;
             ])
         ]);
 
-        $query  = '{ foo } type Query { bar: String }';
+        $query = '{ foo } type Query { bar: String }';
 
         $result = execute($schema, parse($query));
 
         $this->assertEquals([
             'data' => [
                 'foo' => null,
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Uses a custom field resolver
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testUsesACustomFieldResolver()
+    {
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Query',
+                'fields' => [
+                    'foo' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $query = '{ foo }';
+
+        $customResolver = function ($source, $args, $context, ResolveInfo $info) {
+            return $info->getFieldName();
+        };
+
+        $result = execute($schema, parse($query), [], [], [], null, $customResolver);
+
+        $this->assertEquals([
+            'data' => [
+                'foo' => 'foo',
             ]
         ], $result->toArray());
     }
