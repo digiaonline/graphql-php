@@ -63,7 +63,11 @@ class ExecutionContextBuilder
             }
         }
 
-        if(null === $operation) {
+        if (null === $operation) {
+            if ($operationName !== null) {
+                throw new ExecutionException(sprintf('Unknown operation named "%s".', $operationName));
+            }
+
             throw new ExecutionException('Must provide an operation.');
         }
 

@@ -1031,9 +1031,9 @@ SRC;
             'data'   => null,
             'errors' => [
                 [
-                    'message'  => 'Must provide an operation.',
+                    'message'   => 'Must provide an operation.',
                     'locations' => null,
-                    'path'     => null
+                    'path'      => null
                 ]
             ]
         ], $result->toArray());
@@ -1068,9 +1068,45 @@ SRC;
             'data'   => null,
             'errors' => [
                 [
-                    'message'  => 'Must provide operation name if query contains multiple operations.',
+                    'message'   => 'Must provide operation name if query contains multiple operations.',
                     'locations' => null,
-                    'path'     => null
+                    'path'      => null
+                ]
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Errors if unknown operation name is provided
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testErrorsIfUnknownOperationNameIsProvided()
+    {
+        $rootValue = ['a' => 'b'];
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Type',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $query  = 'query Example { a } query OtherExample { a }';
+        $result = execute($schema, parse($query), $rootValue, [], [], 'UnknownExample');
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Unknown operation named "UnknownExample".',
+                    'locations' => null,
+                    'path'      => null
                 ]
             ]
         ], $result->toArray());
