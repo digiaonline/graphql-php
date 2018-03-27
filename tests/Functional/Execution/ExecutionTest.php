@@ -1166,7 +1166,7 @@ SRC;
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
-    public function testUsesTheMutationSchemaForQueries()
+    public function testUsesTheMutationSchemaForMutations()
     {
         $rootValue = ['a' => 'b', 'c' => 'd'];
 
@@ -1195,6 +1195,45 @@ SRC;
         $this->assertEquals([
             'data' => [
                 'c' => 'd',
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Uses the subscription schema for subscriptions
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testUsesTheSubscriptionSchemaForSubscriptions()
+    {
+        $rootValue = ['a' => 'b'];
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Q',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ]),
+            'subscription' => GraphQLObjectType([
+                'name'   => 'S',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $query  = 'query Q { a } subscription S { a }';
+        $result = execute($schema, parse($query), $rootValue, [], [], 'S');
+
+        $this->assertEquals([
+            'data' => [
+                'a' => 'b',
             ]
         ], $result->toArray());
     }
