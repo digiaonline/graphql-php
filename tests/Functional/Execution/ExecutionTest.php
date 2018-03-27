@@ -1324,4 +1324,120 @@ SRC;
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Does not include illegal fields in output
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotIncludeIllegalFieldsInOutput()
+    {
+        $schema = GraphQLSchema([
+            'query'    => new ObjectType([
+                'name'   => 'Q',
+                'fields' => [
+                    'a' => ['type' => GraphQLString()],
+                ]
+            ]),
+            'mutation' => new ObjectType([
+                'name'   => 'M',
+                'fields' => [
+                    'c' => ['type' => GraphQLString()],
+                ]
+            ])
+        ]);
+
+
+        $executionResult = execute($schema, parse('mutation M { thisIsIllegalDontIncludeMe }'));
+
+        $expected = new ExecutionResult([], []);
+
+        $this->assertEquals($expected, $executionResult);
+    }
+
+
+    /**
+     * Fails when an isTypeOf check is not met
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testFailsWhenAnIsTypeOfCheckIsNotMet()
+    {
+        $SpecialType = GraphQLObjectType([
+            'name'     => 'SpecialType',
+            'fields'   => [
+                'value' => [
+                    'type' => GraphQLString()
+                ]
+            ],
+            'isTypeOf' => function ($obj) {
+                return $obj instanceof Special;
+            },
+        ]);
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Query',
+                'fields' => function () use (&$SpecialType) {
+                    return [
+                        'specials' => [
+                            'type'    => GraphQLList($SpecialType),
+                            'resolve' => function ($root) {
+                                return $root['specials'];
+                            }
+                        ]
+                    ];
+                }
+            ])
+        ]);
+
+        $rootValue = [
+            'specials' => [
+                new Special('foo'),
+                new NotSpecial('bar')
+            ]
+        ];
+
+        $query  = '{ specials { value } }';
+        $result = execute($schema, parse($query), $rootValue);
+
+        //$this->assertEquals(1, count($result->getErrors()));
+        $this->assertEquals([
+            'data'   => [
+                'specials' => [
+                    ['value' => 'foo'],
+                    null
+                ]
+            ],
+            'errors' => [
+                [
+                    'message'   => 'Expected value of type "SpecialType" but received: Object.',
+                    'locations' => null,
+                    'path'      => ['specials', 1]
+                ],
+            ]
+        ], $result->toArray());
+    }
+}
+
+class Special
+{
+    public $value;
+
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
+}
+
+class NotSpecial
+{
+    public $value;
+
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
 }

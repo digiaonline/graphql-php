@@ -855,8 +855,9 @@ abstract class ExecutionStrategy
         $serializedResult = $returnType->serialize($result);
 
         if ($serializedResult === null) {
+            //@TODO Make a function for this type of exception
             throw new ExecutionException(
-                sprintf('Expected a value of type "%s" but received: %s', (string)$returnType, toString($result))
+                sprintf('Expected value of type "%s" but received: %s.', (string)$returnType, toString($result))
             );
         }
 
@@ -882,6 +883,17 @@ abstract class ExecutionStrategy
         $path,
         &$result
     ) {
+
+        if (null !== $returnType->getIsTypeOf()) {
+            $isTypeOf = $returnType->isTypeOf($result, $this->context->getContextValue(), $info);
+            //@TODO check for promise?
+            if (!$isTypeOf) {
+                throw new ExecutionException(
+                    sprintf('Expected value of type "%s" but received: %s.', (string)$returnType, toString($result))
+                );
+            }
+        }
+
         return $this->collectAndExecuteSubFields(
             $returnType,
             $fieldNodes,

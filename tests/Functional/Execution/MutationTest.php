@@ -58,35 +58,6 @@ class MutationTest extends TestCase
         $this->assertEquals($expected, $executionResult);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
-    public function testDoesNotIncludeIllegalFieldsInOutput()
-    {
-        $schema = GraphQLSchema([
-            'query'    => new ObjectType([
-                'name'   => 'Q',
-                'fields' => [
-                    'a' => ['type' => GraphQLString()],
-                ]
-            ]),
-            'mutation' => new ObjectType([
-                'name'   => 'M',
-                'fields' => [
-                    'c' => ['type' => GraphQLString()],
-                ]
-            ])
-        ]);
-
-
-        $executionResult = execute($schema, parse('mutation M { thisIsIllegalDontIncludeMe }'));
-
-        $expected = new ExecutionResult([], []);
-
-        $this->assertEquals($expected, $executionResult);
-    }
-
     // EXECUTE: HANDLES MUTATION EXECUTION ORDERING
 
     /**
