@@ -1038,4 +1038,41 @@ SRC;
             ]
         ], $result->toArray());
     }
+
+
+    /**
+     * Errors if no op name is provided with multiple operations
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testErrorsIfNoOpNameIsProvidedWithMultipleOperations()
+    {
+        $rootValue = ['a' => 'b'];
+
+        $schema = GraphQLSchema([
+            'query' => GraphQLObjectType([
+                'name'   => 'Type',
+                'fields' => [
+                    'a' => [
+                        'type' => GraphQLString(),
+                    ]
+                ]
+            ])
+        ]);
+
+        $query  = 'query Example { a } query OtherExample { a }';
+        $result = execute($schema, parse($query), $rootValue);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'  => 'Must provide operation name if query contains multiple operations.',
+                    'locations' => null,
+                    'path'     => null
+                ]
+            ]
+        ], $result->toArray());
+    }
 }
