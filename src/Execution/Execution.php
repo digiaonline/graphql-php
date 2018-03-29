@@ -56,7 +56,7 @@ class Execution implements ExecutionInterface
                 $fieldResolver
             );
         } catch (ExecutionException $error) {
-            return new ExecutionResult(['data' => null], [$error]);
+            return new ExecutionResult(null, [$error]);
         }
 
         $data = $context->getExecutionStrategy()->execute();

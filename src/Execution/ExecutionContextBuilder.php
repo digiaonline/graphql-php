@@ -56,11 +56,15 @@ class ExecutionContextBuilder
                 case NodeKindEnum::FRAGMENT_SPREAD:
                     $fragments[$definition->getName()->getValue()] = $definition;
                     break;
-                default:
-                    throw new ExecutionException(
-                        "GraphQL cannot execute a request containing a {$definition->getKind()}."
-                    );
             }
+        }
+
+        if (null === $operation) {
+            if ($operationName !== null) {
+                throw new ExecutionException(sprintf('Unknown operation named "%s".', $operationName));
+            }
+
+            throw new ExecutionException('Must provide an operation.');
         }
 
         $executionContext = new ExecutionContext(

@@ -505,7 +505,14 @@ abstract class ExecutionStrategy
                 $context = $this->context;
                 /** @var ExtendedPromiseInterface $completed */
                 return $completed->then(null, function ($error) use ($context, $fieldNodes, $path) {
-                    $context->addError($this->buildLocatedError($error, $fieldNodes, $path));
+                    //@TODO Handle $error better
+                    if ($error instanceof \Exception) {
+                        $context->addError($this->buildLocatedError($error, $fieldNodes, $path));
+                    } else {
+                        $context->addError(
+                            $this->buildLocatedError(new ExecutionException($error ?? 'An unknown error occurred.'), $fieldNodes, $path)
+                        );
+                    }
                     return new \React\Promise\FulfilledPromise(null);
                 });
             }
@@ -515,7 +522,7 @@ abstract class ExecutionStrategy
             $this->context->addError($ex);
             return null;
         } catch (\Exception $ex) {
-            $this->context->addError(new ExecutionException($ex->getMessage()));
+            $this->context->addError($this->buildLocatedError($ex, $fieldNodes, $path));
             return null;
         }
     }
@@ -545,11 +552,8 @@ abstract class ExecutionStrategy
             );
 
             return $completed;
-        } catch (\Exception $ex) {
-            throw $this->buildLocatedError($ex, $fieldNodes, $path);
         } catch (\Throwable $ex) {
-            //@TODO throw located error
-            throw $ex;
+            throw $this->buildLocatedError($ex, $fieldNodes, $path);
         }
     }
 
@@ -851,8 +855,9 @@ abstract class ExecutionStrategy
         $serializedResult = $returnType->serialize($result);
 
         if ($serializedResult === null) {
+            //@TODO Make a function for this type of exception
             throw new ExecutionException(
-                sprintf('Expected a value of type "%s" but received: %s', (string)$returnType, toString($result))
+                sprintf('Expected value of type "%s" but received: %s.', (string)$returnType, toString($result))
             );
         }
 
@@ -878,6 +883,17 @@ abstract class ExecutionStrategy
         $path,
         &$result
     ) {
+
+        if (null !== $returnType->getIsTypeOf()) {
+            $isTypeOf = $returnType->isTypeOf($result, $this->context->getContextValue(), $info);
+            //@TODO check for promise?
+            if (!$isTypeOf) {
+                throw new ExecutionException(
+                    sprintf('Expected value of type "%s" but received: %s.', (string)$returnType, toString($result))
+                );
+            }
+        }
+
         return $this->collectAndExecuteSubFields(
             $returnType,
             $fieldNodes,
@@ -1000,14 +1016,15 @@ abstract class ExecutionStrategy
      * @param string|array $path
      * @return GraphQLException
      */
-    protected function buildLocatedError(\Exception $originalException, array $nodes, $path): ExecutionException
+    protected function buildLocatedError(\Exception $originalException, array $nodes = [], array $path = []):
+    ExecutionException
     {
         return new ExecutionException(
             $originalException->getMessage(),
             $originalException instanceof GraphQLException ? $originalException->getNodes() : $nodes,
             $originalException instanceof GraphQLException ? $originalException->getSource() : null,
             $originalException instanceof GraphQLException ? $originalException->getPositions() : null,
-            $path,
+            $originalException instanceof GraphQLException ? ($originalException->getPath() ?? $path) : $path,
             $originalException
         );
     }
