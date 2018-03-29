@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\SchemaValidator;
+namespace Digia\GraphQL\SchemaValidation;
 
 use Digia\GraphQL\Type\SchemaInterface;
 

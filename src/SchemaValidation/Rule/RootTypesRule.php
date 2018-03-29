@@ -1,12 +1,12 @@
 <?php
 
-namespace Digia\GraphQL\SchemaValidator\Rule;
+namespace Digia\GraphQL\SchemaValidation\Rule;
 
 use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use Digia\GraphQL\SchemaValidator\ValidationContext;
+use Digia\GraphQL\SchemaValidation\ValidationContext;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\SchemaInterface;

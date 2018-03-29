@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\SchemaValidator\Rule;
+namespace Digia\GraphQL\SchemaValidation\Rule;
 
 use Digia\GraphQL\GraphQL;
 

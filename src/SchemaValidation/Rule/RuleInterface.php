@@ -1,8 +1,8 @@
 <?php
 
-namespace Digia\GraphQL\SchemaValidator\Rule;
+namespace Digia\GraphQL\SchemaValidation\Rule;
 
-use Digia\GraphQL\SchemaValidator\ValidationContextInterface;
+use Digia\GraphQL\SchemaValidation\ValidationContextInterface;
 
 interface RuleInterface
 {
