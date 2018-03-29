@@ -1,10 +1,10 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\SchemaValidator;
+namespace Digia\GraphQL\Test\Functional\SchemaValidation;
 
 use Digia\GraphQL\Error\ValidationExceptionInterface;
 use Digia\GraphQL\GraphQL;
-use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
+use Digia\GraphQL\SchemaValidation\SchemaValidatorInterface;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\buildSchema;
 use function Digia\GraphQL\Language\dedent;

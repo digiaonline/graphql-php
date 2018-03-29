@@ -22,6 +22,14 @@ trait ResolveTypeTrait
     }
 
     /**
+     * @return callable|null
+     */
+    public function getResolveType(): ?callable
+    {
+        return $this->resolveTypeFunction;
+    }
+
+    /**
      * Classes that use the `ResolveType Trait` are created using the `ConfigAwareTrait` constructor which will
      * automatically call this method when setting arguments from `$config['resolveType']`.
      *
