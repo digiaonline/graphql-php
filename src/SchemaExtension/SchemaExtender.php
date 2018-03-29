@@ -9,16 +9,20 @@ use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\EnumTypeExtensionNode;
+use Digia\GraphQL\Language\Node\InputObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
+use Digia\GraphQL\Language\Node\ScalarTypeExtensionNode;
 use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
+use Digia\GraphQL\Language\Node\TypeExtensionNodeInterface;
+use Digia\GraphQL\Language\Node\UnionTypeExtensionNode;
 use Digia\GraphQL\SchemaBuilder\DefinitionBuilderCreatorInterface;
 use Digia\GraphQL\SchemaBuilder\DefinitionBuilderInterface;
 use Digia\GraphQL\Type\Definition\Argument;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
@@ -33,8 +37,10 @@ use function Digia\GraphQL\Type\GraphQLInterfaceType;
 use function Digia\GraphQL\Type\GraphQLList;
 use function Digia\GraphQL\Type\GraphQLNonNull;
 use function Digia\GraphQL\Type\GraphQLObjectType;
+use function Digia\GraphQL\Type\GraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLUnionType;
 use function Digia\GraphQL\Type\isIntrospectionType;
+use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\toString;
 
@@ -55,19 +61,9 @@ class SchemaExtender implements SchemaExtenderInterface
     protected $definitionBuilder;
 
     /**
-     * @var array
+     * @var TypeExtensionNodeInterface[][]
      */
-    protected $typeDefinitionMap;
-
-    /**
-     * @var ObjectTypeExtensionNode[][]
-     */
-    protected $typeExtensionMap;
-
-    /**
-     * @var array
-     */
-    protected $directiveDefinitions;
+    protected $typeExtensionsMap;
 
     /**
      * SchemaExtender constructor.
@@ -76,6 +72,7 @@ class SchemaExtender implements SchemaExtenderInterface
     public function __construct(DefinitionBuilderCreatorInterface $definitionBuilderCreator, CacheInterface $cache)
     {
         $this->definitionBuilderCreator = $definitionBuilderCreator;
+        $this->typeExtensionsMap        = [];
         $this->cache                    = $cache;
     }
 
@@ -84,13 +81,14 @@ class SchemaExtender implements SchemaExtenderInterface
      * @param DocumentNode    $document
      * @param array           $options
      * @return SchemaInterface
-     * @throws ExecutionException
+     * @throws InvariantException
+     * @throws ExtensionException
+     * @throws InvalidArgumentException
      */
     public function extend(SchemaInterface $schema, DocumentNode $document, array $options = []): SchemaInterface
     {
-        $this->typeDefinitionMap    = [];
-        $this->typeExtensionsMap    = [];
-        $this->directiveDefinitions = [];
+        $typeDefinitionMap    = [];
+        $directiveDefinitions = [];
 
         foreach ($document->getDefinitions() as $definition) {
             if ($definition instanceof TypeDefinitionNodeInterface) {
@@ -99,7 +97,7 @@ class SchemaExtender implements SchemaExtenderInterface
                 $existingType = $schema->getType($typeName);
 
                 if (null !== $existingType) {
-                    throw new ExecutionException(
+                    throw new ExtensionException(
                         \sprintf(
                             'Type "%s" already exists in the schema. It cannot also ' .
                             'be defined in this type definition.',
@@ -114,13 +112,13 @@ class SchemaExtender implements SchemaExtenderInterface
                 continue;
             }
 
-            if ($definition instanceof ObjectTypeDefinitionNode || $definition instanceof InterfaceTypeDefinitionNode) {
+            if ($definition instanceof ObjectTypeExtensionNode || $definition instanceof InterfaceTypeExtensionNode) {
                 // Sanity check that this type extension exists within the schema's existing types.
                 $extendedTypeName = $definition->getNameValue();
                 $existingType     = $schema->getType($extendedTypeName);
 
                 if (null === $existingType) {
-                    throw new ExecutionException(
+                    throw new ExtensionException(
                         \sprintf(
                             'Cannot extend type "%s" because it does not exist in the existing schema.',
                             $extendedTypeName
@@ -131,8 +129,8 @@ class SchemaExtender implements SchemaExtenderInterface
 
                 $this->checkExtensionNode($existingType, $definition);
 
-                $existingTypeExtensions               = $typeExtensionsMap[$extendedTypeName] ?? [];
-                $typeExtensionsMap[$extendedTypeName] = \array_merge($existingTypeExtensions, [$definition]);
+                $existingTypeExtensions                     = $this->typeExtensionsMap[$extendedTypeName] ?? [];
+                $this->typeExtensionsMap[$extendedTypeName] = \array_merge($existingTypeExtensions, [$definition]);
 
                 continue;
             }
@@ -142,7 +140,7 @@ class SchemaExtender implements SchemaExtenderInterface
                 $existingDirective = $schema->getDirective($directiveName);
 
                 if (null !== $existingDirective) {
-                    throw new ExecutionException(
+                    throw new ExtensionException(
                         \sprintf(
                             'Directive "%s" already exists in the schema. It cannot be redefined.',
                             $directiveName
@@ -156,14 +154,19 @@ class SchemaExtender implements SchemaExtenderInterface
                 continue;
             }
 
-            throw new ExecutionException(
-                \sprintf('The %s kind is not yet supported by extendSchema().', $definition->getKind())
-            );
+            if ($definition instanceof ScalarTypeExtensionNode ||
+                $definition instanceof UnionTypeExtensionNode ||
+                $definition instanceof EnumTypeExtensionNode ||
+                $definition instanceof InputObjectTypeExtensionNode) {
+                throw new ExtensionException(
+                    \sprintf('The %s kind is not yet supported by extendSchema().', $definition->getKind())
+                );
+            }
         }
 
         // If this document contains no new types, extensions, or directives then
         // return the same unmodified GraphQLSchema instance.
-        if (empty($typeDefinitionMap) && empty($typeExtensionsMap) && empty($directiveDefinitions)) {
+        if (empty($typeDefinitionMap) && empty($this->typeExtensionsMap) && empty($directiveDefinitions)) {
             return $schema;
         }
 
@@ -189,27 +192,73 @@ class SchemaExtender implements SchemaExtenderInterface
 
         $this->definitionBuilder = $this->definitionBuilderCreator->create(
             $typeDefinitionMap,
-            [],
             $resolveTypeFunction
+        );
+
+        $this->cache->clear();
+
+        $existingQueryType        = $schema->getQueryType();
+        $existingMutationType     = $schema->getMutationType();
+        $existingSubscriptionType = $schema->getSubscriptionType();
+
+        /** @noinspection PhpParamsInspection */
+        return GraphQLSchema([
+            'query'        => null !== $existingQueryType
+                ? $this->getExtendedType($existingQueryType)
+                : null,
+            'mutation'     => null !== $existingMutationType ?
+                $this->getExtendedType($existingMutationType)
+                : null,
+            'subscription' => null !== $existingSubscriptionType
+                ? $this->getExtendedType($existingSubscriptionType)
+                : null,
+            'types'        => \array_merge(
+                \array_map(function ($type) {
+                    return $this->getExtendedType($type);
+                }, \array_values($schema->getTypeMap())),
+                $this->definitionBuilder->buildTypes(\array_values($typeDefinitionMap))
+            ),
+            'directives'   => $this->getMergedDirectives($schema, $directiveDefinitions),
+            'astNode'      => $schema->getAstNode(),
+        ]);
+    }
+
+    /**
+     * @param SchemaInterface $schema
+     * @param array           $directiveDefinitions
+     * @return Directive[]
+     * @throws InvariantException
+     */
+    protected function getMergedDirectives(SchemaInterface $schema, array $directiveDefinitions): array
+    {
+        $existingDirectives = $schema->getDirectives();
+
+        invariant(!empty($existingDirectives), 'schema must have default directives');
+
+        return \array_merge(
+            $existingDirectives,
+            \array_map(function (DirectiveDefinitionNode $node) {
+                return $this->definitionBuilder->buildDirective($node);
+            }, $directiveDefinitions)
         );
     }
 
     /**
      * @param TypeInterface $type
      * @param NodeInterface $node
-     * @throws ExecutionException
+     * @throws ExtensionException
      */
     protected function checkExtensionNode(TypeInterface $type, NodeInterface $node): void
     {
         if ($node instanceof ObjectTypeExtensionNode && !($type instanceof ObjectType)) {
-            throw new ExecutionException(
+            throw new ExtensionException(
                 \sprintf('Cannot extend non-object type "%s".', toString($type)),
                 [$node]
             );
         }
 
         if ($node instanceof InterfaceTypeExtensionNode && !($type instanceof InterfaceType)) {
-            throw new ExecutionException(
+            throw new ExtensionException(
                 \sprintf('Cannot extend non-interface type "%s".', toString($type)),
                 [$node]
             );
@@ -226,7 +275,7 @@ class SchemaExtender implements SchemaExtenderInterface
     {
         $typeName = $type->getName();
 
-        if ($this->isInCache($typeName)) {
+        if (!$this->isInCache($typeName)) {
             $this->setInCache($typeName, $this->extendType($type));
         }
 
@@ -271,10 +320,10 @@ class SchemaExtender implements SchemaExtenderInterface
         $typeName          = $type->getName();
         $extensionASTNodes = $type->getExtensionAstNodes();
 
-        if (isset($this->typeExtensionMap[$typeName])) {
+        if (isset($this->typeExtensionsMap[$typeName])) {
             $extensionASTNodes = !empty($extensionASTNodes)
-                ? \array_merge($this->typeExtensionMap[$typeName], $extensionASTNodes)
-                : $this->typeExtensionMap[$typeName];
+                ? \array_merge($this->typeExtensionsMap[$typeName], $extensionASTNodes)
+                : $this->typeExtensionsMap[$typeName];
         }
 
         return GraphQLObjectType([
@@ -299,12 +348,12 @@ class SchemaExtender implements SchemaExtenderInterface
     protected function extendInterfaceType(InterfaceType $type): InterfaceType
     {
         $typeName          = $type->getName();
-        $extensionASTNodes = $this->typeExtensionMap[$typeName];
+        $extensionASTNodes = $this->typeExtensionsMap[$typeName] ?? [];
 
-        if (isset($this->typeExtensionMap[$typeName])) {
+        if (isset($this->typeExtensionsMap[$typeName])) {
             $extensionASTNodes = !empty($extensionASTNodes)
-                ? \array_merge($this->typeExtensionMap[$typeName], $extensionASTNodes)
-                : $this->typeExtensionMap[$typeName];
+                ? \array_merge($this->typeExtensionsMap[$typeName], $extensionASTNodes)
+                : $this->typeExtensionsMap[$typeName];
         }
 
         return GraphQLInterfaceType([
@@ -349,7 +398,7 @@ class SchemaExtender implements SchemaExtenderInterface
         }, $type->getInterfaces());
 
         // If there are any extensions to the interfaces, apply those here.
-        $extensions = $this->typeExtensionMap[$type->getName()] ?? null;
+        $extensions = $this->typeExtensionsMap[$type->getName()] ?? null;
 
         if (null !== $extensions) {
             foreach ($extensions as $extension) {
@@ -375,7 +424,7 @@ class SchemaExtender implements SchemaExtenderInterface
      */
     protected function extendFieldMap(TypeInterface $type): array
     {
-        $typeName = $type->getName();
+        $typeName    = $type->getName();
         $newFieldMap = [];
         $oldFieldMap = $type->getFields();
 
@@ -395,12 +444,13 @@ class SchemaExtender implements SchemaExtenderInterface
         }
 
         // If there are any extensions to the fields, apply those here.
-        $extensions = $this->typeExtensionMap[$typeName] ?? null;
+        /** @var ObjectTypeExtensionNode|InterfaceTypeExtensionNode[] $extensions */
+        $extensions = $this->typeExtensionsMap[$typeName] ?? null;
 
         if (null !== $extensions) {
             foreach ($extensions as $extension) {
                 foreach ($extension->getFields() as $field) {
-                    $fieldName = $field->getName();
+                    $fieldName = $field->getNameValue();
 
                     if (isset($oldFieldMap[$fieldName])) {
                         throw new ExtensionException(

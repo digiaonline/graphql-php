@@ -9,7 +9,7 @@ trait ExtensionASTNodesTrait
     /**
      * @var ObjectTypeExtensionNode[]
      */
-    protected $extensionAstNodes;
+    protected $extensionAstNodes = [];
 
     /**
      * @return bool

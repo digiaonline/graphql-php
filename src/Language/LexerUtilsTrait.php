@@ -56,7 +56,7 @@ trait LexerUtilsTrait
         throw new SyntaxErrorException(
             $lexer->getSource(),
             $token->getStart(),
-            sprintf('Expected %s, found %s', $kind, $token)
+            sprintf('Expected %s, found %s.', $kind, $token)
         );
     }
 

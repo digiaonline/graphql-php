@@ -13,17 +13,17 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 interface SchemaInterface
 {
     /**
-     * @return TypeInterface|null
+     * @return TypeInterface|ObjectType|null
      */
     public function getQueryType(): ?TypeInterface;
 
     /**
-     * @return TypeInterface|null
+     * @return TypeInterface|ObjectType|null
      */
     public function getMutationType(): ?TypeInterface;
 
     /**
-     * @return TypeInterface|null
+     * @return TypeInterface|ObjectType|null
      */
     public function getSubscriptionType(): ?TypeInterface;
 

@@ -21,6 +21,15 @@ trait FieldsTrait
     protected $fieldMap;
 
     /**
+     * @param string $fieldName
+     * @return Field|null
+     */
+    public function getField(string $fieldName): ?Field
+    {
+        return $this->getFields()[$fieldName] ?? null;
+    }
+
+    /**
      * @return Field[]
      * @throws InvariantException
      */

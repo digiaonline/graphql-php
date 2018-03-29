@@ -44,9 +44,10 @@ trait ArgumentsTrait
             'Args must be an associative array with argument names as keys.'
         );
 
-        foreach ($arguments as $argumentName => $argumentConfig) {
-            $argumentConfig['name'] = $argumentName;
-            $this->arguments[] = new Argument($argumentConfig);
+        foreach ($arguments as $argumentName => $argument) {
+            $this->arguments[] = $argument instanceof Argument
+                ? $argument
+                : new Argument(\array_merge($argument, ['name' => $argumentName]));
         }
 
         return $this;
