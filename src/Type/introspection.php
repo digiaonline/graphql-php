@@ -14,7 +14,7 @@ use function Digia\GraphQL\Util\arraySome;
  */
 function __Schema(): ObjectType
 {
-    return GraphQL::get(GraphQL::SCHEMA_INTROSPECTION);
+    return GraphQL::make(GraphQL::SCHEMA_INTROSPECTION);
 }
 
 /**
@@ -22,7 +22,7 @@ function __Schema(): ObjectType
  */
 function __Directive(): ObjectType
 {
-    return GraphQL::get(GraphQL::DIRECTIVE_INTROSPECTION);
+    return GraphQL::make(GraphQL::DIRECTIVE_INTROSPECTION);
 
 }
 
@@ -31,7 +31,7 @@ function __Directive(): ObjectType
  */
 function __DirectiveLocation(): EnumType
 {
-    return GraphQL::get(GraphQL::DIRECTIVE_LOCATION_INTROSPECTION);
+    return GraphQL::make(GraphQL::DIRECTIVE_LOCATION_INTROSPECTION);
 
 }
 
@@ -40,7 +40,7 @@ function __DirectiveLocation(): EnumType
  */
 function __Type(): ObjectType
 {
-    return GraphQL::get(GraphQL::TYPE_INTROSPECTION);
+    return GraphQL::make(GraphQL::TYPE_INTROSPECTION);
 }
 
 /**
@@ -48,7 +48,7 @@ function __Type(): ObjectType
  */
 function __Field(): ObjectType
 {
-    return GraphQL::get(GraphQL::FIELD_INTROSPECTION);
+    return GraphQL::make(GraphQL::FIELD_INTROSPECTION);
 }
 
 /**
@@ -56,7 +56,7 @@ function __Field(): ObjectType
  */
 function __InputValue(): ObjectType
 {
-    return GraphQL::get(GraphQL::INPUT_VALUE_INTROSPECTION);
+    return GraphQL::make(GraphQL::INPUT_VALUE_INTROSPECTION);
 }
 
 /**
@@ -64,7 +64,7 @@ function __InputValue(): ObjectType
  */
 function __EnumValue(): ObjectType
 {
-    return GraphQL::get(GraphQL::ENUM_VALUE_INTROSPECTION);
+    return GraphQL::make(GraphQL::ENUM_VALUE_INTROSPECTION);
 }
 
 /**
@@ -72,7 +72,7 @@ function __EnumValue(): ObjectType
  */
 function __TypeKind(): EnumType
 {
-    return GraphQL::get(GraphQL::TYPE_KIND_INTROSPECTION);
+    return GraphQL::make(GraphQL::TYPE_KIND_INTROSPECTION);
 }
 
 /**
@@ -80,7 +80,7 @@ function __TypeKind(): EnumType
  */
 function SchemaMetaFieldDefinition(): Field
 {
-    return GraphQL::get(GraphQL::SCHEMA_META_FIELD_DEFINITION);
+    return GraphQL::make(GraphQL::SCHEMA_META_FIELD_DEFINITION);
 }
 
 /**
@@ -88,7 +88,7 @@ function SchemaMetaFieldDefinition(): Field
  */
 function TypeMetaFieldDefinition(): Field
 {
-    return GraphQL::get(GraphQL::TYPE_META_FIELD_DEFINITION);
+    return GraphQL::make(GraphQL::TYPE_META_FIELD_DEFINITION);
 }
 
 /**
@@ -96,7 +96,7 @@ function TypeMetaFieldDefinition(): Field
  */
 function TypeNameMetaFieldDefinition(): Field
 {
-    return GraphQL::get(GraphQL::TYPE_NAME_META_FIELD_DEFINITION);
+    return GraphQL::make(GraphQL::TYPE_NAME_META_FIELD_DEFINITION);
 }
 
 /**

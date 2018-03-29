@@ -47,7 +47,7 @@ class SupportedRules
         $rules = [];
 
         foreach (self::$supportedRules as $className) {
-            $rules[] = GraphQL::get($className);
+            $rules[] = GraphQL::make($className);
         }
 
         return $rules;

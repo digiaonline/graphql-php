@@ -12,7 +12,7 @@ use function Digia\GraphQL\Util\arraySome;
  */
 function GraphQLBoolean(): ScalarType
 {
-    return GraphQL::get('GraphQLBoolean');
+    return GraphQL::make('GraphQLBoolean');
 }
 
 /**
@@ -20,7 +20,7 @@ function GraphQLBoolean(): ScalarType
  */
 function GraphQLFloat(): ScalarType
 {
-    return GraphQL::get('GraphQLFloat');
+    return GraphQL::make('GraphQLFloat');
 }
 
 /**
@@ -28,7 +28,7 @@ function GraphQLFloat(): ScalarType
  */
 function GraphQLInt(): ScalarType
 {
-    return GraphQL::get('GraphQLInt');
+    return GraphQL::make('GraphQLInt');
 }
 
 /**
@@ -36,7 +36,7 @@ function GraphQLInt(): ScalarType
  */
 function GraphQLID(): ScalarType
 {
-    return GraphQL::get('GraphQLID');
+    return GraphQL::make('GraphQLID');
 }
 
 /**
@@ -44,7 +44,7 @@ function GraphQLID(): ScalarType
  */
 function GraphQLString(): ScalarType
 {
-    return GraphQL::get('GraphQLString');
+    return GraphQL::make('GraphQLString');
 }
 
 /**

@@ -3,17 +3,32 @@
 namespace Digia\GraphQL;
 
 use Digia\GraphQL\Cache\CacheProvider;
+use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionProvider;
+use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\LanguageProvider;
+use Digia\GraphQL\Language\LexerInterface;
+use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\TypeNodeInterface;
+use Digia\GraphQL\Language\Node\ValueNodeInterface;
+use Digia\GraphQL\Language\ParserInterface;
+use Digia\GraphQL\Language\PrinterInterface;
+use Digia\GraphQL\Language\Source;
+use Digia\GraphQL\SchemaBuilder\SchemaBuilderInterface;
 use Digia\GraphQL\SchemaBuilder\SchemaBuilderProvider;
+use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
 use Digia\GraphQL\SchemaValidator\SchemaValidatorProvider;
 use Digia\GraphQL\Type\CoercerProvider;
 use Digia\GraphQL\Type\DirectivesProvider;
 use Digia\GraphQL\Type\IntrospectionProvider;
 use Digia\GraphQL\Type\ScalarTypesProvider;
+use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\UtilityProvider;
 use Digia\GraphQL\Validation\RulesProvider;
 use Digia\GraphQL\Validation\ValidationProvider;
+use Digia\GraphQL\Validation\ValidatorInterface;
 use League\Container\Container;
 use League\Container\ContainerInterface;
 
@@ -84,25 +99,15 @@ class GraphQL
     }
 
     /**
-     * Registers the service provides with the container.
-     */
-    protected function registerProviders(ContainerInterface $container): void
-    {
-        foreach (self::$providers as $className) {
-            $container->addServiceProvider($className);
-        }
-    }
-
-    /**
      * @return GraphQL
      */
     public static function getInstance(): self
     {
-        if (null === self::$instance) {
-            self::$instance = new static();
+        if (null === static::$instance) {
+            static::$instance = new static();
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**
@@ -110,9 +115,138 @@ class GraphQL
      * @param array  $args
      * @return mixed
      */
-    public static function get(string $id, array $args = [])
+    public static function make(string $id, array $args = [])
     {
-        return self::getInstance()->getContainer()->get($id, $args);
+        return static::getInstance()
+            ->getContainer()
+            ->get($id, $args);
+    }
+
+    /**
+     * @param string|Source $source
+     * @param array         $resolverMaps
+     * @param array         $options
+     * @return SchemaInterface
+     * @throws InvariantException
+     */
+    public static function buildSchema($source, array $resolverMaps = [], array $options = []): SchemaInterface
+    {
+        return static::make(SchemaBuilderInterface::class)
+            ->build(
+                static::parse($source, $options),
+                $resolverMaps,
+                $options
+            );
+    }
+
+    /**
+     * @param SchemaInterface $schema
+     * @return array
+     */
+    public static function validateSchema(SchemaInterface $schema): array
+    {
+        return static::make(SchemaValidatorInterface::class)
+            ->validate($schema);
+    }
+
+    /**
+     * @param string|Source $source
+     * @param array         $options
+     * @return DocumentNode
+     * @throws InvariantException
+     */
+    public static function parse($source, array $options = []): DocumentNode
+    {
+        return static::make(ParserInterface::class)
+            ->parse(static::lex($source, $options));
+    }
+
+    /**
+     * @param string|Source $source
+     * @param array         $options
+     * @return ValueNodeInterface
+     * @throws InvariantException
+     */
+    public static function parseValue($source, array $options = []): ValueNodeInterface
+    {
+        return static::make(ParserInterface::class)
+            ->parseValue(static::lex($source, $options));
+    }
+
+    /**
+     * @param string|Source $source
+     * @param array         $options
+     * @return TypeNodeInterface
+     * @throws InvariantException
+     */
+    public static function parseType($source, array $options = []): TypeNodeInterface
+    {
+        return static::make(ParserInterface::class)
+            ->parseType(static::lex($source, $options));
+    }
+
+    /**
+     * @param SchemaInterface $schema
+     * @param DocumentNode    $document
+     * @return array
+     */
+    public static function validate(SchemaInterface $schema, DocumentNode $document): array
+    {
+        return static::make(ValidatorInterface::class)
+            ->validate($schema, $document);
+    }
+
+    /**
+     * @param SchemaInterface $schema
+     * @param DocumentNode    $document
+     * @param null            $rootValue
+     * @param null            $contextValue
+     * @param array           $variableValues
+     * @param null            $operationName
+     * @param callable|null   $fieldResolver
+     * @return ExecutionResult
+     */
+    public static function execute(
+        SchemaInterface $schema,
+        DocumentNode $document,
+        $rootValue = null,
+        $contextValue = null,
+        array $variableValues = [],
+        $operationName = null,
+        callable $fieldResolver = null
+    ): ExecutionResult {
+        return static::make(ExecutionInterface::class)
+            ->execute(
+                $schema,
+                $document,
+                $rootValue,
+                $contextValue,
+                $variableValues,
+                $operationName,
+                $fieldResolver
+            );
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return string
+     */
+    public static function print(NodeInterface $node): string
+    {
+        return static::make(PrinterInterface::class)->print($node);
+    }
+
+    /**
+     * @param string|Source $source
+     * @param array         $options
+     * @return LexerInterface
+     * @throws InvariantException
+     */
+    public static function lex($source, array $options = []): LexerInterface
+    {
+        return static::make(LexerInterface::class)
+            ->setSource($source instanceof Source ? $source : new Source($source))
+            ->setOptions($options);
     }
 
     /**
@@ -121,5 +255,15 @@ class GraphQL
     public function getContainer(): Container
     {
         return $this->container;
+    }
+
+    /**
+     * Registers the service provides with the container.
+     */
+    protected function registerProviders(ContainerInterface $container): void
+    {
+        foreach (static::$providers as $className) {
+            $container->addServiceProvider($className);
+        }
     }
 }

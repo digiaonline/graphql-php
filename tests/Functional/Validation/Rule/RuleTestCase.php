@@ -26,8 +26,8 @@ abstract class RuleTestCase extends TestCase
 
     public function setUp()
     {
-        $this->validator = GraphQL::get(ValidatorInterface::class);
-        $this->rule      = GraphQL::get($this->getRuleClassName());
+        $this->validator = GraphQL::make(ValidatorInterface::class);
+        $this->rule      = GraphQL::make($this->getRuleClassName());
     }
 
     protected function expectPassesRule($rule, $query)
