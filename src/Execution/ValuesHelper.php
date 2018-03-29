@@ -31,7 +31,7 @@ class ValuesHelper
      * @throws InvalidTypeException
      * @throws InvariantException
      */
-    public function getArgumentValues($definition, ArgumentsAwareInterface $node, array $variableValues = []): array
+    public function coerceArgumentValues($definition, ArgumentsAwareInterface $node, array $variableValues = []): array
     {
         $coercedValues       = [];
         $argumentDefinitions = $definition->getArguments();
@@ -105,7 +105,7 @@ class ValuesHelper
      * @throws InvalidTypeException
      * @throws InvariantException
      */
-    public function getDirectiveValues(
+    public function coerceDirectiveValues(
         Directive $directive,
         $node,
         array $variableValues = []
@@ -116,7 +116,7 @@ class ValuesHelper
             }) : null;
 
         if (null !== $directiveNode) {
-            return $this->getArgumentValues($directive, $directiveNode, $variableValues);
+            return $this->coerceArgumentValues($directive, $directiveNode, $variableValues);
         }
 
         return null;

@@ -16,9 +16,9 @@ use Digia\GraphQL\Type\SchemaInterface;
  * @param array                    $inputs
  * @return array
  */
-//function getVariableValues(SchemaInterface $schema, array $nodes, array $inputs): array
+//function coerceVariableValues(SchemaInterface $schema, array $nodes, array $inputs): array
 //{
-//    return GraphQL::make(ExecutionHelper::class)->getVariableValues($schema, $nodes, $inputs);
+//    return GraphQL::make(ExecutionHelper::class)->coerceVariableValues($schema, $nodes, $inputs);
 //}
 
 /**
@@ -27,9 +27,9 @@ use Digia\GraphQL\Type\SchemaInterface;
  * @param array                   $variableValues
  * @return array
  */
-function getArgumentValues($definition, ArgumentsAwareInterface $node, array $variableValues = []): array
+function coerceArgumentValues($definition, ArgumentsAwareInterface $node, array $variableValues = []): array
 {
-    return GraphQL::make(ValuesHelper::class)->getArgumentValues($definition, $node, $variableValues);
+    return GraphQL::make(ValuesHelper::class)->coerceArgumentValues($definition, $node, $variableValues);
 }
 
 /**
@@ -38,7 +38,7 @@ function getArgumentValues($definition, ArgumentsAwareInterface $node, array $va
  * @param array              $variableValues
  * @return array|null
  */
-function getDirectiveValues(Directive $directive, $node, array $variableValues = []): ?array
+function coerceDirectiveValues(Directive $directive, $node, array $variableValues = []): ?array
 {
-    return GraphQL::make(ValuesHelper::class)->getDirectiveValues($directive, $node, $variableValues);
+    return GraphQL::make(ValuesHelper::class)->coerceDirectiveValues($directive, $node, $variableValues);
 }

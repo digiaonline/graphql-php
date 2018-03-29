@@ -149,13 +149,13 @@ abstract class ExecutionStrategy
 
         $contextVariables = $this->context->getVariableValues();
 
-        $skip = getDirectiveValues(GraphQLSkipDirective(), $node, $contextVariables);
+        $skip = coerceDirectiveValues(GraphQLSkipDirective(), $node, $contextVariables);
 
         if ($skip && $skip['if'] === true) {
             return false;
         }
 
-        $include = getDirectiveValues(GraphQLIncludeDirective(), $node, $contextVariables);
+        $include = coerceDirectiveValues(GraphQLIncludeDirective(), $node, $contextVariables);
 
         if ($include && $include['if'] === false) {
             return false;
@@ -912,7 +912,7 @@ abstract class ExecutionStrategy
         ResolveInfo $info
     ) {
         try {
-            $args = getArgumentValues($field, $fieldNode, $context->getVariableValues());
+            $args = coerceArgumentValues($field, $fieldNode, $context->getVariableValues());
 
             return $resolveFunction($rootValue, $args, $context->getContextValue(), $info);
         } catch (\Throwable $error) {

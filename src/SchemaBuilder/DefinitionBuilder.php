@@ -36,7 +36,7 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use function Digia\GraphQL\Execution\getDirectiveValues;
+use function Digia\GraphQL\Execution\coerceDirectiveValues;
 use function Digia\GraphQL\Type\assertNullableType;
 use function Digia\GraphQL\Type\GraphQLDirective;
 use function Digia\GraphQL\Type\GraphQLEnumType;
@@ -430,7 +430,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function getDeprecationReason(NodeInterface $node): ?string
     {
-        $deprecated = getDirectiveValues(GraphQLDeprecatedDirective(), $node);
+        $deprecated = coerceDirectiveValues(GraphQLDeprecatedDirective(), $node);
         return $deprecated['reason'] ?? null;
     }
 
