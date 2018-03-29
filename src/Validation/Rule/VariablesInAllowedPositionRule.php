@@ -10,8 +10,8 @@ use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Util\TypeComparator;
 use function Digia\GraphQL\Type\GraphQLNonNull;
+use function Digia\GraphQL\Util\isTypeSubtypeOf;
 use function Digia\GraphQL\Util\typeFromAST;
 use function Digia\GraphQL\Validation\badVariablePositionMessage;
 
@@ -26,19 +26,6 @@ class VariablesInAllowedPositionRule extends AbstractRule
      * @var VariableDefinitionNode[]|null
      */
     protected $variableDefinitionMap;
-
-    /**
-     * @var TypeComparator
-     */
-    protected $typeComparator;
-
-    /**
-     * VariablesInAllowedPositionRule constructor.
-     */
-    public function __construct(TypeComparator $typeComparator)
-    {
-        $this->typeComparator = $typeComparator;
-    }
 
     /**
      * @inheritdoc
@@ -75,7 +62,7 @@ class VariablesInAllowedPositionRule extends AbstractRule
                 $variableType = typeFromAST($schema, $variableDefinition->getType());
 
                 if (null !== $variableType &&
-                    !$this->typeComparator->isTypeSubTypeOf($schema,
+                    !isTypeSubTypeOf($schema,
                         $this->getEffectiveType($variableType, $variableDefinition), $type)) {
                     $this->context->reportError(
                         new ValidationException(

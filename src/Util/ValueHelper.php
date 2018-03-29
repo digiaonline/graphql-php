@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Util;
 
-use Digia\GraphQL\Error\ResolutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Error\ResolutionException;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
@@ -21,28 +21,27 @@ use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
-/**
- * Produces a PHP value given a GraphQL Value AST.
- *
- * A GraphQL type must be provided, which will be used to interpret different
- * GraphQL Value literals.
- *
- * Returns `undefined` when the value could not be validly resolved according to
- * the provided type.
- *
- * | GraphQL Value        | JSON Value    |
- * | -------------------- | ------------- |
- * | Input Object         | Object        |
- * | List                 | Array         |
- * | Boolean              | Boolean       |
- * | String               | String        |
- * | Int / Float          | Number        |
- * | Enum Value           | Mixed         |
- * | NullValue            | null          |
- */
-class ValueNodeResolver
+class ValueHelper
 {
     /**
+     * Produces a PHP value given a GraphQL Value AST.
+     *
+     * A GraphQL type must be provided, which will be used to interpret different
+     * GraphQL Value literals.
+     *
+     * Returns `undefined` when the value could not be validly resolved according to
+     * the provided type.
+     *
+     * | GraphQL Value        | JSON Value    |
+     * | -------------------- | ------------- |
+     * | Input Object         | Object        |
+     * | List                 | Array         |
+     * | Boolean              | Boolean       |
+     * | String               | String        |
+     * | Int / Float          | Number        |
+     * | Enum Value           | Mixed         |
+     * | NullValue            | null          |
+     *
      * @param NodeInterface|ValueNodeInterface|null   $node
      * @param InputTypeInterface|NonNullType|ListType $type
      * @param array                                   $variables
@@ -51,7 +50,7 @@ class ValueNodeResolver
      * @throws InvariantException
      * @throws ResolutionException
      */
-    public function resolve(?NodeInterface $node, TypeInterface $type, array $variables = [])
+    public function fromAST(?NodeInterface $node, TypeInterface $type, array $variables = [])
     {
         if (null === $node) {
             throw new ResolutionException('Node is not defined.');
@@ -69,7 +68,9 @@ class ValueNodeResolver
             $variableName = $node->getNameValue();
 
             if (!isset($variables[$variableName])) {
-                throw new ResolutionException(\sprintf('Cannot resolve value for missing variable "%s".', $variableName));
+                throw new ResolutionException(
+                    \sprintf('Cannot resolve value for missing variable "%s".', $variableName)
+                );
             }
 
             // Note: we're not doing any checking that this variable is correct. We're
@@ -112,7 +113,7 @@ class ValueNodeResolver
             throw new ResolutionException('Cannot resolve non-null values from null value node.');
         }
 
-        return $this->resolve($node, $type->getOfType(), $variables);
+        return $this->fromAST($node, $type->getOfType(), $variables);
     }
 
     /**
@@ -140,14 +141,14 @@ class ValueNodeResolver
 
                     $resolvedValues[] = null;
                 } else {
-                    $resolvedValues[] = $this->resolve($value, $itemType, $variables);
+                    $resolvedValues[] = $this->fromAST($value, $itemType, $variables);
                 }
             }
 
             return $resolvedValues;
         }
 
-        return [$this->resolve($node, $itemType, $variables)];
+        return [$this->fromAST($node, $itemType, $variables)];
     }
 
     /**
@@ -185,7 +186,7 @@ class ValueNodeResolver
                 continue;
             }
 
-            $fieldValue = $this->resolve($fieldNode->getValue(), $field->getType(), $variables);
+            $fieldValue = $this->fromAST($fieldNode->getValue(), $field->getType(), $variables);
 
             $resolvedValues[$name] = $fieldValue;
         }

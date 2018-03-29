@@ -8,7 +8,6 @@ use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\LanguageException;
-use Digia\GraphQL\Execution\ValuesResolver;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumValueDefinitionNode;
@@ -37,6 +36,7 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
+use function Digia\GraphQL\Execution\coerceDirectiveValues;
 use function Digia\GraphQL\Type\assertNullableType;
 use function Digia\GraphQL\Type\GraphQLDirective;
 use function Digia\GraphQL\Type\GraphQLEnumType;
@@ -51,6 +51,7 @@ use function Digia\GraphQL\Type\introspectionTypes;
 use function Digia\GraphQL\Type\specifiedScalarTypes;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\keyValueMap;
+use function Digia\GraphQL\Util\valueFromAST;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
@@ -74,16 +75,10 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected $resolveTypeFunction;
 
     /**
-     * @var ValuesResolver
-     */
-    protected $valuesResolver;
-
-    /**
      * DefinitionBuilder constructor.
      * @param array          $typeDefinitionsMap
      * @param array          $resolverMap
      * @param CacheInterface $cache
-     * @param ValuesResolver $valuesResolver
      * @param callable|null  $resolveTypeFunction
      * @throws InvalidArgumentException
      */
@@ -91,13 +86,11 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         array $typeDefinitionsMap,
         array $resolverMap = [],
         ?callable $resolveTypeFunction = null,
-        CacheInterface $cache,
-        ValuesResolver $valuesResolver
+        CacheInterface $cache
     ) {
         $this->typeDefinitionsMap  = $typeDefinitionsMap;
         $this->resolverMap         = $resolverMap;
         $this->cache               = $cache;
-        $this->valuesResolver      = $valuesResolver;
         $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
 
         $builtInTypes = keyMap(
@@ -202,7 +195,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                     'type'         => $type,
                     'description'  => $value->getDescriptionValue(),
                     'defaultValue' => null !== $defaultValue
-                        ? $this->valuesResolver->coerceValueFromAST($defaultValue, $type)
+                        ? valueFromAST($defaultValue, $type)
                         : null,
                     'astNode'      => $value,
                 ];
@@ -375,7 +368,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                             'type'         => $type,
                             'description'  => $value->getDescriptionValue(),
                             'defaultValue' => null !== $defaultValue
-                                ? $this->valuesResolver->coerceValueFromAST($defaultValue, $type)
+                                ? valueFromAST($defaultValue, $type)
                                 : null,
                             'astNode'      => $value,
                         ];
@@ -437,7 +430,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function getDeprecationReason(NodeInterface $node): ?string
     {
-        $deprecated = $this->valuesResolver->getDirectiveValues(GraphQLDeprecatedDirective(), $node);
+        $deprecated = coerceDirectiveValues(GraphQLDeprecatedDirective(), $node);
         return $deprecated['reason'] ?? null;
     }
 

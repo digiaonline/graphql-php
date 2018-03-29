@@ -23,7 +23,6 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Schema;
-use Digia\GraphQL\Util\ValueNodeResolver;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
@@ -53,12 +52,6 @@ abstract class ExecutionStrategy
      */
     protected $rootValue;
 
-
-    /**
-     * @var ValuesResolver
-     */
-    protected $valuesResolver;
-
     /**
      * @var array
      */
@@ -83,8 +76,6 @@ abstract class ExecutionStrategy
         $this->context   = $context;
         $this->operation = $operation;
         $this->rootValue = $rootValue;
-        // TODO: Inject the ValuesResolver instance by using a builder for this class.
-        $this->valuesResolver = new ValuesResolver(new ValueNodeResolver());
     }
 
     /**
@@ -158,13 +149,13 @@ abstract class ExecutionStrategy
 
         $contextVariables = $this->context->getVariableValues();
 
-        $skip = $this->valuesResolver->getDirectiveValues(GraphQLSkipDirective(), $node, $contextVariables);
+        $skip = coerceDirectiveValues(GraphQLSkipDirective(), $node, $contextVariables);
 
         if ($skip && $skip['if'] === true) {
             return false;
         }
 
-        $include = $this->valuesResolver->getDirectiveValues(GraphQLIncludeDirective(), $node, $contextVariables);
+        $include = coerceDirectiveValues(GraphQLIncludeDirective(), $node, $contextVariables);
 
         if ($include && $include['if'] === false) {
             return false;
@@ -921,7 +912,7 @@ abstract class ExecutionStrategy
         ResolveInfo $info
     ) {
         try {
-            $args = $this->valuesResolver->coerceArgumentValues($field, $fieldNode, $context->getVariableValues());
+            $args = coerceArgumentValues($field, $fieldNode, $context->getVariableValues());
 
             return $resolveFunction($rootValue, $args, $context->getContextValue(), $info);
         } catch (\Throwable $error) {

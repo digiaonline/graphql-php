@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Util\TypeComparator;
 use Digia\GraphQL\Validation\Rule\ExecutableDefinitionsRule;
 use Digia\GraphQL\Validation\Rule\FieldOnCorrectTypeRule;
 use Digia\GraphQL\Validation\Rule\FragmentsOnCompositeTypesRule;
@@ -83,8 +82,7 @@ class RulesProvider extends AbstractServiceProvider
         $this->container->add(NoUnusedFragmentsRule::class, NoUnusedFragmentsRule::class);
         $this->container->add(NoUnusedVariablesRule::class, NoUnusedVariablesRule::class);
         $this->container->add(OverlappingFieldsCanBeMergedRule::class, OverlappingFieldsCanBeMergedRule::class);
-        $this->container->add(PossibleFragmentSpreadsRule::class, PossibleFragmentSpreadsRule::class)
-            ->withArgument(TypeComparator::class);
+        $this->container->add(PossibleFragmentSpreadsRule::class, PossibleFragmentSpreadsRule::class);
         $this->container->add(ProvidedNonNullArgumentsRule::class, ProvidedNonNullArgumentsRule::class);
         $this->container->add(ScalarLeafsRule::class, ScalarLeafsRule::class);
         $this->container->add(SingleFieldSubscriptionsRule::class, SingleFieldSubscriptionsRule::class);
@@ -97,7 +95,6 @@ class RulesProvider extends AbstractServiceProvider
         $this->container->add(ValuesOfCorrectTypeRule::class, ValuesOfCorrectTypeRule::class);
         $this->container->add(VariablesAreInputTypesRule::class, VariablesAreInputTypesRule::class);
         $this->container->add(VariablesDefaultValueAllowedRule::class, VariablesDefaultValueAllowedRule::class);
-        $this->container->add(VariablesInAllowedPositionRule::class, VariablesInAllowedPositionRule::class)
-            ->withArgument(TypeComparator::class);
+        $this->container->add(VariablesInAllowedPositionRule::class, VariablesInAllowedPositionRule::class);
     }
 }

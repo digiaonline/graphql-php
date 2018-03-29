@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\SchemaBuilder;
 
-use Digia\GraphQL\Execution\ValuesResolver;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 
@@ -14,17 +13,11 @@ class DefinitionBuilderCreator implements DefinitionBuilderCreatorInterface
     protected $cache;
 
     /**
-     * @var ValuesResolver
-     */
-    protected $valuesResolver;
-
-    /**
      * DefinitionBuilderCreator constructor.
      */
-    public function __construct(CacheInterface $cache, ValuesResolver $valuesResolver)
+    public function __construct(CacheInterface $cache)
     {
-        $this->cache          = $cache;
-        $this->valuesResolver = $valuesResolver;
+        $this->cache = $cache;
     }
 
     /**
@@ -36,6 +29,6 @@ class DefinitionBuilderCreator implements DefinitionBuilderCreatorInterface
         array $resolverMap,
         ?callable $resolveTypeFunction = null
     ): DefinitionBuilderInterface {
-        return new DefinitionBuilder($typeDefinitionsMap, $resolverMap, null, $this->cache, $this->valuesResolver);
+        return new DefinitionBuilder($typeDefinitionsMap, $resolverMap, null, $this->cache);
     }
 }

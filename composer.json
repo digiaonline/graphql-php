@@ -26,14 +26,15 @@
     "autoload": {
         "files": [
             "./src/Error/helpers.php",
+            "./src/Execution/values.php",
             "./src/Language/blockStringValue.php",
-            "./src/Language/helpers.php",
+            "./src/Language/utils.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
             "./src/Type/introspection.php",
             "./src/Type/scalars.php",
             "./src/Util/helpers.php",
-            "./src/Util/typeFromAST.php",
+            "./src/Util/utils.php",
             "./src/Validation/comparators.php",
             "./src/Validation/messages.php",
             "./src/api.php"

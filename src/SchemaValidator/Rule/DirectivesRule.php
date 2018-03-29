@@ -8,25 +8,11 @@ use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
-use Digia\GraphQL\Util\NameValidator;
 use function Digia\GraphQL\Type\isInputType;
+use function Digia\GraphQL\Util\isValidNameError;
 
 class DirectivesRule extends AbstractRule
 {
-    /**
-     * @var NameValidator
-     */
-    protected $nameValidator;
-
-    /**
-     * DirectivesRule constructor.
-     * @param NameValidator $nameValidator
-     */
-    public function __construct(NameValidator $nameValidator)
-    {
-        $this->nameValidator = $nameValidator;
-    }
-
     /**
      * @inheritdoc
      */
@@ -128,7 +114,7 @@ class DirectivesRule extends AbstractRule
     protected function validateName($node): void
     {
         // Ensure names are valid, however introspection types opt out.
-        $error = $this->nameValidator->isValidNameError($node->getName(), $node);
+        $error = isValidNameError($node->getName(), $node);
 
         if (null !== $error) {
             $this->context->reportError($error);

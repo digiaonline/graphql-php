@@ -77,12 +77,13 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
 
     /**
      * @param NodeInterface $node
+     * @param array|null    $variables
      * @return mixed|null
      */
-    public function parseLiteral(NodeInterface $node)
+    public function parseLiteral(NodeInterface $node, ?array $variables = null)
     {
         return null !== $this->parseLiteralFunction
-            ? \call_user_func($this->parseLiteralFunction, $node)
+            ? \call_user_func($this->parseLiteralFunction, $node, $variables)
             : null;
     }
 

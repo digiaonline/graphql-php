@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\SchemaBuilder;
 
-use Digia\GraphQL\Execution\ValuesResolver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Psr\SimpleCache\CacheInterface;
 
@@ -22,8 +21,7 @@ class SchemaBuilderProvider extends AbstractServiceProvider
     public function register()
     {
         $this->container->add(DefinitionBuilderCreatorInterface::class, DefinitionBuilderCreator::class)
-            ->withArgument(CacheInterface::class)
-            ->withArgument(ValuesResolver::class);
+            ->withArgument(CacheInterface::class);
 
         $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class)
             ->withArgument(DefinitionBuilderCreatorInterface::class);
