@@ -2,6 +2,6 @@
 
 namespace Digia\GraphQL\Error;
 
-class ValidationException extends GraphQLException
+class ValidationException extends GraphQLException implements ValidationExceptionInterface
 {
 }

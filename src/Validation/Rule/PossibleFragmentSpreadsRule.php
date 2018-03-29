@@ -9,7 +9,7 @@ use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Util\TypeComparator;
+use function Digia\GraphQL\Util\doTypesOverlap;
 use function Digia\GraphQL\Util\typeFromAST;
 use function Digia\GraphQL\Validation\typeIncompatibleAnonymousSpreadMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
@@ -24,19 +24,6 @@ use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
 class PossibleFragmentSpreadsRule extends AbstractRule
 {
     /**
-     * @var TypeComparator
-     */
-    protected $typeComparator;
-
-    /**
-     * PossibleFragmentSpreadsRule constructor.
-     */
-    public function __construct(TypeComparator $typeComparator)
-    {
-        $this->typeComparator = $typeComparator;
-    }
-
-    /**
      * @inheritdoc
      */
     protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
@@ -46,7 +33,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
         if ($fragmentType instanceof CompositeTypeInterface &&
             $parentType instanceof CompositeTypeInterface &&
-            !$this->typeComparator->doTypesOverlap($this->context->getSchema(),
+            !doTypesOverlap($this->context->getSchema(),
                 $fragmentType, $parentType)) {
             $this->context->reportError(
                 new ValidationException(
@@ -70,7 +57,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
         if (null !== $fragmentType &&
             null !== $parentType &&
-            !$this->typeComparator->doTypesOverlap($this->context->getSchema(),
+            !doTypesOverlap($this->context->getSchema(),
                 $fragmentType, $parentType)) {
             $this->context->reportError(
                 new ValidationException(

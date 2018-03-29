@@ -2,14 +2,21 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Language\Node\ListTypeNode;
+use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Language\Node\NonNullTypeNode;
+use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
+use function Digia\GraphQL\Type\GraphQLList;
+use function Digia\GraphQL\Type\GraphQLNonNull;
 use Digia\GraphQL\Type\SchemaInterface;
 
-class TypeComparator
+class TypeHelper
 {
     /**
      * Provided two types, return true if the types are equal (invariant).
@@ -138,5 +145,38 @@ class TypeComparator
 
         // Otherwise the types do not overlap.
         return false;
+    }
+
+    /**
+     * Given a Schema and an AST node describing a type, return a GraphQLType
+     * definition which applies to that type. For example, if provided the parsed
+     * AST node for `[User]`, a GraphQLList instance will be returned, containing
+     * the type called "User" found in the schema. If a type called "User" is not
+     * found in the schema, then undefined will be returned.
+     *
+     * @param SchemaInterface   $schema
+     * @param TypeNodeInterface $typeNode
+     * @return TypeInterface|null
+     * @throws InvalidTypeException
+     */
+    public function fromAST(SchemaInterface $schema, TypeNodeInterface $typeNode): ?TypeInterface
+    {
+        $innerType = null;
+
+        if ($typeNode instanceof ListTypeNode) {
+            $innerType = $this->fromAST($schema, $typeNode->getType());
+            return null !== $innerType ? GraphQLList($innerType) : null;
+        }
+
+        if ($typeNode instanceof NonNullTypeNode) {
+            $innerType = $this->fromAST($schema, $typeNode->getType());
+            return null !== $innerType ? GraphQLNonNull($innerType) : null;
+        }
+
+        if ($typeNode instanceof NamedTypeNode) {
+            return $schema->getType($typeNode->getNameValue());
+        }
+
+        throw new InvalidTypeException(sprintf('Unexpected type kind: %s', $typeNode->getKind()));
     }
 }

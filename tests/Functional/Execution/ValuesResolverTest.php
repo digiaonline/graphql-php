@@ -3,7 +3,8 @@
 namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\ExecutionContext;
-use Digia\GraphQL\Execution\ValuesResolver;
+use function Digia\GraphQL\Execution\getArgumentValues;
+use Digia\GraphQL\Execution\ValuesHelper;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
@@ -13,16 +14,6 @@ use function Digia\GraphQL\Type\GraphQLString;
 
 class ValuesResolverTest extends TestCase
 {
-    /**
-     * @var ValuesResolver
-     */
-    protected $valuesResolver;
-
-    public function setUp()
-    {
-        $this->valuesResolver = GraphQL::make(ValuesResolver::class);
-    }
-
     /**
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvalidTypeException
@@ -58,7 +49,7 @@ class ValuesResolverTest extends TestCase
             $schema, [], null, null, ['name' => 'Han Solo'], null, $operation, []
         );
 
-        $args = $this->valuesResolver->coerceArgumentValues($definition, $node, $context->getVariableValues());
+        $args = getArgumentValues($definition, $node, $context->getVariableValues());
 
         $this->assertEquals(['name' => 'Han Solo'], $args);
     }

@@ -6,7 +6,6 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 trait ArgumentsTrait
 {
-
     /**
      * @var array|ArgumentNode[]
      */

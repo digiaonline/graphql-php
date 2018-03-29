@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class DirectiveNode extends AbstractNode implements NodeInterface, NameAwareInterface
+class DirectiveNode extends AbstractNode implements NodeInterface, ArgumentsAwareInterface, NameAwareInterface
 {
     use NameTrait;
     use ArgumentsTrait;

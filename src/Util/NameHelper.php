@@ -6,7 +6,7 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 
-class NameValidator
+class NameHelper
 {
     /**
      * Upholds the spec rules about naming.
@@ -16,9 +16,9 @@ class NameValidator
      * @throws InvariantException
      * @throws ValidationException
      */
-    function assertInvalidName(string $name): string
+    function assertInvalid(string $name): string
     {
-        $error = $this->isValidNameError($name);
+        $error = $this->isValidError($name);
 
         if ($error) {
             throw $error;
@@ -35,7 +35,7 @@ class NameValidator
      * @return ValidationException
      * @throws InvariantException
      */
-    function isValidNameError(string $name, $node = null): ?ValidationException
+    function isValidError(string $name, $node = null): ?ValidationException
     {
         invariant(\is_string($name), 'Expected string');
 

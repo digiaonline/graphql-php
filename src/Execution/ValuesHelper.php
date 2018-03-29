@@ -7,56 +7,35 @@ use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
-use Digia\GraphQL\Language\Node\DirectivesTrait;
-use Digia\GraphQL\Language\Node\FieldNode;
+use Digia\GraphQL\Language\Node\ArgumentsAwareInterface;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
-use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\Node\VariableNode;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Util\ValueNodeResolver;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\keyMap;
+use function Digia\GraphQL\Util\valueFromAST;
 
-/**
- * Class ValuesResolver
- * @package Digia\GraphQL\Execution
- */
-class ValuesResolver
+class ValuesHelper
 {
-    /**
-     * @var ValueNodeResolver
-     */
-    protected $valueNodeCoercer;
-
-    /**
-     * ValuesResolver constructor.
-     * @param ValueNodeResolver $valueNodeCoercer
-     */
-    public function __construct(ValueNodeResolver $valueNodeCoercer)
-    {
-        $this->valueNodeCoercer = $valueNodeCoercer;
-    }
-
     /**
      * @see http://facebook.github.io/graphql/October2016/#CoerceArgumentValues()
      *
-     * @param Field|DirectiveInterface $objectType
-     * @param FieldNode                $field
-     * @param array                    $variableValues
+     * @param Field|Directive         $definition
+     * @param ArgumentsAwareInterface $node
+     * @param array                   $variableValues
      * @return array
      * @throws ExecutionException
      * @throws InvalidTypeException
      * @throws InvariantException
      */
-    public function coerceArgumentValues($objectType, $field, array $variableValues = []): array
+    public function getArgumentValues($definition, ArgumentsAwareInterface $node, array $variableValues = []): array
     {
         $coercedValues       = [];
-        $argumentDefinitions = $objectType->getArguments();
-        $argumentNodes       = $field->getArguments();
+        $argumentDefinitions = $definition->getArguments();
+        $argumentNodes       = $node->getArguments();
 
         if (empty($argumentDefinitions) || empty($argumentNodes)) {
             return $coercedValues;
@@ -79,7 +58,7 @@ class ValuesResolver
                 } elseif (!$argumentType instanceof NonNullType) {
                     throw new ExecutionException(
                         sprintf('Argument "%s" of required type "%s" was not provided.', $argumentName, $argumentType),
-                        [$field]
+                        [$node]
                     );
                 }
             } elseif ($argumentNode instanceof VariableNode) {
@@ -94,8 +73,7 @@ class ValuesResolver
                 $coercedValue = null;
 
                 try {
-                    $coercedValue = $this->coerceValueFromAST($argumentNode->getValue(), $argumentType,
-                        $variableValues);
+                    $coercedValue = valueFromAST($argumentNode->getValue(), $argumentType, $variableValues);
                 } catch (CoercingException $ex) {
                     // Value nodes that cannot be resolved should be treated as invalid values
                     // therefore we catch the exception and leave the `$coercedValue` as `null`.
@@ -119,17 +97,17 @@ class ValuesResolver
     }
 
     /**
-     * @param DirectiveInterface            $directive
-     * @param NodeInterface|DirectivesTrait $node
-     * @param array                         $variableValues
+     * @param Directive $directive
+     * @param mixed     $node
+     * @param array     $variableValues
      * @return array|null
      * @throws ExecutionException
      * @throws InvalidTypeException
      * @throws InvariantException
      */
     public function getDirectiveValues(
-        DirectiveInterface $directive,
-        NodeInterface $node,
+        Directive $directive,
+        $node,
         array $variableValues = []
     ): ?array {
         $directiveNode = $node->hasDirectives()
@@ -138,29 +116,10 @@ class ValuesResolver
             }) : null;
 
         if (null !== $directiveNode) {
-            return $this->coerceArgumentValues($directive, $directiveNode, $variableValues);
+            return $this->getArgumentValues($directive, $directiveNode, $variableValues);
         }
 
         return null;
-    }
-
-    /**
-     * @param ValueNodeInterface|null $valueNode
-     * @param TypeInterface           $type
-     * @param string                  $argumentName
-     * @param array                   $variableValues
-     * @return mixed|null
-     * @throws ExecutionException
-     * @throws InvalidTypeException
-     * @throws InvariantException
-     * @throws CoercingException
-     */
-    public function coerceValueFromAST(
-        ?ValueNodeInterface $valueNode,
-        TypeInterface $type,
-        $variableValues = []
-    ) {
-        return $this->valueNodeCoercer->resolve($valueNode, $type, $variableValues);
     }
 
     /**
@@ -168,7 +127,7 @@ class ValuesResolver
      * @param TypeInterface $argumentType
      * @param string        $argumentName
      * @param array         $variableValues
-     * @param               $defaultValue
+     * @param mixed         $defaultValue
      * @return mixed
      * @throws ExecutionException
      */
@@ -194,7 +153,7 @@ class ValuesResolver
 
         if ($argumentType instanceof NonNullType) {
             throw new ExecutionException(
-                sprintf(
+                \sprintf(
                     'Argument "%s" of required type "%s" was provided the variable "%s" which was not provided a runtime value.',
                     $argumentName,
                     $argumentType,
