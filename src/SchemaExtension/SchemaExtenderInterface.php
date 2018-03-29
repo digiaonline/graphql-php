@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\SchemaExtender;
+namespace Digia\GraphQL\SchemaExtension;
 
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Type\SchemaInterface;

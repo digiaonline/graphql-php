@@ -2,11 +2,11 @@
 
 namespace Digia\GraphQL\SchemaBuilder;
 
-use Digia\GraphQL\SchemaExtender\SchemaExtender;
-use Digia\GraphQL\SchemaExtender\SchemaExtenderInterface;
+use Digia\GraphQL\SchemaExtension\SchemaExtender;
+use Digia\GraphQL\SchemaExtension\SchemaExtenderInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
-class SchemaExtenderProvider extends AbstractServiceProvider
+class SchemaExtensionProvider extends AbstractServiceProvider
 {
     /**
      * @var array
