@@ -50,13 +50,13 @@ Takes care of executing queries against a GraphQL schema.
 
 Resolving data is a very important part of any GraphQL implementation, so we spent quite a lot of time figuring out how 
 to solve this problem in a way that does not limit the developers and provides us with a solid foundation to build on. 
-The current plan is to use a Resolver map, much like Apollo does in its 
-[GraphQL Tools](https://www.apollographql.com/docs/graphql-tools/resolvers.html#Resolver-map) library, which maps each 
-field to a corresponding resolver class.
+We decided to use the [Service Locator pattern](https://en.wikipedia.org/wiki/Service_locator_pattern) to lookup 
+resolvers at runtime from a resolver registry. The default registry is map-based, and is very similar to the one in the
+[GraphQL Tools](https://www.apollographql.com/docs/graphql-tools/resolvers.html#Resolver-map) library.
 
-In practice this means that the schema builder takes the schema and the resolver map and wires everything together to
-build an executable schema. This approach will also allow us to support middleware for resolver, which is very handy 
-for e.g. data transformation or authorization checks.   
+In practice this means that the schema builder takes the schema and the resolver registry and wires everything together 
+to build an executable schema. This approach should also allow us to support middleware for resolver, which could be
+very handy for e.g. data transformation or authorization checks.
 
 #### Language
 
