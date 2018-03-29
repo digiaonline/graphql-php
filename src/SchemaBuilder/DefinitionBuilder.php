@@ -65,9 +65,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected $typeDefinitionsMap;
 
     /**
-     * @var array
+     * @var ResolverRegistryInterface
      */
-    protected $resolverMap;
+    protected $resolverRegistry;
 
     /**
      * @var callable
@@ -76,20 +76,20 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     /**
      * DefinitionBuilder constructor.
-     * @param array          $typeDefinitionsMap
-     * @param array          $resolverMap
-     * @param CacheInterface $cache
-     * @param callable|null  $resolveTypeFunction
+     * @param array                     $typeDefinitionsMap
+     * @param ResolverRegistryInterface $resolverRegistry
+     * @param callable|null             $resolveTypeFunction
+     * @param CacheInterface            $cache
      * @throws InvalidArgumentException
      */
     public function __construct(
         array $typeDefinitionsMap,
-        array $resolverMap = [],
+        ResolverRegistryInterface $resolverRegistry,
         ?callable $resolveTypeFunction = null,
         CacheInterface $cache
     ) {
         $this->typeDefinitionsMap  = $typeDefinitionsMap;
-        $this->resolverMap         = $resolverMap;
+        $this->resolverRegistry    = $resolverRegistry;
         $this->cache               = $cache;
         $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
 
@@ -145,6 +145,21 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function buildField($node, ?callable $resolve = null): array
+    {
+        return [
+            'type'              => $this->buildWrappedType($node->getType()),
+            'description'       => $node->getDescriptionValue(),
+            'args'              => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
+            'deprecationReason' => $this->getDeprecationReason($node),
+            'resolve'           => $resolve,
+            'astNode'           => $node,
+        ];
+    }
+
+    /**
      * @param TypeNodeInterface $typeNode
      * @return TypeInterface
      * @throws InvariantException
@@ -154,26 +169,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     {
         $typeDefinition = $this->buildType($this->getNamedTypeNode($typeNode));
         return buildWrappedType($typeDefinition, $typeNode);
-    }
-
-    /**
-     * @param FieldDefinitionNode|InputValueDefinitionNode $node
-     * @return array
-     * @throws ExecutionException
-     * @throws InvalidTypeException
-     * @throws InvariantException
-     * @throws CoercingException
-     */
-    protected function buildField($node, array $resolverMap): array
-    {
-        return [
-            'type'              => $this->buildWrappedType($node->getType()),
-            'description'       => $node->getDescriptionValue(),
-            'args'              => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
-            'deprecationReason' => $this->getDeprecationReason($node),
-            'resolve'           => $resolverMap[$node->getNameValue()] ?? null,
-            'astNode'           => $node,
-        ];
     }
 
     /**
@@ -258,16 +253,18 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildFields($node): array
     {
-        $resolverMap = $this->resolverMap[$node->getNameValue()] ?? [];
-
         return $node->hasFields() ? keyValueMap(
             $node->getFields(),
             function ($value) {
-                /** @noinspection PhpUndefinedMethodInspection */
+                /** @var FieldDefinitionNode|InputValueDefinitionNode $value */
                 return $value->getNameValue();
             },
-            function ($value) use ($resolverMap) {
-                return $this->buildField($value, $resolverMap);
+            function ($value) use ($node) {
+                /** @var FieldDefinitionNode|InputValueDefinitionNode $value */
+                return $this->buildField(
+                    $value,
+                    $this->resolverRegistry->lookup($node->getNameValue(), $value->getNameValue())
+                );
             }
         ) : [];
     }

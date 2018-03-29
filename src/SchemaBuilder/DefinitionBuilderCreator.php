@@ -26,9 +26,9 @@ class DefinitionBuilderCreator implements DefinitionBuilderCreatorInterface
      */
     public function create(
         array $typeDefinitionsMap,
-        array $resolverMap,
+        ResolverRegistryInterface $resolverRegistry,
         ?callable $resolveTypeFunction = null
     ): DefinitionBuilderInterface {
-        return new DefinitionBuilder($typeDefinitionsMap, $resolverMap, null, $this->cache);
+        return new DefinitionBuilder($typeDefinitionsMap, $resolverRegistry, null, $this->cache);
     }
 }

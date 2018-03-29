@@ -16,6 +16,8 @@ use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\PrinterInterface;
 use Digia\GraphQL\Language\Source;
+use Digia\GraphQL\SchemaBuilder\ResolverMapRegistry;
+use Digia\GraphQL\SchemaBuilder\ResolverRegistryInterface;
 use Digia\GraphQL\SchemaBuilder\SchemaBuilderInterface;
 use Digia\GraphQL\SchemaBuilder\SchemaBuilderProvider;
 use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
@@ -123,18 +125,20 @@ class GraphQL
     }
 
     /**
-     * @param string|Source $source
-     * @param array         $resolverMaps
-     * @param array         $options
+     * @param string|Source                   $source
+     * @param array|ResolverRegistryInterface $resolverRegistry
+     * @param array                           $options
      * @return SchemaInterface
      * @throws InvariantException
      */
-    public static function buildSchema($source, array $resolverMaps = [], array $options = []): SchemaInterface
+    public static function buildSchema($source, $resolverRegistry, array $options = []): SchemaInterface
     {
         return static::make(SchemaBuilderInterface::class)
             ->build(
                 static::parse($source, $options),
-                $resolverMaps,
+                $resolverRegistry instanceof ResolverRegistryInterface
+                    ? $resolverRegistry
+                    : new ResolverMapRegistry($resolverRegistry),
                 $options
             );
     }
@@ -244,6 +248,7 @@ class GraphQL
      */
     public static function lex($source, array $options = []): LexerInterface
     {
+        // TODO: Introduce a LexerCreator to allow setting source and options via the constructor.
         return static::make(LexerInterface::class)
             ->setSource($source instanceof Source ? $source : new Source($source))
             ->setOptions($options);

@@ -12,6 +12,7 @@ class SchemaBuilderProvider extends AbstractServiceProvider
      */
     protected $provides = [
         DefinitionBuilderCreatorInterface::class,
+        ResolverRegistryInterface::class,
         SchemaBuilderInterface::class,
     ];
 
@@ -20,6 +21,8 @@ class SchemaBuilderProvider extends AbstractServiceProvider
      */
     public function register()
     {
+        $this->container->add(ResolverRegistryInterface::class, ResolverMapRegistry::class);
+
         $this->container->add(DefinitionBuilderCreatorInterface::class, DefinitionBuilderCreator::class)
             ->withArgument(CacheInterface::class);
 
