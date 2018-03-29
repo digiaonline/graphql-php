@@ -7,7 +7,7 @@ use Digia\GraphQL\SchemaValidation\Rule\RuleInterface;
 use Digia\GraphQL\SchemaValidation\Rule\SupportedRules;
 use Digia\GraphQL\Type\SchemaInterface;
 
-class SchemaValidator implements SchemaValidationInterface
+class SchemaValidator implements SchemaValidatorInterface
 {
     /**
      * @var ValidationContextCreatorInterface
