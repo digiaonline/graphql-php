@@ -31,7 +31,7 @@ class DefinitionBuilderCreator implements DefinitionBuilderCreatorInterface
         return new DefinitionBuilder(
             $typeDefinitionsMap,
             $resolverRegistry ?? new ResolverMapRegistry(),
-            null,
+            $resolveTypeFunction,
             $this->cache
         );
     }

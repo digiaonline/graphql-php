@@ -287,8 +287,6 @@ class ExtensionContext implements ExtensionContextInterface
         $existingType = $this->schema->getType($typeName);
 
         if (null !== $existingType) {
-            /** @noinspection PhpIncompatibleReturnTypeInspection */
-            /** @noinspection PhpParamsInspection */
             return $this->getExtendedType($existingType);
         }
 

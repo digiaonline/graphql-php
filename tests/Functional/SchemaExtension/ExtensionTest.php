@@ -446,14 +446,130 @@ class ExtensionTest extends TestCase
 
     public function testDoesNotAllowReplacingADefaultDirective()
     {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $document = parse(dedent('
-        directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD
-        '));
-
         $this->expectException(ExtensionException::class);
         $this->expectExceptionMessage('Directive "include" already exists in the schema. It cannot be redefined.');
-        $this->extendTestSchema($document);
+        $this->extendTestSchema('directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD');
+    }
+
+    // does not allow replacing a custom directive
+
+    public function testDoesNotAllowReplacingACustomDirective()
+    {
+        $extendedSchema = $this->extendTestSchema('directive @meow(if: Boolean!) on FIELD | FRAGMENT_SPREAD');
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $sdl = parse('directive @meow(if: Boolean!) on FIELD | QUERY');
+
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('Directive "meow" already exists in the schema. It cannot be redefined.');
+        $this->extendSchema($extendedSchema, $sdl);
+    }
+
+    // does not allow replacing an existing type
+
+    public function testDoesNotAllowReplacingAnExistingType()
+    {
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage(
+            'Field "Bar.foo" already exists in the schema. It cannot also be ' .
+            'defined in this type extension.'
+        );
+        $this->extendTestSchema(dedent('
+        extend type Bar {
+          foo: Foo
+        }
+        '));
+    }
+
+    // does not allow referencing an unknown type
+
+    public function testDoesNotAllowReferencingAnUnknownType()
+    {
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage(
+            'Unknown type: "Quix". Ensure that this type exists either in the ' .
+            'original schema, or is added in a type definition.'
+        );
+        $this->extendTestSchema(dedent('
+        extend type Bar {
+          quix: Quix
+        }
+        '));
+    }
+
+    // does not allow extending an unknown type
+
+    public function testDoesNotAllowExtendingAnUnknownType()
+    {
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage(
+            'Cannot extend type "UnknownType" because it does not exist in the existing schema.'
+        );
+        $this->extendTestSchema(dedent('
+        extend type UnknownType {
+          baz: String
+        }
+        '));
+    }
+
+    // does not allow extending an unknown interface type
+
+    public function testDoesNotAllowExtendingAnUnknownInterfaceType()
+    {
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage(
+            'Cannot extend type "UnknownInterfaceType" because it does not exist in the existing schema.'
+        );
+        $this->extendTestSchema(dedent('
+        extend interface UnknownInterfaceType {
+          baz: String
+        }
+        '));
+    }
+
+    // Skip: maintains configuration of the original schema object
+
+    // Skip: adds to the configuration of the original schema object
+
+    // does not allow extending a non-object type
+
+    // not an object
+
+    public function testDoesNotAllowExtendingANonObjectType()
+    {
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('Cannot extend non-object type "SomeInterface".');
+        $this->extendTestSchema(dedent('
+        extend type SomeInterface {
+          baz: String
+        }
+        '));
+    }
+
+    // not an interface
+
+    public function testDoesNotAllowExtendingANonObjectInterfaceType()
+    {
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('Cannot extend non-interface type "Foo".');
+        $this->extendTestSchema(dedent('
+        extend interface Foo {
+          baz: String
+        }
+        '));
+    }
+
+    // not a scalar
+
+    public function testDoesNotAllowExtendingANonObjectScalarType()
+    {
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('Cannot extend non-object type "String".');
+        $this->extendTestSchema(dedent('
+        extend type String {
+          baz: String
+        }
+        '));
     }
 
     protected function extendSchema($schema, $document)
