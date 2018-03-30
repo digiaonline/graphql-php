@@ -1,12 +1,11 @@
 <?php
 
-namespace Digia\GraphQL\SchemaExtension;
+namespace Digia\GraphQL\SchemaBuilder;
 
+use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\SchemaBuilder\DefinitionBuilderCreatorInterface;
-use Digia\GraphQL\Type\SchemaInterface;
 
-class ExtensionContextCreator implements ExtensionContextCreatorInterface
+class BuilderContextCreator implements BuilderContextCreatorInterface
 {
     /**
      * @var DefinitionBuilderCreatorInterface
@@ -14,7 +13,7 @@ class ExtensionContextCreator implements ExtensionContextCreatorInterface
     protected $definitionBuilderCreator;
 
     /**
-     * ExtensionContextCreator constructor.
+     * BuilderContextCreator constructor.
      * @param DefinitionBuilderCreatorInterface $definitionBuilderCreator
      */
     public function __construct(DefinitionBuilderCreatorInterface $definitionBuilderCreator)
@@ -24,10 +23,13 @@ class ExtensionContextCreator implements ExtensionContextCreatorInterface
 
     /**
      * @inheritdoc
+     * @throws LanguageException
      */
-    public function create(SchemaInterface $schema, DocumentNode $document): ExtensionContextInterface
-    {
-        $context = new ExtensionContext($schema, $document, $this->definitionBuilderCreator);
+    public function create(
+        DocumentNode $document,
+        ResolverRegistryInterface $resolverRegistry
+    ): BuilderContextInterface {
+        $context = new BuilderContext($document, $resolverRegistry, $this->definitionBuilderCreator);
 
         $context->boot();
 

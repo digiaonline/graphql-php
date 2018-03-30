@@ -11,8 +11,9 @@ class SchemaBuilderProvider extends AbstractServiceProvider
      * @var array
      */
     protected $provides = [
-        DefinitionBuilderCreatorInterface::class,
         ResolverRegistryInterface::class,
+        DefinitionBuilderCreatorInterface::class,
+        BuilderContextCreatorInterface::class,
         SchemaBuilderInterface::class,
     ];
 
@@ -26,7 +27,10 @@ class SchemaBuilderProvider extends AbstractServiceProvider
         $this->container->add(DefinitionBuilderCreatorInterface::class, DefinitionBuilderCreator::class)
             ->withArgument(CacheInterface::class);
 
-        $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class)
+        $this->container->add(BuilderContextCreatorInterface::class, BuilderContextCreator::class)
             ->withArgument(DefinitionBuilderCreatorInterface::class);
+
+        $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class)
+            ->withArgument(BuilderContextCreatorInterface::class);
     }
 }
