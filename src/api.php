@@ -10,7 +10,7 @@ use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Source;
-use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Util\SerializationInterface;
 
 /**

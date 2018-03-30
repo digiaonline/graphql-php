@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Type\Schema;
+use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLObjectType;

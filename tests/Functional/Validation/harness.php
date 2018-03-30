@@ -8,7 +8,7 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Type\GraphQLBoolean;
 use function Digia\GraphQL\Type\GraphQLDirective;
 use function Digia\GraphQL\Type\GraphQLEnumType;

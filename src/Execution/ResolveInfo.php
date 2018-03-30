@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 
 class ResolveInfo
 {

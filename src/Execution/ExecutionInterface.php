@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Type\Schema;
+use Digia\GraphQL\Schema\Schema;
 
 interface ExecutionInterface
 {

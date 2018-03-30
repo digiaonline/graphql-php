@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Test\Functional\Type;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Schema;
+use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\Type\GraphQLBoolean;
 use function Digia\GraphQL\Type\GraphQLEnumType;
 use function Digia\GraphQL\Type\GraphQLInt;
