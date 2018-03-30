@@ -34,8 +34,11 @@ class SchemaBuilder implements SchemaBuilderInterface
     /**
      * @inheritdoc
      */
-    public function build(DocumentNode $document, array $resolverMap = [], array $options = []): SchemaInterface
-    {
+    public function build(
+        DocumentNode $document,
+        ResolverRegistryInterface $resolverRegistry,
+        array $options = []
+    ): SchemaInterface {
         $schemaDefinition     = null;
         $typeDefinitions      = [];
         $nodeMap              = [];
@@ -72,7 +75,7 @@ class SchemaBuilder implements SchemaBuilderInterface
             'subscription' => $nodeMap['Subscription'] ?? null,
         ];
 
-        $definitionBuilder = $this->definitionBuilderCreator->create($nodeMap, $resolverMap);
+        $definitionBuilder = $this->definitionBuilderCreator->create($nodeMap, $resolverRegistry);
 
         $types = array_map(function (TypeDefinitionNodeInterface $definition) use ($definitionBuilder) {
             return $definitionBuilder->buildType($definition);

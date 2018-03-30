@@ -3,6 +3,8 @@
 namespace Digia\GraphQL\SchemaBuilder;
 
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
+use Digia\GraphQL\Language\Node\FieldDefinitionNode;
+use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
@@ -20,4 +22,11 @@ interface DefinitionBuilderInterface
      * @return DirectiveInterface
      */
     public function buildDirective(DirectiveDefinitionNode $node): DirectiveInterface;
+
+    /**
+     * @param FieldDefinitionNode|InputValueDefinitionNode $node
+     * @param callable|null                                $resolve
+     * @return array
+     */
+    public function buildField($node, ?callable $resolve = null): array;
 }

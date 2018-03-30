@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\SchemaValidator;
 
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Error\ValidationExceptionInterface;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
 use Digia\GraphQL\Test\TestCase;
@@ -1104,7 +1104,7 @@ class ValidationTest extends TestCase
             ]
         ]);
     }
-    
+
     // rejects a non-input type as a field arg type: ${type}
 
     public function testRejectsNonInputTypesAsFieldArgumentTypes()
@@ -1311,7 +1311,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' => 'Interface field AnotherInterface.field expected but AnotherObject does not provide it.',
+                'message'   => 'Interface field AnotherInterface.field expected but AnotherObject does not provide it.',
                 'locations' => locationsShorthandToArray([[6, 3], [9, 1]])
             ]
         ]);
@@ -1338,7 +1338,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' =>
+                'message'   =>
                     'Interface field AnotherInterface.field expects ' .
                     'type String but AnotherObject.field is type Int.',
                 'locations' => locationsShorthandToArray([[6, 25], [10, 25]])
@@ -1370,7 +1370,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' => 'Interface field AnotherInterface.field expects type A but AnotherObject.field is type B.',
+                'message'   => 'Interface field AnotherInterface.field expects type A but AnotherObject.field is type B.',
                 'locations' => locationsShorthandToArray([[9, 10], [13, 10]])
             ]
         ]);
@@ -1447,7 +1447,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' =>
+                'message'   =>
                     'Interface field argument AnotherInterface.field(input:) expected ' .
                     'but AnotherObject.field does not provide it.',
                 'locations' => locationsShorthandToArray([[6, 9], [10, 3]])
@@ -1476,7 +1476,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' =>
+                'message'   =>
                     'Interface field argument AnotherInterface.field(input:) expects ' .
                     'type String but AnotherObject.field(input:) is type Int.',
                 'locations' => locationsShorthandToArray([[6, 16], [10, 16]])
@@ -1505,13 +1505,13 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' =>
+                'message'   =>
                     'Interface field AnotherInterface.field expects type String but ' .
                     'AnotherObject.field is type Int.',
                 'locations' => locationsShorthandToArray([[6, 25], [10, 22]])
             ],
             [
-                'message' =>
+                'message'   =>
                     'Interface field argument AnotherInterface.field(input:) expects ' .
                     'type String but AnotherObject.field(input:) is type Int.',
                 'locations' => locationsShorthandToArray([[6, 16], [10, 16]])
@@ -1540,7 +1540,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' =>
+                'message'   =>
                     'Object field argument AnotherObject.field(anotherInput:) is of ' .
                     'required type String! but is not also provided by the Interface ' .
                     'field AnotherInterface.field.',
@@ -1592,7 +1592,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' =>
+                'message'   =>
                     'Interface field AnotherInterface.field expects type [String] ' .
                     'but AnotherObject.field is type String.',
                 'locations' => locationsShorthandToArray([[6, 10], [10, 10]])
@@ -1621,7 +1621,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' =>
+                'message'   =>
                     'Interface field AnotherInterface.field expects type String but ' .
                     'AnotherObject.field is type [String].',
                 'locations' => locationsShorthandToArray([[6, 10], [10, 10]])
@@ -1672,7 +1672,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' =>
+                'message'   =>
                     'Interface field AnotherInterface.field expects type String! ' .
                     'but AnotherObject.field is type String.',
                 'locations' => locationsShorthandToArray([[6, 10], [10, 10]])
@@ -1689,7 +1689,7 @@ class ValidationTest extends TestCase
     protected function expectInvalid($schema, $expectedErrors)
     {
         $errors = $this->schemaValidator->validate($schema);
-        $this->assertArraySubset($expectedErrors, \array_map(function (ValidationException $error) {
+        $this->assertArraySubset($expectedErrors, \array_map(function (ValidationExceptionInterface $error) {
             return $error->toArray();
         }, $errors));
     }
