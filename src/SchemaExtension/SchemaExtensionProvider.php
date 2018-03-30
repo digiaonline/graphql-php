@@ -4,7 +4,6 @@ namespace Digia\GraphQL\SchemaExtension;
 
 use Digia\GraphQL\SchemaBuilder\DefinitionBuilderCreatorInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use Psr\SimpleCache\CacheInterface;
 
 class SchemaExtensionProvider extends AbstractServiceProvider
 {
@@ -12,6 +11,7 @@ class SchemaExtensionProvider extends AbstractServiceProvider
      * @var array
      */
     protected $provides = [
+        ExtensionContextCreatorInterface::class,
         SchemaExtenderInterface::class,
     ];
 
@@ -20,8 +20,10 @@ class SchemaExtensionProvider extends AbstractServiceProvider
      */
     public function register()
     {
+        $this->container->add(ExtensionContextCreatorInterface::class, ExtensionContextCreator::class, true)
+            ->withArgument(DefinitionBuilderCreatorInterface::class);
+
         $this->container->add(SchemaExtenderInterface::class, SchemaExtender::class)
-            ->withArgument(DefinitionBuilderCreatorInterface::class)
-            ->withArgument(CacheInterface::class);
+            ->withArgument(ExtensionContextCreatorInterface::class);
     }
 }

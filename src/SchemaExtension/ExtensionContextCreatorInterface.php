@@ -5,12 +5,12 @@ namespace Digia\GraphQL\SchemaExtension;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Type\SchemaInterface;
 
-interface SchemaExtenderInterface
+interface ExtensionContextCreatorInterface
 {
     /**
      * @param SchemaInterface $schema
      * @param DocumentNode    $document
-     * @return SchemaInterface
+     * @return ExtensionContextInterface
      */
-    public function extend(SchemaInterface $schema, DocumentNode $document): SchemaInterface;
+    public function create(SchemaInterface $schema, DocumentNode $document): ExtensionContextInterface;
 }
