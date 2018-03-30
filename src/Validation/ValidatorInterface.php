@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Validation;
 use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 
 interface ValidatorInterface

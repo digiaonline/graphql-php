@@ -16,18 +16,19 @@ use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\PrinterInterface;
 use Digia\GraphQL\Language\Source;
-use Digia\GraphQL\SchemaBuilder\ResolverMapRegistry;
-use Digia\GraphQL\SchemaBuilder\ResolverRegistryInterface;
-use Digia\GraphQL\SchemaBuilder\SchemaBuilderInterface;
-use Digia\GraphQL\SchemaBuilder\SchemaBuilderProvider;
-use Digia\GraphQL\SchemaExtension\SchemaExtensionProvider;
-use Digia\GraphQL\SchemaValidation\SchemaValidationProvider;
-use Digia\GraphQL\SchemaValidation\SchemaValidatorInterface;
+use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
+use Digia\GraphQL\Schema\Building\SchemaBuildingProvider;
+use Digia\GraphQL\Schema\Extension\SchemaExtensionProvider;
+use Digia\GraphQL\Schema\ResolverMapRegistry;
+use Digia\GraphQL\Schema\ResolverRegistryInterface;
+use Digia\GraphQL\Schema\SchemaProvider;
+use Digia\GraphQL\Schema\Validation\SchemaValidationProvider;
+use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use Digia\GraphQL\Type\CoercerProvider;
 use Digia\GraphQL\Type\DirectivesProvider;
 use Digia\GraphQL\Type\IntrospectionProvider;
 use Digia\GraphQL\Type\ScalarTypesProvider;
-use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Util\UtilityProvider;
 use Digia\GraphQL\Validation\RulesProvider;
 use Digia\GraphQL\Validation\ValidationProvider;
@@ -66,7 +67,8 @@ class GraphQL
     private static $providers = [
         CacheProvider::class,
         LanguageProvider::class,
-        SchemaBuilderProvider::class,
+        SchemaProvider::class,
+        SchemaBuildingProvider::class,
         SchemaExtensionProvider::class,
         SchemaValidationProvider::class,
         CoercerProvider::class,

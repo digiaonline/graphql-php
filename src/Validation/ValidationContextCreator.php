@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 
 class ValidationContextCreator implements ValidationContextCreatorInterface

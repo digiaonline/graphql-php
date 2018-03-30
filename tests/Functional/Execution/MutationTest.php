@@ -6,7 +6,7 @@ use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Schema;
+use Digia\GraphQL\Schema\Schema;
 use React\Promise\Promise;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;

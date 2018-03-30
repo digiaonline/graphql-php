@@ -13,7 +13,7 @@ use Digia\GraphQL\Type\Definition\NameTrait;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Util\suggestionList;
 use function Digia\GraphQL\Validation\undefinedFieldMessage;
 
