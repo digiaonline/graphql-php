@@ -61,7 +61,7 @@
             "./tests/Functional/QueryTest.php",
             "./tests/Functional/starWarsData.php",
             "./tests/Functional/starWarsSchema.php",
-            "./tests/helpers.php"
+            "./tests/utils.php"
         ],
         "psr-4": {
             "Digia\\GraphQL\\Test\\": "./tests"
