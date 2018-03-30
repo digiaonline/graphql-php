@@ -8,9 +8,9 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 interface ExtensionContextInterface
 {
     /**
-     * @return array
+     *
      */
-    public function getExtendedDefinitions(): array;
+    public function boot(): void;
 
     /**
      * @return bool

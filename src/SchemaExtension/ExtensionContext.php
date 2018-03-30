@@ -96,98 +96,17 @@ class ExtensionContext implements ExtensionContextInterface
         $this->schema                   = $schema;
         $this->document                 = $document;
         $this->definitionBuilderCreator = $definitionBuilderCreator;
-        $this->typeExtensionsMap        = [];
-        $this->typeDefinitionMap        = [];
-        $this->directiveDefinitions     = [];
         $this->extendTypeCache          = [];
-
-        $typeDefinitionMap = $this->getExtendedDefinitions();
-
-        $this->definitionBuilder = $this->createDefinitionBuilder($typeDefinitionMap);
-
     }
 
     /**
      * @throws ExtensionException
      */
-    public function getExtendedDefinitions(): array
+    public function boot(): void
     {
-        foreach ($this->document->getDefinitions() as $definition) {
-            if ($definition instanceof TypeDefinitionNodeInterface) {
-                // Sanity check that none of the defined types conflict with the schema's existing types.
-                $typeName     = $definition->getNameValue();
-                $existingType = $this->schema->getType($typeName);
+        $this->extendDefinitions();
 
-                if (null !== $existingType) {
-                    throw new ExtensionException(
-                        \sprintf(
-                            'Type "%s" already exists in the schema. It cannot also ' .
-                            'be defined in this type definition.',
-                            $typeName
-                        ),
-                        [$definition]
-                    );
-                }
-
-                $this->typeDefinitionMap[$typeName] = $definition;
-
-                continue;
-            }
-
-            if ($definition instanceof ObjectTypeExtensionNode || $definition instanceof InterfaceTypeExtensionNode) {
-                // Sanity check that this type extension exists within the schema's existing types.
-                $extendedTypeName = $definition->getNameValue();
-                $existingType     = $this->schema->getType($extendedTypeName);
-
-                if (null === $existingType) {
-                    throw new ExtensionException(
-                        \sprintf(
-                            'Cannot extend type "%s" because it does not exist in the existing schema.',
-                            $extendedTypeName
-                        ),
-                        [$definition]
-                    );
-                }
-
-                $this->checkExtensionNode($existingType, $definition);
-
-                $existingTypeExtensions = $this->typeExtensionsMap[$extendedTypeName] ?? [];
-
-                $this->typeExtensionsMap[$extendedTypeName] = \array_merge($existingTypeExtensions, [$definition]);
-
-                continue;
-            }
-
-            if ($definition instanceof DirectiveDefinitionNode) {
-                $directiveName     = $definition->getNameValue();
-                $existingDirective = $this->schema->getDirective($directiveName);
-
-                if (null !== $existingDirective) {
-                    throw new ExtensionException(
-                        \sprintf(
-                            'Directive "%s" already exists in the schema. It cannot be redefined.',
-                            $directiveName
-                        ),
-                        [$definition]
-                    );
-                }
-
-                $this->directiveDefinitions[] = $definition;
-
-                continue;
-            }
-
-            if ($definition instanceof ScalarTypeExtensionNode ||
-                $definition instanceof UnionTypeExtensionNode ||
-                $definition instanceof EnumTypeExtensionNode ||
-                $definition instanceof InputObjectTypeExtensionNode) {
-                throw new ExtensionException(
-                    \sprintf('The %s kind is not yet supported by extendSchema().', $definition->getKind())
-                );
-            }
-        }
-
-        return $this->typeDefinitionMap;
+        $this->definitionBuilder = $this->createDefinitionBuilder();
     }
 
     /**
@@ -301,12 +220,101 @@ class ExtensionContext implements ExtensionContextInterface
     }
 
     /**
-     * @param array $typeDefinitionMap
+     * @throws ExtensionException
+     */
+    protected function extendDefinitions(): void
+    {
+        $typeDefinitionMap    = [];
+        $typeExtensionsMap    = [];
+        $directiveDefinitions = [];
+
+        foreach ($this->document->getDefinitions() as $definition) {
+            if ($definition instanceof TypeDefinitionNodeInterface) {
+                // Sanity check that none of the defined types conflict with the schema's existing types.
+                $typeName     = $definition->getNameValue();
+                $existingType = $this->schema->getType($typeName);
+
+                if (null !== $existingType) {
+                    throw new ExtensionException(
+                        \sprintf(
+                            'Type "%s" already exists in the schema. It cannot also ' .
+                            'be defined in this type definition.',
+                            $typeName
+                        ),
+                        [$definition]
+                    );
+                }
+
+                $typeDefinitionMap[$typeName] = $definition;
+
+                continue;
+            }
+
+            if ($definition instanceof ObjectTypeExtensionNode || $definition instanceof InterfaceTypeExtensionNode) {
+                // Sanity check that this type extension exists within the schema's existing types.
+                $extendedTypeName = $definition->getNameValue();
+                $existingType     = $this->schema->getType($extendedTypeName);
+
+                if (null === $existingType) {
+                    throw new ExtensionException(
+                        \sprintf(
+                            'Cannot extend type "%s" because it does not exist in the existing schema.',
+                            $extendedTypeName
+                        ),
+                        [$definition]
+                    );
+                }
+
+                $this->checkExtensionNode($existingType, $definition);
+
+                $typeExtensionsMap[$extendedTypeName] = \array_merge(
+                    $typeExtensionsMap[$extendedTypeName] ?? [],
+                    [$definition]
+                );
+
+                continue;
+            }
+
+            if ($definition instanceof DirectiveDefinitionNode) {
+                $directiveName     = $definition->getNameValue();
+                $existingDirective = $this->schema->getDirective($directiveName);
+
+                if (null !== $existingDirective) {
+                    throw new ExtensionException(
+                        \sprintf(
+                            'Directive "%s" already exists in the schema. It cannot be redefined.',
+                            $directiveName
+                        ),
+                        [$definition]
+                    );
+                }
+
+                $directiveDefinitions[] = $definition;
+
+                continue;
+            }
+
+            if ($definition instanceof ScalarTypeExtensionNode ||
+                $definition instanceof UnionTypeExtensionNode ||
+                $definition instanceof EnumTypeExtensionNode ||
+                $definition instanceof InputObjectTypeExtensionNode) {
+                throw new ExtensionException(
+                    \sprintf('The %s kind is not yet supported by extendSchema().', $definition->getKind())
+                );
+            }
+        }
+
+        $this->typeDefinitionMap    = $typeDefinitionMap;
+        $this->typeExtensionsMap    = $typeExtensionsMap;
+        $this->directiveDefinitions = $directiveDefinitions;
+    }
+
+    /**
      * @return DefinitionBuilderInterface
      */
-    protected function createDefinitionBuilder(array $typeDefinitionMap): DefinitionBuilderInterface
+    protected function createDefinitionBuilder(): DefinitionBuilderInterface
     {
-        return $this->definitionBuilderCreator->create($typeDefinitionMap, [$this, 'resolveType']);
+        return $this->definitionBuilderCreator->create($this->typeDefinitionMap, [$this, 'resolveType']);
     }
 
     /**

@@ -27,6 +27,10 @@ class ExtensionContextCreator implements ExtensionContextCreatorInterface
      */
     public function create(SchemaInterface $schema, DocumentNode $document): ExtensionContextInterface
     {
-        return new ExtensionContext($schema, $document, $this->definitionBuilderCreator);
+        $context = new ExtensionContext($schema, $document, $this->definitionBuilderCreator);
+
+        $context->boot();
+
+        return $context;
     }
 }
