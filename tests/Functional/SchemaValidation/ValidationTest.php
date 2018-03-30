@@ -997,11 +997,11 @@ class ValidationTest extends TestCase
 
     // Type System: Interface extensions should be valid
 
-    // rejects an Object implementing the extended interface due to missing field
+    // TODO: rejects an Object implementing the extended interface due to missing field
 
-    // rejects an Object implementing the extended interface due to missing field args
+    // TODO: rejects an Object implementing the extended interface due to missing field args
 
-    // rejects Objects implementing the extended interface due to mismatching interface type
+    // TODO: rejects Objects implementing the extended interface due to mismatching interface type
 
     // Type System: Interface fields must have output types
 
