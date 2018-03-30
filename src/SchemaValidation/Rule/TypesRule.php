@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\SchemaValidator\Rule;
+namespace Digia\GraphQL\SchemaValidation\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\SchemaValidationException;
@@ -15,7 +15,7 @@ use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
-use Digia\GraphQL\SchemaValidator\ValidationContext;
+use Digia\GraphQL\SchemaValidation\ValidationContext;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;

@@ -75,7 +75,7 @@ class SchemaBuilder implements SchemaBuilderInterface
             'subscription' => $nodeMap['Subscription'] ?? null,
         ];
 
-        $definitionBuilder = $this->definitionBuilderCreator->create($nodeMap, $resolverRegistry);
+        $definitionBuilder = $this->definitionBuilderCreator->create($nodeMap, null, $resolverRegistry);
 
         $types = array_map(function (TypeDefinitionNodeInterface $definition) use ($definitionBuilder) {
             return $definitionBuilder->buildType($definition);

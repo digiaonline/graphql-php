@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\SchemaBuilder;
 
 use Psr\SimpleCache\CacheInterface;
-use Psr\SimpleCache\InvalidArgumentException;
 
 class DefinitionBuilderCreator implements DefinitionBuilderCreatorInterface
 {
@@ -22,13 +21,18 @@ class DefinitionBuilderCreator implements DefinitionBuilderCreatorInterface
 
     /**
      * @inheritdoc
-     * @throws InvalidArgumentException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function create(
         array $typeDefinitionsMap,
-        ResolverRegistryInterface $resolverRegistry,
-        ?callable $resolveTypeFunction = null
+        ?callable $resolveTypeFunction = null,
+        ?ResolverRegistryInterface $resolverRegistry = null
     ): DefinitionBuilderInterface {
-        return new DefinitionBuilder($typeDefinitionsMap, $resolverRegistry, null, $this->cache);
+        return new DefinitionBuilder(
+            $typeDefinitionsMap,
+            $resolverRegistry ?? new ResolverMapRegistry(),
+            $resolveTypeFunction,
+            $this->cache
+        );
     }
 }

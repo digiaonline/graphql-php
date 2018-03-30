@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
+use Digia\GraphQL\SchemaValidation\SchemaValidatorInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class ValidationProvider extends AbstractServiceProvider

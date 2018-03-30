@@ -1,10 +1,10 @@
 <?php
 
-namespace Digia\GraphQL\SchemaValidator;
+namespace Digia\GraphQL\SchemaValidation;
 
 use Digia\GraphQL\Error\SchemaValidationException;
-use Digia\GraphQL\SchemaValidator\Rule\RuleInterface;
-use Digia\GraphQL\SchemaValidator\Rule\SupportedRules;
+use Digia\GraphQL\SchemaValidation\Rule\RuleInterface;
+use Digia\GraphQL\SchemaValidation\Rule\SupportedRules;
 use Digia\GraphQL\Type\SchemaInterface;
 
 class SchemaValidator implements SchemaValidatorInterface
@@ -15,7 +15,7 @@ class SchemaValidator implements SchemaValidatorInterface
     protected $contextCreator;
 
     /**
-     * SchemaValidator constructor.
+     * SchemaValidation constructor.
      * @param ValidationContextCreatorInterface $contextCreator
      */
     public function __construct(ValidationContextCreatorInterface $contextCreator)

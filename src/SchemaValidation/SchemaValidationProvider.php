@@ -1,13 +1,13 @@
 <?php
 
-namespace Digia\GraphQL\SchemaValidator;
+namespace Digia\GraphQL\SchemaValidation;
 
-use Digia\GraphQL\SchemaValidator\Rule\DirectivesRule;
-use Digia\GraphQL\SchemaValidator\Rule\RootTypesRule;
-use Digia\GraphQL\SchemaValidator\Rule\TypesRule;
+use Digia\GraphQL\SchemaValidation\Rule\DirectivesRule;
+use Digia\GraphQL\SchemaValidation\Rule\RootTypesRule;
+use Digia\GraphQL\SchemaValidation\Rule\TypesRule;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
-class SchemaValidatorProvider extends AbstractServiceProvider
+class SchemaValidationProvider extends AbstractServiceProvider
 {
     /**
      * @var array

@@ -12,6 +12,12 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 interface DefinitionBuilderInterface
 {
     /**
+     * @param NodeInterface[] $nodes
+     * @return TypeInterface[]
+     */
+    public function buildTypes(array $nodes): array;
+
+    /**
      * @param NodeInterface $node
      * @return TypeInterface
      */

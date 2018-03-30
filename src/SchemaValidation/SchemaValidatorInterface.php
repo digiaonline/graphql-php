@@ -1,9 +1,9 @@
 <?php
 
-namespace Digia\GraphQL\SchemaValidator;
+namespace Digia\GraphQL\SchemaValidation;
 
 use Digia\GraphQL\Error\SchemaValidationException;
-use Digia\GraphQL\SchemaValidator\Rule\RuleInterface;
+use Digia\GraphQL\SchemaValidation\Rule\RuleInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 
 interface SchemaValidatorInterface

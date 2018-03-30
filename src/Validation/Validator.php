@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Validation;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
-use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
+use Digia\GraphQL\SchemaValidation\SchemaValidatorInterface;
 use Digia\GraphQL\Type\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use Digia\GraphQL\Validation\Rule\RuleInterface;

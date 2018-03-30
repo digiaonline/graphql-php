@@ -20,8 +20,9 @@ use Digia\GraphQL\SchemaBuilder\ResolverMapRegistry;
 use Digia\GraphQL\SchemaBuilder\ResolverRegistryInterface;
 use Digia\GraphQL\SchemaBuilder\SchemaBuilderInterface;
 use Digia\GraphQL\SchemaBuilder\SchemaBuilderProvider;
-use Digia\GraphQL\SchemaValidator\SchemaValidatorInterface;
-use Digia\GraphQL\SchemaValidator\SchemaValidatorProvider;
+use Digia\GraphQL\SchemaExtension\SchemaExtensionProvider;
+use Digia\GraphQL\SchemaValidation\SchemaValidationProvider;
+use Digia\GraphQL\SchemaValidation\SchemaValidatorInterface;
 use Digia\GraphQL\Type\CoercerProvider;
 use Digia\GraphQL\Type\DirectivesProvider;
 use Digia\GraphQL\Type\IntrospectionProvider;
@@ -36,7 +37,6 @@ use League\Container\ContainerInterface;
 
 class GraphQL
 {
-
     public const BOOLEAN = 'GraphQLBoolean';
     public const FLOAT   = 'GraphQLFloat';
     public const INT     = 'GraphQLInt';
@@ -67,7 +67,8 @@ class GraphQL
         CacheProvider::class,
         LanguageProvider::class,
         SchemaBuilderProvider::class,
-        SchemaValidatorProvider::class,
+        SchemaExtensionProvider::class,
+        SchemaValidationProvider::class,
         CoercerProvider::class,
         IntrospectionProvider::class,
         ScalarTypesProvider::class,

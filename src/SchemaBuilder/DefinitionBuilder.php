@@ -106,6 +106,16 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function buildTypes(array $nodes): array
+    {
+        return \array_map(function (NodeInterface $node) {
+            return $this->buildType($node);
+        }, $nodes);
+    }
+
+    /**
      * @param NamedTypeNode|TypeDefinitionNodeInterface $node
      * @inheritdoc
      */
