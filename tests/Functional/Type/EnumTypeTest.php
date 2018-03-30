@@ -7,10 +7,10 @@ use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\Type\GraphQLBoolean;
-use function Digia\GraphQL\Type\GraphQLEnumType;
+use function Digia\GraphQL\Type\newGraphQLEnumType;
 use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
 class EnumTypeTest extends TestCase
@@ -58,7 +58,7 @@ class EnumTypeTest extends TestCase
 
     public function setUp()
     {
-        $this->colorType = GraphQLEnumType([
+        $this->colorType = newGraphQLEnumType([
             'name'   => 'Color',
             'values' => [
                 'RED'   => ['value' => 0],
@@ -76,7 +76,7 @@ class EnumTypeTest extends TestCase
             'someRandomValue' => 123,
         ];
 
-        $this->complexEnum = GraphQLEnumType([
+        $this->complexEnum = newGraphQLEnumType([
             'name'   => 'Complex',
             'values' => [
                 'ONE' => ['value' => $this->complex1],
@@ -84,7 +84,7 @@ class EnumTypeTest extends TestCase
             ],
         ]);
 
-        $this->queryType = GraphQLObjectType([
+        $this->queryType = newGraphQLObjectType([
             'name'   => 'Query',
             'fields' => [
                 'colorEnum'   => [
@@ -131,7 +131,7 @@ class EnumTypeTest extends TestCase
             ],
         ]);
 
-        $this->mutationType = GraphQLObjectType([
+        $this->mutationType = newGraphQLObjectType([
             'name'   => 'Mutation',
             'fields' => [
                 'favoriteEnum' => [
@@ -144,7 +144,7 @@ class EnumTypeTest extends TestCase
             ],
         ]);
 
-        $this->subscriptionType = GraphQLObjectType([
+        $this->subscriptionType = newGraphQLObjectType([
             'name'   => 'Subscription',
             'fields' => [
                 'subscribeToEnum' => [
@@ -157,7 +157,7 @@ class EnumTypeTest extends TestCase
             ],
         ]);
 
-        $this->schema = GraphQLSchema([
+        $this->schema = newGraphQLSchema([
             'query'        => $this->queryType,
             'mutation'     => $this->mutationType,
             'subscription' => $this->subscriptionType,

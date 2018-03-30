@@ -14,11 +14,11 @@ use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Util\ValueHelper;
-use function Digia\GraphQL\Type\GraphQLEnumType;
-use function Digia\GraphQL\Type\GraphQLInputObjectType;
+use function Digia\GraphQL\Type\newGraphQLEnumType;
+use function Digia\GraphQL\Type\newGraphQLInputObjectType;
 use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\GraphQLList;
-use function Digia\GraphQL\Type\GraphQLNonNull;
+use function Digia\GraphQL\Type\newGraphQLList;
+use function Digia\GraphQL\Type\newGraphQLNonNull;
 use function Digia\GraphQL\Type\GraphQLString;
 
 class ValueHelperTest extends TestCase
@@ -45,7 +45,7 @@ class ValueHelperTest extends TestCase
     {
         $node = new StringValueNode(['value' => 'foo']);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->helper->fromAST($node, GraphQLNonNull(GraphQLString())));
+        $this->assertEquals('foo', $this->helper->fromAST($node, newGraphQLNonNull(GraphQLString())));
     }
 
     public function testResolveNonNullWithNullValue()
@@ -54,7 +54,7 @@ class ValueHelperTest extends TestCase
         $this->expectException(ResolutionException::class);
         $this->expectExceptionMessage('Cannot resolve non-null values from null value node');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(null, $this->helper->fromAST($node, GraphQLNonNull(GraphQLString())));
+        $this->assertEquals(null, $this->helper->fromAST($node, newGraphQLNonNull(GraphQLString())));
     }
 
     public function testResolveValidListOfStrings()
@@ -67,7 +67,7 @@ class ValueHelperTest extends TestCase
             ],
         ]);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, GraphQLList(GraphQLString())));
+        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newGraphQLList(GraphQLString())));
     }
 
     public function testResolveListWithMissingVariableValue()
@@ -83,7 +83,7 @@ class ValueHelperTest extends TestCase
         $this->expectException(ResolutionException::class);
         $this->expectExceptionMessage('Cannot resolve value for missing variable "$b".');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, GraphQLList(GraphQLString()), $variables));
+        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newGraphQLList(GraphQLString()), $variables));
     }
 
     public function testResolveValidInputObject()
@@ -97,7 +97,7 @@ class ValueHelperTest extends TestCase
             ],
         ]);
 
-        $type = GraphQLInputObjectType([
+        $type = newGraphQLInputObjectType([
             'name'   => 'InputObject',
             'fields' => [
                 'a' => ['type' => GraphQLInt()],
@@ -112,7 +112,7 @@ class ValueHelperTest extends TestCase
     {
         $node = new StringValueNode(['value' => null]);
 
-        $type = GraphQLInputObjectType([
+        $type = newGraphQLInputObjectType([
             'name'   => 'InputObject',
             'fields' => [
                 'a' => ['type' => GraphQLInt()],
@@ -136,11 +136,11 @@ class ValueHelperTest extends TestCase
             ],
         ]);
 
-        $type = GraphQLInputObjectType([
+        $type = newGraphQLInputObjectType([
             'name'   => 'InputObject',
             'fields' => [
                 'a' => ['type' => GraphQLInt()],
-                'b' => ['type' => GraphQLNonNull(GraphQLString())],
+                'b' => ['type' => newGraphQLNonNull(GraphQLString())],
             ],
         ]);
 
@@ -153,7 +153,7 @@ class ValueHelperTest extends TestCase
     public function testResolveEnumWithIntValue()
     {
         $node = new EnumValueNode(['value' => 'FOO']);
-        $type = GraphQLEnumType([
+        $type = newGraphQLEnumType([
             'name'   => 'EnumType',
             'values' => [
                 'FOO' => ['value' => 1],
@@ -166,7 +166,7 @@ class ValueHelperTest extends TestCase
     public function testResolveEnumWithNodeOfInvalidType()
     {
         $node = new StringValueNode(['value' => null]);
-        $type = GraphQLEnumType([
+        $type = newGraphQLEnumType([
             'name'   => 'EnumType',
         ]);
 
@@ -179,7 +179,7 @@ class ValueHelperTest extends TestCase
     public function testResolveEnumWithMissingValue()
     {
         $node = new EnumValueNode(['value' => 'FOO']);
-        $type = GraphQLEnumType([
+        $type = newGraphQLEnumType([
             'name'   => 'EnumType',
             'values' => [
                 'BAR' => ['value' => 'foo'],

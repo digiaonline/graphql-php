@@ -8,12 +8,12 @@ use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLBoolean;
-use function Digia\GraphQL\Type\GraphQLInterfaceType;
-use function Digia\GraphQL\Type\GraphQLList;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\newGraphQLInterfaceType;
+use function Digia\GraphQL\Type\newGraphQLList;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Type\GraphQLUnionType;
+use function Digia\GraphQL\Type\newGraphQLUnionType;
 
 class AbstractTest extends TestCase
 {
@@ -27,14 +27,14 @@ class AbstractTest extends TestCase
      */
     public function testIsTypeOfUsedToResolveFunctionForInterface()
     {
-        $PetInterfaceType = GraphQLInterfaceType([
+        $PetInterfaceType = newGraphQLInterfaceType([
             'name'   => 'Pet',
             'fields' => [
                 'name' => ['type' => GraphQLString()]
             ]
         ]);
 
-        $DogType = GraphQLObjectType([
+        $DogType = newGraphQLObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
@@ -46,7 +46,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $CatType = GraphQLObjectType([
+        $CatType = newGraphQLObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
@@ -58,12 +58,12 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $schema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => GraphQLList($PetInterfaceType),
+                        'type'    => newGraphQLList($PetInterfaceType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),
@@ -115,7 +115,7 @@ class AbstractTest extends TestCase
      */
     public function testIsTypeOfUsedToResolveRuntimeTypeForUnion()
     {
-        $DogType = GraphQLObjectType([
+        $DogType = newGraphQLObjectType([
             'name'     => 'Dog',
             'fields'   => [
                 'name'  => ['type' => GraphQLString()],
@@ -126,7 +126,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $CatType = GraphQLObjectType([
+        $CatType = newGraphQLObjectType([
             'name'     => 'Cat',
             'fields'   => [
                 'name'  => ['type' => GraphQLString()],
@@ -137,7 +137,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $PetUnionType = GraphQLUnionType([
+        $PetUnionType = newGraphQLUnionType([
             'name'        => 'Pet',
             'types'       => [$DogType, $CatType],
             'resolveType' => function ($result, $context, $info) use ($DogType, $CatType) {
@@ -153,12 +153,12 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $schema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => GraphQLList($PetUnionType),
+                        'type'    => newGraphQLList($PetUnionType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),
@@ -209,7 +209,7 @@ class AbstractTest extends TestCase
      */
     public function testResolveTypeOnInterfaceYieldsUsefulError()
     {
-        $PetInterfaceType = GraphQLInterfaceType([
+        $PetInterfaceType = newGraphQLInterfaceType([
             'name'        => 'Pet',
             'resolveType' => function ($result, $context, $info) use (&$DogType, &$CatType, &$HumanType) {
                 if ($result instanceof Dog) {
@@ -227,7 +227,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $DogType = GraphQLObjectType([
+        $DogType = newGraphQLObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
@@ -239,7 +239,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $CatType = GraphQLObjectType([
+        $CatType = newGraphQLObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
@@ -251,7 +251,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $HumanType = GraphQLObjectType([
+        $HumanType = newGraphQLObjectType([
             'name'     => 'Human',
             'fields'   => [
                 'name' => ['type' => GraphQLString()]
@@ -261,12 +261,12 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $schema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => GraphQLList($PetInterfaceType),
+                        'type'    => newGraphQLList($PetInterfaceType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),
@@ -328,7 +328,7 @@ class AbstractTest extends TestCase
      */
     public function testResolveTypeOnUnionYieldsUseFulError()
     {
-        $DogType = GraphQLObjectType([
+        $DogType = newGraphQLObjectType([
             'name'     => 'Dog',
             'fields'   => [
                 'name'  => ['type' => GraphQLString()],
@@ -339,7 +339,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $CatType = GraphQLObjectType([
+        $CatType = newGraphQLObjectType([
             'name'     => 'Cat',
             'fields'   => [
                 'name'  => ['type' => GraphQLString()],
@@ -350,7 +350,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $HumanType = GraphQLObjectType([
+        $HumanType = newGraphQLObjectType([
             'name'     => 'Human',
             'fields'   => [
                 'name' => ['type' => GraphQLString()]
@@ -360,7 +360,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $PetUnionType = GraphQLUnionType([
+        $PetUnionType = newGraphQLUnionType([
             'name'        => 'Pet',
             'types'       => [$DogType, $CatType],
             'resolveType' => function ($result, $context, $info) use ($DogType, $CatType, $HumanType) {
@@ -380,12 +380,12 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $schema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => GraphQLList($PetUnionType),
+                        'type'    => newGraphQLList($PetUnionType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),
@@ -446,7 +446,7 @@ class AbstractTest extends TestCase
      */
     public function testResolveTypeAllowsResolvingWithTypeName()
     {
-        $PetInterfaceType = GraphQLInterfaceType([
+        $PetInterfaceType = newGraphQLInterfaceType([
             'name'        => 'Pet',
             'resolveType' => function ($result, $context, $info) {
                 if ($result instanceof Dog) {
@@ -461,7 +461,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $DogType = GraphQLObjectType([
+        $DogType = newGraphQLObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
@@ -473,7 +473,7 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $CatType = GraphQLObjectType([
+        $CatType = newGraphQLObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
@@ -485,12 +485,12 @@ class AbstractTest extends TestCase
             }
         ]);
 
-        $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $schema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => GraphQLList($PetInterfaceType),
+                        'type'    => newGraphQLList($PetInterfaceType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),

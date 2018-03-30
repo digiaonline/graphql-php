@@ -11,8 +11,8 @@ use React\Promise\Promise;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
 class MutationTest extends TestCase
@@ -24,7 +24,7 @@ class MutationTest extends TestCase
      */
     public function testSimpleMutation()
     {
-        $schema = GraphQLSchema([
+        $schema = newGraphQLSchema([
             'mutation' =>
                 new ObjectType([
                     'name'   => 'M',
@@ -238,21 +238,21 @@ class Root
 
 function rootSchema(): Schema
 {
-    $numberHolderType = GraphQLObjectType([
+    $numberHolderType = newGraphQLObjectType([
         'fields' => [
             'theNumber' => ['type' => GraphQLInt()],
         ],
         'name'   => 'NumberHolder',
     ]);
 
-    $schema = GraphQLSchema([
-        'query'    => GraphQLObjectType([
+    $schema = newGraphQLSchema([
+        'query'    => newGraphQLObjectType([
             'fields' => [
                 'numberHolder' => ['type' => $numberHolderType],
             ],
             'name'   => 'Query',
         ]),
-        'mutation' => GraphQLObjectType([
+        'mutation' => newGraphQLObjectType([
             'fields' => [
                 'immediatelyChangeTheNumber'      => [
                     'type'    => $numberHolderType,

@@ -38,15 +38,15 @@ use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Execution\coerceDirectiveValues;
 use function Digia\GraphQL\Type\assertNullableType;
-use function Digia\GraphQL\Type\GraphQLDirective;
-use function Digia\GraphQL\Type\GraphQLEnumType;
-use function Digia\GraphQL\Type\GraphQLInputObjectType;
-use function Digia\GraphQL\Type\GraphQLInterfaceType;
-use function Digia\GraphQL\Type\GraphQLList;
-use function Digia\GraphQL\Type\GraphQLNonNull;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLScalarType;
-use function Digia\GraphQL\Type\GraphQLUnionType;
+use function Digia\GraphQL\Type\newGraphQLDirective;
+use function Digia\GraphQL\Type\newGraphQLEnumType;
+use function Digia\GraphQL\Type\newGraphQLInputObjectType;
+use function Digia\GraphQL\Type\newGraphQLInterfaceType;
+use function Digia\GraphQL\Type\newGraphQLList;
+use function Digia\GraphQL\Type\newGraphQLNonNull;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLScalarType;
+use function Digia\GraphQL\Type\newGraphQLUnionType;
 use function Digia\GraphQL\Type\introspectionTypes;
 use function Digia\GraphQL\Type\specifiedScalarTypes;
 use function Digia\GraphQL\Util\keyMap;
@@ -143,7 +143,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     public function buildDirective(DirectiveDefinitionNode $node): DirectiveInterface
     {
-        return GraphQLDirective([
+        return newGraphQLDirective([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'locations'   => \array_map(function (NameNode $node) {
@@ -242,7 +242,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildObjectType(ObjectTypeDefinitionNode $node): ObjectType
     {
-        return GraphQLObjectType([
+        return newGraphQLObjectType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'fields'      => function () use ($node) {
@@ -285,7 +285,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildInterfaceType(InterfaceTypeDefinitionNode $node): InterfaceType
     {
-        return GraphQLInterfaceType([
+        return newGraphQLInterfaceType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'fields'      => function () use ($node): array {
@@ -301,7 +301,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildEnumType(EnumTypeDefinitionNode $node): EnumType
     {
-        return GraphQLEnumType([
+        return newGraphQLEnumType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'values'      => $node->hasValues() ? keyValueMap(
@@ -327,7 +327,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildUnionType(UnionTypeDefinitionNode $node): UnionType
     {
-        return GraphQLUnionType([
+        return newGraphQLUnionType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'types'       => $node->hasTypes() ? \array_map(function (TypeNodeInterface $type) {
@@ -343,7 +343,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildScalarType(ScalarTypeDefinitionNode $node): ScalarType
     {
-        return GraphQLScalarType([
+        return newGraphQLScalarType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'serialize'   => function ($value) {
@@ -359,7 +359,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildInputObjectType(InputObjectTypeDefinitionNode $node): InputObjectType
     {
-        return GraphQLInputObjectType([
+        return newGraphQLInputObjectType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'fields'      => $node->hasFields() ? function () use ($node) {
@@ -460,12 +460,12 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputTypeNode): TypeInterface
 {
     if ($inputTypeNode instanceof ListTypeNode) {
-        return GraphQLList(buildWrappedType($innerType, $inputTypeNode->getType()));
+        return newGraphQLList(buildWrappedType($innerType, $inputTypeNode->getType()));
     }
 
     if ($inputTypeNode instanceof NonNullTypeNode) {
         $wrappedType = buildWrappedType($innerType, $inputTypeNode->getType());
-        return GraphQLNonNull(assertNullableType($wrappedType));
+        return newGraphQLNonNull(assertNullableType($wrappedType));
     }
 
     return $innerType;
