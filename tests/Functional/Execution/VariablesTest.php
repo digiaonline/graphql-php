@@ -148,4 +148,26 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
+
+
+    /**
+     * Properly parses single value to list
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testProperlyParsesSingleValueToList()
+    {
+        $query = '{
+            fieldWithObjectInput(input: {a: "foo", b: "bar", c: "baz"})
+        }';
+
+        $result = execute($this->schema, parse($query));
+
+        $this->assertEquals([
+            'data' => [
+                'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+            ]
+        ], $result->toArray());
+    }
 }
