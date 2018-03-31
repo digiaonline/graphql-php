@@ -245,4 +245,25 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Properly runs parseLiteral on complex scalar types
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testProperlyRunsParseLiteralOnComplexScalarTypes()
+    {
+        $query = '{
+            fieldWithObjectInput(input: {c: "foo", d: "SerializedValue"})
+        }';
+
+        $result = execute($this->schema, parse($query));
+
+        $this->assertEquals([
+            'data'   => [
+                'fieldWithObjectInput' => '{"c":"foo","d":"DeserializedValue"}'
+            ]
+        ], $result->toArray());
+    }
 }
