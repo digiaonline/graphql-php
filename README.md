@@ -58,7 +58,7 @@ In practice this means that the schema builder takes the schema and the resolver
 to build an executable schema. This approach should also allow us to support middleware for resolver, which could be
 very handy for e.g. data transformation or authorization checks.
 
-#### Language
+### Language
 
 Defines the GraphQL language and the associated Abstact Syntax Tree (AST).
 
