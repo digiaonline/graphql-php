@@ -277,13 +277,34 @@ class VariablesTest extends TestCase
      */
     public function testExecutesWithComplexInputUsingVariables()
     {
-        $query = ' query ($input: TestInputObject) {
+        $query = 'query ($input: TestInputObject) {
           fieldWithObjectInput(input: $input)
         }';
 
         $params = ['input' => ['a' => 'foo', 'b' => ['bar'], 'c' => 'baz']];
 
         $result = execute($this->schema, parse($query), null, null, $params);
+
+        $this->assertEquals([
+            'data' => [
+                'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Use default value when not provided
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testUseDefaultValueWhenNotProvide()
+    {
+        $query = 'query ($input: TestInputObject = {a: "foo", b: ["bar"], c: "baz"}) {
+            fieldWithObjectInput(input: $input)
+         }';
+
+        $result = execute($this->schema, parse($query));
 
         $this->assertEquals([
             'data' => [
