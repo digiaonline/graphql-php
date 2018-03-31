@@ -1,28 +1,27 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\SchemaExtension;
+namespace Digia\GraphQL\Test\Functional\Schema;
 
 use Digia\GraphQL\Error\ExtensionException;
 use Digia\GraphQL\GraphQL;
-use Digia\GraphQL\SchemaExtension\SchemaExtenderInterface;
+use Digia\GraphQL\Schema\Extension\SchemaExtenderInterface;
 use Digia\GraphQL\Test\TestCase;
-use function Digia\GraphQL\graphql;
-use function Digia\GraphQL\Language\dedent;
-use function Digia\GraphQL\parse;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use function Digia\GraphQL\Type\newGraphQLEnumType;
+use function Digia\GraphQL\graphql;
+use function Digia\GraphQL\Language\dedent;
+use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLID;
+use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\newGraphQLEnumType;
 use function Digia\GraphQL\Type\newGraphQLInterfaceType;
 use function Digia\GraphQL\Type\newGraphQLList;
 use function Digia\GraphQL\Type\newGraphQLNonNull;
 use function Digia\GraphQL\Type\newGraphQLObjectType;
 use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\GraphQLString;
 use function Digia\GraphQL\Type\newGraphQLUnionType;
-use Digia\GraphQL\Type\SchemaInterface;
 use function Digia\GraphQL\validateSchema;
 
 class ExtensionTest extends TestCase
@@ -221,12 +220,12 @@ class ExtensionTest extends TestCase
             $secondExtensionAST
         );
 
-        $query = $extendedTwiceSchema->getQueryType();
-        $testInput = $extendedTwiceSchema->getType('TestInput');
-        $testEnum = $extendedTwiceSchema->getType('TestEnum');
-        $testUnion = $extendedTwiceSchema->getType('TestUnion');
+        $query         = $extendedTwiceSchema->getQueryType();
+        $testInput     = $extendedTwiceSchema->getType('TestInput');
+        $testEnum      = $extendedTwiceSchema->getType('TestEnum');
+        $testUnion     = $extendedTwiceSchema->getType('TestUnion');
         $testInterface = $extendedTwiceSchema->getType('TestInterface');
-        $testType = $extendedTwiceSchema->getType('TestType');
+        $testType      = $extendedTwiceSchema->getType('TestType');
         $testDirective = $extendedTwiceSchema->getDirective('test');
 
         $this->assertCount(2, $query->getExtensionAstNodes());
@@ -333,31 +332,31 @@ class ExtensionTest extends TestCase
     }
 
     // TODO: extends interfaces multiple times
-    
+
     // may extend mutations and subscriptions
 
     public function testMayExtendMutationsAndSubscriptions()
     {
         $mutationSchema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
-                'name' => 'Query',
-                'fields' => function() {
+            'query'        => newGraphQLObjectType([
+                'name'   => 'Query',
+                'fields' => function () {
                     return [
                         'queryField' => ['type' => GraphQLString()],
                     ];
                 },
             ]),
-            'mutation' => newGraphQLObjectType([
-                'name' => 'Mutation',
-                'fields' => function() {
+            'mutation'     => newGraphQLObjectType([
+                'name'   => 'Mutation',
+                'fields' => function () {
                     return [
                         'mutationField' => ['type' => GraphQLString()],
                     ];
                 },
             ]),
             'subscription' => newGraphQLObjectType([
-                'name' => 'Subscription',
-                'fields' => function() {
+                'name'   => 'Subscription',
+                'fields' => function () {
                     return [
                         'subscriptionField' => ['type' => GraphQLString()],
                     ];

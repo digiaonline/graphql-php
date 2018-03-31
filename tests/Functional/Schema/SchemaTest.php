@@ -1,13 +1,13 @@
 <?php
 
-namespace Digia\GraphQL\Test\Functional\Type;
+namespace Digia\GraphQL\Test\Functional\Schema;
 
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Schema;
+use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\Type\newGraphQLDirective;
 use function Digia\GraphQL\Type\newGraphQLInputObjectType;
 use function Digia\GraphQL\Type\newGraphQLInterfaceType;

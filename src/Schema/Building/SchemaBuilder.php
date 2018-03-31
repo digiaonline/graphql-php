@@ -1,18 +1,13 @@
 <?php
 
-namespace Digia\GraphQL\SchemaBuilder;
+namespace Digia\GraphQL\Schema\Building;
 
-use Digia\GraphQL\Error\LanguageException;
-use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Language\Node\NamedTypeNode;
-use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
-use Digia\GraphQL\Language\Node\TypeNodeInterface;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
-use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Schema\Building\BuilderContextCreatorInterface;
+use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
+use Digia\GraphQL\Schema\ResolverRegistryInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Util\arraySome;
 
 class SchemaBuilder implements SchemaBuilderInterface
 {

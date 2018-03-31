@@ -14,7 +14,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Type\newGraphQLList;
 use function Digia\GraphQL\Type\newGraphQLNonNull;
-use Digia\GraphQL\Type\SchemaInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 
 class TypeHelper
 {
