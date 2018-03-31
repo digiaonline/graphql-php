@@ -191,4 +191,25 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Properly parses null value in list
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testProperlyParsesNullValueInList()
+    {
+        $query = '{
+            fieldWithObjectInput(input: {b: ["A",null,"C"], c: "C"})
+        }';
+
+        $result = execute($this->schema, parse($query));
+
+        $this->assertEquals([
+            'data' => [
+                'fieldWithObjectInput' => '{"b":["A",null,"C"],"c":"C"}'
+            ]
+        ], $result->toArray());
+    }
 }
