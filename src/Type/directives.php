@@ -8,17 +8,17 @@ use function Digia\GraphQL\Util\arraySome;
 /**
  * @return Directive
  */
-function GraphQLIncludeDirective(): Directive
+function IncludeDirective(): Directive
 {
-    return GraphQL::make('GraphQLIncludeDirective');
+    return GraphQL::make(GraphQL::INCLUDE_DIRECTIVE);
 }
 
 /**
  * @return Directive
  */
-function GraphQLSkipDirective(): Directive
+function SkipDirective(): Directive
 {
-    return GraphQL::make('GraphQLSkipDirective');
+    return GraphQL::make(GraphQL::SKIP_DIRECTIVE);
 }
 
 const DEFAULT_DEPRECATION_REASON = 'No longer supported';
@@ -26,9 +26,9 @@ const DEFAULT_DEPRECATION_REASON = 'No longer supported';
 /**
  * @return Directive
  */
-function GraphQLDeprecatedDirective(): Directive
+function DeprecatedDirective(): Directive
 {
-    return GraphQL::make('GraphQLDeprecatedDirective');
+    return GraphQL::make(GraphQL::DEPRECATED_DIRECTIVE);
 }
 
 /**
@@ -37,9 +37,9 @@ function GraphQLDeprecatedDirective(): Directive
 function specifiedDirectives(): array
 {
     return [
-        GraphQLIncludeDirective(),
-        GraphQLSkipDirective(),
-        GraphQLDeprecatedDirective(),
+        IncludeDirective(),
+        SkipDirective(),
+        DeprecatedDirective(),
     ];
 }
 

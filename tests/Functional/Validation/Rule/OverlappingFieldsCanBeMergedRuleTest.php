@@ -5,14 +5,14 @@ namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 use Digia\GraphQL\Validation\Rule\OverlappingFieldsCanBeMergedRule;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\fieldConflict;
-use function Digia\GraphQL\Type\GraphQLID;
-use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\newGraphQLInterfaceType;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\ID;
+use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\newInterfaceType;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newNonNull;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\String;
 
 class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
 {
@@ -35,95 +35,95 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     {
         parent::setUp();
 
-        $this->someBox = newGraphQLInterfaceType([
+        $this->someBox = newInterfaceType([
             'name'   => 'SomeBox',
             'fields' => function () {
                 return [
                     'deepBox'        => ['type' => $this->someBox],
-                    'unrelatedField' => ['type' => GraphQLString()],
+                    'unrelatedField' => ['type' => String()],
                 ];
             },
         ]);
 
-        $this->stringBox = newGraphQLObjectType([
+        $this->stringBox = newObjectType([
             'name'       => 'StringBox',
             'interfaces' => [$this->someBox],
             'fields'     => function () {
                 return [
-                    'scalar'         => ['type' => GraphQLString()],
+                    'scalar'         => ['type' => String()],
                     'deepBox'        => ['type' => $this->stringBox],
-                    'unrelatedField' => ['type' => GraphQLString()],
-                    'listStringBox'  => ['type' => newGraphQLList($this->stringBox)],
+                    'unrelatedField' => ['type' => String()],
+                    'listStringBox'  => ['type' => newList($this->stringBox)],
                     'stringBox'      => ['type' => $this->stringBox],
                     'intBox'         => ['type' => $this->intBox],
                 ];
             },
         ]);
 
-        $this->intBox = newGraphQLObjectType([
+        $this->intBox = newObjectType([
             'name'       => 'IntBox',
             'interfaces' => [$this->someBox],
             'fields'     => function () {
                 return [
-                    'scalar'         => ['type' => GraphQLInt()],
+                    'scalar'         => ['type' => Int()],
                     'deepBox'        => ['type' => $this->intBox],
-                    'unrelatedField' => ['type' => GraphQLString()],
-                    'listStringBox'  => ['type' => newGraphQLList($this->stringBox)],
+                    'unrelatedField' => ['type' => String()],
+                    'listStringBox'  => ['type' => newList($this->stringBox)],
                     'stringBox'      => ['type' => $this->stringBox],
                     'intBox'         => ['type' => $this->intBox],
                 ];
             },
         ]);
 
-        $this->nonNullStringBox1 = newGraphQLInterfaceType([
+        $this->nonNullStringBox1 = newInterfaceType([
             'name'   => 'NonNullStringBox1',
             'fields' => [
-                'scalar' => ['type' => newGraphQLNonNull(GraphQLString())],
+                'scalar' => ['type' => newNonNull(String())],
             ],
         ]);
 
-        $this->nonNullStringBox1Impl = newGraphQLObjectType([
+        $this->nonNullStringBox1Impl = newObjectType([
             'name'       => 'NonNullStringBox1Impl',
             'interfaces' => [$this->someBox, $this->nonNullStringBox1],
             'fields'     => [
-                'scalar'         => ['type' => newGraphQLNonNull(GraphQLString())],
-                'unrelatedField' => ['type' => GraphQLString()],
+                'scalar'         => ['type' => newNonNull(String())],
+                'unrelatedField' => ['type' => String()],
                 'deepBox'        => ['type' => $this->someBox],
             ],
         ]);
 
-        $this->nonNullStringBox2 = newGraphQLInterfaceType([
+        $this->nonNullStringBox2 = newInterfaceType([
             'name'   => 'NonNullStringBox2',
             'fields' => [
-                'scalar' => ['type' => newGraphQLNonNull(GraphQLString())],
+                'scalar' => ['type' => newNonNull(String())],
             ],
         ]);
 
-        $this->nonNullStringBox2Impl = newGraphQLObjectType([
+        $this->nonNullStringBox2Impl = newObjectType([
             'name'       => 'NonNullStringBox2Impl',
             'interfaces' => [$this->someBox, $this->nonNullStringBox2],
             'fields'     => [
-                'scalar'         => ['type' => newGraphQLNonNull(GraphQLString())],
-                'unrelatedField' => ['type' => GraphQLString()],
+                'scalar'         => ['type' => newNonNull(String())],
+                'unrelatedField' => ['type' => String()],
                 'deepBox'        => ['type' => $this->someBox],
             ],
         ]);
 
-        $this->connection = newGraphQLObjectType([
+        $this->connection = newObjectType([
             'name'   => 'Connection',
             'fields' => function () {
                 return [
                     'edges' => [
-                        'type' => newGraphQLList(
-                            newGraphQLObjectType([
+                        'type' => newList(
+                            newObjectType([
                                 'name'   => 'Edge',
                                 'fields' => [
                                     'node' => [
-                                        'type' => newGraphQLObjectType([
+                                        'type' => newObjectType([
                                             'name'   => 'Node',
                                             'fields' => [
-                                                'id'   => ['type' => GraphQLID()],
-                                                'name' => ['type' => GraphQLString()],
+                                                'id'   => ['type' => ID()],
+                                                'name' => ['type' => String()],
                                             ],
                                         ])
                                     ],
@@ -135,8 +135,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             },
         ]);
 
-        $this->schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $this->schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'QueryRoot',
                 'fields' => function () {
                     return [

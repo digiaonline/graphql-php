@@ -325,7 +325,7 @@ function getNamedType(?TypeInterface $type): ?NamedTypeInterface
  * @param array $config
  * @return ScalarType
  */
-function newGraphQLScalarType(array $config = []): ScalarType
+function newScalarType(array $config = []): ScalarType
 {
     return new ScalarType($config);
 }
@@ -334,7 +334,7 @@ function newGraphQLScalarType(array $config = []): ScalarType
  * @param array $config
  * @return EnumType
  */
-function newGraphQLEnumType(array $config = []): EnumType
+function newEnumType(array $config = []): EnumType
 {
     return new EnumType($config);
 }
@@ -343,7 +343,7 @@ function newGraphQLEnumType(array $config = []): EnumType
  * @param array $config
  * @return InputObjectType
  */
-function newGraphQLInputObjectType(array $config = []): InputObjectType
+function newInputObjectType(array $config = []): InputObjectType
 {
     return new InputObjectType($config);
 }
@@ -352,7 +352,7 @@ function newGraphQLInputObjectType(array $config = []): InputObjectType
  * @param array $config
  * @return InterfaceType
  */
-function newGraphQLInterfaceType(array $config = []): InterfaceType
+function newInterfaceType(array $config = []): InterfaceType
 {
     return new InterfaceType($config);
 }
@@ -361,7 +361,7 @@ function newGraphQLInterfaceType(array $config = []): InterfaceType
  * @param array $config
  * @return ObjectType
  */
-function newGraphQLObjectType(array $config = []): ObjectType
+function newObjectType(array $config = []): ObjectType
 {
     return new ObjectType($config);
 }
@@ -370,7 +370,7 @@ function newGraphQLObjectType(array $config = []): ObjectType
  * @param array $config
  * @return UnionType
  */
-function newGraphQLUnionType(array $config = []): UnionType
+function newUnionType(array $config = []): UnionType
 {
     return new UnionType($config);
 }
@@ -379,7 +379,7 @@ function newGraphQLUnionType(array $config = []): UnionType
  * @param array $config
  * @return Schema
  */
-function newGraphQLSchema(array $config = []): Schema
+function newSchema(array $config = []): Schema
 {
     return new Schema($config);
 }
@@ -388,7 +388,7 @@ function newGraphQLSchema(array $config = []): Schema
  * @param array $config
  * @return Directive
  */
-function newGraphQLDirective(array $config = []): Directive
+function newDirective(array $config = []): Directive
 {
     return new Directive($config);
 }
@@ -397,7 +397,7 @@ function newGraphQLDirective(array $config = []): Directive
  * @param TypeInterface $ofType
  * @return ListType
  */
-function newGraphQLList(TypeInterface $ofType): ListType
+function newList(TypeInterface $ofType): ListType
 {
     return new ListType($ofType);
 }
@@ -407,7 +407,7 @@ function newGraphQLList(TypeInterface $ofType): ListType
  * @return NonNullType
  * @throws InvalidTypeException
  */
-function newGraphQLNonNull(TypeInterface $ofType): NonNullType
+function newNonNull(TypeInterface $ofType): NonNullType
 {
     return new NonNullType($ofType);
 }

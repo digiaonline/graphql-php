@@ -7,7 +7,7 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Schema\SchemaInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use function Digia\GraphQL\Type\newGraphQLSchema;
+use function Digia\GraphQL\Type\newSchema;
 
 class SchemaExtender implements SchemaExtenderInterface
 {
@@ -43,7 +43,7 @@ class SchemaExtender implements SchemaExtenderInterface
             return $schema;
         }
 
-        return newGraphQLSchema([
+        return newSchema([
             'query'        => $context->getExtendedQueryType(),
             'mutation'     => $context->getExtendedMutationType(),
             'subscription' => $context->getExtendedSubscriptionType(),

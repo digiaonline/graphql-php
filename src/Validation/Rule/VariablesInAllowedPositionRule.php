@@ -10,7 +10,7 @@ use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
+use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Util\isTypeSubtypeOf;
 use function Digia\GraphQL\Util\typeFromAST;
 use function Digia\GraphQL\Validation\badVariablePositionMessage;
@@ -101,6 +101,6 @@ class VariablesInAllowedPositionRule extends AbstractRule
     ): TypeInterface {
         return (!$variableDefinition->hasDefaultValue() || $variableType instanceof NonNullType)
             ? $variableType
-            : newGraphQLNonNull($variableType);
+            : newNonNull($variableType);
     }
 }

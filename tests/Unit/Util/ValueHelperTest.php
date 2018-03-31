@@ -14,12 +14,12 @@ use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Util\ValueHelper;
-use function Digia\GraphQL\Type\newGraphQLEnumType;
-use function Digia\GraphQL\Type\newGraphQLInputObjectType;
-use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
-use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\newEnumType;
+use function Digia\GraphQL\Type\newInputObjectType;
+use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newNonNull;
+use function Digia\GraphQL\Type\String;
 
 class ValueHelperTest extends TestCase
 {
@@ -38,14 +38,14 @@ class ValueHelperTest extends TestCase
         $this->expectException(ResolutionException::class);
         $this->expectExceptionMessage('Node is not defined.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->helper->fromAST(null, GraphQLString());
+        $this->helper->fromAST(null, String());
     }
 
     public function testResolveNonNullWithStringValue()
     {
         $node = new StringValueNode(['value' => 'foo']);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->helper->fromAST($node, newGraphQLNonNull(GraphQLString())));
+        $this->assertEquals('foo', $this->helper->fromAST($node, newNonNull(String())));
     }
 
     public function testResolveNonNullWithNullValue()
@@ -54,7 +54,7 @@ class ValueHelperTest extends TestCase
         $this->expectException(ResolutionException::class);
         $this->expectExceptionMessage('Cannot resolve non-null values from null value node');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(null, $this->helper->fromAST($node, newGraphQLNonNull(GraphQLString())));
+        $this->assertEquals(null, $this->helper->fromAST($node, newNonNull(String())));
     }
 
     public function testResolveValidListOfStrings()
@@ -67,7 +67,7 @@ class ValueHelperTest extends TestCase
             ],
         ]);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newGraphQLList(GraphQLString())));
+        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newList(String())));
     }
 
     public function testResolveListWithMissingVariableValue()
@@ -83,7 +83,7 @@ class ValueHelperTest extends TestCase
         $this->expectException(ResolutionException::class);
         $this->expectExceptionMessage('Cannot resolve value for missing variable "$b".');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newGraphQLList(GraphQLString()), $variables));
+        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newList(String()), $variables));
     }
 
     public function testResolveValidInputObject()
@@ -97,10 +97,10 @@ class ValueHelperTest extends TestCase
             ],
         ]);
 
-        $type = newGraphQLInputObjectType([
+        $type = newInputObjectType([
             'name'   => 'InputObject',
             'fields' => [
-                'a' => ['type' => GraphQLInt()],
+                'a' => ['type' => Int()],
             ],
         ]);
 
@@ -112,10 +112,10 @@ class ValueHelperTest extends TestCase
     {
         $node = new StringValueNode(['value' => null]);
 
-        $type = newGraphQLInputObjectType([
+        $type = newInputObjectType([
             'name'   => 'InputObject',
             'fields' => [
-                'a' => ['type' => GraphQLInt()],
+                'a' => ['type' => Int()],
             ],
         ]);
 
@@ -136,11 +136,11 @@ class ValueHelperTest extends TestCase
             ],
         ]);
 
-        $type = newGraphQLInputObjectType([
+        $type = newInputObjectType([
             'name'   => 'InputObject',
             'fields' => [
-                'a' => ['type' => GraphQLInt()],
-                'b' => ['type' => newGraphQLNonNull(GraphQLString())],
+                'a' => ['type' => Int()],
+                'b' => ['type' => newNonNull(String())],
             ],
         ]);
 
@@ -153,7 +153,7 @@ class ValueHelperTest extends TestCase
     public function testResolveEnumWithIntValue()
     {
         $node = new EnumValueNode(['value' => 'FOO']);
-        $type = newGraphQLEnumType([
+        $type = newEnumType([
             'name'   => 'EnumType',
             'values' => [
                 'FOO' => ['value' => 1],
@@ -166,7 +166,7 @@ class ValueHelperTest extends TestCase
     public function testResolveEnumWithNodeOfInvalidType()
     {
         $node = new StringValueNode(['value' => null]);
-        $type = newGraphQLEnumType([
+        $type = newEnumType([
             'name'   => 'EnumType',
         ]);
 
@@ -179,7 +179,7 @@ class ValueHelperTest extends TestCase
     public function testResolveEnumWithMissingValue()
     {
         $node = new EnumValueNode(['value' => 'FOO']);
-        $type = newGraphQLEnumType([
+        $type = newEnumType([
             'name'   => 'EnumType',
             'values' => [
                 'BAR' => ['value' => 'foo'],
@@ -195,7 +195,7 @@ class ValueHelperTest extends TestCase
     {
         $node = new StringValueNode(['value' => 'foo']);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->helper->fromAST($node, GraphQLString()));
+        $this->assertEquals('foo', $this->helper->fromAST($node, String()));
     }
 
     public function testResolveInvalidScalar()
@@ -204,6 +204,6 @@ class ValueHelperTest extends TestCase
 
         $this->expectException(ResolutionException::class);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->helper->fromAST($node, GraphQLString()));
+        $this->assertEquals('foo', $this->helper->fromAST($node, String()));
     }
 }

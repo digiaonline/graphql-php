@@ -8,13 +8,13 @@ use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\GraphQLBoolean;
-use function Digia\GraphQL\Type\newGraphQLInterfaceType;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Type\newGraphQLUnionType;
+use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\newInterfaceType;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\newUnionType;
 
 class AbstractPromiseTest extends TestCase
 {
@@ -28,43 +28,43 @@ class AbstractPromiseTest extends TestCase
      */
     public function testIsTypeOfUsedToResolveFunctionForInterface()
     {
-        $PetInterfaceType = newGraphQLInterfaceType([
+        $PetInterfaceType = newInterfaceType([
             'name'   => 'Pet',
             'fields' => [
-                'name' => ['type' => GraphQLString()]
+                'name' => ['type' => String()]
             ]
         ]);
 
-        $DogType = newGraphQLObjectType([
+        $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'woofs' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'woofs' => ['type' => Boolean()],
             ],
             'isTypeOf'   => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Dog);
             }
         ]);
 
-        $CatType = newGraphQLObjectType([
+        $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'meows' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'meows' => ['type' => Boolean()],
             ],
             'isTypeOf'   => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Cat);
             }
         ]);
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newGraphQLList($PetInterfaceType),
+                        'type'    => newList($PetInterfaceType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),
@@ -116,43 +116,43 @@ class AbstractPromiseTest extends TestCase
      */
     public function testIsTypeOfCanBeRejected()
     {
-        $PetInterfaceType = newGraphQLInterfaceType([
+        $PetInterfaceType = newInterfaceType([
             'name'   => 'Pet',
             'fields' => [
-                'name' => ['type' => GraphQLString()]
+                'name' => ['type' => String()]
             ]
         ]);
 
-        $DogType = newGraphQLObjectType([
+        $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'woofs' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'woofs' => ['type' => Boolean()],
             ],
             'isTypeOf'   => function ($obj) {
                 return \React\Promise\reject(new ExecutionException('We are testing this error'));
             }
         ]);
 
-        $CatType = newGraphQLObjectType([
+        $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'meows' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'meows' => ['type' => Boolean()],
             ],
             'isTypeOf'   => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Cat);
             }
         ]);
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newGraphQLList($PetInterfaceType),
+                        'type'    => newList($PetInterfaceType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),
@@ -212,29 +212,29 @@ class AbstractPromiseTest extends TestCase
      */
     public function testIsTypeOfUsedToResolveRuntimeTypeForUnion()
     {
-        $DogType = newGraphQLObjectType([
+        $DogType = newObjectType([
             'name'     => 'Dog',
             'fields'   => [
-                'name'  => ['type' => GraphQLString()],
-                'woofs' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'woofs' => ['type' => Boolean()],
             ],
             'isTypeOf' => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Dog);
             }
         ]);
 
-        $CatType = newGraphQLObjectType([
+        $CatType = newObjectType([
             'name'     => 'Cat',
             'fields'   => [
-                'name'  => ['type' => GraphQLString()],
-                'meows' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'meows' => ['type' => Boolean()],
             ],
             'isTypeOf' => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Cat);
             }
         ]);
 
-        $PetUnionType = newGraphQLUnionType([
+        $PetUnionType = newUnionType([
             'name'        => 'Pet',
             'types'       => [$DogType, $CatType],
             'resolveType' => function ($result, $context, $info) use ($DogType, $CatType) {
@@ -249,12 +249,12 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newGraphQLList($PetUnionType),
+                        'type'    => newList($PetUnionType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),
@@ -305,7 +305,7 @@ class AbstractPromiseTest extends TestCase
      */
     public function testResolveTypeOnInterfaceYieldsUsefulError()
     {
-        $PetInterfaceType = newGraphQLInterfaceType([
+        $PetInterfaceType = newInterfaceType([
             'name'        => 'Pet',
             'resolveType' => function ($obj) use (&$DogType, &$CatType, &$HumanType) {
                 return \React\Promise\resolve(
@@ -317,37 +317,37 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
-        $DogType = newGraphQLObjectType([
+        $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'woofs' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'woofs' => ['type' => Boolean()],
             ]
         ]);
 
-        $CatType = newGraphQLObjectType([
+        $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'meows' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'meows' => ['type' => Boolean()],
             ]
         ]);
 
-        $HumanType = newGraphQLObjectType([
+        $HumanType = newObjectType([
             'name'   => 'Human',
             'fields' => [
-                'name' => ['type' => GraphQLString()]
+                'name' => ['type' => String()]
             ]
         ]);
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newGraphQLList($PetInterfaceType),
+                        'type'    => newList($PetInterfaceType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return \React\Promise\resolve([
                                 new Dog('Odie', true),
@@ -410,39 +410,39 @@ class AbstractPromiseTest extends TestCase
      */
     public function testResolveTypeOnUnionYieldsUsefulError()
     {
-        $DogType = newGraphQLObjectType([
+        $DogType = newObjectType([
             'name'     => 'Dog',
             'fields'   => [
-                'name'  => ['type' => GraphQLString()],
-                'woofs' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'woofs' => ['type' => Boolean()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Dog;
             }
         ]);
 
-        $CatType = newGraphQLObjectType([
+        $CatType = newObjectType([
             'name'     => 'Cat',
             'fields'   => [
-                'name'  => ['type' => GraphQLString()],
-                'meows' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'meows' => ['type' => Boolean()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Cat;
             }
         ]);
 
-        $HumanType = newGraphQLObjectType([
+        $HumanType = newObjectType([
             'name'     => 'Human',
             'fields'   => [
-                'name' => ['type' => GraphQLString()]
+                'name' => ['type' => String()]
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Human;
             }
         ]);
 
-        $PetUnionType = newGraphQLUnionType([
+        $PetUnionType = newUnionType([
             'name'        => 'Pet',
             'types'       => [$DogType, $CatType],
             'resolveType' => function ($result, $context, $info) use ($DogType, $CatType, $HumanType) {
@@ -462,12 +462,12 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newGraphQLList($PetUnionType),
+                        'type'    => newList($PetUnionType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return \React\Promise\resolve([
                                 new Dog('Odie', true),
@@ -529,7 +529,7 @@ class AbstractPromiseTest extends TestCase
      */
     public function testResolveTypeAllowsResolvingWithTypeName()
     {
-        $PetInterfaceType = newGraphQLInterfaceType([
+        $PetInterfaceType = newInterfaceType([
             'name'        => 'Pet',
             'resolveType' => function ($obj) {
                 return \React\Promise\resolve(
@@ -540,36 +540,36 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
-        $DogType = newGraphQLObjectType([
+        $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'woofs' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'woofs' => ['type' => Boolean()],
             ],
             'isTypeOf'   => function ($obj) {
                 return $obj instanceof Dog;
             }
         ]);
 
-        $CatType = newGraphQLObjectType([
+        $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'meows' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'meows' => ['type' => Boolean()],
             ],
             'isTypeOf'   => function ($obj) {
                 return $obj instanceof Cat;
             }
         ]);
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newGraphQLList($PetInterfaceType),
+                        'type'    => newList($PetInterfaceType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),
@@ -621,37 +621,37 @@ class AbstractPromiseTest extends TestCase
      */
     public function testResolveTypeCanBeCaught()
     {
-        $PetInterfaceType = newGraphQLInterfaceType([
+        $PetInterfaceType = newInterfaceType([
             'name'        => 'Pet',
             'resolveType' => function ($obj) {
                 return \React\Promise\reject(new ExecutionException('We are testing this error'));
             }
         ]);
 
-        $DogType = newGraphQLObjectType([
+        $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'woofs' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'woofs' => ['type' => Boolean()],
             ]
         ]);
 
-        $CatType = newGraphQLObjectType([
+        $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'meows' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'meows' => ['type' => Boolean()],
             ]
         ]);
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newGraphQLList($PetInterfaceType),
+                        'type'    => newList($PetInterfaceType),
                         'resolve' => function ($source, $args, $context, $info) {
                             return [
                                 new Dog('Odie', true),

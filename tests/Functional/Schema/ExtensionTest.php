@@ -13,15 +13,15 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\GraphQLID;
-use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Type\newGraphQLEnumType;
-use function Digia\GraphQL\Type\newGraphQLInterfaceType;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\newGraphQLUnionType;
+use function Digia\GraphQL\Type\ID;
+use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\newEnumType;
+use function Digia\GraphQL\Type\newInterfaceType;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newNonNull;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\newUnionType;
 use function Digia\GraphQL\validateSchema;
 
 class ExtensionTest extends TestCase
@@ -43,55 +43,55 @@ class ExtensionTest extends TestCase
     {
         $this->extender = GraphQL::make(SchemaExtenderInterface::class);
 
-        $this->someInterfaceType = newGraphQLInterfaceType([
+        $this->someInterfaceType = newInterfaceType([
             'name'   => 'SomeInterface',
             'fields' => function () {
                 return [
-                    'name' => ['type' => GraphQLString()],
+                    'name' => ['type' => String()],
                     'some' => ['type' => $this->someInterfaceType],
                 ];
             },
         ]);
 
-        $this->fooType = newGraphQLObjectType([
+        $this->fooType = newObjectType([
             'name'       => 'Foo',
             'interfaces' => [$this->someInterfaceType],
             'fields'     => function () {
                 return [
-                    'name' => ['type' => GraphQLString()],
+                    'name' => ['type' => String()],
                     'some' => ['type' => $this->someInterfaceType],
-                    'tree' => ['type' => newGraphQLNonNull(newGraphQLList($this->fooType))],
+                    'tree' => ['type' => newNonNull(newList($this->fooType))],
                 ];
             },
         ]);
 
-        $this->barType = newGraphQLObjectType([
+        $this->barType = newObjectType([
             'name'       => 'Bar',
             'interfaces' => [$this->someInterfaceType],
             'fields'     => function () {
                 return [
-                    'name' => ['type' => GraphQLString()],
+                    'name' => ['type' => String()],
                     'some' => ['type' => $this->someInterfaceType],
                     'foo'  => ['type' => $this->fooType],
                 ];
             },
         ]);
 
-        $this->bizType = newGraphQLObjectType([
+        $this->bizType = newObjectType([
             'name'   => 'Biz',
             'fields' => function () {
                 return [
-                    'fizz' => ['type' => GraphQLString()]
+                    'fizz' => ['type' => String()]
                 ];
             },
         ]);
 
-        $this->someUnionType = newGraphQLUnionType([
+        $this->someUnionType = newUnionType([
             'name'  => 'SomeUnion',
             'types' => [$this->fooType, $this->bizType],
         ]);
 
-        $this->someEnumType = newGraphQLEnumType([
+        $this->someEnumType = newEnumType([
             'name'   => 'SomeEnum',
             'values' => [
                 'ONE' => ['value' => 1],
@@ -99,8 +99,8 @@ class ExtensionTest extends TestCase
             ],
         ]);
 
-        $this->testSchema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $this->testSchema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => function () {
                     return [
@@ -109,7 +109,7 @@ class ExtensionTest extends TestCase
                         'someEnum'      => ['type' => $this->someEnumType],
                         'someInterface' => [
                             'type' => $this->someInterfaceType,
-                            'args' => ['id' => ['type' => newGraphQLNonNull(GraphQLID())]],
+                            'args' => ['id' => ['type' => newNonNull(ID())]],
                         ],
                     ];
                 },
@@ -337,28 +337,28 @@ class ExtensionTest extends TestCase
 
     public function testMayExtendMutationsAndSubscriptions()
     {
-        $mutationSchema = newGraphQLSchema([
-            'query'        => newGraphQLObjectType([
+        $mutationSchema = newSchema([
+            'query'        => newObjectType([
                 'name'   => 'Query',
                 'fields' => function () {
                     return [
-                        'queryField' => ['type' => GraphQLString()],
+                        'queryField' => ['type' => String()],
                     ];
                 },
             ]),
-            'mutation'     => newGraphQLObjectType([
+            'mutation'     => newObjectType([
                 'name'   => 'Mutation',
                 'fields' => function () {
                     return [
-                        'mutationField' => ['type' => GraphQLString()],
+                        'mutationField' => ['type' => String()],
                     ];
                 },
             ]),
-            'subscription' => newGraphQLObjectType([
+            'subscription' => newObjectType([
                 'name'   => 'Subscription',
                 'fields' => function () {
                     return [
-                        'subscriptionField' => ['type' => GraphQLString()],
+                        'subscriptionField' => ['type' => String()],
                     ];
                 },
             ]),

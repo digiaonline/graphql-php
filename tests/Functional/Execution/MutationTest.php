@@ -10,10 +10,10 @@ use Digia\GraphQL\Schema\Schema;
 use React\Promise\Promise;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\String;
 
 class MutationTest extends TestCase
 {
@@ -24,19 +24,19 @@ class MutationTest extends TestCase
      */
     public function testSimpleMutation()
     {
-        $schema = newGraphQLSchema([
+        $schema = newSchema([
             'mutation' =>
                 new ObjectType([
                     'name'   => 'M',
                     'fields' => [
                         'greeting' => [
-                            'type'    => GraphQLString(),
+                            'type'    => String(),
                             'resolve' => function ($source, $args, $context, $info) {
                                 return sprintf('Hello %s.', $args['name']);
                             },
                             'args'    => [
                                 'name' => [
-                                    'type' => GraphQLString()
+                                    'type' => String()
                                 ]
                             ]
                         ]
@@ -238,46 +238,46 @@ class Root
 
 function rootSchema(): Schema
 {
-    $numberHolderType = newGraphQLObjectType([
+    $numberHolderType = newObjectType([
         'fields' => [
-            'theNumber' => ['type' => GraphQLInt()],
+            'theNumber' => ['type' => Int()],
         ],
         'name'   => 'NumberHolder',
     ]);
 
-    $schema = newGraphQLSchema([
-        'query'    => newGraphQLObjectType([
+    $schema = newSchema([
+        'query'    => newObjectType([
             'fields' => [
                 'numberHolder' => ['type' => $numberHolderType],
             ],
             'name'   => 'Query',
         ]),
-        'mutation' => newGraphQLObjectType([
+        'mutation' => newObjectType([
             'fields' => [
                 'immediatelyChangeTheNumber'      => [
                     'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => GraphQLInt()]],
+                    'args'    => ['newNumber' => ['type' => Int()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->immediatelyChangeTheNumber($args['newNumber']);
                     }
                 ],
                 'promiseToChangeTheNumber'        => [
                     'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => GraphQLInt()]],
+                    'args'    => ['newNumber' => ['type' => Int()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->promiseToChangeTheNumber($args['newNumber']);
                     }
                 ],
                 'failToChangeTheNumber'           => [
                     'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => GraphQLInt()]],
+                    'args'    => ['newNumber' => ['type' => Int()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->failToChangeTheNumber($args['newNumber']);
                     }
                 ],
                 'promiseAndFailToChangeTheNumber' => [
                     'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => GraphQLInt()]],
+                    'args'    => ['newNumber' => ['type' => Int()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->promiseAndFailToChangeTheNumber($args['newNumber']);
                     }
