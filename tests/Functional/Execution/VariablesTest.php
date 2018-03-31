@@ -261,8 +261,33 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse($query));
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'fieldWithObjectInput' => '{"c":"foo","d":"DeserializedValue"}'
+            ]
+        ], $result->toArray());
+    }
+
+    //USING VARIABLES
+
+    /**
+     * Executes with complex input
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testExecutesWithComplexInputUsingVariables()
+    {
+        $query = ' query ($input: TestInputObject) {
+          fieldWithObjectInput(input: $input)
+        }';
+
+        $params = ['input' => ['a' => 'foo', 'b' => ['bar'], 'c' => 'baz']];
+
+        $result = execute($this->schema, parse($query), null, null, $params);
+
+        $this->assertEquals([
+            'data' => [
+                'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
             ]
         ], $result->toArray());
     }
