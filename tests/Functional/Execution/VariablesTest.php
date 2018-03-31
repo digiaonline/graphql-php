@@ -14,24 +14,6 @@ use function Digia\GraphQL\Type\newGraphQLObjectType;
 use function Digia\GraphQL\Type\newGraphQLScalarType;
 use function Digia\GraphQL\Type\newGraphQLSchema;
 
-/**
- * @param $inputArg
- * @return array
- */
-function fieldWithInputArg($inputArg): array
-{
-    return [
-        'type'    => GraphQLString(),
-        'args'    => [
-            'input' => $inputArg
-        ],
-        'resolve' => function ($root, $args) {
-            if (isset($args['input'])) {
-                return json_encode($args['input']);
-            }
-        }
-    ];
-}
 
 /**
  * Class VariablesTest
@@ -92,27 +74,29 @@ class VariablesTest extends TestCase
         $TestType = newGraphQLObjectType([
             'name'   => 'TestField',
             'fields' => [
-                'fieldWithObjectInput'            => fieldWithInputArg(['type' => $TestInputObject]),
-                'fieldWithNullableStringInput'    => fieldWithInputArg(['type' => GraphQLString()]),
-                'fieldWithNonNullableStringInput' => fieldWithInputArg([
+                'fieldWithObjectInput'            => $this->fieldWithInputArg(['type' => $TestInputObject]),
+                'fieldWithNullableStringInput'    => $this->fieldWithInputArg(['type' => GraphQLString()]),
+                'fieldWithNonNullableStringInput' => $this->fieldWithInputArg([
                     'type' => newGraphQLNonNull(GraphQLString())
                 ]),
-                'fieldWithDefaultArgumentValue'   => fieldWithInputArg([
+                'fieldWithDefaultArgumentValue'   => $this->fieldWithInputArg([
                     'type'         => GraphQLString(),
                     'defaultValue' => 'Hello World'
                 ]),
-                'fieldWithNestedInputObject'      => fieldWithInputArg([
+                'fieldWithNestedInputObject'      => $this->fieldWithInputArg([
                     'type'         => $TestNestedInputObject,
                     'defaultValue' => 'Hello World'
                 ]),
-                'list'                            => fieldWithInputArg(['type' => newGraphQLList(GraphQLString())]),
-                'nnList'                          => fieldWithInputArg([
+                'list'                            => $this->fieldWithInputArg([
+                    'type' => newGraphQLList(GraphQLString())
+                ]),
+                'nnList'                          => $this->fieldWithInputArg([
                     'type' => newGraphQLNonNull(newGraphQLList(GraphQLString())),
                 ]),
-                'listNN'                          => fieldWithInputArg([
+                'listNN'                          => $this->fieldWithInputArg([
                     'type' => newGraphQLList(newGraphQLNonNull(GraphQLString())),
                 ]),
-                'nnListNN'                        => fieldWithInputArg([
+                'nnListNN'                        => $this->fieldWithInputArg([
                     'type' => newGraphQLNonNull(newGraphQLList(newGraphQLNonNull(GraphQLString()))),
                 ]),
             ]
@@ -121,6 +105,25 @@ class VariablesTest extends TestCase
         $this->schema = newGraphQLSchema([
             'query' => $TestType
         ]);
+    }
+
+    /**
+     * @param $inputArg
+     * @return array
+     */
+    function fieldWithInputArg($inputArg): array
+    {
+        return [
+            'type'    => GraphQLString(),
+            'args'    => [
+                'input' => $inputArg
+            ],
+            'resolve' => function ($root, $args) {
+                if (isset($args['input'])) {
+                    return json_encode($args['input']);
+                }
+            }
+        ];
     }
 
     //Execute: Handles inputs
@@ -209,6 +212,36 @@ class VariablesTest extends TestCase
         $this->assertEquals([
             'data' => [
                 'fieldWithObjectInput' => '{"b":["A",null,"C"],"c":"C"}'
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Does not use incorrect value
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotUseIncorrectValue()
+    {
+        $query = '{
+            fieldWithObjectInput(input: ["foo", "bar", "baz"])
+        }';
+
+        $result = execute($this->schema, parse($query));
+
+        $this->assertEquals([
+            'data'   => [
+                'fieldWithObjectInput' => null
+            ],
+            'errors' => [
+                [
+                    //@TODO Check if line and column are correct
+                    //Original message: Argument "input" has invalid value ["foo", "bar", "baz"].
+                    'message'   => 'Input object values can only be resolved form object value nodes.',
+                    'path'      => ['fieldWithObjectInput'],
+                    'locations' => [['line' => 2, 'column' => 13]],
+                ]
             ]
         ], $result->toArray());
     }
