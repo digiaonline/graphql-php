@@ -137,9 +137,9 @@ class BuilderContext implements BuilderContextInterface
         }, $this->directiveDefinitions);
 
         $specifiedDirectivesMap = [
-            'skip'       => GraphQLSkipDirective(),
-            'include'    => GraphQLIncludeDirective(),
-            'deprecated' => GraphQLDeprecatedDirective(),
+            'skip'       => SkipDirective(),
+            'include'    => IncludeDirective(),
+            'deprecated' => DeprecatedDirective(),
         ];
 
         foreach ($specifiedDirectivesMap as $name => $directive) {

@@ -6,13 +6,13 @@ use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\GraphQLBoolean;
-use function Digia\GraphQL\Type\newGraphQLInterfaceType;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Type\newGraphQLUnionType;
+use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\newInterfaceType;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\newUnionType;
 
 
 class UnionInterfaceTest extends TestCase
@@ -31,38 +31,38 @@ class UnionInterfaceTest extends TestCase
     {
         parent::setUp();
 
-        $NamedType = newGraphQLInterfaceType([
+        $NamedType = newInterfaceType([
             'name'   => 'Named',
             'fields' => [
-                'name' => ['type' => GraphQLString()]
+                'name' => ['type' => String()]
             ]
         ]);
 
-        $DogType = newGraphQLObjectType([
+        $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$NamedType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'woofs' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'woofs' => ['type' => Boolean()],
             ],
             'isTypeOf'   => function ($obj) {
                 return $obj instanceof Dog;
             }
         ]);
 
-        $CatType = newGraphQLObjectType([
+        $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$NamedType],
             'fields'     => [
-                'name'  => ['type' => GraphQLString()],
-                'meows' => ['type' => GraphQLBoolean()],
+                'name'  => ['type' => String()],
+                'meows' => ['type' => Boolean()],
             ],
             'isTypeOf'   => function ($obj) {
                 return $obj instanceof Cat;
             }
         ]);
 
-        $PetType = newGraphQLUnionType([
+        $PetType = newUnionType([
             'name'        => 'Pet',
             'types'       => [$DogType, $CatType],
             'resolveType' => function ($result, $context, $info) use ($DogType, $CatType) {
@@ -78,20 +78,20 @@ class UnionInterfaceTest extends TestCase
             }
         ]);
 
-        $PersonType = newGraphQLObjectType([
+        $PersonType = newObjectType([
             'name'       => 'Person',
             'interfaces' => [$NamedType],
             'fields'     => [
-                'name'    => ['type' => GraphQLString()],
-                'pets'    => ['type' => newGraphQLList($PetType)],
-                'friends' => ['type' => newGraphQLList($NamedType)],
+                'name'    => ['type' => String()],
+                'pets'    => ['type' => newList($PetType)],
+                'friends' => ['type' => newList($NamedType)],
             ],
             'isTypeOf'   => function ($obj) {
                 return $obj instanceof Person;
             }
         ]);
 
-        $schema = newGraphQLSchema([
+        $schema = newSchema([
             'query' => $PersonType
         ]);
 
@@ -369,10 +369,10 @@ class UnionInterfaceTest extends TestCase
         $encounteredRootValue = null;
         $PersonType2          = null;
 
-        $NamedType2 = newGraphQLInterfaceType([
+        $NamedType2 = newInterfaceType([
             'name'        => 'Named',
             'fields'      => [
-                'name' => ['type' => GraphQLString()]
+                'name' => ['type' => String()]
             ],
             'resolveType' => function ($obj, $context, ResolveInfo $info) use (
                 &$encounteredContext,
@@ -387,16 +387,16 @@ class UnionInterfaceTest extends TestCase
             }
         ]);
 
-        $PersonType2 = newGraphQLObjectType([
+        $PersonType2 = newObjectType([
             'name'       => 'Person',
             'interfaces' => [$NamedType2],
             'fields'     => [
-                'name'    => ['type' => GraphQLString()],
-                'friends' => ['type' => newGraphQLList($NamedType2)],
+                'name'    => ['type' => String()],
+                'friends' => ['type' => newList($NamedType2)],
             ],
         ]);
 
-        $schema2 = newGraphQLSchema([
+        $schema2 = newSchema([
             'query' => $PersonType2
         ]);
 

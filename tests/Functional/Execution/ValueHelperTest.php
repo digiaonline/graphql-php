@@ -8,9 +8,9 @@ use Digia\GraphQL\Execution\ValuesHelper;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\String;
 
 class ValueHelperTest extends TestCase
 {
@@ -22,16 +22,16 @@ class ValueHelperTest extends TestCase
      */
     public function testGetValues()
     {
-        $schema = newGraphQLSchema([
+        $schema = newSchema([
             'query' =>
-                newGraphQLObjectType([
+                newObjectType([
                     'name'   => 'Greeting',
                     'fields' => [
                         'greeting' => [
-                            'type' => GraphQLString(),
+                            'type' => String(),
                             'args' => [
                                 'name' => [
-                                    'type' => GraphQLString(),
+                                    'type' => String(),
                                 ]
                             ]
                         ]

@@ -8,13 +8,13 @@ use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Schema\Schema;
-use function Digia\GraphQL\Type\newGraphQLDirective;
-use function Digia\GraphQL\Type\newGraphQLInputObjectType;
-use function Digia\GraphQL\Type\newGraphQLInterfaceType;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\newDirective;
+use function Digia\GraphQL\Type\newInputObjectType;
+use function Digia\GraphQL\Type\newInterfaceType;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\String;
 
 class SchemaTest extends TestCase
 {
@@ -54,21 +54,21 @@ class SchemaTest extends TestCase
      */
     public function setUp()
     {
-        $this->interfaceType = newGraphQLInterfaceType([
+        $this->interfaceType = newInterfaceType([
             'name'   => 'Interface',
             'fields' => [
                 'fieldName' => [
-                    'type' => GraphQLString(),
+                    'type' => String(),
                 ],
             ],
         ]);
 
-        $this->implementingType = newGraphQLObjectType([
+        $this->implementingType = newObjectType([
             'name'       => 'Object',
             'interfaces' => [$this->interfaceType],
             'fields'     => [
                 'fieldName' => [
-                    'type'    => GraphQLString(),
+                    'type'    => String(),
                     'resolve' => function () {
                         return '';
                     },
@@ -76,25 +76,25 @@ class SchemaTest extends TestCase
             ],
         ]);
 
-        $this->directiveInputType = newGraphQLInputObjectType([
+        $this->directiveInputType = newInputObjectType([
             'name'   => 'DirInput',
             'fields' => [
                 'field' => [
-                    'type' => GraphQLString(),
+                    'type' => String(),
                 ]
             ],
         ]);
 
-        $this->wrappedDirectiveInputType = newGraphQLInputObjectType([
+        $this->wrappedDirectiveInputType = newInputObjectType([
             'name'   => 'WrappedDirInput',
             'fields' => [
                 'field' => [
-                    'type' => GraphQLString(),
+                    'type' => String(),
                 ],
             ],
         ]);
 
-        $this->directive = newGraphQLDirective([
+        $this->directive = newDirective([
             'name'      => 'dir',
             'locations' => ['OBJECT'],
             'args'      => [
@@ -102,18 +102,18 @@ class SchemaTest extends TestCase
                     'type' => $this->directiveInputType,
                 ],
                 'argList' => [
-                    'type' => newGraphQLList($this->wrappedDirectiveInputType),
+                    'type' => newList($this->wrappedDirectiveInputType),
                 ],
             ],
             'fields'    => [
                 'field' => [
-                    'type' => GraphQLString(),
+                    'type' => String(),
                 ],
             ],
         ]);
 
-        $this->schema = newGraphQLSchema([
-            'query'      => newGraphQLObjectType([
+        $this->schema = newSchema([
+            'query'      => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'getObject' => [

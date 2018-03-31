@@ -149,13 +149,13 @@ abstract class ExecutionStrategy
 
         $contextVariables = $this->context->getVariableValues();
 
-        $skip = coerceDirectiveValues(GraphQLSkipDirective(), $node, $contextVariables);
+        $skip = coerceDirectiveValues(SkipDirective(), $node, $contextVariables);
 
         if ($skip && $skip['if'] === true) {
             return false;
         }
 
-        $include = coerceDirectiveValues(GraphQLIncludeDirective(), $node, $contextVariables);
+        $include = coerceDirectiveValues(IncludeDirective(), $node, $contextVariables);
 
         if ($include && $include['if'] === false) {
             return false;

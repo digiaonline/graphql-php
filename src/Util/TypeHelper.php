@@ -12,8 +12,8 @@ use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newNonNull;
 use Digia\GraphQL\Schema\SchemaInterface;
 
 class TypeHelper
@@ -165,12 +165,12 @@ class TypeHelper
 
         if ($typeNode instanceof ListTypeNode) {
             $innerType = $this->fromAST($schema, $typeNode->getType());
-            return null !== $innerType ? newGraphQLList($innerType) : null;
+            return null !== $innerType ? newList($innerType) : null;
         }
 
         if ($typeNode instanceof NonNullTypeNode) {
             $innerType = $this->fromAST($schema, $typeNode->getType());
-            return null !== $innerType ? newGraphQLNonNull($innerType) : null;
+            return null !== $innerType ? newNonNull($innerType) : null;
         }
 
         if ($typeNode instanceof NamedTypeNode) {

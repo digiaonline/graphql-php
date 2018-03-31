@@ -11,14 +11,14 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
 use function Digia\GraphQL\Type\assertScalarType;
 use function Digia\GraphQL\Type\assertType;
-use function Digia\GraphQL\Type\newGraphQLEnumType;
-use function Digia\GraphQL\Type\newGraphQLInputObjectType;
-use function Digia\GraphQL\Type\newGraphQLInterfaceType;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLScalarType;
-use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Type\newGraphQLUnionType;
+use function Digia\GraphQL\Type\newEnumType;
+use function Digia\GraphQL\Type\newInputObjectType;
+use function Digia\GraphQL\Type\newInterfaceType;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newScalarType;
+use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\newUnionType;
 
 class PredicateTest extends TestCase
 {
@@ -55,12 +55,12 @@ class PredicateTest extends TestCase
 
     public function setUp()
     {
-        $this->objectType      = newGraphQLObjectType(['name' => 'Object']);
-        $this->interfaceType   = newGraphQLInterfaceType(['name' => 'Interface']);
-        $this->unionType       = newGraphQLUnionType(['name' => 'Union', 'types' => [$this->objectType]]);
-        $this->enumType        = newGraphQLEnumType(['name' => 'Enum', 'values' => ['foo' => []]]);
-        $this->inputObjectType = newGraphQLInputObjectType(['name' => 'InputObject']);
-        $this->scalarType      = newGraphQLScalarType([
+        $this->objectType      = newObjectType(['name' => 'Object']);
+        $this->interfaceType   = newInterfaceType(['name' => 'Interface']);
+        $this->unionType       = newUnionType(['name' => 'Union', 'types' => [$this->objectType]]);
+        $this->enumType        = newEnumType(['name' => 'Enum', 'values' => ['foo' => []]]);
+        $this->inputObjectType = newInputObjectType(['name' => 'InputObject']);
+        $this->scalarType      = newScalarType([
             'name'         => 'Scalar',
             'serialize'    => function () {
             },
@@ -73,7 +73,7 @@ class PredicateTest extends TestCase
 
     public function testAssertType()
     {
-        assertType(GraphQLString());
+        assertType(String());
         assertType($this->objectType);
 
         $this->addToAssertionCount(2);
@@ -81,7 +81,7 @@ class PredicateTest extends TestCase
 
     public function testAssertScalarTypeWithValidTypes()
     {
-        assertScalarType(GraphQLString());
+        assertScalarType(String());
         assertScalarType($this->scalarType);
 
         $this->addToAssertionCount(2);
@@ -92,7 +92,7 @@ class PredicateTest extends TestCase
      */
     public function testAssertScalarTypeWithInvalidTypes()
     {
-        assertScalarType(newGraphQLList($this->scalarType));
+        assertScalarType(newList($this->scalarType));
         assertScalarType($this->enumType);
     }
 }

@@ -9,33 +9,33 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Schema\SchemaInterface;
-use function Digia\GraphQL\Type\GraphQLBoolean;
-use function Digia\GraphQL\Type\newGraphQLDirective;
-use function Digia\GraphQL\Type\newGraphQLEnumType;
-use function Digia\GraphQL\Type\GraphQLFloat;
-use function Digia\GraphQL\Type\GraphQLID;
-use function Digia\GraphQL\Type\newGraphQLInputObjectType;
-use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\newGraphQLInterfaceType;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLScalarType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Type\newGraphQLUnionType;
+use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\newDirective;
+use function Digia\GraphQL\Type\newEnumType;
+use function Digia\GraphQL\Type\Float;
+use function Digia\GraphQL\Type\ID;
+use function Digia\GraphQL\Type\newInputObjectType;
+use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\newInterfaceType;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newNonNull;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newScalarType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\newUnionType;
 
 function Being(): InterfaceType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLInterfaceType([
+        $instance = newInterfaceType([
             'name'   => 'Being',
             'fields' => function () {
                 return [
                     'name' => [
-                        'type' => GraphQLString(),
-                        'args' => ['surname' => ['type' => GraphQLBoolean()]],
+                        'type' => String(),
+                        'args' => ['surname' => ['type' => Boolean()]],
                     ],
                 ];
             },
@@ -46,13 +46,13 @@ function Pet(): InterfaceType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLInterfaceType([
+        $instance = newInterfaceType([
             'name'   => 'Pet',
             'fields' => function () {
                 return [
                     'name' => [
-                        'type' => GraphQLString(),
-                        'args' => ['surname' => ['type' => GraphQLBoolean()]],
+                        'type' => String(),
+                        'args' => ['surname' => ['type' => Boolean()]],
                     ],
                 ];
             },
@@ -63,13 +63,13 @@ function Canine(): InterfaceType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLInterfaceType([
+        $instance = newInterfaceType([
             'name'   => 'Canine',
             'fields' => function () {
                 return [
                     'name' => [
-                        'type' => GraphQLString(),
-                        'args' => ['surname' => ['type' => GraphQLBoolean()]],
+                        'type' => String(),
+                        'args' => ['surname' => ['type' => Boolean()]],
                     ],
                 ];
             },
@@ -80,7 +80,7 @@ function DogCommand(): EnumType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLEnumType([
+        $instance = newEnumType([
             'name'   => 'DogCommand',
             'values' => [
                 'SIT'  => ['value' => 0],
@@ -94,35 +94,35 @@ function Dog(): ObjectType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLObjectType([
+        $instance = newObjectType([
             'name'       => 'Dog',
             'fields'     => function () {
                 return [
                     'name'            => [
-                        'type' => GraphQLString(),
-                        'args' => ['surname' => ['type' => GraphQLBoolean()]],
+                        'type' => String(),
+                        'args' => ['surname' => ['type' => Boolean()]],
                     ],
-                    'nickname'        => ['type' => GraphQLString()],
-                    'barkVolume'      => ['type' => GraphQLInt()],
-                    'barks'           => ['type' => GraphQLBoolean()],
+                    'nickname'        => ['type' => String()],
+                    'barkVolume'      => ['type' => Int()],
+                    'barks'           => ['type' => Boolean()],
                     'doesKnowCommand' => [
-                        'type' => GraphQLBoolean(),
+                        'type' => Boolean(),
                         'args' => [
                             'dogCommand' => ['type' => DogCommand()],
                         ],
                     ],
                     'isHouseTrained'  => [
-                        'type' => GraphQLBoolean(),
+                        'type' => Boolean(),
                         'args' => [
                             'atOtherHomes' => [
-                                'type'         => GraphQLBoolean(),
+                                'type'         => Boolean(),
                                 'defaultValue' => true,
                             ],
                         ],
                     ],
                     'isAtLocation'    => [
-                        'type' => GraphQLBoolean(),
-                        'args' => ['x' => ['type' => GraphQLInt()], 'y' => ['type' => GraphQLInt()]],
+                        'type' => Boolean(),
+                        'args' => ['x' => ['type' => Int()], 'y' => ['type' => Int()]],
                     ],
                 ];
             },
@@ -134,17 +134,17 @@ function Cat(): ObjectType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLObjectType([
+        $instance = newObjectType([
             'name'       => 'Cat',
             'fields'     => function () {
                 return [
                     'name'       => [
-                        'type' => GraphQLString(),
-                        'args' => ['surname' => ['type' => GraphQLBoolean()]],
+                        'type' => String(),
+                        'args' => ['surname' => ['type' => Boolean()]],
                     ],
-                    'nickname'   => ['type' => GraphQLString()],
-                    'meows'      => ['type' => GraphQLBoolean()],
-                    'meowVolume' => ['type' => GraphQLInt()],
+                    'nickname'   => ['type' => String()],
+                    'meows'      => ['type' => Boolean()],
+                    'meowVolume' => ['type' => Int()],
                     'furColor'   => ['type' => FurColor()],
                 ];
             },
@@ -156,7 +156,7 @@ function CatOrDog(): UnionType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLUnionType([
+        $instance = newUnionType([
             'name'  => 'CatOrDog',
             'types' => [Cat(), Dog()],
         ]);
@@ -166,10 +166,10 @@ function Intelligent(): InterfaceType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLInterfaceType([
+        $instance = newInterfaceType([
             'name'   => 'Intelligent',
             'fields' => [
-                'iq' => ['type' => GraphQLInt()],
+                'iq' => ['type' => Int()],
             ],
         ]);
 }
@@ -178,18 +178,18 @@ function Human(): ObjectType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLObjectType([
+        $instance = newObjectType([
             'name'       => 'Human',
             'interfaces' => [Being(), Intelligent()],
             'fields'     => function () {
                 return [
                     'name'      => [
-                        'type' => GraphQLString(),
-                        'args' => ['surname' => ['type' => GraphQLBoolean()]],
+                        'type' => String(),
+                        'args' => ['surname' => ['type' => Boolean()]],
                     ],
-                    'pets'      => ['type' => newGraphQLList(Pet())],
-                    'relatives' => ['type' => newGraphQLList(Human())],
-                    'iq'        => ['type' => GraphQLInt()],
+                    'pets'      => ['type' => newList(Pet())],
+                    'relatives' => ['type' => newList(Human())],
+                    'iq'        => ['type' => Int()],
                 ];
             },
         ]);
@@ -199,17 +199,17 @@ function Alien(): ObjectType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLObjectType([
+        $instance = newObjectType([
             'name'       => 'Alien',
             'interfaces' => [Being(), Intelligent()],
             'fields'     => function () {
                 return [
-                    'iq'      => ['type' => GraphQLInt()],
+                    'iq'      => ['type' => Int()],
                     'name'    => [
-                        'type' => GraphQLString(),
-                        'args' => ['surname' => ['type' => GraphQLBoolean()]],
+                        'type' => String(),
+                        'args' => ['surname' => ['type' => Boolean()]],
                     ],
-                    'numEyes' => ['type' => GraphQLInt()],
+                    'numEyes' => ['type' => Int()],
                 ];
             },
         ]);
@@ -219,7 +219,7 @@ function DogOrHuman(): UnionType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLUnionType([
+        $instance = newUnionType([
             'name'  => 'DogOrHuman',
             'types' => [Dog(), Human()],
         ]);
@@ -229,7 +229,7 @@ function HumanOrAlien(): UnionType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLUnionType([
+        $instance = newUnionType([
             'name'  => 'HumanOrAlien',
             'types' => [Human(), Alien()],
         ]);
@@ -239,7 +239,7 @@ function FurColor(): EnumType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLEnumType([
+        $instance = newEnumType([
             'name'   => 'FurColor',
             'values' => [
                 'BROWN'   => ['value' => 0],
@@ -256,14 +256,14 @@ function ComplexInput(): InputObjectType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLInputObjectType([
+        $instance = newInputObjectType([
             'name'   => 'ComplexInput',
             'fields' => [
-                'requiredField'   => ['type' => newGraphQLNonNull(GraphQLBoolean())],
-                'intField'        => ['type' => GraphQLInt()],
-                'stringField'     => ['type' => GraphQLString()],
-                'booleanField'    => ['type' => GraphQLBoolean()],
-                'stringListField' => ['type' => newGraphQLList(GraphQLString())],
+                'requiredField'   => ['type' => newNonNull(Boolean())],
+                'intField'        => ['type' => Int()],
+                'stringField'     => ['type' => String()],
+                'booleanField'    => ['type' => Boolean()],
+                'stringListField' => ['type' => newList(String())],
             ],
         ]);
 }
@@ -272,7 +272,7 @@ function ComplicatedArgs(): ObjectType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLObjectType([
+        $instance = newObjectType([
             'name'   => 'ComplicatedArgs',
             // TODO List
             // TODO Coercion
@@ -280,66 +280,66 @@ function ComplicatedArgs(): ObjectType
             'fields' => function () {
                 return [
                     'intArgField'               => [
-                        'type' => GraphQLString(),
-                        'args' => ['intArg' => ['type' => GraphQLInt()]],
+                        'type' => String(),
+                        'args' => ['intArg' => ['type' => Int()]],
                     ],
                     'nonNullIntArgField'        => [
-                        'type' => GraphQLString(),
-                        'args' => ['nonNullIntArg' => ['type' => newGraphQLNonNull(GraphQLInt())]],
+                        'type' => String(),
+                        'args' => ['nonNullIntArg' => ['type' => newNonNull(Int())]],
                     ],
                     'stringArgField'            => [
-                        'type' => GraphQLString(),
-                        'args' => ['stringArg' => ['type' => GraphQLString()]],
+                        'type' => String(),
+                        'args' => ['stringArg' => ['type' => String()]],
                     ],
                     'booleanArgField'           => [
-                        'type' => GraphQLString(),
-                        'args' => ['booleanArg' => ['type' => GraphQLBoolean()]],
+                        'type' => String(),
+                        'args' => ['booleanArg' => ['type' => Boolean()]],
                     ],
                     'enumArgField'              => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                         'args' => ['enumArg' => ['type' => FurColor()]],
                     ],
                     'floatArgField'             => [
-                        'type' => GraphQLString(),
-                        'args' => ['floatArg' => ['type' => GraphQLFloat()]],
+                        'type' => String(),
+                        'args' => ['floatArg' => ['type' => Float()]],
                     ],
                     'idArgField'                => [
-                        'type' => GraphQLString(),
-                        'args' => ['idArg' => ['type' => GraphQLID()]],
+                        'type' => String(),
+                        'args' => ['idArg' => ['type' => ID()]],
                     ],
                     'stringListArgField'        => [
-                        'type' => GraphQLString(),
-                        'args' => ['stringListArg' => ['type' => newGraphQLList(GraphQLString())]],
+                        'type' => String(),
+                        'args' => ['stringListArg' => ['type' => newList(String())]],
                     ],
                     'stringListNonNullArgField' => [
-                        'type' => GraphQLString(),
-                        'args' => ['stringListNonNullArg' => ['type' => newGraphQLList(newGraphQLNonNull(GraphQLString()))]],
+                        'type' => String(),
+                        'args' => ['stringListNonNullArg' => ['type' => newList(newNonNull(String()))]],
                     ],
                     'complexArgField'           => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                         'args' => ['complexArg' => ['type' => ComplexInput()]],
                     ],
                     'multipleReqs'              => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                         'args' => [
-                            'req1' => ['type' => newGraphQLNonNull(GraphQLInt())],
-                            'req2' => ['type' => newGraphQLNonNull(GraphQLInt())],
+                            'req1' => ['type' => newNonNull(Int())],
+                            'req2' => ['type' => newNonNull(Int())],
                         ],
                     ],
                     'multipleOpts'              => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                         'args' => [
-                            'opt1' => ['type' => GraphQLInt(), 'defaultValue' => 0],
-                            'opt2' => ['type' => GraphQLInt(), 'defaultValue' => 0],
+                            'opt1' => ['type' => Int(), 'defaultValue' => 0],
+                            'opt2' => ['type' => Int(), 'defaultValue' => 0],
                         ],
                     ],
                     'multipleOptsAndReq'        => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                         'args' => [
-                            'req1' => ['type' => newGraphQLNonNull(GraphQLInt())],
-                            'req2' => ['type' => newGraphQLNonNull(GraphQLInt())],
-                            'opt1' => ['type' => GraphQLInt(), 'defaultValue' => 0],
-                            'opt2' => ['type' => GraphQLInt(), 'defaultValue' => 0],
+                            'req1' => ['type' => newNonNull(Int())],
+                            'req2' => ['type' => newNonNull(Int())],
+                            'opt1' => ['type' => Int(), 'defaultValue' => 0],
+                            'opt2' => ['type' => Int(), 'defaultValue' => 0],
                         ],
                     ],
                 ];
@@ -351,7 +351,7 @@ function InvalidScalar(): ScalarType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLScalarType([
+        $instance = newScalarType([
             'name'         => 'Invalid',
             'serialize'    => function ($value) {
                 return $value;
@@ -369,7 +369,7 @@ function AnyScalar(): ScalarType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLScalarType([
+        $instance = newScalarType([
             'name'         => 'Any',
             'serialize'    => function ($value) {
                 return $value;
@@ -387,12 +387,12 @@ function QueryRoot(): ObjectType
 {
     static $instance = null;
     return $instance ??
-        $instance = newGraphQLObjectType([
+        $instance = newObjectType([
             'name'   => 'QueryRoot',
             'fields' => function () {
                 return [
                     'human'           => [
-                        'args' => ['id' => ['type' => GraphQLID()]],
+                        'args' => ['id' => ['type' => ID()]],
                         'type' => Human(),
                     ],
                     'alien'           => ['type' => Alien()],
@@ -405,11 +405,11 @@ function QueryRoot(): ObjectType
                     'complicatedArgs' => ['type' => ComplicatedArgs()],
                     'invalidArg'      => [
                         'args' => ['arg' => ['type' => InvalidScalar()]],
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ],
                     'anyArg'          => [
                         'args' => ['arg' => ['type' => AnyScalar()]],
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ],
                 ];
             },
@@ -421,81 +421,81 @@ function QueryRoot(): ObjectType
  */
 function testSchema(): SchemaInterface
 {
-    return newGraphQLSchema([
+    return newSchema([
         'query'      => QueryRoot(),
         'types'      => [Cat(), Dog(), Human(), Alien()],
         'directives' => [
-            GraphQLIncludeDirective(),
-            GraphQLSkipDirective(),
-            newGraphQLDirective([
+            IncludeDirective(),
+            SkipDirective(),
+            newDirective([
                 'name'      => 'onQuery',
                 'locations' => ['QUERY'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onMutation',
                 'locations' => ['MUTATION'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onSubscription',
                 'locations' => ['SUBSCRIPTION'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onField',
                 'locations' => ['FIELD'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onFragmentDefinition',
                 'locations' => ['FRAGMENT_DEFINITION'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onFragmentSpread',
                 'locations' => ['FRAGMENT_SPREAD'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onInlineFragment',
                 'locations' => ['INLINE_FRAGMENT'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onSchema',
                 'locations' => ['SCHEMA'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onScalar',
                 'locations' => ['SCALAR'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onObject',
                 'locations' => ['OBJECT'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onFieldDefinition',
                 'locations' => ['FIELD_DEFINITION'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onArgumentDefinition',
                 'locations' => ['ARGUMENT_DEFINITION'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onInterface',
                 'locations' => ['INTERFACE'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onUnion',
                 'locations' => ['UNION'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onEnum',
                 'locations' => ['ENUM'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onEnumValue',
                 'locations' => ['ENUM_VALUE'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onInputObject',
                 'locations' => ['INPUT_OBJECT'],
             ]),
-            newGraphQLDirective([
+            newDirective([
                 'name'      => 'onInputFieldDefinition',
                 'locations' => ['INPUT_FIELD_DEFINITION'],
             ]),

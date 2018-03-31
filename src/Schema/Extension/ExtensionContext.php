@@ -29,11 +29,11 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Schema\SchemaInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use function Digia\GraphQL\Type\newGraphQLInterfaceType;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLUnionType;
+use function Digia\GraphQL\Type\newInterfaceType;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newNonNull;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newUnionType;
 use function Digia\GraphQL\Type\isIntrospectionType;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\keyMap;
@@ -400,7 +400,7 @@ class ExtensionContext implements ExtensionContextInterface
                 : $this->typeExtensionsMap[$typeName];
         }
 
-        return newGraphQLObjectType([
+        return newObjectType([
             'name'              => $typeName,
             'description'       => $type->getDescription(),
             'interfaces'        => function () use ($type) {
@@ -430,7 +430,7 @@ class ExtensionContext implements ExtensionContextInterface
                 : $this->typeExtensionsMap[$typeName];
         }
 
-        return newGraphQLInterfaceType([
+        return newInterfaceType([
             'name'              => $typeName,
             'description'       => $type->getDescription(),
             'fields'            => function () use ($type) {
@@ -449,7 +449,7 @@ class ExtensionContext implements ExtensionContextInterface
      */
     protected function extendUnionType(UnionType $type): UnionType
     {
-        return newGraphQLUnionType([
+        return newUnionType([
             'name'        => $type->getName(),
             'description' => $type->getDescription(),
             'types'       => \array_map(function ($unionType) {
@@ -555,11 +555,11 @@ class ExtensionContext implements ExtensionContextInterface
     protected function extendFieldType(TypeInterface $typeDefinition): TypeInterface
     {
         if ($typeDefinition instanceof ListType) {
-            return newGraphQLList($this->extendFieldType($typeDefinition->getOfType()));
+            return newList($this->extendFieldType($typeDefinition->getOfType()));
         }
 
         if ($typeDefinition instanceof NonNullType) {
-            return newGraphQLNonNull($this->extendFieldType($typeDefinition->getOfType()));
+            return newNonNull($this->extendFieldType($typeDefinition->getOfType()));
         }
 
         return $this->getExtendedType($typeDefinition);

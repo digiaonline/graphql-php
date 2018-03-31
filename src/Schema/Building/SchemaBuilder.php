@@ -7,7 +7,7 @@ use Digia\GraphQL\Schema\Building\BuilderContextCreatorInterface;
 use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
 use Digia\GraphQL\Schema\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
-use function Digia\GraphQL\Type\newGraphQLSchema;
+use function Digia\GraphQL\Type\newSchema;
 
 class SchemaBuilder implements SchemaBuilderInterface
 {
@@ -35,7 +35,7 @@ class SchemaBuilder implements SchemaBuilderInterface
     ): SchemaInterface {
         $context = $this->contextCreator->create($document, $resolverRegistry);
 
-        return newGraphQLSchema([
+        return newSchema([
             'query'        => $context->buildQueryType(),
             'mutation'     => $context->buildMutationType(),
             'subscription' => $context->buildSubscriptionType(),

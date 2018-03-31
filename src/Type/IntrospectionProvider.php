@@ -58,7 +58,7 @@ class IntrospectionProvider extends AbstractServiceProvider
     protected function registerIntrospectionTypes()
     {
         $this->container->add(GraphQL::SCHEMA_INTROSPECTION, function () {
-            return newGraphQLObjectType([
+            return newObjectType([
                 'name'            => GraphQL::SCHEMA_INTROSPECTION,
                 'isIntrospection' => true,
                 'description'     =>
@@ -69,14 +69,14 @@ class IntrospectionProvider extends AbstractServiceProvider
                     return [
                         'types'            => [
                             'description' => 'A list of all types supported by this server.',
-                            'type'        => newGraphQLNonNull(newGraphQLList(newGraphQLNonNull(__Type()))),
+                            'type'        => newNonNull(newList(newNonNull(__Type()))),
                             'resolve'     => function (SchemaInterface $schema): array {
                                 return array_values($schema->getTypeMap());
                             },
                         ],
                         'queryType'        => [
                             'description' => 'The type that query operations will be rooted at.',
-                            'type'        => newGraphQLNonNull(__Type()),
+                            'type'        => newNonNull(__Type()),
                             'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
                                 return $schema->getQueryType();
                             },
@@ -101,7 +101,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                         ],
                         'directives'       => [
                             'description' => 'A list of all directives supported by this server.',
-                            'type'        => newGraphQLNonNull(newGraphQLList(newGraphQLNonNull(__Directive()))),
+                            'type'        => newNonNull(newList(newNonNull(__Directive()))),
                             'resolve'     => function (SchemaInterface $schema): array {
                                 return $schema->getDirectives();
                             },
@@ -112,7 +112,7 @@ class IntrospectionProvider extends AbstractServiceProvider
         }, true/* $shared */);
 
         $this->container->add(GraphQL::DIRECTIVE_INTROSPECTION, function () {
-            return newGraphQLObjectType([
+            return newObjectType([
                 'name'            => GraphQL::DIRECTIVE_INTROSPECTION,
                 'isIntrospection' => true,
                 'description'     =>
@@ -124,13 +124,13 @@ class IntrospectionProvider extends AbstractServiceProvider
                     'describing additional information to the executor.',
                 'fields'          => function () {
                     return [
-                        'name'        => ['type' => newGraphQLNonNull(GraphQLString())],
-                        'description' => ['type' => GraphQLString()],
+                        'name'        => ['type' => newNonNull(String())],
+                        'description' => ['type' => String()],
                         'locations'   => [
-                            'type' => newGraphQLNonNull(newGraphQLList(newGraphQLNonNull(__DirectiveLocation()))),
+                            'type' => newNonNull(newList(newNonNull(__DirectiveLocation()))),
                         ],
                         'args'        => [
-                            'type'    => newGraphQLNonNull(newGraphQLList(newGraphQLNonNull(__InputValue()))),
+                            'type'    => newNonNull(newList(newNonNull(__InputValue()))),
                             'resolve' => function (DirectiveInterface $directive): array {
                                 return $directive->getArguments() ?: [];
                             },
@@ -141,7 +141,7 @@ class IntrospectionProvider extends AbstractServiceProvider
         }, true/* $shared */);
 
         $this->container->add(GraphQL::DIRECTIVE_LOCATION_INTROSPECTION, function () {
-            return newGraphQLEnumType([
+            return newEnumType([
                 'name'            => GraphQL::DIRECTIVE_LOCATION_INTROSPECTION,
                 'isIntrospection' => true,
                 'description'     =>
@@ -207,7 +207,7 @@ class IntrospectionProvider extends AbstractServiceProvider
         }, true/* $shared */);
 
         $this->container->add(GraphQL::TYPE_INTROSPECTION, function () {
-            return newGraphQLObjectType([
+            return newObjectType([
                 'name'            => GraphQL::TYPE_INTROSPECTION,
                 'isIntrospection' => true,
                 'description'     =>
@@ -222,7 +222,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                 'fields'          => function () {
                     return [
                         'kind'          => [
-                            'type'    => newGraphQLNonNull(__TypeKind()),
+                            'type'    => newNonNull(__TypeKind()),
                             'resolve' => function (TypeInterface $type) {
                                 if ($type instanceof ScalarType) {
                                     return TypeKindEnum::SCALAR;
@@ -252,12 +252,12 @@ class IntrospectionProvider extends AbstractServiceProvider
                                 throw new InvalidTypeException(sprintf('Unknown kind of type: %s', $type));
                             },
                         ],
-                        'name'          => ['type' => GraphQLString()],
-                        'description'   => ['type' => GraphQLString()],
+                        'name'          => ['type' => String()],
+                        'description'   => ['type' => String()],
                         'fields'        => [
-                            'type'    => newGraphQLList(newGraphQLNonNull(__Field())),
+                            'type'    => newList(newNonNull(__Field())),
                             'args'    => [
-                                'includeDeprecated' => ['type' => GraphQLBoolean(), 'defaultValue' => false],
+                                'includeDeprecated' => ['type' => Boolean(), 'defaultValue' => false],
                             ],
                             'resolve' => function (TypeInterface $type, array $args):
                             ?array {
@@ -279,13 +279,13 @@ class IntrospectionProvider extends AbstractServiceProvider
                             },
                         ],
                         'interfaces'    => [
-                            'type'    => newGraphQLList(newGraphQLNonNull(__Type())),
+                            'type'    => newList(newNonNull(__Type())),
                             'resolve' => function (TypeInterface $type): ?array {
                                 return $type instanceof ObjectType ? $type->getInterfaces() : null;
                             },
                         ],
                         'possibleTypes' => [
-                            'type'    => newGraphQLList(newGraphQLNonNull(__Type())),
+                            'type'    => newList(newNonNull(__Type())),
                             'resolve' => function (
                                 TypeInterface $type,
                                 array $args,
@@ -300,9 +300,9 @@ class IntrospectionProvider extends AbstractServiceProvider
                             },
                         ],
                         'enumValues'    => [
-                            'type'    => newGraphQLList(newGraphQLNonNull(__EnumValue())),
+                            'type'    => newList(newNonNull(__EnumValue())),
                             'args'    => [
-                                'includeDeprecated' => ['type' => GraphQLBoolean(), 'defaultValue' => false],
+                                'includeDeprecated' => ['type' => Boolean(), 'defaultValue' => false],
                             ],
                             'resolve' => function (TypeInterface $type, array $args): ?array {
                                 [$includeDeprecated] = $args;
@@ -323,7 +323,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                             },
                         ],
                         'inputFields'   => [
-                            'type'    => newGraphQLList(newGraphQLNonNull(__InputValue())),
+                            'type'    => newList(newNonNull(__InputValue())),
                             'resolve' => function (TypeInterface $type): ?array {
                                 return $type instanceof InputObjectType ? $type->getFields() : null;
                             },
@@ -335,7 +335,7 @@ class IntrospectionProvider extends AbstractServiceProvider
         }, true/* $shared */);
 
         $this->container->add(GraphQL::FIELD_INTROSPECTION, function () {
-            return newGraphQLObjectType([
+            return newObjectType([
                 'name'            => GraphQL::FIELD_INTROSPECTION,
                 'isIntrospection' => true,
                 'description'     =>
@@ -343,24 +343,24 @@ class IntrospectionProvider extends AbstractServiceProvider
                     'which has a name, potentially a list of arguments, and a return type.',
                 'fields'          => function () {
                     return [
-                        'name'              => ['type' => newGraphQLNonNull(GraphQLString())],
-                        'description'       => ['type' => GraphQLString()],
+                        'name'              => ['type' => newNonNull(String())],
+                        'description'       => ['type' => String()],
                         'args'              => [
-                            'type'    => newGraphQLNonNull(newGraphQLList(newGraphQLNonNull(__InputValue()))),
+                            'type'    => newNonNull(newList(newNonNull(__InputValue()))),
                             'resolve' => function (ArgumentsAwareInterface $directive): array {
                                 return $directive->getArguments() ?? [];
                             },
                         ],
-                        'type'              => ['type' => newGraphQLNonNull(__Type())],
-                        'isDeprecated'      => ['type' => newGraphQLNonNull(GraphQLBoolean())],
-                        'deprecationReason' => ['type' => GraphQLString()],
+                        'type'              => ['type' => newNonNull(__Type())],
+                        'isDeprecated'      => ['type' => newNonNull(Boolean())],
+                        'deprecationReason' => ['type' => String()],
                     ];
                 }
             ]);
         }, true/* $shared */);
 
         $this->container->add(GraphQL::INPUT_VALUE_INTROSPECTION, function () {
-            return newGraphQLObjectType([
+            return newObjectType([
                 'name'            => GraphQL::INPUT_VALUE_INTROSPECTION,
                 'isIntrospection' => true,
                 'description'     =>
@@ -369,11 +369,11 @@ class IntrospectionProvider extends AbstractServiceProvider
                     'and optionally a default value.',
                 'fields'          => function () {
                     return [
-                        'name'         => ['type' => newGraphQLNonNull(GraphQLString())],
-                        'description'  => ['type' => GraphQLString()],
-                        'type'         => ['type' => newGraphQLNonNull(__Type())],
+                        'name'         => ['type' => newNonNull(String())],
+                        'description'  => ['type' => String()],
+                        'type'         => ['type' => newNonNull(__Type())],
                         'defaultValue' => [
-                            'type'        => GraphQLString(),
+                            'type'        => String(),
                             'description' =>
                                 'A GraphQL-formatted string representing the default value for this ' .
                                 'input value.',
@@ -388,7 +388,7 @@ class IntrospectionProvider extends AbstractServiceProvider
         }, true/* $shared */);
 
         $this->container->add(GraphQL::ENUM_VALUE_INTROSPECTION, function () {
-            return newGraphQLObjectType([
+            return newObjectType([
                 'name'            => GraphQL::ENUM_VALUE_INTROSPECTION,
                 'isIntrospection' => true,
                 'description'     =>
@@ -397,17 +397,17 @@ class IntrospectionProvider extends AbstractServiceProvider
                     'returned in a JSON response as a string.',
                 'fields'          => function () {
                     return [
-                        'name'              => ['type' => newGraphQLNonNull(GraphQLString())],
-                        'description'       => ['type' => GraphQLString()],
-                        'isDeprecated'      => ['type' => newGraphQLNonNull(GraphQLBoolean())],
-                        'deprecationReason' => ['type' => GraphQLString()],
+                        'name'              => ['type' => newNonNull(String())],
+                        'description'       => ['type' => String()],
+                        'isDeprecated'      => ['type' => newNonNull(Boolean())],
+                        'deprecationReason' => ['type' => String()],
                     ];
                 }
             ]);
         }, true/* $shared */);
 
         $this->container->add(GraphQL::TYPE_KIND_INTROSPECTION, function () {
-            return newGraphQLEnumType([
+            return newEnumType([
                 'name'            => GraphQL::TYPE_KIND_INTROSPECTION,
                 'isIntrospection' => true,
                 'description'     => 'An enum describing what kind of type a given `__Type` is.',
@@ -449,7 +449,7 @@ class IntrospectionProvider extends AbstractServiceProvider
         $this->container->add(GraphQL::SCHEMA_META_FIELD_DEFINITION, function ($__Schema) {
             return new Field([
                 'name'        => '__schema',
-                'type'        => newGraphQLNonNull($__Schema),
+                'type'        => newNonNull($__Schema),
                 'description' => 'Access the current type schema of this server.',
                 'resolve'     => function ($source, $args, $context, ResolveInfo $info): SchemaInterface {
                     return $info->getSchema();
@@ -464,7 +464,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                 'type'        => $__Type,
                 'description' => 'Request the type information of a single type.',
                 'args'        => [
-                    'name' => ['type' => newGraphQLNonNull(GraphQLString())],
+                    'name' => ['type' => newNonNull(String())],
                 ],
                 'resolve'     => function ($source, $args, $context, ResolveInfo $info): TypeInterface {
                     ['name' => $name] = $args;
@@ -478,7 +478,7 @@ class IntrospectionProvider extends AbstractServiceProvider
         $this->container->add(GraphQL::TYPE_NAME_META_FIELD_DEFINITION, function () {
             return new Field([
                 'name'        => '__typename',
-                'type'        => newGraphQLNonNull(GraphQLString()),
+                'type'        => newNonNull(String()),
                 'description' => 'The name of the current Object type at runtime.',
                 'resolve'     => function ($source, $args, $context, ResolveInfo $info): string {
                     $parentType = $info->getParentType();

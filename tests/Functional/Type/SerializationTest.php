@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Test\Functional\Type;
 
 use Digia\GraphQL\Test\TestCase;
-use function Digia\GraphQL\Type\GraphQLBoolean;
-use function Digia\GraphQL\Type\GraphQLFloat;
-use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\Float;
+use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\String;
 
 class SerializationTest extends TestCase
 {
@@ -18,7 +18,7 @@ class SerializationTest extends TestCase
      */
     public function testValuesIntCanRepresent($value, $answer)
     {
-        $this->assertEquals($answer, GraphQLInt()->serialize($value));
+        $this->assertEquals($answer, Int()->serialize($value));
     }
 
     /**
@@ -42,7 +42,7 @@ class SerializationTest extends TestCase
      */
     public function testValuesIntCannotRepresent($value)
     {
-        GraphQLInt()->serialize($value);
+        Int()->serialize($value);
         $this->addToAssertionCount(1);
     }
 
@@ -66,8 +66,8 @@ class SerializationTest extends TestCase
 
     public function testSerializeBooleanToInt()
     {
-        $this->assertEquals(0, GraphQLInt()->serialize(false));
-        $this->assertEquals(1, GraphQLInt()->serialize(true));
+        $this->assertEquals(0, Int()->serialize(false));
+        $this->assertEquals(1, Int()->serialize(true));
     }
 
     /**
@@ -75,7 +75,7 @@ class SerializationTest extends TestCase
      */
     public function testSerializeEmptyStringToInt()
     {
-        GraphQLInt()->serialize('');
+        Int()->serialize('');
         $this->addToAssertionCount(1);
     }
 
@@ -86,7 +86,7 @@ class SerializationTest extends TestCase
      */
     public function testValuesFloatCanRepresent($value, $answer)
     {
-        $this->assertEquals($answer, GraphQLFloat()->serialize($value));
+        $this->assertEquals($answer, Float()->serialize($value));
     }
 
     /**
@@ -115,7 +115,7 @@ class SerializationTest extends TestCase
      */
     public function testValuesFloatCannotRepresent($value)
     {
-        GraphQLFloat()->serialize($value);
+        Float()->serialize($value);
         $this->addToAssertionCount(1);
     }
 
@@ -134,7 +134,7 @@ class SerializationTest extends TestCase
      */
     public function testValuesStringCanRepresent($value, $answer)
     {
-        $this->assertEquals($answer, GraphQLString()->serialize($value));
+        $this->assertEquals($answer, String()->serialize($value));
     }
 
     /**
@@ -156,7 +156,7 @@ class SerializationTest extends TestCase
      */
     public function testValuesBooleanCanRepresent($value, $answer)
     {
-        $this->assertEquals($answer, GraphQLBoolean()->serialize($value));
+        $this->assertEquals($answer, Boolean()->serialize($value));
     }
 
     /**

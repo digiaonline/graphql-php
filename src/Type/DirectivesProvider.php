@@ -5,10 +5,10 @@ namespace Digia\GraphQL\Type;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use function Digia\GraphQL\Type\GraphQLBoolean;
-use function Digia\GraphQL\Type\newGraphQLDirective;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
-use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\newDirective;
+use function Digia\GraphQL\Type\newNonNull;
+use function Digia\GraphQL\Type\String;
 
 class DirectivesProvider extends AbstractServiceProvider
 {
@@ -27,7 +27,7 @@ class DirectivesProvider extends AbstractServiceProvider
     public function register()
     {
         $this->container->add(GraphQL::INCLUDE_DIRECTIVE, function () {
-            return newGraphQLDirective([
+            return newDirective([
                 'name'        => 'include',
                 'description' =>
                     'Directs the executor to include this field or fragment only when ' .
@@ -39,7 +39,7 @@ class DirectivesProvider extends AbstractServiceProvider
                 ],
                 'args'        => [
                     'if' => [
-                        'type'        => newGraphQLNonNull(GraphQLBoolean()),
+                        'type'        => newNonNull(Boolean()),
                         'description' => 'Included when true.',
                     ],
                 ],
@@ -47,7 +47,7 @@ class DirectivesProvider extends AbstractServiceProvider
         }, true/* $shared */);
 
         $this->container->add(GraphQL::SKIP_DIRECTIVE, function () {
-            return newGraphQLDirective([
+            return newDirective([
                 'name'        => 'skip',
                 'description' =>
                     'Directs the executor to skip this field or fragment when the `if` ' .
@@ -59,7 +59,7 @@ class DirectivesProvider extends AbstractServiceProvider
                 ],
                 'args'        => [
                     'if' => [
-                        'type'        => newGraphQLNonNull(GraphQLBoolean()),
+                        'type'        => newNonNull(Boolean()),
                         'description' => 'Skipped when true.',
                     ],
                 ],
@@ -67,7 +67,7 @@ class DirectivesProvider extends AbstractServiceProvider
         }, true/* $shared */);
 
         $this->container->add(GraphQL::DEPRECATED_DIRECTIVE, function () {
-            return newGraphQLDirective([
+            return newDirective([
                 'name'        => 'deprecated',
                 'description' => 'Marks an element of a GraphQL schema as no longer supported.',
                 'locations'   => [
@@ -76,7 +76,7 @@ class DirectivesProvider extends AbstractServiceProvider
                 ],
                 'args'        => [
                     'reason' => [
-                        'type'         => GraphQLString(),
+                        'type'         => String(),
                         'description'  =>
                             'Explains why this element was deprecated, usually also including a ' .
                             'suggestion for how to access supported similar data. Formatted ' .

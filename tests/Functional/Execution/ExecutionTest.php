@@ -10,12 +10,12 @@ use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
-use function Digia\GraphQL\Type\GraphQLString;
+use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newNonNull;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\String;
 
 class ExecutionTest extends TestCase
 {
@@ -27,13 +27,13 @@ class ExecutionTest extends TestCase
     {
         $this->expectException(\TypeError::class);
 
-        $schema = newGraphQLSchema([
+        $schema = newSchema([
             'query' =>
                 new ObjectType([
                     'name'   => 'Type',
                     'fields' => [
                         'a' => [
-                            'type' => GraphQLString()
+                            'type' => String()
                         ]
                     ]
                 ])
@@ -66,7 +66,7 @@ class ExecutionTest extends TestCase
                     'name'   => 'Greeting',
                     'fields' => [
                         'a' => [
-                            'type'    => GraphQLString(),
+                            'type'    => String(),
                             'resolve' => function ($source, $args, $context, $info) {
                                 return $source;
                             }
@@ -95,7 +95,7 @@ class ExecutionTest extends TestCase
                     'name'   => 'Greeting',
                     'fields' => [
                         'hello' => [
-                            'type'    => GraphQLString(),
+                            'type'    => String(),
                             'resolve' => function () {
                                 return 'world';
                             }
@@ -121,25 +121,25 @@ class ExecutionTest extends TestCase
             'fields' => function () use (&$dataType) {
                 return [
                     'a'      => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Already Been Done';
                         }
                     ],
                     'b'      => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Boring';
                         }
                     ],
                     'c'      => [
-                        'type'    => newGraphQLList(GraphQLString()),
+                        'type'    => newList(String()),
                         'resolve' => function () {
                             return ['Contrived', null, 'Confusing'];
                         }
                     ],
                     'deeper' => [
-                        'type'    => newGraphQLList($dataType),
+                        'type'    => newList($dataType),
                         'resolve' => function () {
                             return [
                                 [
@@ -164,49 +164,49 @@ class ExecutionTest extends TestCase
             'fields' => function () use (&$dataType, &$deep) {
                 return [
                     'a'       => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Apple';
                         }
                     ],
                     'b'       => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Banana';
                         }
                     ],
                     'c'       => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Cookie';
                         }
                     ],
                     'd'       => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Donut';
                         }
                     ],
                     'e'       => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Egg';
                         }
                     ],
                     'f'       => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Fish';
                         }
                     ],
                     'pic'     => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function ($src, $args) {
                             return 'Pic of size: ' . ($args['size'] ?? 50);
                         },
                         'args'    => [
                             'size' => [
-                                'type' => GraphQLInt(),
+                                'type' => Int(),
                             ]
                         ],
                     ],
@@ -294,19 +294,19 @@ class ExecutionTest extends TestCase
      */
     public function testExecuteQueryHelloWithArgs()
     {
-        $schema = newGraphQLSchema([
+        $schema = newSchema([
             'query' =>
-                newGraphQLObjectType([
+                newObjectType([
                     'name'   => 'Greeting',
                     'fields' => [
                         'greeting' => [
-                            'type'    => GraphQLString(),
+                            'type'    => String(),
                             'resolve' => function ($source, $args, $context, $info) {
                                 return sprintf('Hello %s', $args['name']);
                             },
                             'args'    => [
                                 'name' => [
-                                    'type' => GraphQLString(),
+                                    'type' => String(),
                                 ]
                             ]
                         ]
@@ -334,31 +334,31 @@ class ExecutionTest extends TestCase
                     'name'   => 'Human',
                     'fields' => [
                         'id'         => [
-                            'type'    => GraphQLInt(),
+                            'type'    => Int(),
                             'resolve' => function () {
                                 return 1000;
                             }
                         ],
                         'type'       => [
-                            'type'    => GraphQLString(),
+                            'type'    => String(),
                             'resolve' => function () {
                                 return 'Human';
                             }
                         ],
                         'friends'    => [
-                            'type'    => newGraphQLList(GraphQLString()),
+                            'type'    => newList(String()),
                             'resolve' => function () {
                                 return ['1002', '1003', '2000', '2001'];
                             }
                         ],
                         'appearsIn'  => [
-                            'type'    => newGraphQLList(GraphQLInt()),
+                            'type'    => newList(Int()),
                             'resolve' => function () {
                                 return [4, 5, 6];
                             }
                         ],
                         'homePlanet' => [
-                            'type'    => GraphQLString(),
+                            'type'    => String(),
                             'resolve' => function () {
                                 return 'Tatooine';
                             }
@@ -403,19 +403,19 @@ SRC;
             'fields' => function () use (&$Type) {
                 return [
                     'a'    => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Apple';
                         }
                     ],
                     'b'    => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Banana';
                         }
                     ],
                     'c'    => [
-                        'type'    => GraphQLString(),
+                        'type'    => String(),
                         'resolve' => function () {
                             return 'Cherry';
                         }
@@ -469,7 +469,7 @@ SRC;
                     'name'   => 'Test',
                     'fields' => [
                         'test' => [
-                            'type'    => GraphQLString(),
+                            'type'    => String(),
                             'resolve' => function ($source, $args, $context, $_info) use (&$info) {
                                 $info = $_info;
                             }
@@ -492,7 +492,7 @@ SRC;
             $ast->getDefinitions()[0]->getSelectionSet()->getSelections()[0],
             $info->getFieldNodes()[0]
         );
-        $this->assertEquals(GraphQLString(), $info->getReturnType());
+        $this->assertEquals(String(), $info->getReturnType());
         $this->assertEquals($schema->getQueryType(), $info->getParentType());
         $this->assertEquals(["result"], $info->getPath()); // { prev: undefined, key: 'result' }
         $this->assertEquals($schema, $info->getSchema());
@@ -516,7 +516,7 @@ SRC;
                     'name'   => 'Test',
                     'fields' => [
                         'a' => [
-                            'type'    => GraphQLString(),
+                            'type'    => String(),
                             'resolve' => function ($rootValue) use (&$resolvedRootValue) {
                                 $resolvedRootValue = $rootValue;
                             }
@@ -550,10 +550,10 @@ SRC;
                     'name'   => 'Type',
                     'fields' => [
                         'b' => [
-                            'type'    => GraphQLInt(),
+                            'type'    => Int(),
                             'args'    => [
-                                'numArg'    => ['type' => GraphQLInt()],
-                                'stringArg' => ['type' => GraphQLString()]
+                                'numArg'    => ['type' => Int()],
+                                'stringArg' => ['type' => String()]
                             ],
                             'resolve' => function ($source, $args) use (&$resolvedArgs) {
                                 $resolvedArgs = $args;
@@ -646,18 +646,18 @@ SRC;
                 new ObjectType([
                     'name'   => 'Type',
                     'fields' => [
-                        'sync'                => ['type' => GraphQLString()],
-                        'syncError'           => ['type' => GraphQLString()],
-                        'syncRawError'        => ['type' => GraphQLString()],
-                        'syncReturnError'     => ['type' => GraphQLString()],
-                        'syncReturnErrorList' => ['type' => newGraphQLList(GraphQLString())],
-                        'async'               => ['type' => GraphQLString()],
-                        'asyncReject'         => ['type' => GraphQLString()],
-                        'asyncRawReject'      => ['type' => GraphQLString()],
-                        'asyncEmptyReject'    => ['type' => GraphQLString()],
-                        'asyncError'          => ['type' => GraphQLString()],
-                        'asyncRawError'       => ['type' => GraphQLString()],
-                        'asyncReturnError'    => ['type' => GraphQLString()],
+                        'sync'                => ['type' => String()],
+                        'syncError'           => ['type' => String()],
+                        'syncRawError'        => ['type' => String()],
+                        'syncReturnError'     => ['type' => String()],
+                        'syncReturnErrorList' => ['type' => newList(String())],
+                        'async'               => ['type' => String()],
+                        'asyncReject'         => ['type' => String()],
+                        'asyncRawReject'      => ['type' => String()],
+                        'asyncEmptyReject'    => ['type' => String()],
+                        'asyncError'          => ['type' => String()],
+                        'asyncRawError'       => ['type' => String()],
+                        'asyncReturnError'    => ['type' => String()],
                     ]
                 ])
         ]);
@@ -805,11 +805,11 @@ SRC;
                 'name'   => 'Type',
                 'fields' => [
                     'foods' => [
-                        'type'    => newGraphQLList(newGraphQLObjectType([
+                        'type'    => newList(newObjectType([
                             'name'   => 'Food',
                             'fields' => [
                                 'name' => [
-                                    'type' => GraphQLString()
+                                    'type' => String()
                                 ]
                             ]
                         ])),
@@ -850,7 +850,7 @@ SRC;
      */
     public function testFullResponsePathIsIncludedForNonNullableFields()
     {
-        $A = newGraphQLObjectType([
+        $A = newObjectType([
             'name'   => 'A',
             'fields' => function () use (&$A) {
                 return [
@@ -861,13 +861,13 @@ SRC;
                         }
                     ],
                     'nonNullA'  => [
-                        'type'    => newGraphQLNonNull($A),
+                        'type'    => newNonNull($A),
                         'resolve' => function () {
                             return [];
                         }
                     ],
                     'throws'    => [
-                        'type'    => newGraphQLNonNull(GraphQLString()),
+                        'type'    => newNonNull(String()),
                         'resolve' => function () {
                             throw new \Exception('Catch me if you can!');
                         }
@@ -876,7 +876,7 @@ SRC;
             }
         ]);
 
-        $queryType = newGraphQLObjectType([
+        $queryType = newObjectType([
             'name'   => 'query',
             'fields' => function () use (&$A) {
                 return [
@@ -890,7 +890,7 @@ SRC;
             }
         ]);
 
-        $schema = newGraphQLSchema([
+        $schema = newSchema([
             'query' => $queryType
         ]);
 
@@ -946,12 +946,12 @@ SRC;
     {
         $rootValue = ['a' => 'b'];
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -976,12 +976,12 @@ SRC;
     {
         $rootValue = ['a' => 'b'];
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -1007,12 +1007,12 @@ SRC;
     {
         $rootValue = ['a' => 'b'];
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -1044,12 +1044,12 @@ SRC;
     {
         $rootValue = ['a' => 'b'];
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -1080,12 +1080,12 @@ SRC;
     {
         $rootValue = ['a' => 'b'];
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -1117,28 +1117,28 @@ SRC;
     {
         $rootValue = ['a' => 'b'];
 
-        $schema = newGraphQLSchema([
-            'query'        => newGraphQLObjectType([
+        $schema = newSchema([
+            'query'        => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ]),
-            'mutation'     => newGraphQLObjectType([
+            'mutation'     => newObjectType([
                 'name'   => 'M',
                 'fields' => [
                     'c' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ]),
-            'subscription' => newGraphQLObjectType([
+            'subscription' => newObjectType([
                 'name'   => 'S',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -1164,20 +1164,20 @@ SRC;
     {
         $rootValue = ['a' => 'b', 'c' => 'd'];
 
-        $schema = newGraphQLSchema([
-            'query'    => newGraphQLObjectType([
+        $schema = newSchema([
+            'query'    => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ]),
-            'mutation' => newGraphQLObjectType([
+            'mutation' => newObjectType([
                 'name'   => 'M',
                 'fields' => [
                     'c' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -1203,20 +1203,20 @@ SRC;
     {
         $rootValue = ['a' => 'b'];
 
-        $schema = newGraphQLSchema([
-            'query'        => newGraphQLObjectType([
+        $schema = newSchema([
+            'query'        => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ]),
-            'subscription' => newGraphQLObjectType([
+            'subscription' => newObjectType([
                 'name'   => 'S',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -1252,15 +1252,15 @@ SRC;
             'e' => 'e'
         ];
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
-                    'a' => ['type' => GraphQLString()],
-                    'b' => ['type' => GraphQLString()],
-                    'c' => ['type' => GraphQLString()],
-                    'd' => ['type' => GraphQLString()],
-                    'e' => ['type' => GraphQLString()],
+                    'a' => ['type' => String()],
+                    'b' => ['type' => String()],
+                    'c' => ['type' => String()],
+                    'd' => ['type' => String()],
+                    'e' => ['type' => String()],
                 ]
             ])
         ]);
@@ -1289,12 +1289,12 @@ SRC;
     {
         $rootValue = ['a' => 'b'];
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -1327,17 +1327,17 @@ SRC;
      */
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
-        $schema = newGraphQLSchema([
+        $schema = newSchema([
             'query'    => new ObjectType([
                 'name'   => 'Q',
                 'fields' => [
-                    'a' => ['type' => GraphQLString()],
+                    'a' => ['type' => String()],
                 ]
             ]),
             'mutation' => new ObjectType([
                 'name'   => 'M',
                 'fields' => [
-                    'c' => ['type' => GraphQLString()],
+                    'c' => ['type' => String()],
                 ]
             ])
         ]);
@@ -1359,11 +1359,11 @@ SRC;
      */
     public function testFailsWhenAnIsTypeOfCheckIsNotMet()
     {
-        $SpecialType = newGraphQLObjectType([
+        $SpecialType = newObjectType([
             'name'     => 'SpecialType',
             'fields'   => [
                 'value' => [
-                    'type' => GraphQLString()
+                    'type' => String()
                 ]
             ],
             'isTypeOf' => function ($obj) {
@@ -1371,13 +1371,13 @@ SRC;
             },
         ]);
 
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => function () use (&$SpecialType) {
                     return [
                         'specials' => [
-                            'type'    => newGraphQLList($SpecialType),
+                            'type'    => newList($SpecialType),
                             'resolve' => function ($root) {
                                 return $root['specials'];
                             }
@@ -1423,12 +1423,12 @@ SRC;
      */
     public function testExecutesIgnoringInvalidNonExecutableDefinitions()
     {
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'foo' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
@@ -1453,12 +1453,12 @@ SRC;
      */
     public function testUsesACustomFieldResolver()
     {
-        $schema = newGraphQLSchema([
-            'query' => newGraphQLObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'foo' => [
-                        'type' => GraphQLString(),
+                        'type' => String(),
                     ]
                 ]
             ])
