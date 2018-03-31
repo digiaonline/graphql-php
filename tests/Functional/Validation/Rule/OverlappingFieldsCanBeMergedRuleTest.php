@@ -7,11 +7,11 @@ use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\fieldConflict;
 use function Digia\GraphQL\Type\GraphQLID;
 use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\GraphQLInterfaceType;
-use function Digia\GraphQL\Type\GraphQLList;
-use function Digia\GraphQL\Type\GraphQLNonNull;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\newGraphQLInterfaceType;
+use function Digia\GraphQL\Type\newGraphQLList;
+use function Digia\GraphQL\Type\newGraphQLNonNull;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
 class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
@@ -35,7 +35,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
     {
         parent::setUp();
 
-        $this->someBox = GraphQLInterfaceType([
+        $this->someBox = newGraphQLInterfaceType([
             'name'   => 'SomeBox',
             'fields' => function () {
                 return [
@@ -45,7 +45,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             },
         ]);
 
-        $this->stringBox = GraphQLObjectType([
+        $this->stringBox = newGraphQLObjectType([
             'name'       => 'StringBox',
             'interfaces' => [$this->someBox],
             'fields'     => function () {
@@ -53,14 +53,14 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'scalar'         => ['type' => GraphQLString()],
                     'deepBox'        => ['type' => $this->stringBox],
                     'unrelatedField' => ['type' => GraphQLString()],
-                    'listStringBox'  => ['type' => GraphQLList($this->stringBox)],
+                    'listStringBox'  => ['type' => newGraphQLList($this->stringBox)],
                     'stringBox'      => ['type' => $this->stringBox],
                     'intBox'         => ['type' => $this->intBox],
                 ];
             },
         ]);
 
-        $this->intBox = GraphQLObjectType([
+        $this->intBox = newGraphQLObjectType([
             'name'       => 'IntBox',
             'interfaces' => [$this->someBox],
             'fields'     => function () {
@@ -68,58 +68,58 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'scalar'         => ['type' => GraphQLInt()],
                     'deepBox'        => ['type' => $this->intBox],
                     'unrelatedField' => ['type' => GraphQLString()],
-                    'listStringBox'  => ['type' => GraphQLList($this->stringBox)],
+                    'listStringBox'  => ['type' => newGraphQLList($this->stringBox)],
                     'stringBox'      => ['type' => $this->stringBox],
                     'intBox'         => ['type' => $this->intBox],
                 ];
             },
         ]);
 
-        $this->nonNullStringBox1 = GraphQLInterfaceType([
+        $this->nonNullStringBox1 = newGraphQLInterfaceType([
             'name'   => 'NonNullStringBox1',
             'fields' => [
-                'scalar' => ['type' => GraphQLNonNull(GraphQLString())],
+                'scalar' => ['type' => newGraphQLNonNull(GraphQLString())],
             ],
         ]);
 
-        $this->nonNullStringBox1Impl = GraphQLObjectType([
+        $this->nonNullStringBox1Impl = newGraphQLObjectType([
             'name'       => 'NonNullStringBox1Impl',
             'interfaces' => [$this->someBox, $this->nonNullStringBox1],
             'fields'     => [
-                'scalar'         => ['type' => GraphQLNonNull(GraphQLString())],
+                'scalar'         => ['type' => newGraphQLNonNull(GraphQLString())],
                 'unrelatedField' => ['type' => GraphQLString()],
                 'deepBox'        => ['type' => $this->someBox],
             ],
         ]);
 
-        $this->nonNullStringBox2 = GraphQLInterfaceType([
+        $this->nonNullStringBox2 = newGraphQLInterfaceType([
             'name'   => 'NonNullStringBox2',
             'fields' => [
-                'scalar' => ['type' => GraphQLNonNull(GraphQLString())],
+                'scalar' => ['type' => newGraphQLNonNull(GraphQLString())],
             ],
         ]);
 
-        $this->nonNullStringBox2Impl = GraphQLObjectType([
+        $this->nonNullStringBox2Impl = newGraphQLObjectType([
             'name'       => 'NonNullStringBox2Impl',
             'interfaces' => [$this->someBox, $this->nonNullStringBox2],
             'fields'     => [
-                'scalar'         => ['type' => GraphQLNonNull(GraphQLString())],
+                'scalar'         => ['type' => newGraphQLNonNull(GraphQLString())],
                 'unrelatedField' => ['type' => GraphQLString()],
                 'deepBox'        => ['type' => $this->someBox],
             ],
         ]);
 
-        $this->connection = GraphQLObjectType([
+        $this->connection = newGraphQLObjectType([
             'name'   => 'Connection',
             'fields' => function () {
                 return [
                     'edges' => [
-                        'type' => GraphQLList(
-                            GraphQLObjectType([
+                        'type' => newGraphQLList(
+                            newGraphQLObjectType([
                                 'name'   => 'Edge',
                                 'fields' => [
                                     'node' => [
-                                        'type' => GraphQLObjectType([
+                                        'type' => newGraphQLObjectType([
                                             'name'   => 'Node',
                                             'fields' => [
                                                 'id'   => ['type' => GraphQLID()],
@@ -135,8 +135,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             },
         ]);
 
-        $this->schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $this->schema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'QueryRoot',
                 'fields' => function () {
                     return [

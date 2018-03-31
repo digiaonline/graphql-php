@@ -10,16 +10,16 @@ use function Digia\GraphQL\buildSchema;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Language\locationsShorthandToArray;
-use function Digia\GraphQL\Type\GraphQLEnumType;
-use function Digia\GraphQL\Type\GraphQLInputObjectType;
-use function Digia\GraphQL\Type\GraphQLInterfaceType;
-use function Digia\GraphQL\Type\GraphQLList;
-use function Digia\GraphQL\Type\GraphQLNonNull;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLScalarType;
-use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\newGraphQLEnumType;
+use function Digia\GraphQL\Type\newGraphQLInputObjectType;
+use function Digia\GraphQL\Type\newGraphQLInterfaceType;
+use function Digia\GraphQL\Type\newGraphQLList;
+use function Digia\GraphQL\Type\newGraphQLNonNull;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLScalarType;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Type\GraphQLUnionType;
+use function Digia\GraphQL\Type\newGraphQLUnionType;
 use function Digia\GraphQL\Util\toString;
 
 class ValidationTest extends TestCase
@@ -44,7 +44,7 @@ class ValidationTest extends TestCase
     {
         $this->schemaValidator = GraphQL::make(SchemaValidatorInterface::class);
 
-        $this->someScalarType = GraphQLScalarType([
+        $this->someScalarType = newGraphQLScalarType([
             'name'         => 'SomeScalar',
             'serialize'    => function () {
             },
@@ -54,27 +54,27 @@ class ValidationTest extends TestCase
             },
         ]);
 
-        $this->someObjectType = GraphQLObjectType([
+        $this->someObjectType = newGraphQLObjectType([
             'name'   => 'SomeObject',
             'fields' => ['f' => ['type' => GraphQLString()]],
         ]);
 
-        $this->someUnionType = GraphQLUnionType([
+        $this->someUnionType = newGraphQLUnionType([
             'name'  => 'SomeUnion',
             'types' => [$this->someObjectType],
         ]);
 
-        $this->someInterfaceType = GraphQLInterfaceType([
+        $this->someInterfaceType = newGraphQLInterfaceType([
             'name'   => 'SomeInterface',
             'fields' => ['f' => ['type' => GraphQLString()]],
         ]);
 
-        $this->someEnumType = GraphQLEnumType([
+        $this->someEnumType = newGraphQLEnumType([
             'name'   => 'SomeEnum',
             'values' => ['ONLY' => []],
         ]);
 
-        $this->someInputObjectType = GraphQLInputObjectType([
+        $this->someInputObjectType = newGraphQLInputObjectType([
             'name'   => 'SomeInputObject',
             'fields' => [
                 'val' => ['type' => GraphQLString(), 'defaultValue' => 'hello'],
@@ -375,7 +375,7 @@ class ValidationTest extends TestCase
 
     public function testRejectsASchemaWhoseDirectivesAreIncorrectlyTypes()
     {
-        $schema = GraphQLSchema([
+        $schema = newGraphQLSchema([
             'query'      => $this->someObjectType,
             'directives' => ['somedirective']
         ]);
@@ -428,7 +428,7 @@ class ValidationTest extends TestCase
         ]);
 
         $manualSchema = $this->schemaWithFieldType(
-            GraphQLObjectType([
+            newGraphQLObjectType([
                 'name'   => 'IncompleteObject',
                 'fields' => [],
             ])
@@ -441,7 +441,7 @@ class ValidationTest extends TestCase
         ]);
 
         $manualSchema2 = $this->schemaWithFieldType(
-            GraphQLObjectType([
+            newGraphQLObjectType([
                 'name'   => 'IncompleteObject',
                 'fields' => function () {
                     return [];
@@ -461,7 +461,7 @@ class ValidationTest extends TestCase
     public function testRejectsAnObjectTypeWithIncorrectlyNamedFields()
     {
         $schema = $this->schemaWithFieldType(
-            GraphQLObjectType([
+            newGraphQLObjectType([
                 'name'   => 'SomeObject',
                 'fields' => [
                     'bad-name-with-dashes' => ['type' => GraphQLString()],
@@ -487,7 +487,7 @@ class ValidationTest extends TestCase
     public function testAcceptsFieldArgumentsWithValidNames()
     {
         $schema = $this->schemaWithFieldType(
-            GraphQLObjectType([
+            newGraphQLObjectType([
                 'name'   => 'SomeObject',
                 'fields' => [
                     'goodField' => [
@@ -508,7 +508,7 @@ class ValidationTest extends TestCase
     public function testRejectsFieldArgumentsWithInvalidNames()
     {
         $schema = $this->schemaWithFieldType(
-            GraphQLObjectType([
+            newGraphQLObjectType([
                 'name'   => 'SomeObject',
                 'fields' => [
                     'badField' => [
@@ -642,8 +642,8 @@ class ValidationTest extends TestCase
 
         $badUnionMemberTypes = [
             GraphQLString(),
-            GraphQLNonNull($this->someObjectType),
-            GraphQLList($this->someObjectType),
+            newGraphQLNonNull($this->someObjectType),
+            newGraphQLList($this->someObjectType),
             $this->someInterfaceType,
             $this->someUnionType,
             $this->someEnumType,
@@ -652,7 +652,7 @@ class ValidationTest extends TestCase
 
         foreach ($badUnionMemberTypes as $memberType) {
             $badSchema = $this->schemaWithFieldType(
-                GraphQLUnionType(['name' => 'BadUnion', 'types' => [$memberType]])
+                newGraphQLUnionType(['name' => 'BadUnion', 'types' => [$memberType]])
             );
 
             $this->expectInvalid($badSchema, [
@@ -795,7 +795,7 @@ class ValidationTest extends TestCase
     {
         $schemaWithEnum = function ($name) {
             return $this->schemaWithFieldType(
-                GraphQLEnumType([
+                newGraphQLEnumType([
                     'name'   => 'SomeEnum',
                     'values' => [
                         $name => [],
@@ -901,8 +901,8 @@ class ValidationTest extends TestCase
 
     public function testRejectsAnObjectImplementingANonTypeValues()
     {
-        $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $schema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'       => 'BadObject',
                 'fields'     => ['f' => ['type' => GraphQLString()]],
                 'interfaces' => [null],
@@ -1699,21 +1699,21 @@ class ValidationTest extends TestCase
         return \array_merge(
             $types,
             array_map(function ($type) {
-                return GraphQLList($type);
+                return newGraphQLList($type);
             }, $types),
             array_map(function ($type) {
-                return GraphQLNonNull($type);
+                return newGraphQLNonNull($type);
             }, $types),
             array_map(function ($type) {
-                return GraphQLNonNull(GraphQLList($type));
+                return newGraphQLNonNull(newGraphQLList($type));
             }, $types)
         );
     }
 
     protected function schemaWithFieldType($fieldType)
     {
-        return GraphQLSchema([
-            'query' => GraphQLObjectType([
+        return newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => ['f' => ['type' => $fieldType]]
             ]),
@@ -1723,7 +1723,7 @@ class ValidationTest extends TestCase
 
     protected function objectWithFieldOfType($fieldType)
     {
-        return GraphQLObjectType([
+        return newGraphQLObjectType([
             'name'   => 'BadObject',
             'fields' => [
                 'badField' => ['type' => $fieldType],
@@ -1733,7 +1733,7 @@ class ValidationTest extends TestCase
 
     protected function interfaceWithFieldOfType($fieldType)
     {
-        return GraphQLInterfaceType([
+        return newGraphQLInterfaceType([
             'name'   => 'BadInterface',
             'fields' => [
                 'badField' => ['type' => $fieldType],
@@ -1743,7 +1743,7 @@ class ValidationTest extends TestCase
 
     protected function objectWithFieldArgumentOfType($argumentType)
     {
-        return GraphQLObjectType([
+        return newGraphQLObjectType([
             'name'   => 'BadObject',
             'fields' => [
                 'badField' => [
@@ -1758,14 +1758,14 @@ class ValidationTest extends TestCase
 
     protected function inputObjectWithFieldOfType($fieldType)
     {
-        return GraphQLObjectType([
+        return newGraphQLObjectType([
             'name'   => 'BadObject',
             'fields' => [
                 'badField' => [
                     'type' => GraphQLString(),
                     'args' => [
                         'badArg' => [
-                            'type' => GraphQLInputObjectType([
+                            'type' => newGraphQLInputObjectType([
                                 'name'   => 'BadInputObject',
                                 'fields' => [
                                     'badField' => ['type' => $fieldType],

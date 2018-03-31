@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Test\Functional\Type;
 
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\graphql;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 use function Digia\GraphQL\Test\readFileContents;
 
@@ -20,8 +20,8 @@ class IntrospectionTest extends TestCase
 
     public function testExecutesAnIntrospectionQuery()
     {
-        $emptySchema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $emptySchema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'QueryRoot',
                 'fields' => [
                     'onlyField' => ['type' => GraphQLString()],

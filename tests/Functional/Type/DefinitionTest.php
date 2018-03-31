@@ -15,17 +15,17 @@ use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\Type\GraphQLBoolean;
-use function Digia\GraphQL\Type\GraphQLEnumType;
-use function Digia\GraphQL\Type\GraphQLInputObjectType;
+use function Digia\GraphQL\Type\newGraphQLEnumType;
+use function Digia\GraphQL\Type\newGraphQLInputObjectType;
 use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\GraphQLInterfaceType;
-use function Digia\GraphQL\Type\GraphQLList;
-use function Digia\GraphQL\Type\GraphQLNonNull;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLScalarType;
-use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\newGraphQLInterfaceType;
+use function Digia\GraphQL\Type\newGraphQLList;
+use function Digia\GraphQL\Type\newGraphQLNonNull;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLScalarType;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Type\GraphQLUnionType;
+use function Digia\GraphQL\Type\newGraphQLUnionType;
 use function Digia\GraphQL\Type\isOutputType;
 
 class DefinitionTest extends TestCase
@@ -96,7 +96,7 @@ class DefinitionTest extends TestCase
      */
     public function setUp()
     {
-        $this->blogImage = GraphQLObjectType([
+        $this->blogImage = newGraphQLObjectType([
             'name'   => 'Image',
             'fields' => [
                 'url'    => ['type' => GraphQLString()],
@@ -105,7 +105,7 @@ class DefinitionTest extends TestCase
             ],
         ]);
 
-        $this->blogAuthor = GraphQLObjectType([
+        $this->blogAuthor = newGraphQLObjectType([
             'name'   => 'Author',
             'fields' => function () {
                 return [
@@ -123,7 +123,7 @@ class DefinitionTest extends TestCase
             },
         ]);
 
-        $this->blogArticle = GraphQLObjectType([
+        $this->blogArticle = newGraphQLObjectType([
             'name'   => 'Article',
             'fields' => [
                 'id'          => ['type' => GraphQLString()],
@@ -134,7 +134,7 @@ class DefinitionTest extends TestCase
             ],
         ]);
 
-        $this->blogQuery = GraphQLObjectType([
+        $this->blogQuery = newGraphQLObjectType([
             'name'   => 'Query',
             'fields' => [
                 'article' => [
@@ -142,12 +142,12 @@ class DefinitionTest extends TestCase
                     'type' => $this->blogArticle,
                 ],
                 'feed'    => [
-                    'type' => GraphQLList($this->blogArticle),
+                    'type' => newGraphQLList($this->blogArticle),
                 ],
             ],
         ]);
 
-        $this->blogMutation = GraphQLObjectType([
+        $this->blogMutation = newGraphQLObjectType([
             'name'   => 'Mutation',
             'fields' => [
                 'writeArticle' => [
@@ -156,7 +156,7 @@ class DefinitionTest extends TestCase
             ],
         ]);
 
-        $this->blogSubscription = GraphQLObjectType([
+        $this->blogSubscription = newGraphQLObjectType([
             'name'   => 'Subscription',
             'fields' => [
                 'articleSubscribe' => [
@@ -166,12 +166,12 @@ class DefinitionTest extends TestCase
             ],
         ]);
 
-        $this->objectType      = GraphQLObjectType(['name' => 'Object']);
-        $this->interfaceType   = GraphQLInterfaceType(['name' => 'Interface']);
-        $this->unionType       = GraphQLUnionType(['name' => 'Union', 'types' => [$this->objectType]]);
-        $this->enumType        = GraphQLEnumType(['name' => 'Enum', 'values' => ['foo' => []]]);
-        $this->inputObjectType = GraphQLInputObjectType(['name' => 'InputObject']);
-        $this->scalarType      = GraphQLScalarType([
+        $this->objectType      = newGraphQLObjectType(['name' => 'Object']);
+        $this->interfaceType   = newGraphQLInterfaceType(['name' => 'Interface']);
+        $this->unionType       = newGraphQLUnionType(['name' => 'Union', 'types' => [$this->objectType]]);
+        $this->enumType        = newGraphQLEnumType(['name' => 'Enum', 'values' => ['foo' => []]]);
+        $this->inputObjectType = newGraphQLInputObjectType(['name' => 'InputObject']);
+        $this->scalarType      = newGraphQLScalarType([
             'name'         => 'Scalar',
             'serialize'    => function () {
             },
@@ -188,8 +188,8 @@ class DefinitionTest extends TestCase
      */
     protected function schemaWithField(TypeInterface $type): Schema
     {
-        return GraphQLSchema([
-            'query' => GraphQLObjectType([
+        return newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'field' => ['type' => $type],
@@ -205,7 +205,7 @@ class DefinitionTest extends TestCase
      */
     protected function schemaWithObjectWithFieldResolver($resolveValue): Schema
     {
-        $badResolverType = GraphQLObjectType([
+        $badResolverType = newGraphQLObjectType([
             'name'   => 'BadResolver',
             'fields' => [
                 'badField' => [
@@ -215,8 +215,8 @@ class DefinitionTest extends TestCase
             ],
         ]);
 
-        return GraphQLSchema([
-            'query' => GraphQLObjectType([
+        return newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'f' => ['type' => $badResolverType],
@@ -229,7 +229,7 @@ class DefinitionTest extends TestCase
 
     public function testQuerySchema()
     {
-        $schema = GraphQLSchema([
+        $schema = newGraphQLSchema([
             'query' => $this->blogQuery,
         ]);
 
@@ -268,7 +268,7 @@ class DefinitionTest extends TestCase
 
     public function testMutationSchema()
     {
-        $schema = GraphQLSchema([
+        $schema = newGraphQLSchema([
             'mutation' => $this->blogMutation,
         ]);
 
@@ -283,7 +283,7 @@ class DefinitionTest extends TestCase
 
     public function testSubscriptionSchema()
     {
-        $schema = GraphQLSchema([
+        $schema = newGraphQLSchema([
             'subscription' => $this->blogSubscription,
         ]);
 
@@ -298,7 +298,7 @@ class DefinitionTest extends TestCase
 
     public function testEnumTypeWithDeprecatedValue()
     {
-        $enumWithDeprecatedValue = GraphQLEnumType([
+        $enumWithDeprecatedValue = newGraphQLEnumType([
             'name'   => 'EnumWithDeprecatedValue',
             'values' => ['foo' => ['deprecationReason' => 'Just because']],
         ]);
@@ -316,7 +316,7 @@ class DefinitionTest extends TestCase
 
     public function testObjectWithDeprecatedField()
     {
-        $typeWithDeprecatedField = GraphQLObjectType([
+        $typeWithDeprecatedField = newGraphQLObjectType([
             'name'   => 'foo',
             'fields' => [
                 'bar' => [
@@ -337,17 +337,17 @@ class DefinitionTest extends TestCase
 
     public function testIncludesNestedInputObjectsInSchemaTypeMap()
     {
-        $nestedInputObject = GraphQLInputObjectType([
+        $nestedInputObject = newGraphQLInputObjectType([
             'name'   => 'NestedInputObject',
             'fields' => ['value' => ['type' => GraphQLString()]],
         ]);
 
-        $someInputObject = GraphQLInputObjectType([
+        $someInputObject = newGraphQLInputObjectType([
             'name'   => 'SomeInputObject',
             'fields' => ['nested' => ['type' => $nestedInputObject]],
         ]);
 
-        $someMutation = GraphQLObjectType([
+        $someMutation = newGraphQLObjectType([
             'name'   => 'SomeMutation',
             'fields' => [
                 'mutateSomething' => [
@@ -357,7 +357,7 @@ class DefinitionTest extends TestCase
             ],
         ]);
 
-        $someSubscription = GraphQLObjectType([
+        $someSubscription = newGraphQLObjectType([
             'name'   => 'SomeSubscription',
             'fields' => [
                 'subscribeToSomething' => [
@@ -367,7 +367,7 @@ class DefinitionTest extends TestCase
             ],
         ]);
 
-        $schema = GraphQLSchema([
+        $schema = newGraphQLSchema([
             'query'        => $this->blogQuery,
             'mutation'     => $someMutation,
             'subscription' => $someSubscription,
@@ -378,14 +378,14 @@ class DefinitionTest extends TestCase
 
     public function testIncludesInterfacePossibleTypesInSchemaTypeMap()
     {
-        $someInterface = GraphQLInterfaceType([
+        $someInterface = newGraphQLInterfaceType([
             'name'   => 'SomeInterface',
             'fields' => [
                 'f' => ['type' => GraphQLInt()],
             ],
         ]);
 
-        $someSubtype = GraphQLObjectType([
+        $someSubtype = newGraphQLObjectType([
             'name'       => 'SomeSubtype',
             'fields'     => [
                 'f' => ['type' => GraphQLInt()],
@@ -393,8 +393,8 @@ class DefinitionTest extends TestCase
             'interfaces' => [$someInterface],
         ]);
 
-        $schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $schema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'Query',
                 'fields' => [
                     'iface' => ['type' => $someInterface],
@@ -410,14 +410,14 @@ class DefinitionTest extends TestCase
     {
         $this->assertEquals(TypeNameEnum::INT, (string)GraphQLInt());
         $this->assertEquals('Article', (string)$this->blogArticle);
-        $this->assertEquals('Interface', (string)GraphQLInterfaceType(['name' => 'Interface']));
-        $this->assertEquals('Union', (string)GraphQLUnionType(['name' => 'Union']));
-        $this->assertEquals('Enum', (string)GraphQLEnumType(['name' => 'Enum']));
+        $this->assertEquals('Interface', (string)newGraphQLInterfaceType(['name' => 'Interface']));
+        $this->assertEquals('Union', (string)newGraphQLUnionType(['name' => 'Union']));
+        $this->assertEquals('Enum', (string)newGraphQLEnumType(['name' => 'Enum']));
         $this->assertEquals(TypeNameEnum::INT, (string)GraphQLInt());
-        $this->assertEquals('Int!', (string)GraphQLNonNull(GraphQLInt()));
-        $this->assertEquals('[Int]!', (string)GraphQLNonNull(GraphQLList(GraphQLInt())));
-        $this->assertEquals('[Int!]', (string)GraphQLList(GraphQLNonNull(GraphQLInt())));
-        $this->assertEquals('[[Int]]', (string)GraphQLList(GraphQLList(GraphQLInt())));
+        $this->assertEquals('Int!', (string)newGraphQLNonNull(GraphQLInt()));
+        $this->assertEquals('[Int]!', (string)newGraphQLNonNull(newGraphQLList(GraphQLInt())));
+        $this->assertEquals('[Int!]', (string)newGraphQLList(newGraphQLNonNull(GraphQLInt())));
+        $this->assertEquals('[[Int]]', (string)newGraphQLList(newGraphQLList(GraphQLInt())));
     }
 
     /**
@@ -428,8 +428,8 @@ class DefinitionTest extends TestCase
     public function testIdentifiesInputTypes($type, $answer)
     {
         $this->assertEquals($answer, isOutputType($type));
-        $this->assertEquals($answer, isOutputType(GraphQLList($type)));
-        $this->assertEquals($answer, isOutputType(GraphQLNonNull($type)));
+        $this->assertEquals($answer, isOutputType(newGraphQLList($type)));
+        $this->assertEquals($answer, isOutputType(newGraphQLNonNull($type)));
     }
 
     public function identifiesInputTypesDataProvider(): array
@@ -437,11 +437,11 @@ class DefinitionTest extends TestCase
         // We cannot use the class fields here because they do not get instantiated for data providers.
         return [
             [GraphQLInt(), true],
-            [GraphQLObjectType(['name' => 'Object']), true],
-            [GraphQLInterfaceType(['name' => 'Interface']), true],
-            [GraphQLUnionType(['name' => 'Union']), true],
-            [GraphQLEnumType(['name' => 'Enum']), true],
-            [GraphQLInputObjectType(['name' => 'InputObjectType']), false],
+            [newGraphQLObjectType(['name' => 'Object']), true],
+            [newGraphQLInterfaceType(['name' => 'Interface']), true],
+            [newGraphQLUnionType(['name' => 'Union']), true],
+            [newGraphQLEnumType(['name' => 'Enum']), true],
+            [newGraphQLInputObjectType(['name' => 'InputObjectType']), false],
         ];
     }
 
@@ -450,14 +450,14 @@ class DefinitionTest extends TestCase
      */
     public function testProhibitsNestingNonNullInsideNonNull()
     {
-        GraphQLNonNull(GraphQLNonNull(GraphQLInt()));
+        newGraphQLNonNull(newGraphQLNonNull(GraphQLInt()));
 
         $this->addToAssertionCount(1);
     }
 
     public function testAllowsAThunkForUnionMemberTypes()
     {
-        $union = GraphQLUnionType([
+        $union = newGraphQLUnionType([
             'name'  => 'ThunkUnion',
             'types' => function () {
                 return [$this->objectType];
@@ -482,24 +482,24 @@ class DefinitionTest extends TestCase
             ],
         ];
 
-        $testObject1 = GraphQLObjectType([
+        $testObject1 = newGraphQLObjectType([
             'name'   => 'Test1',
             'fields' => $fields,
         ]);
 
-        $testObject2 = GraphQLObjectType([
+        $testObject2 = newGraphQLObjectType([
             'name'   => 'Test2',
             'fields' => $fields,
         ]);
 
         $this->assertEquals($testObject2->getFields(), $testObject1->getFields());
 
-        $testInputObject1 = GraphQLInputObjectType([
+        $testInputObject1 = newGraphQLInputObjectType([
             'name'   => 'Test1',
             'fields' => $fields,
         ]);
 
-        $testInputObject2 = GraphQLInputObjectType([
+        $testInputObject2 = newGraphQLInputObjectType([
             'name'   => 'Test2',
             'fields' => $fields,
         ]);
@@ -518,7 +518,7 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsAnObjectTypeFieldWithNullConfig()
     {
-        $objType = GraphQLObjectType([
+        $objType = newGraphQLObjectType([
             'name'   => 'SomeObject',
             'fields' => ['f' => null],
         ]);
@@ -533,7 +533,7 @@ class DefinitionTest extends TestCase
      */
     function testRejectsAnObjectTypeWithIncorrectlyTypedFields()
     {
-        $objType = GraphQLObjectType([
+        $objType = newGraphQLObjectType([
             'name'   => 'SomeObject',
             'fields' => [['f' => null]],
         ]);
@@ -548,7 +548,7 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsAnObjectTypeWithAFieldFunctionThatReturnsIncorrectType()
     {
-        $objType = GraphQLObjectType([
+        $objType = newGraphQLObjectType([
             'name'   => 'SomeObject',
             'fields' => function () {
                 return [['f' => null]];
@@ -564,7 +564,7 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAnObjectTypeWithFieldArgs()
     {
-        $objType = GraphQLObjectType([
+        $objType = newGraphQLObjectType([
             'name'   => 'SomeObject',
             'fields' => [
                 'goodField' => [
@@ -586,7 +586,7 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsAnObjectTypeWithIncorrectlyTypedFieldArgs()
     {
-        $objType = GraphQLObjectType([
+        $objType = newGraphQLObjectType([
             'name'   => 'SomeObject',
             'fields' => [
                 'badField' => [
@@ -606,7 +606,7 @@ class DefinitionTest extends TestCase
      */
     public function testDoesNotAllowIsDeprecatedWithoutDeprecationReasonOnField()
     {
-        $oldObject = GraphQLObjectType([
+        $oldObject = newGraphQLObjectType([
             'name'   => 'OldObject',
             'fields' => [
                 'field' => [
@@ -625,7 +625,7 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAnObjectTypeWithArrayInterfaces()
     {
-        $objType = GraphQLObjectType([
+        $objType = newGraphQLObjectType([
             'name'       => 'SomeObject',
             'interfaces' => [$this->interfaceType],
             'fields'     => ['f' => ['type' => GraphQLString()]],
@@ -636,7 +636,7 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAnObjectTypeWithInterfacesAsAFunctionReturningAnArray()
     {
-        $objType = GraphQLObjectType([
+        $objType = newGraphQLObjectType([
             'name'       => 'SomeObject',
             'interfaces' => [$this->interfaceType],
             'fields'     => [
@@ -688,7 +688,7 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAnInterfaceTypeDefiningResolveType()
     {
-        $anotherInterfaceType = GraphQLInterfaceType([
+        $anotherInterfaceType = newGraphQLInterfaceType([
             'name'        => 'AnotherInterface',
             'fields'      => ['f' => ['type' => GraphQLString()]],
             'resolveType' => function () {
@@ -697,7 +697,7 @@ class DefinitionTest extends TestCase
         ]);
 
         $this->schemaWithField(
-            GraphQLObjectType([
+            newGraphQLObjectType([
                 'name'       => 'SomeObject',
                 'interfaces' => [$anotherInterfaceType],
                 'fields'     => ['f' => ['type' => GraphQLString()]],
@@ -709,13 +709,13 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAnInterfaceTypeWithImplementingTypeDefiningIsTypeOf()
     {
-        $anotherInterfaceType = GraphQLInterfaceType([
+        $anotherInterfaceType = newGraphQLInterfaceType([
             'name'   => 'AnotherInterface',
             'fields' => ['f' => ['type' => GraphQLString()]],
         ]);
 
         $this->schemaWithField(
-            GraphQLObjectType([
+            newGraphQLObjectType([
                 'name'       => 'SomeObject',
                 'interfaces' => [$anotherInterfaceType],
                 'fields'     => ['f' => ['type' => GraphQLString()]],
@@ -730,7 +730,7 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAnInterfaceTypeDefiningResolveTypeWithImplementingTypeDefiningIsTypeOf()
     {
-        $anotherInterfaceType = GraphQLInterfaceType([
+        $anotherInterfaceType = newGraphQLInterfaceType([
             'name'        => 'AnotherInterface',
             'fields'      => ['f' => ['type' => GraphQLString()]],
             'resolveType' => function () {
@@ -739,7 +739,7 @@ class DefinitionTest extends TestCase
         ]);
 
         $this->schemaWithField(
-            GraphQLObjectType([
+            newGraphQLObjectType([
                 'name'       => 'SomeObject',
                 'interfaces' => [$anotherInterfaceType],
                 'fields'     => ['f' => ['type' => GraphQLString()]],
@@ -757,7 +757,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsUnionTypeDefiningResolveType()
     {
         $this->schemaWithField(
-            GraphQLUnionType([
+            newGraphQLUnionType([
                 'name'  => 'SomeUnion',
                 'types' => [$this->objectType],
             ])
@@ -768,13 +768,13 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAUnionOfObjectTypesDefiningIsTypeOf()
     {
-        $objectWithIsTypeOf = GraphQLObjectType([
+        $objectWithIsTypeOf = newGraphQLObjectType([
             'name'   => 'ObjectWithIsTypeOf',
             'fields' => ['f' => ['type' => GraphQLString()]],
         ]);
 
         $this->schemaWithField(
-            GraphQLUnionType([
+            newGraphQLUnionType([
                 'name'  => 'SomeUnion',
                 'types' => [$objectWithIsTypeOf],
             ])
@@ -788,7 +788,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsAScalarTypeDefiningSerialize()
     {
         $this->schemaWithField(
-            GraphQLScalarType([
+            newGraphQLScalarType([
                 'name'      => 'SomeScalar',
                 'serialize' => function () {
                     return null;
@@ -805,7 +805,7 @@ class DefinitionTest extends TestCase
     public function testRejectsAScalarTypeNotDefiningSerialize()
     {
         $this->schemaWithField(
-            GraphQLScalarType([
+            newGraphQLScalarType([
                 'name' => 'SomeScalar',
             ])
         );
@@ -816,7 +816,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsAScalarTypeDefiningParseValueAndParseLiteral()
     {
         $this->schemaWithField(
-            GraphQLScalarType([
+            newGraphQLScalarType([
                 'name'         => 'SomeScalar',
                 'serialize'    => function () {
                     return null;
@@ -839,7 +839,7 @@ class DefinitionTest extends TestCase
     public function testRejectsAScalarTypeDefiningParseValueButNotParseLiteral()
     {
         $this->schemaWithField(
-            GraphQLScalarType([
+            newGraphQLScalarType([
                 'name'       => 'SomeScalar',
                 'serialize'  => function () {
                     return null;
@@ -859,7 +859,7 @@ class DefinitionTest extends TestCase
     public function testRejectsAScalarTypeDefiningParseLiteralButNotParseValue()
     {
         $this->schemaWithField(
-            GraphQLScalarType([
+            newGraphQLScalarType([
                 'name'         => 'SomeScalar',
                 'serialize'    => function () {
                     return null;
@@ -878,7 +878,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsAnObjectTypeWithAnIsTypeOfFunction()
     {
         $this->schemaWithField(
-            GraphQLObjectType([
+            newGraphQLObjectType([
                 'name'     => 'AnotherObject',
                 'fields'   => ['f' => ['type' => GraphQLString()]],
                 'isTypeOf' => function () {
@@ -895,7 +895,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsAnUnionTypeWithArrayTypes()
     {
         $this->schemaWithField(
-            GraphQLUnionType([
+            newGraphQLUnionType([
                 'name'  => 'AnotherObject',
                 'types' => [$this->objectType],
             ])
@@ -907,7 +907,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsAnUnionTypeWithFunctionReturningAnArrayOfTypes()
     {
         $this->schemaWithField(
-            GraphQLUnionType([
+            newGraphQLUnionType([
                 'name'  => 'AnotherObject',
                 'types' => function () {
                     return [$this->objectType];
@@ -921,7 +921,7 @@ class DefinitionTest extends TestCase
     public function testRejectsAnUnionWithoutTypes()
     {
         $this->schemaWithField(
-            GraphQLUnionType([
+            newGraphQLUnionType([
                 'name' => 'AnotherObject',
             ])
         );
@@ -933,7 +933,7 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAnInputObjectTypeWithFields()
     {
-        $inputObjectType = GraphQLInputObjectType([
+        $inputObjectType = newGraphQLInputObjectType([
             'name'   => 'SomeInputObject',
             'fields' => ['f' => ['type' => GraphQLString()]],
         ]);
@@ -944,7 +944,7 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAnInputObjectTypeWithAFieldFunction()
     {
-        $inputObjectType = GraphQLInputObjectType([
+        $inputObjectType = newGraphQLInputObjectType([
             'name'   => 'SomeInputObject',
             'fields' => function () {
                 return ['f' => ['type' => GraphQLString()]];
@@ -962,7 +962,7 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsAnInputObjectTypeWithResolvers()
     {
-        $inputObjectType = GraphQLInputObjectType([
+        $inputObjectType = newGraphQLInputObjectType([
             'name'   => 'SomeInputObject',
             'fields' => [
                 'f' => [
@@ -985,7 +985,7 @@ class DefinitionTest extends TestCase
 
     public function testAcceptsAWellDefinedEnumTypeWithEmptyValueDefinition()
     {
-        $enumType = GraphQLEnumType([
+        $enumType = newGraphQLEnumType([
             'name'   => 'SomeEnum',
             'values' => [
                 'FOO' => ['value' => 10],
@@ -1002,7 +1002,7 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsAnEnumWithIncorrectlyTypedValues()
     {
-        $enumType = GraphQLEnumType([
+        $enumType = newGraphQLEnumType([
             'name'   => 'SomeEnum',
             'values' => ['FOO' => 10],
         ]);
@@ -1017,7 +1017,7 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsAnEnumTypeWithMissingValueDefinition()
     {
-        $enumType = GraphQLEnumType([
+        $enumType = newGraphQLEnumType([
             'name'   => 'SomeEnum',
             'values' => ['FOO' => null],
         ]);
@@ -1032,7 +1032,7 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsAnEnumTypeWithIncorrectlyTypedValueDefinition()
     {
-        $enumType = GraphQLEnumType([
+        $enumType = newGraphQLEnumType([
             'name'   => 'SomeEnum',
             'values' => ['FOO' => 10],
         ]);
@@ -1047,7 +1047,7 @@ class DefinitionTest extends TestCase
      */
     public function testDoesNotAllowIsDeprecatedWithoutDeprecationReasonOnEnum()
     {
-        $enumType = GraphQLEnumType([
+        $enumType = newGraphQLEnumType([
             'name'   => 'SomeEnum',
             'values' => ['FOO' => ['isDeprecated' => true]],
         ]);
@@ -1069,12 +1069,12 @@ class DefinitionTest extends TestCase
             $this->interfaceType,
             $this->enumType,
             $this->inputObjectType,
-            GraphQLList(GraphQLString()),
-            GraphQLNonNull(GraphQLString()),
+            newGraphQLList(GraphQLString()),
+            newGraphQLNonNull(GraphQLString()),
         ];
 
         foreach ($types as $type) {
-            GraphQLList($type);
+            newGraphQLList($type);
         }
 
         $this->addToAssertionCount(9);
@@ -1092,12 +1092,12 @@ class DefinitionTest extends TestCase
             $this->interfaceType,
             $this->enumType,
             $this->inputObjectType,
-            GraphQLList(GraphQLString()),
-            GraphQLList(GraphQLNonNull(GraphQLString())),
+            newGraphQLList(GraphQLString()),
+            newGraphQLList(newGraphQLNonNull(GraphQLString())),
         ];
 
         foreach ($types as $type) {
-            GraphQLNonNull($type);
+            newGraphQLNonNull($type);
             $this->addToAssertionCount(1);
         }
     }
@@ -1107,10 +1107,10 @@ class DefinitionTest extends TestCase
      */
     public function testNonNullMustNotAcceptNonTypes()
     {
-        $nonTypes = [GraphQLNonNull(GraphQLString()), [], '', null];
+        $nonTypes = [newGraphQLNonNull(GraphQLString()), [], '', null];
 
         foreach ($nonTypes as $nonType) {
-            GraphQLNonNull($nonType);
+            newGraphQLNonNull($nonType);
             $this->addToAssertionCount(1);
         }
     }
@@ -1122,14 +1122,14 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsASchemaWhichDefinesABuiltInType()
     {
-        $fakeString = GraphQLScalarType([
+        $fakeString = newGraphQLScalarType([
             'name'      => 'String',
             'serialize' => function () {
                 return null;
             },
         ]);
 
-        $queryType = GraphQLObjectType([
+        $queryType = newGraphQLObjectType([
             'name'   => 'Query',
             'fields' => [
                 'normal' => ['type' => GraphQLString()],
@@ -1137,7 +1137,7 @@ class DefinitionTest extends TestCase
             ]
         ]);
 
-        GraphQLSchema(['query' => $queryType]);
+        newGraphQLSchema(['query' => $queryType]);
 
         $this->addToAssertionCount(1);
     }
@@ -1147,17 +1147,17 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsASchemaWhichDefinesAnObjectTypeTwice()
     {
-        $a = GraphQLObjectType([
+        $a = newGraphQLObjectType([
             'name'   => 'SameName',
             'fields' => ['f' => ['type' => GraphQLString()]],
         ]);
 
-        $b = GraphQLObjectType([
+        $b = newGraphQLObjectType([
             'name'   => 'SameName',
             'fields' => ['f' => ['type' => GraphQLString()]],
         ]);
 
-        $queryType = GraphQLObjectType([
+        $queryType = newGraphQLObjectType([
             'name'   => 'Query',
             'fields' => [
                 'a' => ['type' => $a],
@@ -1165,7 +1165,7 @@ class DefinitionTest extends TestCase
             ]
         ]);
 
-        GraphQLSchema(['query' => $queryType]);
+        newGraphQLSchema(['query' => $queryType]);
 
         $this->addToAssertionCount(1);
     }
@@ -1175,31 +1175,31 @@ class DefinitionTest extends TestCase
      */
     public function testRejectsASchemaWhichHaveSameNamedObjectsImplementingAnInterface()
     {
-        $anotherInterface = GraphQLInterfaceType([
+        $anotherInterface = newGraphQLInterfaceType([
             'name'   => 'AnotherInterface',
             'fields' => ['f' => ['type' => GraphQLString()]],
         ]);
 
-        $firstBadObject = GraphQLObjectType([
+        $firstBadObject = newGraphQLObjectType([
             'name'       => 'BadObject',
             'interfaces' => [$anotherInterface],
             'fields'     => ['f' => ['type' => GraphQLString()]],
         ]);
 
-        $secondBadObject = GraphQLObjectType([
+        $secondBadObject = newGraphQLObjectType([
             'name'       => 'BadObject',
             'interfaces' => [$anotherInterface],
             'fields'     => ['f' => ['type' => GraphQLString()]],
         ]);
 
-        $queryType = GraphQLObjectType([
+        $queryType = newGraphQLObjectType([
             'name'   => 'Query',
             'fields' => [
                 'iface' => ['type' => $anotherInterface],
             ]
         ]);
 
-        GraphQLSchema([
+        newGraphQLSchema([
             'query' => $queryType,
             'types' => [$firstBadObject, $secondBadObject],
         ]);

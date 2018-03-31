@@ -7,8 +7,8 @@ use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
 class DirectivesTest extends TestCase
@@ -30,8 +30,8 @@ class DirectivesTest extends TestCase
     {
         parent::setUp();
 
-        $this->schema = GraphQLSchema([
-            'query' => GraphQLObjectType([
+        $this->schema = newGraphQLSchema([
+            'query' => newGraphQLObjectType([
                 'name'   => 'TestType',
                 'fields' => [
                     'a' => ['type' => GraphQLString()],

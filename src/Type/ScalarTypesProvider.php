@@ -34,7 +34,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
     public function register()
     {
         $this->container->add(GraphQL::BOOLEAN, function (BooleanCoercer $coercer) {
-            return GraphQLScalarType([
+            return newGraphQLScalarType([
                 'name'         => TypeNameEnum::BOOLEAN,
                 'description'  => 'The `Boolean` scalar type represents `true` or `false`.',
                 'serialize'    => function ($value) use ($coercer) {
@@ -54,7 +54,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
             ->withArgument(BooleanCoercer::class);
 
         $this->container->add(GraphQL::FLOAT, function (FloatCoercer $coercer) {
-            return GraphQLScalarType([
+            return newGraphQLScalarType([
                 'name'         => TypeNameEnum::FLOAT,
                 'description'  =>
                     'The `Float` scalar type represents signed double-precision fractional ' .
@@ -77,7 +77,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
             ->withArgument(FloatCoercer::class);
 
         $this->container->add(GraphQL::INT, function (IntCoercer $coercer) {
-            return GraphQLScalarType([
+            return newGraphQLScalarType([
                 'name'         => TypeNameEnum::INT,
                 'description'  =>
                     'The `Int` scalar type represents non-fractional signed whole numeric ' .
@@ -103,7 +103,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
             ->withArgument(IntCoercer::class);
 
         $this->container->add(GraphQL::ID, function (StringCoercer $coercer) {
-            return GraphQLScalarType([
+            return newGraphQLScalarType([
                 'name'         => TypeNameEnum::ID,
                 'description'  =>
                     'The `ID` scalar type represents a unique identifier, often used to ' .
@@ -128,7 +128,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
             ->withArgument(StringCoercer::class);
 
         $this->container->add(GraphQL::STRING, function (StringCoercer $coercer) {
-            return GraphQLScalarType([
+            return newGraphQLScalarType([
                 'name'         => TypeNameEnum::STRING,
                 'description'  =>
                     'The `String` scalar type represents textual data, represented as UTF-8 ' .

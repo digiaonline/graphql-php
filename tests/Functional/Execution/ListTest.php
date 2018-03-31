@@ -7,9 +7,9 @@ use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\GraphQLInt;
-use function Digia\GraphQL\Type\GraphQLList;
-use function Digia\GraphQL\Type\GraphQLObjectType;
-use function Digia\GraphQL\Type\GraphQLSchema;
+use function Digia\GraphQL\Type\newGraphQLList;
+use function Digia\GraphQL\Type\newGraphQLObjectType;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 use function Digia\GraphQL\Type\GraphQLString;
 
 class ListTest extends TestCase
@@ -25,7 +25,7 @@ class ListTest extends TestCase
      */
     public function makeTest($testType, $testData, $expected)
     {
-        $dataType = GraphQLObjectType([
+        $dataType = newGraphQLObjectType([
             'name'   => 'DataType',
             'fields' => function () use (&$dataType, $testType, $testData) {
                 return [
@@ -46,7 +46,7 @@ class ListTest extends TestCase
 
         $source = '{ nest { test } }';
 
-        $schema = GraphQLSchema(['query' => $dataType]);
+        $schema = newGraphQLSchema(['query' => $dataType]);
 
 
         /** @var ExecutionResult $executionResult */
@@ -61,7 +61,7 @@ class ListTest extends TestCase
      */
     public function testAcceptAnArrayObjectAsListValue()
     {
-        $this->makeTest(GraphQLList(GraphQLString()),
+        $this->makeTest(newGraphQLList(GraphQLString()),
             new \ArrayObject(['apple', 'banana', 'coconut']),
             [
                 'data' => [
@@ -80,7 +80,7 @@ class ListTest extends TestCase
      */
     public function testAcceptsAGeneratorAsFunctionValue()
     {
-        $this->makeTest(GraphQLList(GraphQLString()),
+        $this->makeTest(newGraphQLList(GraphQLString()),
             function () {
                 yield 'one';
                 yield 2;
@@ -102,7 +102,7 @@ class ListTest extends TestCase
      */
     public function testDoesNotAcceptStringAsIterable()
     {
-        $this->makeTest(GraphQLList(GraphQLString()),
+        $this->makeTest(newGraphQLList(GraphQLString()),
             'Singluar',
             [
                 'data'   => [
@@ -133,7 +133,7 @@ class ListTest extends TestCase
      */
     public function testArrayContainsValues()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             [1, 2],
             [
                 'data' => [
@@ -152,7 +152,7 @@ class ListTest extends TestCase
      */
     public function testArrayContainsNull()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             [1, null, 2],
             [
                 'data' => [
@@ -170,7 +170,7 @@ class ListTest extends TestCase
      */
     public function testArrayReturnsNull()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             null,
             [
                 'data' => [
@@ -188,7 +188,7 @@ class ListTest extends TestCase
      */
     public function testPromiseContainsValues()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             \React\Promise\resolve([1, 2]),
             [
                 'data' => [
@@ -207,7 +207,7 @@ class ListTest extends TestCase
      */
     public function testPromiseContainsNull()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             \React\Promise\resolve([1, null, 2]),
             [
                 'data' => [
@@ -225,7 +225,7 @@ class ListTest extends TestCase
      */
     public function testPromiseReturnsNull()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             \React\Promise\resolve(null),
             [
                 'data' => [
@@ -243,7 +243,7 @@ class ListTest extends TestCase
      */
     public function testPromiseReject()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             \React\Promise\reject(new \Exception('Bad')),
             [
                 'data'   => [
@@ -273,7 +273,7 @@ class ListTest extends TestCase
      */
     public function testArrayPromiseContainsValues()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             [
                 \React\Promise\resolve(1),
                 \React\Promise\resolve(2)
@@ -295,7 +295,7 @@ class ListTest extends TestCase
      */
     public function testArrayPromiseContainsNull()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             [
                 \React\Promise\resolve(1),
                 \React\Promise\resolve(null),
@@ -317,7 +317,7 @@ class ListTest extends TestCase
      */
     public function testArrayPromiseContainsReject()
     {
-        $this->makeTest(GraphQLList(GraphQLInt()),
+        $this->makeTest(newGraphQLList(GraphQLInt()),
             [
                 \React\Promise\resolve(1),
                 \React\Promise\reject(new \Exception('Bad')),

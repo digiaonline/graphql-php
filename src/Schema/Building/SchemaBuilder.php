@@ -2,18 +2,12 @@
 
 namespace Digia\GraphQL\Schema\Building;
 
-use Digia\GraphQL\Error\LanguageException;
-use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Language\Node\NamedTypeNode;
-use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
-use Digia\GraphQL\Language\Node\TypeNodeInterface;
+use Digia\GraphQL\Schema\Building\BuilderContextCreatorInterface;
+use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
 use Digia\GraphQL\Schema\ResolverRegistryInterface;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
-use function Digia\GraphQL\Type\GraphQLSchema;
-use function Digia\GraphQL\Util\arraySome;
+use function Digia\GraphQL\Type\newGraphQLSchema;
 
 class SchemaBuilder implements SchemaBuilderInterface
 {
@@ -41,7 +35,7 @@ class SchemaBuilder implements SchemaBuilderInterface
     ): SchemaInterface {
         $context = $this->contextCreator->create($document, $resolverRegistry);
 
-        return GraphQLSchema([
+        return newGraphQLSchema([
             'query'        => $context->buildQueryType(),
             'mutation'     => $context->buildMutationType(),
             'subscription' => $context->buildSubscriptionType(),
