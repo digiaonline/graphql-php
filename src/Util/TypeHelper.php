@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\NonNullTypeNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
@@ -144,6 +145,39 @@ class TypeHelper
         }
 
         // Otherwise the types do not overlap.
+        return false;
+    }
+
+    /**
+     * Two types conflict if both types could not apply to a value simultaneously.
+     * Composite types are ignored as their individual field types will be compared
+     * later recursively. However List and Non-Null types must match.
+     *
+     * @param TypeInterface $typeA
+     * @param TypeInterface $typeB
+     * @return bool
+     */
+    public function compareTypes(TypeInterface $typeA, TypeInterface $typeB): bool
+    {
+        if ($typeA instanceof ListType) {
+            return $typeB instanceof ListType
+                ? $this->compareTypes($typeA->getOfType(), $typeB->getOfType())
+                : true;
+        }
+        if ($typeB instanceof ListType) {
+            return true;
+        }
+        if ($typeA instanceof NonNullType) {
+            return $typeB instanceof NonNullType
+                ? $this->compareTypes($typeA->getOfType(), $typeB->getOfType())
+                : true;
+        }
+        if ($typeB instanceof NonNullType) {
+            return true;
+        }
+        if ($typeA instanceof LeafTypeInterface || $typeB instanceof LeafTypeInterface) {
+            return $typeA !== $typeB;
+        }
         return false;
     }
 

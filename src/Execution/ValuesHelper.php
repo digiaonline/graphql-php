@@ -21,6 +21,13 @@ use function Digia\GraphQL\Util\valueFromAST;
 class ValuesHelper
 {
     /**
+     * Prepares an object map of argument values given a list of argument
+     * definitions and list of argument AST nodes.
+     *
+     * Note: The returned value is a plain Object with a prototype, since it is
+     * exposed to user code. Care should be taken to not pull values from the
+     * Object prototype.
+     *
      * @see http://facebook.github.io/graphql/October2016/#CoerceArgumentValues()
      *
      * @param Field|Directive         $definition
@@ -97,6 +104,16 @@ class ValuesHelper
     }
 
     /**
+     * Prepares an object map of argument values given a directive definition
+     * and a AST node which may contain directives. Optionally also accepts a map
+     * of variable values.
+     *
+     * If the directive does not exist on the node, returns undefined.
+     *
+     * Note: The returned value is a plain Object with a prototype, since it is
+     * exposed to user code. Care should be taken to not pull values from the
+     * Object prototype.
+     *
      * @param Directive $directive
      * @param mixed     $node
      * @param array     $variableValues
