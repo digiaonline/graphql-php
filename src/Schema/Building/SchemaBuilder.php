@@ -53,8 +53,8 @@ class SchemaBuilder implements SchemaBuilderInterface
     public function createContext(
         DocumentNode $document,
         ResolverRegistryInterface $resolverRegistry
-    ): BuilderContextInterface {
-        $context = new BuilderContext($document, $resolverRegistry, $this->definitionBuilderCreator);
+    ): BuildingContextInterface {
+        $context = new BuildingContext($document, $resolverRegistry, $this->definitionBuilderCreator);
 
         $context->boot();
 

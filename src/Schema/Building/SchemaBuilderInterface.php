@@ -23,10 +23,10 @@ interface SchemaBuilderInterface
     /**
      * @param DocumentNode              $document
      * @param ResolverRegistryInterface $resolverRegistry
-     * @return BuilderContextInterface
+     * @return BuildingContextInterface
      */
     public function createContext(
         DocumentNode $document,
         ResolverRegistryInterface $resolverRegistry
-    ): BuilderContextInterface;
+    ): BuildingContextInterface;
 }

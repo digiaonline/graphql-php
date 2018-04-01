@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
-interface BuilderContextInterface
+interface BuildingContextInterface
 {
     /**
      *
