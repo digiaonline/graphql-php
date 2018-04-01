@@ -13,7 +13,6 @@ class SchemaValidationProvider extends AbstractServiceProvider
      * @var array
      */
     protected $provides = [
-        ValidationContextCreatorInterface::class,
         SchemaValidatorInterface::class,
         RootTypesRule::class,
         DirectivesRule::class,
@@ -25,10 +24,7 @@ class SchemaValidationProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(ValidationContextCreatorInterface::class, ValidationContextCreator::class, true);
-
-        $this->container->add(SchemaValidatorInterface::class, SchemaValidator::class, true)
-            ->withArgument(ValidationContextCreatorInterface::class);
+        $this->container->add(SchemaValidatorInterface::class, SchemaValidator::class, true);
 
         // Rules
         $this->container->add(RootTypesRule::class, RootTypesRule::class);

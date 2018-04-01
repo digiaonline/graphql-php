@@ -10,27 +10,13 @@ use Digia\GraphQL\Schema\SchemaInterface;
 class SchemaValidator implements SchemaValidatorInterface
 {
     /**
-     * @var ValidationContextCreatorInterface
-     */
-    protected $contextCreator;
-
-    /**
-     * SchemaValidation constructor.
-     * @param ValidationContextCreatorInterface $contextCreator
-     */
-    public function __construct(ValidationContextCreatorInterface $contextCreator)
-    {
-        $this->contextCreator = $contextCreator;
-    }
-
-    /**
      * @param SchemaInterface      $schema
      * @param RuleInterface[]|null $rules
      * @return SchemaValidationException[]
      */
     public function validate(SchemaInterface $schema, ?array $rules = null): array
     {
-        $context = $this->contextCreator->create($schema);
+        $context = $this->createContext($schema);
 
         $rules = $rules ?? SupportedRules::build();
 
@@ -56,5 +42,13 @@ class SchemaValidator implements SchemaValidatorInterface
 
             throw new SchemaValidationException($message);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createContext(SchemaInterface $schema): ValidationContextInterface
+    {
+        return new ValidationContext($schema);
     }
 }
