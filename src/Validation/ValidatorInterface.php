@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Schema\SchemaInterface;
@@ -23,4 +22,16 @@ interface ValidatorInterface
         ?array $rules = null,
         ?TypeInfo $typeInfo = null
     ): array;
+
+    /**
+     * @param SchemaInterface $schema
+     * @param DocumentNode    $document
+     * @param TypeInfo        $typeInfo
+     * @return ValidationContextInterface
+     */
+    public function createContext(
+        SchemaInterface $schema,
+        DocumentNode $document,
+        TypeInfo $typeInfo
+    ): ValidationContextInterface;
 }
