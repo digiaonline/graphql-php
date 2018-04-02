@@ -10,6 +10,8 @@ use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Schema\SchemaInterface;
 
+// TODO: Implement coerceVariableValues.
+
 /**
  * @param SchemaInterface          $schema
  * @param VariableDefinitionNode[] $nodes
@@ -18,7 +20,7 @@ use Digia\GraphQL\Schema\SchemaInterface;
  */
 //function coerceVariableValues(SchemaInterface $schema, array $nodes, array $inputs): array
 //{
-//    return GraphQL::make(ExecutionHelper::class)->coerceVariableValues($schema, $nodes, $inputs);
+//    return GraphQL::make(ValuesHelper::class)->coerceVariableValues($schema, $nodes, $inputs);
 //}
 
 /**
