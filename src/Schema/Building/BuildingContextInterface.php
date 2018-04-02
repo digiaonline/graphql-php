@@ -9,11 +9,6 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 interface BuildingContextInterface
 {
     /**
-     *
-     */
-    public function boot(): void;
-
-    /**
      * @return TypeInterface|null
      */
     public function buildQueryType(): ?TypeInterface;
