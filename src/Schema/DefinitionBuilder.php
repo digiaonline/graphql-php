@@ -38,6 +38,7 @@ use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Execution\coerceDirectiveValues;
 use function Digia\GraphQL\Type\assertNullableType;
+use function Digia\GraphQL\Type\introspectionTypes;
 use function Digia\GraphQL\Type\newDirective;
 use function Digia\GraphQL\Type\newEnumType;
 use function Digia\GraphQL\Type\newInputObjectType;
@@ -47,7 +48,6 @@ use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newUnionType;
-use function Digia\GraphQL\Type\introspectionTypes;
 use function Digia\GraphQL\Type\specifiedScalarTypes;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\keyValueMap;
@@ -76,22 +76,22 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     /**
      * DefinitionBuilder constructor.
-     * @param array                     $typeDefinitionsMap
-     * @param ResolverRegistryInterface $resolverRegistry
-     * @param callable|null             $resolveTypeFunction
-     * @param CacheInterface            $cache
+     * @param array                          $typeDefinitionsMap
+     * @param ResolverRegistryInterface|null $resolverRegistry
+     * @param callable|null                  $resolveTypeFunction
+     * @param CacheInterface                 $cache
      * @throws InvalidArgumentException
      */
     public function __construct(
         array $typeDefinitionsMap,
-        ResolverRegistryInterface $resolverRegistry,
+        ?ResolverRegistryInterface $resolverRegistry = null,
         ?callable $resolveTypeFunction = null,
         CacheInterface $cache
     ) {
         $this->typeDefinitionsMap  = $typeDefinitionsMap;
-        $this->resolverRegistry    = $resolverRegistry;
-        $this->cache               = $cache;
+        $this->resolverRegistry    = $resolverRegistry ?? new ResolverMapRegistry();
         $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
+        $this->cache               = $cache;
 
         $builtInTypes = keyMap(
             \array_merge(specifiedScalarTypes(), introspectionTypes()),

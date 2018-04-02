@@ -59,7 +59,7 @@ class SchemaBuilder implements SchemaBuilderInterface
         DocumentNode $document,
         ResolverRegistryInterface $resolverRegistry
     ): BuildingContextInterface {
-        $info = $this->createBuildingInfo($document);
+        $info = $this->createInfo($document);
 
         $definitionBuilder = new DefinitionBuilder(
             $info->getTypeDefinitionMap(),
@@ -68,14 +68,14 @@ class SchemaBuilder implements SchemaBuilderInterface
             $this->cache
         );
 
-        return new BuildingContext($document, $resolverRegistry, $definitionBuilder, $info);
+        return new BuildingContext($resolverRegistry, $definitionBuilder, $info);
     }
 
     /**
      * @inheritdoc
      * @throws BuildingException
      */
-    protected function createBuildingInfo(DocumentNode $document): BuildingInfo
+    protected function createInfo(DocumentNode $document): BuildingInfo
     {
         $schemaDefinition     = null;
         $typeDefinitionMap    = [];

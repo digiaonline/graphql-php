@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Schema\Building;
 
-use Digia\GraphQL\Schema\DefinitionBuilderCreatorInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Psr\SimpleCache\CacheInterface;
 

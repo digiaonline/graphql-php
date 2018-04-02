@@ -6,7 +6,6 @@ use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
-use Digia\GraphQL\Schema\DefinitionBuilder;
 use Digia\GraphQL\Schema\DefinitionBuilderInterface;
 use Digia\GraphQL\Schema\ResolverRegistryInterface;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -15,11 +14,6 @@ use function Digia\GraphQL\Util\arraySome;
 
 class BuildingContext implements BuildingContextInterface
 {
-    /**
-     * @var DocumentNode
-     */
-    protected $document;
-
     /**
      * @var ResolverRegistryInterface
      */
@@ -37,18 +31,15 @@ class BuildingContext implements BuildingContextInterface
 
     /**
      * BuilderContext constructor.
-     * @param DocumentNode              $document
-     * @param ResolverRegistryInterface $resolverRegistry
-     * @param DefinitionBuilder         $definitionBuilder
-     * @param BuildingInfo              $info
+     * @param ResolverRegistryInterface  $resolverRegistry
+     * @param DefinitionBuilderInterface $definitionBuilder
+     * @param BuildingInfo               $info
      */
     public function __construct(
-        DocumentNode $document,
         ResolverRegistryInterface $resolverRegistry,
-        DefinitionBuilder $definitionBuilder,
+        DefinitionBuilderInterface $definitionBuilder,
         BuildingInfo $info
     ) {
-        $this->document          = $document;
         $this->resolverRegistry  = $resolverRegistry;
         $this->definitionBuilder = $definitionBuilder;
         $this->info              = $info;

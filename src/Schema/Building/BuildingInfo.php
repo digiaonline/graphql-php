@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
+use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
 class BuildingInfo
@@ -15,11 +16,6 @@ class BuildingInfo
      * @var DocumentNode
      */
     protected $document;
-
-    /**
-     * @var SchemaDefinitionNode|null
-     */
-    protected $schemaDefinition;
 
     /**
      * @var TypeInterface[]
@@ -35,6 +31,11 @@ class BuildingInfo
      * @var OperationTypeDefinitionNode[]
      */
     protected $operationTypeDefinitions;
+
+    /**
+     * @var SchemaDefinitionNode|null
+     */
+    protected $schemaDefinition;
 
     /**
      * BuildingInfo constructor.
@@ -69,7 +70,7 @@ class BuildingInfo
 
     /**
      * @param string $operation
-     * @return NodeInterface|null
+     * @return TypeNodeInterface|null
      */
     public function getOperationTypeDefinition(string $operation): ?NodeInterface
     {
