@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Schema\Extension;
 use Digia\GraphQL\Error\ExtensionException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Schema\DefinitionBuilderCreatorInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Type\newSchema;
@@ -12,17 +13,17 @@ use function Digia\GraphQL\Type\newSchema;
 class SchemaExtender implements SchemaExtenderInterface
 {
     /**
-     * @var ExtensionContextCreatorInterface
+     * @var DefinitionBuilderCreatorInterface
      */
-    protected $contextCreator;
+    protected $definitionBuilderCreator;
 
     /**
-     * SchemaExtender constructor.
-     * @param ExtensionContextCreatorInterface $contextCreator
+     * BuilderContextCreator constructor.
+     * @param DefinitionBuilderCreatorInterface $definitionBuilderCreator
      */
-    public function __construct(ExtensionContextCreatorInterface $contextCreator)
+    public function __construct(DefinitionBuilderCreatorInterface $definitionBuilderCreator)
     {
-        $this->contextCreator = $contextCreator;
+        $this->definitionBuilderCreator = $definitionBuilderCreator;
     }
 
     /**
@@ -35,7 +36,7 @@ class SchemaExtender implements SchemaExtenderInterface
      */
     public function extend(SchemaInterface $schema, DocumentNode $document): SchemaInterface
     {
-        $context = $this->contextCreator->create($schema, $document);
+        $context = $this->createContext($schema, $document);
 
         // If this document contains no new types, extensions, or directives then
         // return the same unmodified GraphQLSchema instance.
@@ -51,5 +52,17 @@ class SchemaExtender implements SchemaExtenderInterface
             'directives'   => $context->getExtendedDirectives(),
             'astNode'      => $schema->getAstNode(),
         ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createContext(SchemaInterface $schema, DocumentNode $document): ExtensionContextInterface
+    {
+        $context = new ExtensionContext($schema, $document, $this->definitionBuilderCreator);
+
+        $context->boot();
+
+        return $context;
     }
 }

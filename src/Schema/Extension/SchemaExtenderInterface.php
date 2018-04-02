@@ -13,4 +13,11 @@ interface SchemaExtenderInterface
      * @return SchemaInterface
      */
     public function extend(SchemaInterface $schema, DocumentNode $document): SchemaInterface;
+
+    /**
+     * @param SchemaInterface $schema
+     * @param DocumentNode    $document
+     * @return ExtensionContextInterface
+     */
+    public function createContext(SchemaInterface $schema, DocumentNode $document): ExtensionContextInterface;
 }

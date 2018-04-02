@@ -11,7 +11,6 @@ class ValidationProvider extends AbstractServiceProvider
      * @var array
      */
     protected $provides = [
-        ValidationContextCreatorInterface::class,
         ValidatorInterface::class,
     ];
 
@@ -20,14 +19,7 @@ class ValidationProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(
-            ValidationContextCreatorInterface::class,
-            ValidationContextCreator::class,
-            true/* $shared */
-        );
-
         $this->container->add(ValidatorInterface::class, Validator::class, true/* $shared */)
-            ->withArgument(ValidationContextCreatorInterface::class)
             ->withArgument(SchemaValidatorInterface::class);
     }
 }

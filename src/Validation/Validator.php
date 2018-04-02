@@ -15,25 +15,16 @@ use function Digia\GraphQL\Util\invariant;
 class Validator implements ValidatorInterface
 {
     /**
-     * @var ValidationContextCreatorInterface
-     */
-    protected $contextCreator;
-
-    /**
      * @var SchemaValidatorInterface
      */
     protected $schemaValidator;
 
     /**
      * Validator constructor.
-     * @param ValidationContextCreatorInterface $contextCreator
-     * @param SchemaValidatorInterface          $schemaValidator
+     * @param SchemaValidatorInterface $schemaValidator
      */
-    public function __construct(
-        ValidationContextCreatorInterface $contextCreator,
-        SchemaValidatorInterface $schemaValidator
-    ) {
-        $this->contextCreator  = $contextCreator;
+    public function __construct(SchemaValidatorInterface $schemaValidator)
+    {
         $this->schemaValidator = $schemaValidator;
     }
 
@@ -53,7 +44,7 @@ class Validator implements ValidatorInterface
         $typeInfo = $typeInfo ?? new TypeInfo($schema);
         $rules    = $rules ?? SupportedRules::build();
 
-        $context = $this->contextCreator->create($schema, $document, $typeInfo);
+        $context = $this->createContext($schema, $document, $typeInfo);
 
         $visitors = \array_map(function (RuleInterface $rule) use ($context) {
             return $rule->setContext($context);
@@ -65,5 +56,19 @@ class Validator implements ValidatorInterface
         $document->acceptVisitor($visitor);
 
         return $context->getErrors();
+    }
+
+    /**
+     * @param SchemaInterface $schema
+     * @param DocumentNode    $document
+     * @param TypeInfo        $typeInfo
+     * @return ValidationContextInterface
+     */
+    public function createContext(
+        SchemaInterface $schema,
+        DocumentNode $document,
+        TypeInfo $typeInfo
+    ): ValidationContextInterface {
+        return new ValidationContext($schema, $document, $typeInfo);
     }
 }

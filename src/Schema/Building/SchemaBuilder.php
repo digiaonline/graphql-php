@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Schema\Building;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Schema\Building\BuilderContextCreatorInterface;
 use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
+use Digia\GraphQL\Schema\DefinitionBuilderCreatorInterface;
 use Digia\GraphQL\Schema\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Type\newSchema;
@@ -12,17 +13,17 @@ use function Digia\GraphQL\Type\newSchema;
 class SchemaBuilder implements SchemaBuilderInterface
 {
     /**
-     * @var BuilderContextCreatorInterface
+     * @var DefinitionBuilderCreatorInterface
      */
-    protected $contextCreator;
+    protected $definitionBuilderCreator;
 
     /**
-     * SchemaBuilder constructor.
-     * @param BuilderContextCreatorInterface $contextCreator
+     * BuilderContextCreator constructor.
+     * @param DefinitionBuilderCreatorInterface $definitionBuilderCreator
      */
-    public function __construct(BuilderContextCreatorInterface $contextCreator)
+    public function __construct(DefinitionBuilderCreatorInterface $definitionBuilderCreator)
     {
-        $this->contextCreator = $contextCreator;
+        $this->definitionBuilderCreator = $definitionBuilderCreator;
     }
 
     /**
@@ -33,7 +34,7 @@ class SchemaBuilder implements SchemaBuilderInterface
         ResolverRegistryInterface $resolverRegistry,
         array $options = []
     ): SchemaInterface {
-        $context = $this->contextCreator->create($document, $resolverRegistry);
+        $context = $this->createContext($document, $resolverRegistry);
 
         return newSchema([
             'query'        => $context->buildQueryType(),
@@ -44,5 +45,19 @@ class SchemaBuilder implements SchemaBuilderInterface
             'astNode'      => $context->getSchemaDefinition(),
             'assumeValid'  => $options['assumeValid'] ?? false,
         ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createContext(
+        DocumentNode $document,
+        ResolverRegistryInterface $resolverRegistry
+    ): BuildingContextInterface {
+        $context = new BuildingContext($document, $resolverRegistry, $this->definitionBuilderCreator);
+
+        $context->boot();
+
+        return $context;
     }
 }

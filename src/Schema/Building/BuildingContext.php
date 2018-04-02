@@ -17,7 +17,7 @@ use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\arraySome;
 
-class BuilderContext implements BuilderContextInterface
+class BuildingContext implements BuildingContextInterface
 {
     /**
      * @var DocumentNode
