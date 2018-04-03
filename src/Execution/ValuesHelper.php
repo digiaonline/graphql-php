@@ -255,7 +255,7 @@ class ValuesHelper
         }
 
         if ($type instanceof EnumType) {
-            if (gettype($value) === 'string') {
+            if (is_string($value)) {
                 $enumValue = $type->getValue($value);
                 if ($enumValue !== null) {
                     return [
@@ -267,6 +267,8 @@ class ValuesHelper
             $suggestions = suggestionList((string)$value, array_map(function (EnumValue $enumValue) {
                 return $enumValue->getName();
             }, $type->getValues()));
+
+            //@TODO throw proper error
         }
 
         if ($type instanceof ListType) {
