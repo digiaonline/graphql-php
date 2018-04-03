@@ -9,7 +9,7 @@ use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
 
-class ExtensionInfo
+class ExtendInfo
 {
     /**
      * @var SchemaInterface

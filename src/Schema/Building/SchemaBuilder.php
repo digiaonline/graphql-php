@@ -75,7 +75,7 @@ class SchemaBuilder implements SchemaBuilderInterface
      * @inheritdoc
      * @throws BuildingException
      */
-    protected function createInfo(DocumentNode $document): BuildingInfo
+    protected function createInfo(DocumentNode $document): BuildInfo
     {
         $schemaDefinition     = null;
         $typeDefinitionMap    = [];
@@ -111,7 +111,7 @@ class SchemaBuilder implements SchemaBuilderInterface
             }
         }
 
-        return new BuildingInfo(
+        return new BuildInfo(
             $document,
             $typeDefinitionMap,
             $directiveDefinitions,

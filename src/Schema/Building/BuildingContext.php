@@ -25,7 +25,7 @@ class BuildingContext implements BuildingContextInterface
     protected $definitionBuilder;
 
     /**
-     * @var BuildingInfo
+     * @var BuildInfo
      */
     protected $info;
 
@@ -33,12 +33,12 @@ class BuildingContext implements BuildingContextInterface
      * BuilderContext constructor.
      * @param ResolverRegistryInterface  $resolverRegistry
      * @param DefinitionBuilderInterface $definitionBuilder
-     * @param BuildingInfo               $info
+     * @param BuildInfo                  $info
      */
     public function __construct(
         ResolverRegistryInterface $resolverRegistry,
         DefinitionBuilderInterface $definitionBuilder,
-        BuildingInfo $info
+        BuildInfo $info
     ) {
         $this->resolverRegistry  = $resolverRegistry;
         $this->definitionBuilder = $definitionBuilder;

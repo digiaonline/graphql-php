@@ -30,7 +30,7 @@ use function Digia\GraphQL\Util\keyMap;
 class ExtensionContext implements ExtensionContextInterface
 {
     /**
-     * @var ExtensionInfo
+     * @var ExtendInfo
      */
     protected $info;
 
@@ -46,9 +46,9 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * ExtensionContext constructor.
-     * @param ExtensionInfo $info
+     * @param ExtendInfo $info
      */
-    public function __construct(ExtensionInfo $info)
+    public function __construct(ExtendInfo $info)
     {
         $this->info = $info;
     }

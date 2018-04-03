@@ -92,10 +92,10 @@ class SchemaExtender implements SchemaExtenderInterface
     /**
      * @param SchemaInterface $schema
      * @param DocumentNode    $document
-     * @return ExtensionInfo
+     * @return ExtendInfo
      * @throws ExtensionException
      */
-    protected function createInfo(SchemaInterface $schema, DocumentNode $document): ExtensionInfo
+    protected function createInfo(SchemaInterface $schema, DocumentNode $document): ExtendInfo
     {
         $typeDefinitionMap    = [];
         $typeExtensionsMap    = [];
@@ -177,7 +177,7 @@ class SchemaExtender implements SchemaExtenderInterface
             }
         }
 
-        return new ExtensionInfo(
+        return new ExtendInfo(
             $schema,
             $document,
             $typeDefinitionMap,

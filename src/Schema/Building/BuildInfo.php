@@ -10,7 +10,7 @@ use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
-class BuildingInfo
+class BuildInfo
 {
     /**
      * @var DocumentNode
