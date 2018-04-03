@@ -284,7 +284,7 @@ class VariablesTest extends TestCase
         $params = ['input' => ['a' => 'foo', 'b' => ['bar'], 'c' => 'baz']];
 
         $result = execute($this->schema, parse($query), null, null, $params);
-
+            
         $this->assertEquals([
             'data' => [
                 'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
