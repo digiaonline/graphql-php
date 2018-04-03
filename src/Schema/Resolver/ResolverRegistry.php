@@ -2,27 +2,28 @@
 
 namespace Digia\GraphQL\Schema\Resolver;
 
+use Digia\GraphQL\Error\ResolutionException;
+
 class ResolverRegistry implements ResolverRegistryInterface
 {
     /**
-     * @var array
+     * @var ResolverInterface[]
      */
     protected $resolverMap;
 
     /**
      * ResolverMapRegistry constructor.
-     *
-     * @param array $resolverMap
+     * @param array $resolvers
      */
-    public function __construct(array $resolverMap = [])
+    public function __construct(array $resolvers)
     {
-        $this->resolverMap = $resolverMap;
+        $this->registerResolvers($resolvers);
     }
 
     /**
      * @inheritdoc
      */
-    public function register(string $typeName, $resolver): void
+    public function register(string $typeName, ResolverInterface $resolver): void
     {
         $this->resolverMap[$typeName] = $resolver;
     }
@@ -32,20 +33,34 @@ class ResolverRegistry implements ResolverRegistryInterface
      */
     public function lookup(string $typeName, string $fieldName): ?callable
     {
-        $resolver = $this->resolverMap[$typeName] ?? null;
-
-        if (\is_array($resolver) && isset($resolver[$fieldName])) {
-            return $resolver[$fieldName];
+        if (!isset($this->resolverMap[$typeName])) {
+            return null;
         }
 
-        if (\is_string($resolver)) {
-            $resolver = new $resolver();
-        }
+        $resolver = $this->resolverMap[$typeName];
 
         if ($resolver instanceof ResolverInterface) {
             return $resolver->getResolveMethod($fieldName);
         }
 
-        return null;
+        throw new ResolutionException(\sprintf('Failed to resolve field "%s" for type "%s".', $fieldName, $typeName));
+    }
+
+    /**
+     * @param array $resolvers
+     */
+    protected function registerResolvers(array $resolvers): void
+    {
+        foreach ($resolvers as $typeName => $resolver) {
+            if (\is_array($resolver)) {
+                $resolver = new ArrayResolver($resolver);
+            }
+
+            if (\is_string($resolver)) {
+                $resolver = new $resolver();
+            }
+
+            $this->register($typeName, $resolver);
+        }
     }
 }
