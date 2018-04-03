@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Execution;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
 
 /**
@@ -23,6 +24,7 @@ class ExecutionContextBuilder
      * @param callable|null $fieldResolver
      * @return ExecutionContext
      * @throws ExecutionException
+     * @throws \Exception
      */
     public function buildContext(
         Schema $schema,
@@ -67,12 +69,25 @@ class ExecutionContextBuilder
             throw new ExecutionException('Must provide an operation.');
         }
 
+        $variableValues = [];
+
+        /** @var OperationDefinitionNode $operation */
+        if ($operation) {
+            $coercedVariableValues = (new ValuesHelper())->coerceVariableValues(
+                $schema,
+                $operation->getVariableDefinitions(),
+                $rawVariableValues
+            );
+
+            $variableValues = $coercedVariableValues['coerced'];
+        }
+
         $executionContext = new ExecutionContext(
             $schema,
             $fragments,
             $rootValue,
             $contextValue,
-            $rawVariableValues,
+            $variableValues,
             $fieldResolver,
             $operation,
             $errors

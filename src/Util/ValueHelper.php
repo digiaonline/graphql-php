@@ -104,9 +104,10 @@ class ValueHelper
             $variableName = $node->getNameValue();
 
             if (!isset($variables[$variableName])) {
-                throw new ResolutionException(
+                /*throw new ResolutionException(
                     \sprintf('Cannot resolve value for missing variable "%s".', $variableName)
-                );
+                );*/
+                return; // Invalid: intentionally return no value.
             }
 
             // Note: we're not doing any checking that this variable is correct. We're
