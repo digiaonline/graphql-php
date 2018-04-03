@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Schema\Building;
 
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Schema\ResolverRegistryInterface;
+use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
 
 interface SchemaBuilderInterface
