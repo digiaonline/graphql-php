@@ -8,11 +8,6 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 interface ExtensionContextInterface
 {
     /**
-     *
-     */
-    public function boot(): void;
-
-    /**
      * @return bool
      */
     public function isSchemaExtended(): bool;

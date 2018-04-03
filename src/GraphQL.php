@@ -21,14 +21,13 @@ use Digia\GraphQL\Schema\Building\SchemaBuildingProvider;
 use Digia\GraphQL\Schema\Extension\SchemaExtensionProvider;
 use Digia\GraphQL\Schema\ResolverMapRegistry;
 use Digia\GraphQL\Schema\ResolverRegistryInterface;
-use Digia\GraphQL\Schema\SchemaProvider;
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Schema\Validation\SchemaValidationProvider;
 use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use Digia\GraphQL\Type\CoercerProvider;
 use Digia\GraphQL\Type\DirectivesProvider;
 use Digia\GraphQL\Type\IntrospectionProvider;
 use Digia\GraphQL\Type\ScalarTypesProvider;
-use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Util\UtilityProvider;
 use Digia\GraphQL\Validation\RulesProvider;
 use Digia\GraphQL\Validation\ValidationProvider;
@@ -67,7 +66,6 @@ class GraphQL
     private static $providers = [
         CacheProvider::class,
         LanguageProvider::class,
-        SchemaProvider::class,
         SchemaBuildingProvider::class,
         SchemaExtensionProvider::class,
         SchemaValidationProvider::class,
