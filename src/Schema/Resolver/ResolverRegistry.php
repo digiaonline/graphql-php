@@ -15,7 +15,7 @@ class ResolverRegistry implements ResolverRegistryInterface
      * ResolverMapRegistry constructor.
      * @param array $resolvers
      */
-    public function __construct(array $resolvers)
+    public function __construct(array $resolvers = [])
     {
         $this->registerResolvers($resolvers);
     }
@@ -33,17 +33,26 @@ class ResolverRegistry implements ResolverRegistryInterface
      */
     public function lookup(string $typeName, string $fieldName): ?callable
     {
-        if (!isset($this->resolverMap[$typeName])) {
+        $resolver = $this->getResolver($typeName);
+
+        if (null === $resolver) {
             return null;
         }
-
-        $resolver = $this->resolverMap[$typeName];
 
         if ($resolver instanceof ResolverInterface) {
             return $resolver->getResolveMethod($fieldName);
         }
 
         throw new ResolutionException(\sprintf('Failed to resolve field "%s" for type "%s".', $fieldName, $typeName));
+    }
+
+    /**
+     * @param string $typeName
+     * @return ResolverInterface|null
+     */
+    public function getResolver(string $typeName): ?ResolverInterface
+    {
+        return $this->resolverMap[$typeName] ?? null;
     }
 
     /**

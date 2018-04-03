@@ -19,6 +19,15 @@ class ArrayResolver implements ResolverInterface
     }
 
     /**
+     * @param string   $fieldName
+     * @param callable $resolver
+     */
+    public function addResolver(string $fieldName, callable $resolver)
+    {
+        $this->resolvers[$fieldName] = $resolver;
+    }
+
+    /**
      * @param string $fieldName
      * @return callable|null
      */
