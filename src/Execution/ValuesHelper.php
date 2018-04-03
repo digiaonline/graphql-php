@@ -306,9 +306,14 @@ class ValuesHelper
                 if (!isset($value[$field->getName()])) {
                     if (!empty($field->getDefaultValue())) {
                         $coercedValue[$field->getName()] = $field->getDefaultValue();
-                    } elseif($type instanceof NonNullType) {
-                        //@TODO proper message
-                        $errors[] = new GraphQLException("Field `path` of required type `type` was not provided");
+                    } elseif ($type instanceof NonNullType) {
+                        $errors[] = new GraphQLException(
+                            sprintf(
+                                "Field %s of required type %s was not provided",
+                                implode(",", array_merge($path, [$field->getName()])),
+                                $type->getName()
+                            )
+                        );
                     }
                 } else {
                     $fieldValue   = $value[$field->getName()];
@@ -328,11 +333,12 @@ class ValuesHelper
             }
 
             // Ensure every provided field is defined.
-            foreach ($value as $fieldName => $value) {
+            foreach ($value as $fieldName => $fieldValue) {
                 if ($fields[$fieldName] === null) {
                     $suggestion = suggestionList($fieldName, array_keys($fields));
-                    $errors[]   = new GraphQLException(sprintf('Field "%" is not defined by type %s'),
-                        $fieldName, $type->getName());
+                    $errors[]   = new GraphQLException(
+                        sprintf('Field "%s" is not defined by type %s', $fieldName, $type->getName())
+                    );
                 }
             }
 
@@ -341,14 +347,6 @@ class ValuesHelper
                 'coerced' => $coercedValue ?? []
             ];
         }
-
-//        if ($type instanceof LeafTypeInterface) {
-//            $parsed = $type->parseValue($value);
-//            if (null === $parsed) {
-//                throw new GraphQLException('Undefined');
-//            }
-//            return $parsed;
-//        }
 
         throw new GraphQLException('Unexpected type.');
     }

@@ -305,7 +305,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                                 'includeDeprecated' => ['type' => Boolean(), 'defaultValue' => false],
                             ],
                             'resolve' => function (TypeInterface $type, array $args): ?array {
-                                [$includeDeprecated] = $args;
+                                $includeDeprecated = $args['includeDeprecated'];
 
                                 if ($type instanceof EnumType) {
                                     $values = array_values($type->getValues());
