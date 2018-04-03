@@ -6,13 +6,13 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\GraphQLString;
-use function Digia\GraphQL\Type\newGraphQLInputObjectType;
-use function Digia\GraphQL\Type\newGraphQLList;
-use function Digia\GraphQL\Type\newGraphQLNonNull;
-use function Digia\GraphQL\Type\newGraphQLObjectType;
-use function Digia\GraphQL\Type\newGraphQLScalarType;
-use function Digia\GraphQL\Type\newGraphQLSchema;
+use function Digia\GraphQL\Type\newInputObjectType;
+use function Digia\GraphQL\Type\newList;
+use function Digia\GraphQL\Type\newNonNull;
+use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newScalarType;
+use function Digia\GraphQL\Type\newSchema;
+use function Digia\GraphQL\Type\String;
 
 
 /**
@@ -31,7 +31,7 @@ class VariablesTest extends TestCase
     {
         parent::setUp();
 
-        $TestComplexScalar = newGraphQLScalarType([
+        $TestComplexScalar = newScalarType([
             'name'         => 'ComplexScalar',
             'serialize'    => function ($value) {
                 if ($value === 'DeserializedValue') {
@@ -53,34 +53,34 @@ class VariablesTest extends TestCase
             }
         ]);
 
-        $TestInputObject = newGraphQLInputObjectType([
+        $TestInputObject = newInputObjectType([
             'name'   => 'TestInputObject',
             'fields' => [
-                'a' => ['type' => GraphQLString()],
-                'b' => ['type' => newGraphQLList(GraphQLString())],
-                'c' => ['type' => newGraphQLNonNull(GraphQLString())],
+                'a' => ['type' => String()],
+                'b' => ['type' => newList(String())],
+                'c' => ['type' => newNonNull(String())],
                 'd' => ['type' => $TestComplexScalar]
             ]
         ]);
 
-        $TestNestedInputObject = newGraphQLInputObjectType([
+        $TestNestedInputObject = newInputObjectType([
             'name'   => 'TestNestedInputObject',
             'fields' => [
-                'na' => ['type' => newGraphQLNonNull($TestInputObject)],
-                'nb' => ['type' => newGraphQLNonNull(GraphQLString())]
+                'na' => ['type' => newNonNull($TestInputObject)],
+                'nb' => ['type' => newNonNull(String())]
             ]
         ]);
 
-        $TestType = newGraphQLObjectType([
+        $TestType = newObjectType([
             'name'   => 'TestField',
             'fields' => [
                 'fieldWithObjectInput'            => $this->fieldWithInputArg(['type' => $TestInputObject]),
-                'fieldWithNullableStringInput'    => $this->fieldWithInputArg(['type' => GraphQLString()]),
+                'fieldWithNullableStringInput'    => $this->fieldWithInputArg(['type' => String()]),
                 'fieldWithNonNullableStringInput' => $this->fieldWithInputArg([
-                    'type' => newGraphQLNonNull(GraphQLString())
+                    'type' => newNonNull(String())
                 ]),
                 'fieldWithDefaultArgumentValue'   => $this->fieldWithInputArg([
-                    'type'         => GraphQLString(),
+                    'type'         => String(),
                     'defaultValue' => 'Hello World'
                 ]),
                 'fieldWithNestedInputObject'      => $this->fieldWithInputArg([
@@ -88,21 +88,21 @@ class VariablesTest extends TestCase
                     'defaultValue' => 'Hello World'
                 ]),
                 'list'                            => $this->fieldWithInputArg([
-                    'type' => newGraphQLList(GraphQLString())
+                    'type' => newList(String())
                 ]),
                 'nnList'                          => $this->fieldWithInputArg([
-                    'type' => newGraphQLNonNull(newGraphQLList(GraphQLString())),
+                    'type' => newNonNull(newList(String())),
                 ]),
                 'listNN'                          => $this->fieldWithInputArg([
-                    'type' => newGraphQLList(newGraphQLNonNull(GraphQLString())),
+                    'type' => newList(newNonNull(String())),
                 ]),
                 'nnListNN'                        => $this->fieldWithInputArg([
-                    'type' => newGraphQLNonNull(newGraphQLList(newGraphQLNonNull(GraphQLString()))),
+                    'type' => newNonNull(newList(newNonNull(String()))),
                 ]),
             ]
         ]);
 
-        $this->schema = newGraphQLSchema([
+        $this->schema = newSchema([
             'query' => $TestType
         ]);
     }
@@ -114,7 +114,7 @@ class VariablesTest extends TestCase
     function fieldWithInputArg($inputArg): array
     {
         return [
-            'type'    => GraphQLString(),
+            'type'    => String(),
             'args'    => [
                 'input' => $inputArg
             ],
