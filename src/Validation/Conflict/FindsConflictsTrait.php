@@ -194,7 +194,7 @@ trait FindsConflictsTrait
         $fieldMapB = $contextB->getFieldMap();
 
         // Do not compare a fragment's fieldMap to itself.
-        if ($fieldMap === $fieldMapB) {
+        if ($fieldMap == $fieldMapB) {
             return;
         }
 
