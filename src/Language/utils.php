@@ -29,7 +29,7 @@ function ordUTF8(string $string)
  */
 function charCodeAt(string $string, int $position): int
 {
-    return ordUTF8($string[$position]);
+    return ordUTF8(mb_substr($string, $position, 1));
 }
 
 /**
