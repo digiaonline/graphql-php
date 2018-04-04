@@ -55,8 +55,7 @@ resolvers at runtime from a resolver registry. The default registry is map-based
 [GraphQL Tools](https://www.apollographql.com/docs/graphql-tools/resolvers.html#Resolver-map) library.
 
 In practice this means that the schema builder takes the schema and the resolver registry and wires everything together 
-to build an executable schema. This approach should also allow us to support middleware for resolver, which could be
-very handy for e.g. data transformation or authorization checks.
+to build an executable schema.
 
 ### Language
 
@@ -100,21 +99,16 @@ even XML.
 
 **Package lead: [@crisu83](https://github.com/crisu83/)**
 
-### Schema Validation
+#### Schema validation
 
-TODO
+Our schema validation is based on the reference implementation, but we decided to implement it using rules. We introduced three rules, one for validating root types (query, mutation and subscription), one for validating directives and one for validating all the types.
 
-### Query validation
+#### Query validation
 
 Even though some GraphQL implementations come without any query validation we decided to include it in the first 
-version as it is a part of the specification. Query validation is done by evaluating the query AST using validation 
-rules. We implemented this using the [Visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) very much like 
-it is implemented in the reference implementation. 
+version, because it is a part of the specification. Query validation is done by evaluating the query AST using a set of validation rules (27 in total). We used the [Visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) to implement query validation, but instead of using a functional approach, like the reference implementation, we decided to go with a more traditional, object-oriented apporach. 
 
-In practice this means that the query AST is visited by the each rule. Every rule takes care of 
-validating the query against a particular part of the 
-[Validation specification](http://facebook.github.io/graphql/October2016/#sec-Validation). This also allows 
-developers to easily implement their own validation rules.
+In practice this means that the query AST is visited by the each rule. Every rule takes care of validating the query against a particular part of the [Validation specification](http://facebook.github.io/graphql/October2016/#sec-Validation). This also allows developers to easily implement their own validation rules.
 
 ## Usage
 
@@ -209,8 +203,8 @@ enum Episode { NEWHOPE, EMPIRE, JEDI }
 
 ```
 
-The public API consists of many more functions that can also be used separately. Developers can also choose to not 
-use the functions at all and wire everything together themselves.
+The public API consists of many more functions that can also be used directly. Developers can also choose to not 
+use the functions at all and wire everything together themselves if they prefer.
 
 ## Contributing
 
