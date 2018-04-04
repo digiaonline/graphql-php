@@ -393,6 +393,4 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
-
-
 }
