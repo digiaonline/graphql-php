@@ -37,10 +37,6 @@ class ValuesHelper
      * Prepares an object map of argument values given a list of argument
      * definitions and list of argument AST nodes.
      *
-     * Note: The returned value is a plain Object with a prototype, since it is
-     * exposed to user code. Care should be taken to not pull values from the
-     * Object prototype.
-     *
      * @see http://facebook.github.io/graphql/October2016/#CoerceArgumentValues()
      *
      * @param Field|Directive         $definition
@@ -121,11 +117,7 @@ class ValuesHelper
      * and a AST node which may contain directives. Optionally also accepts a map
      * of variable values.
      *
-     * If the directive does not exist on the node, returns undefined.
-     *
-     * Note: The returned value is a plain Object with a prototype, since it is
-     * exposed to user code. Care should be taken to not pull values from the
-     * Object prototype.
+     * If the directive does not exist on the node, returns null.
      *
      * @param Directive $directive
      * @param mixed     $node
@@ -153,6 +145,10 @@ class ValuesHelper
     }
 
     /**
+     * Prepares an object map of variableValues of the correct type based on the
+     * provided variable definitions and arbitrary input. If the input cannot be
+     * parsed to match the variable definitions, a GraphQLError will be thrown.
+     *
      * @param Schema                         $schema
      * @param array|VariableDefinitionNode[] $variableDefinitionNodes
      * @param                                $input
@@ -174,6 +170,7 @@ class ValuesHelper
             }
 
             if (!$type instanceof InputTypeInterface) {
+                //@TODO proper message
                 throw new GraphQLException('InputTypeInterface');
             } else {
                 if (!isset($inputs[$variableName])) {
@@ -214,6 +211,9 @@ class ValuesHelper
     }
 
     /**
+     * Returns either a value which is valid for the provided type or a list of
+     * encountered coercion errors.
+     *
      * @param  mixed|array $value
      * @param              $type
      * @param              $blameNode
