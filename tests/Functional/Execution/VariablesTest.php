@@ -335,4 +335,27 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Executes with complex scalar input using variable
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testExecutesWithComplexScalarInputUsingVariable()
+    {
+        $params = ['input' => ['c' => 'foo', 'd' => 'SerializedValue']];
+
+        $query = 'query ($input: TestInputObject) {
+            fieldWithObjectInput(input: $input)
+        }';
+
+        $result = execute($this->schema, parse($query), null, null, $params);
+
+        $this->assertEquals([
+            'data' => [
+                'fieldWithObjectInput' => '{"c":"foo","d":"DeserializedValue"}'
+            ]
+        ], $result->toArray());
+    }
 }
