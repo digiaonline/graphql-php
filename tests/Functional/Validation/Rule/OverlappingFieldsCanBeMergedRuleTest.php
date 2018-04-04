@@ -1054,8 +1054,6 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
 
     public function testFindsInvalidCaseEvenWithImmediatelyRecursiveFragment()
     {
-        $this->markTestIncomplete('BUG: Finds three conflicts, but should only find one.');
-
         $this->expectFailsRule(
             $this->rule,
             dedent('
