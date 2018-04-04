@@ -296,6 +296,14 @@ class ValuesHelper
                     'coerced' => $coercedValue ?? []
                 ];
             }
+
+            // Lists accept a non-list value as a list of one.
+            $coercedItem = $this->coerceValue($value, $itemType, $blameNode);
+
+            return [
+                'errors'  => $coercedItem['errors'] ?? [],
+                'coerced' => $coercedItem['coerced'] ? [$coercedItem['coerced']] : []
+            ];
         }
 
         if ($type instanceof InputObjectType) {
