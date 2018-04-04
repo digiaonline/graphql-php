@@ -18,6 +18,7 @@ use Digia\GraphQL\Language\PrinterInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
 use Digia\GraphQL\Schema\Building\SchemaBuildingProvider;
+use Digia\GraphQL\Schema\Extension\SchemaExtenderInterface;
 use Digia\GraphQL\Schema\Extension\SchemaExtensionProvider;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistry;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
@@ -136,6 +137,31 @@ class GraphQL
     {
         return static::make(SchemaBuilderInterface::class)
             ->build(
+                static::parse($source, $options),
+                $resolverRegistry instanceof ResolverRegistryInterface
+                    ? $resolverRegistry
+                    : new ResolverRegistry($resolverRegistry),
+                $options
+            );
+    }
+
+    /**
+     * @param SchemaInterface                 $schema
+     * @param string|Source                   $source
+     * @param array|ResolverRegistryInterface $resolverRegistry
+     * @param array                           $options
+     * @return SchemaInterface
+     * @throws InvariantException
+     */
+    public static function extendSchema(
+        SchemaInterface $schema,
+        $source,
+        $resolverRegistry,
+        array $options = []
+    ): SchemaInterface {
+        return static::make(SchemaExtenderInterface::class)
+            ->extend(
+                $schema,
                 static::parse($source, $options),
                 $resolverRegistry instanceof ResolverRegistryInterface
                     ? $resolverRegistry
