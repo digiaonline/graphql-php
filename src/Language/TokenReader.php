@@ -143,50 +143,42 @@ class TokenReader implements TokenReaderInterface
       int $col,
       Token $prev
     ): Token {
-        $body = $this->lexer->getBody();
+        $body       = $this->lexer->getBody();
         $bodyLength = mb_strlen($body);
-        $start = $pos;
-        $pos = $start + 3;
+        $start      = $pos;
+        $pos        = $start + 3;
         $chunkStart = $pos;
-        $rawValue = '';
-
-        while ($pos < $bodyLength && ($code = charCodeAt($body,
-            $pos)) !== null) {
+        $rawValue   = '';
+        while ($pos < $bodyLength && ($code = charCodeAt($body, $pos)) !== null) {
             // Closing Triple-Quote (""")
             if ($this->isTripleQuote($body, $code, $pos)) {
                 $rawValue .= sliceString($body, $chunkStart, $pos);
-
                 return new Token(
-                  TokenKindEnum::BLOCK_STRING,
-                  $start,
-                  $pos + 3,
-                  $line,
-                  $col,
-                  $prev,
-                  blockStringValue($rawValue)
+                    TokenKindEnum::BLOCK_STRING,
+                    $start,
+                    $pos + 3,
+                    $line,
+                    $col,
+                    $prev,
+                    blockStringValue($rawValue)
                 );
             }
-
             if (isSourceCharacter($code)) {
                 throw new SyntaxErrorException(
-                  $this->lexer->getSource(),
-                  $pos,
-                  sprintf('Invalid character within String: %s',
-                    printCharCode($code))
+                    $this->lexer->getSource(),
+                    $pos,
+                    sprintf('Invalid character within String: %s', printCharCode($code))
                 );
             }
-
             if ($this->isEscapedTripleQuote($body, $code, $pos)) {
-                $rawValue .= sliceString($body, $chunkStart, $pos) . '"""';
-                $pos += 4;
+                $rawValue   .= sliceString($body, $chunkStart, $pos) . '"""';
+                $pos        += 4;
                 $chunkStart = $pos;
             } else {
                 ++$pos;
             }
         }
-
-        throw new SyntaxErrorException($this->lexer->getSource(), $pos,
-          'Unterminated string.');
+        throw new SyntaxErrorException($this->lexer->getSource(), $pos, 'Unterminated string.');
     }
 
     /**
