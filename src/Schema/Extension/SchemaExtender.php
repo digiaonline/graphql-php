@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Schema\Extension;
 
 use Digia\GraphQL\Error\ExtensionException;
-use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\EnumTypeExtensionNode;
@@ -15,12 +14,12 @@ use Digia\GraphQL\Language\Node\ScalarTypeExtensionNode;
 use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeExtensionNode;
 use Digia\GraphQL\Schema\DefinitionBuilder;
+use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Psr\SimpleCache\CacheInterface;
-use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Type\newSchema;
 use function Digia\GraphQL\Util\toString;
 
@@ -41,16 +40,15 @@ class SchemaExtender implements SchemaExtenderInterface
     }
 
     /**
-     * @param SchemaInterface $schema
-     * @param DocumentNode    $document
-     * @return SchemaInterface
-     * @throws InvariantException
-     * @throws ExtensionException
-     * @throws InvalidArgumentException
+     * @inheritdoc
      */
-    public function extend(SchemaInterface $schema, DocumentNode $document): SchemaInterface
-    {
-        $context = $this->createContext($schema, $document);
+    public function extend(
+        SchemaInterface $schema,
+        DocumentNode $document,
+        ?ResolverRegistryInterface $resolverRegistry = null,
+        array $options = []
+    ): SchemaInterface {
+        $context = $this->createContext($schema, $document, $resolverRegistry);
 
         // If this document contains no new types, extensions, or directives then
         // return the same unmodified GraphQLSchema instance.
@@ -71,8 +69,11 @@ class SchemaExtender implements SchemaExtenderInterface
     /**
      * @inheritdoc
      */
-    public function createContext(SchemaInterface $schema, DocumentNode $document): ExtensionContextInterface
-    {
+    public function createContext(
+        SchemaInterface $schema,
+        DocumentNode $document,
+        ?ResolverRegistryInterface $resolverRegistry
+    ): ExtensionContextInterface {
         $info = $this->createInfo($schema, $document);
 
         // Context has to be created in order to create the definition builder,
@@ -81,7 +82,7 @@ class SchemaExtender implements SchemaExtenderInterface
 
         $definitionBuilder = new DefinitionBuilder(
             $info->getTypeDefinitionMap(),
-            null,
+            $resolverRegistry,
             [$context, 'resolveType'],
             $this->cache
         );

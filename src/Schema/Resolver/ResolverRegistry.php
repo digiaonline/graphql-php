@@ -47,8 +47,7 @@ class ResolverRegistry implements ResolverRegistryInterface
     }
 
     /**
-     * @param string $typeName
-     * @return ResolverInterface|null
+     * @inheritdoc
      */
     public function getResolver(string $typeName): ?ResolverInterface
     {

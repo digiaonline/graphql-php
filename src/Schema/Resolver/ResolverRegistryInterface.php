@@ -16,4 +16,10 @@ interface ResolverRegistryInterface
      * @return callable|null
      */
     public function lookup(string $typeName, string $fieldName): ?callable;
+
+    /**
+     * @param string $typeName
+     * @return ResolverInterface|null
+     */
+    public function getResolver(string $typeName): ?ResolverInterface;
 }

@@ -10,18 +10,33 @@ use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Source;
+use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Util\SerializationInterface;
 
 /**
- * @param string|Source $source
- * @param array         $options
+ * @param string|Source                   $source
+ * @param array|ResolverRegistryInterface $resolverRegistry
+ * @param array                           $options
  * @return SchemaInterface
  * @throws InvariantException
  */
-function buildSchema($source, array $resolverMaps = [], array $options = []): SchemaInterface
+function buildSchema($source, $resolverRegistry = [], array $options = []): SchemaInterface
 {
-    return GraphQL::buildSchema($source, $resolverMaps, $options);
+    return GraphQL::buildSchema($source, $resolverRegistry, $options);
+}
+
+/**
+ * @param SchemaInterface                 $schema
+ * @param string|Source                   $source
+ * @param array|ResolverRegistryInterface $resolverRegistry
+ * @param array                           $options
+ * @return SchemaInterface
+ * @throws InvariantException
+ */
+function extendSchema(SchemaInterface $schema, $source, $resolverRegistry = [], array $options = []): SchemaInterface
+{
+    return GraphQL::extendSchema($schema, $source, $resolverRegistry, $options);
 }
 
 /**
