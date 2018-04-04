@@ -13,6 +13,7 @@ use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -22,7 +23,6 @@ use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Schema\Schema;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
@@ -501,7 +501,11 @@ abstract class ExecutionStrategy
                         $context->addError($this->buildLocatedError($error, $fieldNodes, $path));
                     } else {
                         $context->addError(
-                            $this->buildLocatedError(new ExecutionException($error ?? 'An unknown error occurred.'), $fieldNodes, $path)
+                            $this->buildLocatedError(
+                                new ExecutionException($error ?? 'An unknown error occurred.'),
+                                $fieldNodes,
+                                $path
+                            )
                         );
                     }
                     return new \React\Promise\FulfilledPromise(null);
@@ -1002,14 +1006,16 @@ abstract class ExecutionStrategy
     }
 
     /**
-     * @param \Exception   $originalException
+     * @param \Throwable   $originalException
      * @param array        $nodes
      * @param string|array $path
      * @return GraphQLException
      */
-    protected function buildLocatedError(\Exception $originalException, array $nodes = [], array $path = []):
-    ExecutionException
-    {
+    protected function buildLocatedError(
+        \Throwable $originalException,
+        array $nodes = [],
+        array $path = []
+    ): ExecutionException {
         return new ExecutionException(
             $originalException->getMessage(),
             $originalException instanceof GraphQLException ? $originalException->getNodes() : $nodes,
