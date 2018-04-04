@@ -2,6 +2,6 @@
 
 namespace Digia\GraphQL\Error;
 
-class CoercingException extends AbstractException
+class CoercingException extends GraphQLException
 {
 }

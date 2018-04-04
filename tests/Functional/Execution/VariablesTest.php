@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\newInputObjectType;
 use function Digia\GraphQL\Type\newList;
@@ -358,4 +359,40 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Errors on null for nested non-null using variable
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testErrorsOnNullForNestedNonNullUsingVariable()
+    {
+        $params = ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => null]];
+
+        $query = 'query ($input: TestInputObject) {
+            fieldWithObjectInput(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, $params);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$input" got invalid value {"a":"foo","b":"bar","c":null}; ' .
+                        'Expected non-nullable type String! not to be null at value.c.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ]
+            ]
+        ], $result->toArray());
+    }
+
+
 }

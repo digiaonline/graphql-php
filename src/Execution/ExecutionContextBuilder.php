@@ -73,13 +73,17 @@ class ExecutionContextBuilder
 
         /** @var OperationDefinitionNode $operation */
         if ($operation) {
-            $coercedVariableValues = (new ValuesHelper())->coerceVariableValues(
+            $coercedVariableValues = coerceVariableValues(
                 $schema,
                 $operation->getVariableDefinitions(),
                 $rawVariableValues
             );
 
-            $variableValues = $coercedVariableValues['coerced'];
+            $variableValues = $coercedVariableValues->getValue();
+
+            if ($coercedVariableValues->hasErrors()) {
+                $errors = $coercedVariableValues->getErrors();
+            }
         }
 
         $executionContext = new ExecutionContext(
