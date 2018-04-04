@@ -10,7 +10,7 @@ use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Schema\DefinitionBuilder;
-use Digia\GraphQL\Schema\ResolverRegistryInterface;
+use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
 use Psr\SimpleCache\CacheInterface;
 use function Digia\GraphQL\Type\newSchema;

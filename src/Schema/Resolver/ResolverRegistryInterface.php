@@ -1,15 +1,14 @@
 <?php
 
-namespace Digia\GraphQL\Schema;
+namespace Digia\GraphQL\Schema\Resolver;
 
 interface ResolverRegistryInterface
 {
     /**
-     * @param string   $typeName
-     * @param string   $fieldName
-     * @param callable $resolver
+     * @param string            $typeName
+     * @param ResolverInterface $resolver
      */
-    public function register(string $typeName, string $fieldName, callable $resolver): void;
+    public function register(string $typeName, ResolverInterface $resolver): void;
 
     /**
      * @param string $typeName

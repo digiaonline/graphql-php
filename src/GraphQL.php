@@ -19,8 +19,8 @@ use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
 use Digia\GraphQL\Schema\Building\SchemaBuildingProvider;
 use Digia\GraphQL\Schema\Extension\SchemaExtensionProvider;
-use Digia\GraphQL\Schema\ResolverMapRegistry;
-use Digia\GraphQL\Schema\ResolverRegistryInterface;
+use Digia\GraphQL\Schema\Resolver\ResolverRegistry;
+use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Schema\Validation\SchemaValidationProvider;
 use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
@@ -139,7 +139,7 @@ class GraphQL
                 static::parse($source, $options),
                 $resolverRegistry instanceof ResolverRegistryInterface
                     ? $resolverRegistry
-                    : new ResolverMapRegistry($resolverRegistry),
+                    : new ResolverRegistry($resolverRegistry),
                 $options
             );
     }

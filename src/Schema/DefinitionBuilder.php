@@ -25,6 +25,7 @@ use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
+use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -89,7 +90,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         CacheInterface $cache
     ) {
         $this->typeDefinitionsMap  = $typeDefinitionsMap;
-        $this->resolverRegistry    = $resolverRegistry ?? new ResolverMapRegistry();
+        $this->resolverRegistry    = $resolverRegistry;
         $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
         $this->cache               = $cache;
 
@@ -271,10 +272,11 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             },
             function ($value) use ($node) {
                 /** @var FieldDefinitionNode|InputValueDefinitionNode $value */
-                return $this->buildField(
-                    $value,
-                    $this->resolverRegistry->lookup($node->getNameValue(), $value->getNameValue())
-                );
+                $resolve = null !== $this->resolverRegistry
+                    ? $this->resolverRegistry->lookup($node->getNameValue(), $value->getNameValue())
+                    : null;
+
+                return $this->buildField($value, $resolve);
             }
         ) : [];
     }

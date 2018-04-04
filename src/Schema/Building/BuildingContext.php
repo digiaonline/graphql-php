@@ -3,11 +3,10 @@
 namespace Digia\GraphQL\Schema\Building;
 
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
-use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Schema\DefinitionBuilderInterface;
-use Digia\GraphQL\Schema\ResolverRegistryInterface;
+use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\arraySome;
