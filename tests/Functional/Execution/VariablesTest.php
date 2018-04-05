@@ -785,5 +785,45 @@ class VariablesTest extends TestCase
     }
 
 
+    /**
+     * Reports error for non-provided variables for non-nullable inputs
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testReportErrorForNonProvidedVariableForNonNullableInputs()
+    {
+        // Note: this test would typically fail validation before encountering
+        // this execution error, however for queries which previously validated
+        // and are being run against a new schema which have introduced a breaking
+        // change to make a formerly non-required argument required, this asserts
+        // failure before allowing the underlying code to receive a non-null value.
+
+        $query = '{
+          fieldWithNonNullableStringInput(input: $foo)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data'   => [
+                'fieldWithNonNullableStringInput' => null
+            ],
+            'errors' => [
+                [
+                    'message'   => 'Argument "input" of required type "String!" was provided the ' .
+                        'variable "$foo" which was not provided a runtime value.',
+                    'locations' => [
+                        [
+                            'line'   => 2,
+                            'column' => 50
+                        ]
+                    ],
+                    'path'      => ['fieldWithNonNullableStringInput'] // @TODO Check path
+                ]
+            ]
+        ], $result->toArray());
+    }
+
 
 }

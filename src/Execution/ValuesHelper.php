@@ -78,9 +78,9 @@ class ValuesHelper
                         [$node]
                     );
                 }
-            } elseif ($argumentNode instanceof VariableNode) {
+            } elseif ($argumentNode->getValue() instanceof VariableNode) {
                 $coercedValues[$argumentName] = $this->coerceValueForVariableNode(
-                    $argumentNode,
+                    $argumentNode->getValue(),
                     $argumentType,
                     $argumentName,
                     $variableValues,
@@ -542,12 +542,12 @@ class ValuesHelper
         if ($argumentType instanceof NonNullType) {
             throw new ExecutionException(
                 \sprintf(
-                    'Argument "%s" of required type "%s" was provided the variable "%s" which was not provided a runtime value.',
+                    'Argument "%s" of required type "%s" was provided the variable "$%s" which was not provided a runtime value.',
                     $argumentName,
                     $argumentType,
                     $variableName
                 ),
-                [$variableNode->getValue()]
+                [$variableNode]
             );
         }
     }
