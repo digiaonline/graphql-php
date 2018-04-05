@@ -1041,8 +1041,41 @@ class VariablesTest extends TestCase
             'data'   => null,
             'errors' => [
                 [
-                    'message'   =>  'Variable "$input" got invalid value null; ' .
+                    'message'   => 'Variable "$input" got invalid value null; ' .
                         'Expected non-nullable type [String!]! not to be null.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ]
+            ],
+        ], $result->toArray());
+    }
+
+
+    /**
+     * Does not allow non-null lists of non-nulls to contain null
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotAllowsNonNullListsOfNonNullsToContainNull()
+    {
+        $query = 'query ($input: [String!]!) {
+          nnListNN(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A', null, 'B']]);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$input" got invalid value ["A",null,"B"]; ' .
+                        'Expected non-nullable type String! not to be null at value.1.',
                     'locations' => [
                         [
                             'line'   => 1,
