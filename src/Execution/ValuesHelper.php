@@ -90,12 +90,14 @@ class ValuesHelper
 
                 try {
                     $coercedValue = valueFromAST($argumentNode->getValue(), $argumentType, $variableValues);
-                } catch (CoercingException $ex) {
+                } catch (\Exception $ex) {
                     // Value nodes that cannot be resolved should be treated as invalid values
                     // because there is no undefined value in PHP so that we throw an exception
 
                     throw new ExecutionException(
-                        sprintf('Argument "%s" has invalid value %s.', $argumentName, $argumentNode),
+                        sprintf('Argument "%s" has invalid value %s.',
+                            $argumentName,
+                            $argumentNode->getValue()->getValue()),
                         [$argumentNode->getValue()],
                         null, null, null, $ex
                     );

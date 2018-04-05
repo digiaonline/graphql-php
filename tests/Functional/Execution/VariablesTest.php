@@ -1178,7 +1178,7 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)));
 
         $this->assertEquals([
-            'data'   => ['fieldWithDefaultArgumentValue' => '"Hello World"']
+            'data' => ['fieldWithDefaultArgumentValue' => '"Hello World"']
         ], $result->toArray());
     }
 
@@ -1196,7 +1196,40 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)));
 
         $this->assertEquals([
-            'data'   => ['fieldWithDefaultArgumentValue' => '"Hello World"']
+            'data' => ['fieldWithDefaultArgumentValue' => '"Hello World"']
+        ], $result->toArray());
+    }
+
+    /**
+     * Not when argument cannot be coerced
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testNotWhenArgumentCannotBeCoerced()
+    {
+        $query = '{
+          fieldWithDefaultArgumentValue(input: WRONG_TYPE)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data'   => [
+                'fieldWithDefaultArgumentValue' => null
+            ],
+            'errors' => [
+                [
+                    'message'   => 'Argument "input" has invalid value WRONG_TYPE.',
+                    'locations' => [
+                        [
+                            'line'   => 2,
+                            'column' => 48
+                        ]
+                    ],
+                    'path'      => ['fieldWithDefaultArgumentValue']
+                ]
+            ],
         ], $result->toArray());
     }
 }
