@@ -581,4 +581,27 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+    // HANDLES NON-NULLABLE SCALARS'
+
+    /**
+     * Allows non-nullable inputs to be omitted given a default
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsNonNullableInputsToBeOmittedGivenADefault()
+    {
+        $query = ' query ($value: String = "default") {
+          fieldWithNonNullableStringInput(input: $value)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data' => [
+                'fieldWithNonNullableStringInput' => '"default"'
+            ],
+        ], $result->toArray());
+    }
 }
