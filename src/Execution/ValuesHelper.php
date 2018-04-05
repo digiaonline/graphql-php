@@ -200,8 +200,7 @@ class ValuesHelper
                     if ($coercedValue->hasErrors()) {
                         $messagePrelude = sprintf(
                             'Variable "$%s" got invalid value %s',
-                            $variableName, json_encode
-                            ($value)
+                            $variableName, json_encode($value)
                         );
                         foreach ($coercedValue->getErrors() as $error) {
                             $errors[] = $this->buildCoerceException(

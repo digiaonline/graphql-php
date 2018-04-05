@@ -742,4 +742,36 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Reports error for array passed into string input
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testReportErrorForArrayPassedIntoStringInput()
+    {
+        $query = 'query ($value: String!) {
+          fieldWithNonNullableStringInput(input: $value)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['value' => [1, 2, 3]]);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$value" got invalid value [1,2,3]; Expected type String; ' .
+                        'String cannot represent a non-scalar value',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => [] // @TODO Check path
+                ]
+            ]
+        ], $result->toArray());
+    }
 }
