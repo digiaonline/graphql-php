@@ -592,7 +592,7 @@ class VariablesTest extends TestCase
      */
     public function testAllowsNonNullableInputsToBeOmittedGivenADefault()
     {
-        $query = ' query ($value: String = "default") {
+        $query = 'query ($value: String = "default") {
           fieldWithNonNullableStringInput(input: $value)
         }';
 
@@ -601,6 +601,37 @@ class VariablesTest extends TestCase
         $this->assertEquals([
             'data' => [
                 'fieldWithNonNullableStringInput' => '"default"'
+            ],
+        ], $result->toArray());
+    }
+
+    /**
+     * Does not allow non-nullable inputs to be omitted in a variable
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotAllowNonNullableInputsToBeOmittedInAVariable()
+    {
+        $query = 'query ($value: String!) {
+          fieldWithNonNullableStringInput(input: $value)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$value" of required type "String!" was not provided.',
+                    'locations' => [
+                        [
+                            'column' => 8,
+                            'line'   => 1
+                        ]
+                    ],
+                    'path'      => []
+                ]
             ],
         ], $result->toArray());
     }

@@ -166,18 +166,27 @@ class ValuesHelper
             }
 
             if (!$type instanceof InputTypeInterface) {
-                $errors[] = new GraphQLException(
+                $errors[] = $this->buildCoerceException(
                     sprintf(
-                        'Variable "%s" expected value of type %s which cannot be used as an input type.',
+                        'Variable "$%s" expected value of type "%s!" which cannot be used as an input type',
                         $variableName,
-                        $variableDefinitionNode->getType()->getName()
+                        $type->getName()
                     ),
-                    [$variableDefinitionNode->getType()]
+                    $variableDefinitionNode,
+                    []
                 );
             } else {
                 if (!isset($inputs[$variableName])) {
                     if ($variableType instanceof NonNullType) {
-                        throw new GraphQLException('NonNullType');
+                        $errors[] = $this->buildCoerceException(
+                            sprintf(
+                                'Variable "$%s" of required type "%s!" was not provided',
+                                $variableName,
+                                $type->getName()
+                            ),
+                            $variableDefinitionNode,
+                            []
+                        );
                     } elseif ($variableDefinitionNode->getDefaultValue() !== null) {
                         $coercedValues[$variableName] = valueFromAST(
                             $variableDefinitionNode->getDefaultValue(),
