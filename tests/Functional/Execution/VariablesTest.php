@@ -491,7 +491,7 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)));
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'fieldWithNullableStringInput' => null
             ],
         ], $result->toArray());
@@ -512,7 +512,7 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)));
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'fieldWithNullableStringInput' => null
             ],
         ], $result->toArray());
@@ -534,7 +534,28 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)));
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
+                'fieldWithNullableStringInput' => null
+            ],
+        ], $result->toArray());
+    }
+
+    /**
+     * Allows nullable inputs to be set to null in a variable
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsNullableInputsToBeSetToNullInVariable()
+    {
+        $query = 'query ($value: String) {
+          fieldWithNullableStringInput(input: $value)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['value' => null]);
+
+        $this->assertEquals([
+            'data' => [
                 'fieldWithNullableStringInput' => null
             ],
         ], $result->toArray());
