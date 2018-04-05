@@ -484,13 +484,32 @@ class VariablesTest extends TestCase
      */
     public function testAllowsNullableInputsToBeOmitted()
     {
-        $params = ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => 'baz', 'extra' => 'dog']];
-
         $query = '{
           fieldWithNullableStringInput
         }';
 
-        $result = execute($this->schema, parse(dedent($query)), null, null, $params);
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data'   => [
+                'fieldWithNullableStringInput' => null
+            ],
+        ], $result->toArray());
+    }
+
+    /**
+     * Allows nullable inputs to be omitted in a variable
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsNullableInputsToBeOmittedInAVariable()
+    {
+        $query = 'query ($value: String) {
+          fieldWithNullableStringInput(input: $value)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)));
 
         $this->assertEquals([
             'data'   => [

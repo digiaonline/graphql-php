@@ -97,6 +97,7 @@ class ValueHelper
         }
 
         if ($node instanceof NullValueNode) {
+            // This is explicitly returning the value null.
             return null;
         }
 
@@ -104,9 +105,8 @@ class ValueHelper
             $variableName = $node->getNameValue();
 
             if (!isset($variables[$variableName])) {
-                throw new ResolutionException(
-                    \sprintf('Cannot resolve value for missing variable "%s".', $variableName)
-                );
+                // No valid return value.
+                return null;
             }
 
             // Note: we're not doing any checking that this variable is correct. We're
@@ -170,9 +170,7 @@ class ValueHelper
             foreach ($node->getValues() as $value) {
                 if ($this->isMissingVariable($value, $variables)) {
                     if ($itemType instanceof NonNullType) {
-                        // If an array contains a missing variable, it is either resolved to
-                        // null or if the item type is non-null, it considered invalid.
-                        throw new ResolutionException('Cannot resolve value for missing non-null list item.');
+                        return; // Invalid: intentionally return no value.
                     }
 
                     $resolvedValues[] = null;
@@ -288,6 +286,6 @@ class ValueHelper
      */
     protected function isMissingVariable(ValueNodeInterface $node, array $variables): bool
     {
-        return $node instanceof VariableNode && isset($variables[$node->getNameValue()]);
+        return $node instanceof VariableNode && !isset($variables[$node->getNameValue()]);
     }
 }

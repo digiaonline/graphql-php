@@ -14,9 +14,9 @@ use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Util\ValueHelper;
+use function Digia\GraphQL\Type\Int;
 use function Digia\GraphQL\Type\newEnumType;
 use function Digia\GraphQL\Type\newInputObjectType;
-use function Digia\GraphQL\Type\Int;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\String;
@@ -72,18 +72,17 @@ class ValueHelperTest extends TestCase
 
     public function testResolveListWithMissingVariableValue()
     {
-        $node      = new ListValueNode([
+        $node = new ListValueNode([
             'values' => [
                 new VariableNode(['name' => new NameNode(['value' => '$a'])]),
                 new VariableNode(['name' => new NameNode(['value' => '$b'])]),
                 new VariableNode(['name' => new NameNode(['value' => '$c'])]),
             ],
         ]);
+        // Null-able inputs in a variable can be omitted
         $variables = ['$a' => 'A', '$c' => 'C'];
-        $this->expectException(ResolutionException::class);
-        $this->expectExceptionMessage('Cannot resolve value for missing variable "$b".');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newList(String()), $variables));
+        $this->assertEquals(['A', null, 'C'], $this->helper->fromAST($node, newList(String()), $variables));
     }
 
     public function testResolveValidInputObject()
@@ -167,7 +166,7 @@ class ValueHelperTest extends TestCase
     {
         $node = new StringValueNode(['value' => null]);
         $type = newEnumType([
-            'name'   => 'EnumType',
+            'name' => 'EnumType',
         ]);
 
         $this->expectException(ResolutionException::class);
