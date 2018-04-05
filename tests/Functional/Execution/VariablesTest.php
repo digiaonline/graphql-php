@@ -819,11 +819,32 @@ class VariablesTest extends TestCase
                             'column' => 50
                         ]
                     ],
-                    'path'      => ['fieldWithNonNullableStringInput'] // @TODO Check path
+                    'path'      => ['fieldWithNonNullableStringInput']
                 ]
             ]
         ], $result->toArray());
     }
 
+    // HANDLES LISTS AND NULLABILITY
 
+    /**
+     * Allows lists to be null
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsListsToBeNull()
+    {
+        $query = 'query ($input: [String]) {
+          list(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
+
+        $this->assertEquals([
+            'data'   => [
+                'list' => null
+            ],
+        ], $result->toArray());
+    }
 }
