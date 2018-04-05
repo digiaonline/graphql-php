@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Execution;
 
 
+use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\Language\dedent;
@@ -774,4 +775,15 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
+
+    //serializing an array via GraphQLString throws TypeError
+    public function testSerializingAnArrayViaGraphQLStringThrowsTypeError()
+    {
+        $this->expectException(InvalidTypeException::class);
+
+        String()->serialize([1, 2, 3]);
+    }
+
+
+
 }
