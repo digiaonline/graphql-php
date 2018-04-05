@@ -847,4 +847,25 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+    /**
+     * Allows lists to contain values
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsListsContainValues()
+    {
+        $query = 'query ($input: [String]) {
+          list(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A']]);
+
+        $this->assertEquals([
+            'data'   => [
+                'list' => '["A"]'
+            ],
+        ], $result->toArray());
+    }
 }
