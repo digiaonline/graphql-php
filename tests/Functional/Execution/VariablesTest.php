@@ -868,4 +868,26 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+
+    /**
+     * Allows lists to contain null
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsListsContainNull()
+    {
+        $query = 'query ($input: [String]) {
+          list(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A', null, 'B']]);
+
+        $this->assertEquals([
+            'data'   => [
+                'list' => '["A",null,"B"]'
+            ],
+        ], $result->toArray());
+    }
 }
