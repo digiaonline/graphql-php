@@ -3,8 +3,6 @@
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\Language\ASTBuilder\ASTDirectorInterface;
-use Digia\GraphQL\Language\ASTBuilder\ASTKindEnum;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\NodeBuilder\NodeDirectorInterface;
 
@@ -13,9 +11,9 @@ class Parser implements ParserInterface
     use LexerUtilsTrait;
 
     /**
-     * @var ASTDirectorInterface
+     * @var ASTBuilderInterface
      */
-    protected $astDirector;
+    protected $astBuilder;
 
     /**
      * @var NodeDirectorInterface
@@ -24,12 +22,12 @@ class Parser implements ParserInterface
 
     /**
      * Parser constructor.
-     * @param ASTDirectorInterface  $astDirector
+     * @param ASTBuilderInterface   $astBuilder
      * @param NodeDirectorInterface $nodeDirector
      */
-    public function __construct(ASTDirectorInterface $astDirector, NodeDirectorInterface $nodeDirector)
+    public function __construct(ASTBuilderInterface $astBuilder, NodeDirectorInterface $nodeDirector)
     {
-        $this->astDirector  = $astDirector;
+        $this->astBuilder   = $astBuilder;
         $this->nodeDirector = $nodeDirector;
     }
 
@@ -68,7 +66,7 @@ class Parser implements ParserInterface
      */
     protected function parseAST(LexerInterface $lexer): array
     {
-        return $this->astDirector->build(ASTKindEnum::DOCUMENT, $lexer);
+        return $this->astBuilder->buildDocument($lexer);
     }
 
     /**
@@ -79,7 +77,7 @@ class Parser implements ParserInterface
     protected function parseValueAST(LexerInterface $lexer): array
     {
         $this->expect($lexer, TokenKindEnum::SOF);
-        $value = $this->astDirector->build(ASTKindEnum::VALUE_LITERAL, $lexer, ['isConst' => false]);
+        $value = $this->astBuilder->buildValueLiteral($lexer, false);
         $this->expect($lexer, TokenKindEnum::EOF);
 
         return $value;
@@ -93,7 +91,7 @@ class Parser implements ParserInterface
     protected function parseTypeAST(LexerInterface $lexer): array
     {
         $this->expect($lexer, TokenKindEnum::SOF);
-        $type = $this->astDirector->build(ASTKindEnum::TYPE_REFERENCE, $lexer);
+        $type = $this->astBuilder->buildTypeReference($lexer);
         $this->expect($lexer, TokenKindEnum::EOF);
 
         return $type;

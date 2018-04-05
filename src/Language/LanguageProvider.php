@@ -2,10 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Language\ASTBuilder\ASTDirector;
-use Digia\GraphQL\Language\ASTBuilder\ASTDirectorInterface;
-use Digia\GraphQL\Language\ASTBuilder\SupportedASTBuilders;
-use Digia\GraphQL\Language\NodeBuilder\ASTBuilder;
 use Digia\GraphQL\Language\NodeBuilder\NodeDirector;
 use Digia\GraphQL\Language\NodeBuilder\NodeDirectorInterface;
 use Digia\GraphQL\Language\NodeBuilder\SupportedNodeBuilders;
@@ -19,7 +15,7 @@ class LanguageProvider extends AbstractServiceProvider
      * @var array
      */
     protected $provides = [
-        ASTDirectorInterface::class,
+        ASTBuilderInterface::class,
         NodeDirectorInterface::class,
         LexerInterface::class,
         ParserInterface::class,
@@ -31,16 +27,14 @@ class LanguageProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(ASTDirectorInterface::class, function () {
-            return new ASTDirector(SupportedASTBuilders::get());
-        });
+        $this->container->add(ASTBuilderInterface::class, ASTBuilder::class, true);
 
         $this->container->add(NodeDirectorInterface::class, function () {
             return new NodeDirector(SupportedNodeBuilders::get());
         });
 
         $this->container->add(ParserInterface::class, Parser::class, true/* $shared */)
-            ->withArgument(ASTDirectorInterface::class)
+            ->withArgument(ASTBuilderInterface::class)
             ->withArgument(NodeDirectorInterface::class);
 
         $this->container->add(LexerInterface::class, function () {
