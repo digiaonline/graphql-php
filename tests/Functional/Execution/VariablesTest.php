@@ -438,4 +438,39 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Errors on addition of unknown input field
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testErrorsOnAdditionOfUnknownInputfield()
+    {
+        $params = ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => 'baz', 'extra' => 'dog']];
+
+        $query = 'query ($input: TestInputObject) {
+            fieldWithObjectInput(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, $params);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$input" got invalid value ' .
+                        '{"a":"foo","b":"bar","c":"baz","extra":"dog"}; ' .
+                        'Field "extra" is not defined by type TestInputObject.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ]
+            ]
+        ], $result->toArray());
+    }
 }

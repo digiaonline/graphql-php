@@ -408,7 +408,7 @@ class ValuesHelper
 
         // Ensure every provided field is defined.
         foreach ($value as $fieldName => $fieldValue) {
-            if ($fields[$fieldName] === null) {
+            if (!isset($fields[$fieldName])) {
                 $suggestions = suggestionList($fieldName, array_keys($fields));
                 $didYouMean  = (!empty($suggestions))
                     ? 'did you mean' . implode(',', $suggestions)
@@ -498,10 +498,10 @@ class ValuesHelper
      */
     protected function printPath(?array $path)
     {
-        $stringPath = ltrim(implode(".", $path), '.');
+        $stringPath = ltrim(implode(".", $path ?? []), '.');
 
         return ($stringPath !== '')
-            ?  $stringPath = 'value.' . $stringPath
+            ? $stringPath = 'value.' . $stringPath
             : $stringPath;
     }
 
