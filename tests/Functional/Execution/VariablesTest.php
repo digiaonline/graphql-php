@@ -1162,4 +1162,23 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+    // Execute: Uses argument default values
+
+
+    /**
+     * When no argument provided
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testWhenNoArgumentProvided()
+    {
+        $query = '{ fieldWithDefaultArgumentValue }';
+
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data'   => ['fieldWithDefaultArgumentValue' => '"Hello World"']
+        ], $result->toArray());
+    }
 }
