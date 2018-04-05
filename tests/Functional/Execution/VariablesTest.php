@@ -230,7 +230,7 @@ class VariablesTest extends TestCase
             fieldWithObjectInput(input: ["foo", "bar", "baz"])
         }';
 
-        $result = execute($this->schema, parse($query));
+        $result = execute($this->schema, parse(dedent($query)));
 
         $this->assertEquals([
             'data'   => [
@@ -238,11 +238,9 @@ class VariablesTest extends TestCase
             ],
             'errors' => [
                 [
-                    //@TODO Check if line and column are correct
-                    //Original message: Argument "input" has invalid value ["foo", "bar", "baz"].
-                    'message'   => 'Input object values can only be resolved form object value nodes.',
+                    'message'   => 'Argument "input" has invalid value ["foo","bar","baz"].',
                     'path'      => ['fieldWithObjectInput'],
-                    'locations' => [['line' => 2, 'column' => 13]],
+                    'locations' => [['line' => 2, 'column' => 41]],
                 ]
             ]
         ], $result->toArray());

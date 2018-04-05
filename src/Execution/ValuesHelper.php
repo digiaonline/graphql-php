@@ -97,7 +97,7 @@ class ValuesHelper
                     throw new ExecutionException(
                         sprintf('Argument "%s" has invalid value %s.',
                             $argumentName,
-                            $argumentNode->getValue()->getValue()),
+                            (string)$argumentNode->getValue()),
                         [$argumentNode->getValue()],
                         null, null, null, $ex
                     );

@@ -57,4 +57,14 @@ class ListValueNode extends AbstractNode implements ValueNodeInterface
             'values' => $this->getValuesAsArray(),
         ];
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString(): string
+    {
+        return json_encode(array_map(function(ValueNodeInterface $node) {
+            return $node->getValue();
+        }, $this->getValues()));
+    }
 }

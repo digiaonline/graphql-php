@@ -10,4 +10,13 @@ class EnumValueNode extends AbstractNode implements ValueNodeInterface
      * @var string
      */
     protected $kind = NodeKindEnum::ENUM;
+
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString(): string
+    {
+        return (string)$this->getValue();
+    }
 }
