@@ -74,7 +74,7 @@ class VariablesTest extends TestCase
         ]);
 
         $TestType = newObjectType([
-            'name'   => 'TestField',
+            'name'   => 'TestType',
             'fields' => [
                 'fieldWithObjectInput'            => $this->fieldWithInputArg(['type' => $TestInputObject]),
                 'fieldWithNullableStringInput'    => $this->fieldWithInputArg(['type' => String()]),
@@ -1076,6 +1076,46 @@ class VariablesTest extends TestCase
                 [
                     'message'   => 'Variable "$input" got invalid value ["A",null,"B"]; ' .
                         'Expected non-nullable type String! not to be null at value.1.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ]
+            ],
+        ], $result->toArray());
+    }
+
+    /**
+     * Does not allow invalid types to be used as values
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotAllowsInvalidTypesToBeUsedAsValues()
+    {
+        $query = 'query ($input: TestType!) {
+          fieldWithObjectInput(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, [
+            'input' => [
+                'list' => [
+                    'A',
+                    null,
+                    'B'
+                ]
+            ]
+        ]);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$input" expected value of type "TestType!" which ' .
+                        'cannot be used as an input type.',
                     'locations' => [
                         [
                             'line'   => 1,

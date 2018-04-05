@@ -163,7 +163,7 @@ class ValuesHelper
             if (!$this->isInputType($variableType)) {
                 $errors[] = $this->buildCoerceException(
                     sprintf(
-                        'Variable "$%s" expected value of type %s! which cannot be used as an input type',
+                        'Variable "$%s" expected value of type "%s" which cannot be used as an input type',
                         $variableName,
                         (string)$variableType
                     ),
