@@ -381,7 +381,52 @@ class VariablesTest extends TestCase
             'errors' => [
                 [
                     'message'   => 'Variable "$input" got invalid value {"a":"foo","b":"bar","c":null}; ' .
-                        'Expected non-nullable type String! not to be null at value.c.',
+                        'Field value.c of required type String! was not provided.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ]
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Errors on deep nested errors and with many errors
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testErrorsOnDeepNestedErrorsWithManyErrors()
+    {
+        $params = ['input' => ['na' => ['a' => 'foo']]];
+
+        $query = 'query ($input: TestNestedInputObject) {
+            fieldWithNestedObjectInput(input: $input)
+         }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, $params);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$input" got invalid value {"na":{"a":"foo"}}; ' .
+                        'Field value.na.c of required type String! was not provided.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ],
+                [
+                    'message'   => 'Variable "$input" got invalid value {"na":{"a":"foo"}}; ' .
+                        'Field value.nb of required type String! was not provided.',
                     'locations' => [
                         [
                             'line'   => 1,

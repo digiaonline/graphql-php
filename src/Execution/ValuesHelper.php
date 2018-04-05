@@ -377,15 +377,15 @@ class ValuesHelper
 
         // Ensure every defined field is valid.
         foreach ($fields as $field) {
-            if (!array_key_exists($field->getName(), $value)) {
+            if (empty($value[$field->getName()])) {
                 if (!empty($field->getDefaultValue())) {
                     $coercedValue[$field->getName()] = $field->getDefaultValue();
-                } elseif ($type instanceof NonNullType) {
+                } elseif ($field->getType() instanceof NonNullType) {
                     $errors[] = new GraphQLException(
                         sprintf(
-                            "Field %s of required type %s was not provided",
-                            implode(",", array_merge($path, [$field->getName()])),
-                            $type->getName()
+                            "Field %s of required type %s! was not provided.",
+                            $this->printPath(array_merge($path ?? [], [$field->getName()])),
+                            $field->getType()->getOfType()
                         )
                     );
                 }
@@ -468,7 +468,7 @@ class ValuesHelper
      * @param NodeInterface         $blameNode
      * @param array|null            $path
      * @param null|string           $subMessage
-     * @param GraphQLException|null $origin$originalException
+     * @param GraphQLException|null $origin $originalException
      * @return GraphQLException
      */
     protected function buildCoerceException(
@@ -478,11 +478,11 @@ class ValuesHelper
         ?string $subMessage = null,
         ?GraphQLException $originalException = null
     ) {
-        $stringPath = implode(".", $path);
+        $stringPath = $this->printPath($path);
 
         return new CoercingException(
             $message .
-            (($stringPath !== '') ? ' at value' . $stringPath : $stringPath) .
+            (($stringPath !== '') ? ' at ' . $stringPath : $stringPath) .
             (($subMessage !== null) ? '; ' . $subMessage : '.'),
             [$blameNode],
             null,
@@ -490,6 +490,19 @@ class ValuesHelper
             [],
             $originalException
         );
+    }
+
+    /**
+     * @param array|null $path
+     * @return string
+     */
+    protected function printPath(?array $path)
+    {
+        $stringPath = ltrim(implode(".", $path), '.');
+
+        return ($stringPath !== '')
+            ?  $stringPath = 'value.' . $stringPath
+            : $stringPath;
     }
 
     /**
