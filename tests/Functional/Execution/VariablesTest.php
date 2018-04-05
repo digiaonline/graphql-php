@@ -1022,4 +1022,36 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+    /**
+     * Does not allow non-null lists of non-nulls to be null
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotAllowsListsOfNonNullsToBeNull()
+    {
+        $query = 'query ($input: [String!]!) {
+          nnListNN(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   =>  'Variable "$input" got invalid value null; ' .
+                        'Expected non-nullable type [String!]! not to be null.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ]
+            ],
+        ], $result->toArray());
+    }
 }
