@@ -560,4 +560,25 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+    /**
+     * Allows nullable inputs to be set to a value directly
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsNullableInputsToBeSetToAValueDirectly()
+    {
+        $query = 'query ($value: String) {
+          fieldWithNullableStringInput(input: "a")
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data' => [
+                'fieldWithNullableStringInput' => '"a"'
+            ],
+        ], $result->toArray());
+    }
 }
