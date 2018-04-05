@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\NodeBuilder\NodeDirectorInterface;
 
 class Parser implements ParserInterface
 {
@@ -16,19 +15,19 @@ class Parser implements ParserInterface
     protected $astBuilder;
 
     /**
-     * @var NodeDirectorInterface
+     * @var NodeBuilderInterface
      */
-    protected $nodeDirector;
+    protected $nodeBuilder;
 
     /**
      * Parser constructor.
-     * @param ASTBuilderInterface   $astBuilder
-     * @param NodeDirectorInterface $nodeDirector
+     * @param ASTBuilderInterface  $astBuilder
+     * @param NodeBuilderInterface $nodeBuilder
      */
-    public function __construct(ASTBuilderInterface $astBuilder, NodeDirectorInterface $nodeDirector)
+    public function __construct(ASTBuilderInterface $astBuilder, NodeBuilderInterface $nodeBuilder)
     {
-        $this->astBuilder   = $astBuilder;
-        $this->nodeDirector = $nodeDirector;
+        $this->astBuilder  = $astBuilder;
+        $this->nodeBuilder = $nodeBuilder;
     }
 
     /**
@@ -37,7 +36,7 @@ class Parser implements ParserInterface
      */
     public function parse(LexerInterface $lexer): NodeInterface
     {
-        return $this->nodeDirector->build($this->parseAST($lexer));
+        return $this->nodeBuilder->build($this->parseAST($lexer));
     }
 
     /**
@@ -46,7 +45,7 @@ class Parser implements ParserInterface
      */
     public function parseValue(LexerInterface $lexer): NodeInterface
     {
-        return $this->nodeDirector->build($this->parseValueAST($lexer));
+        return $this->nodeBuilder->build($this->parseValueAST($lexer));
     }
 
     /**
@@ -55,7 +54,7 @@ class Parser implements ParserInterface
      */
     public function parseType(LexerInterface $lexer): NodeInterface
     {
-        return $this->nodeDirector->build($this->parseTypeAST($lexer));
+        return $this->nodeBuilder->build($this->parseTypeAST($lexer));
     }
 
     /**

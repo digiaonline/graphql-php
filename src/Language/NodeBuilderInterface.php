@@ -1,10 +1,10 @@
 <?php
 
-namespace Digia\GraphQL\Language\NodeBuilder;
+namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Language\Node\NodeInterface;
 
-interface NodeDirectorInterface
+interface NodeBuilderInterface
 {
     /**
      * @param array $ast
