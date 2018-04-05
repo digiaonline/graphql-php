@@ -685,12 +685,11 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)), null, null, ['value' => 'a']);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'fieldWithNonNullableStringInput' => '"a"'
             ]
         ], $result->toArray());
     }
-
 
     /**
      * Allows non-nullable inputs to be set to a value directly
@@ -707,8 +706,39 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)));
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'fieldWithNonNullableStringInput' => '"a"'
+            ]
+        ], $result->toArray());
+    }
+
+    /**
+     * Reports error for missing non-nullable inputs
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testReportErrorForMissingNonNullableInputs()
+    {
+        $query = '{ fieldWithNonNullableStringInput }';
+
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data'   => [
+                'fieldWithNonNullableStringInput' => null
+            ],
+            'errors' => [
+                [
+                    'message'   => 'Argument "input" of required type "String!" was not provided.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 3
+                        ]
+                    ],
+                    'path'      => ['fieldWithNonNullableStringInput']
+                ]
             ]
         ], $result->toArray());
     }

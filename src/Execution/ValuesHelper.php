@@ -53,7 +53,7 @@ class ValuesHelper
         $argumentDefinitions = $definition->getArguments();
         $argumentNodes       = $node->getArguments();
 
-        if (empty($argumentDefinitions) || empty($argumentNodes)) {
+        if (empty($argumentDefinitions) || $argumentNodes === null) {
             return $coercedValues;
         }
 
@@ -65,15 +65,16 @@ class ValuesHelper
             $argumentName = $argumentDefinition->getName();
             $argumentType = $argumentDefinition->getType();
             /** @var ArgumentNode $argumentNode */
-            $argumentNode = $argumentNodeMap[$argumentName];
+            $argumentNode = $argumentNodeMap[$argumentName] ?? null;
             $defaultValue = $argumentDefinition->getDefaultValue();
 
             if (null === $argumentNode) {
-                if (null === $defaultValue) {
+                if (null !== $defaultValue) {
                     $coercedValues[$argumentName] = $defaultValue;
-                } elseif (!$argumentType instanceof NonNullType) {
+                } elseif ($argumentType instanceof NonNullType) {
                     throw new ExecutionException(
-                        sprintf('Argument "%s" of required type "%s" was not provided.', $argumentName, $argumentType),
+                        sprintf('Argument "%s" of required type "%s" was not provided.', $argumentName,
+                            $argumentType),
                         [$node]
                     );
                 }
