@@ -1001,14 +1001,12 @@ class VariablesTest extends TestCase
 
         $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A', null, 'B']]);
 
-        //@TODO Fix printPath change value.1 to value[1]
-
         $this->assertEquals([
             'data'   => null,
             'errors' => [
                 [
                     'message'   => 'Variable "$input" got invalid value ["A",null,"B"]; ' .
-                        'Expected non-nullable type String! not to be null at value.1.',
+                        'Expected non-nullable type String! not to be null at value[1].',
                     'locations' => [
                         [
                             'line'   => 1,
@@ -1073,7 +1071,7 @@ class VariablesTest extends TestCase
             'errors' => [
                 [
                     'message'   => 'Variable "$input" got invalid value ["A",null,"B"]; ' .
-                        'Expected non-nullable type String! not to be null at value.1.',
+                        'Expected non-nullable type String! not to be null at value[1].',
                     'locations' => [
                         [
                             'line'   => 1,

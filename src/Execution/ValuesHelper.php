@@ -176,7 +176,7 @@ class ValuesHelper
                         $variableTypeName
                     ),
                     $variableDefinitionNode,
-                    []
+                    null
                 );
             } else {
                 if (!array_key_exists($variableName, $inputs)) {
@@ -188,7 +188,7 @@ class ValuesHelper
                                 (string)$variableType
                             ),
                             $variableDefinitionNode,
-                            []
+                            null
                         );
                     } elseif ($variableDefinitionNode->getDefaultValue() !== null) {
                         $coercedValues[$variableName] = valueFromAST(
@@ -208,7 +208,7 @@ class ValuesHelper
                             $errors[] = $this->buildCoerceException(
                                 $messagePrelude,
                                 $variableDefinitionNode,
-                                [],
+                                null,
                                 $error->getMessage(),
                                 $error
                             );
@@ -248,7 +248,7 @@ class ValuesHelper
      * @throws InvariantException
      * @throws GraphQLException
      */
-    private function coerceValue($value, $type, $blameNode, ?array $path = null): CoercedValue
+    private function coerceValue($value, $type, $blameNode, ?Path $path = null): CoercedValue
     {
         if ($type instanceof NonNullType) {
             return $this->coerceValueForNonNullType($value, $type, $blameNode, $path);
@@ -290,7 +290,7 @@ class ValuesHelper
         $value,
         NonNullType $type,
         NodeInterface $blameNode,
-        ?array $path
+        ?Path $path
     ): CoercedValue {
         if (empty($value)) {
             return new CoercedValue(null, [
@@ -319,7 +319,7 @@ class ValuesHelper
         $value,
         ScalarType $type,
         NodeInterface $blameNode,
-        ?array $path
+        ?Path $path
     ): CoercedValue {
         try {
             $parseResult = $type->parseValue($value);
@@ -354,7 +354,7 @@ class ValuesHelper
         $value,
         EnumType $type,
         NodeInterface $blameNode,
-        ?array $path
+        ?Path $path
     ): CoercedValue {
         if (is_string($value)) {
             $enumValue = $type->getValue($value);
@@ -389,7 +389,7 @@ class ValuesHelper
         $value,
         InputObjectType $type,
         NodeInterface $blameNode,
-        ?array $path
+        ?Path $path
     ): CoercedValue {
         $errors        = [];
         $coercedValues = [];
@@ -404,7 +404,7 @@ class ValuesHelper
                     $errors[] = new GraphQLException(
                         sprintf(
                             "Field %s of required type %s! was not provided.",
-                            $this->printPath(array_merge($path ?? [], [$field->getName()])),
+                            $this->printPath(new Path($path, $field->getName())),
                             $field->getType()->getOfType()
                         )
                     );
@@ -415,7 +415,7 @@ class ValuesHelper
                     $fieldValue,
                     $field->getType(),
                     $blameNode,
-                    [$path, $field->getName()] // new path
+                    new Path($path, $field->getName())
                 );
 
                 if ($coercedValue->hasErrors()) {
@@ -457,7 +457,7 @@ class ValuesHelper
         $value,
         ListType $type,
         NodeInterface $blameNode,
-        ?array $path
+        ?Path $path
     ): CoercedValue {
         $itemType = $type->getOfType();
 
@@ -465,7 +465,7 @@ class ValuesHelper
             $errors        = [];
             $coercedValues = [];
             foreach ($value as $index => $itemValue) {
-                $coercedValue = $this->coerceValue($itemValue, $itemType, $blameNode, [$path, $index]);
+                $coercedValue = $this->coerceValue($itemValue, $itemType, $blameNode, new Path($path, $index));
 
                 if ($coercedValue->hasErrors()) {
                     $errors = array_merge($errors, $coercedValue->getErrors());
@@ -494,7 +494,7 @@ class ValuesHelper
     protected function buildCoerceException(
         string $message,
         NodeInterface $blameNode,
-        ?array $path,
+        ?Path $path,
         ?string $subMessage = null,
         ?GraphQLException $originalException = null
     ) {
@@ -516,13 +516,22 @@ class ValuesHelper
      * @param array|null $path
      * @return string
      */
-    protected function printPath(?array $path)
+    protected function printPath(?Path $path)
     {
-        $stringPath = ltrim(implode(".", $path ?? []), '.');
+        $stringPath  = '';
+        $currentPath = $path;
 
-        return ($stringPath !== '')
-            ? $stringPath = 'value.' . $stringPath
-            : $stringPath;
+        while ($currentPath) {
+            if (is_string($currentPath->getKey())) {
+                $stringPath = '.' . $currentPath->getKey() . $stringPath;
+            } else {
+                $stringPath = '[' . (string)$currentPath->getKey() . ']' . $stringPath;
+            }
+
+            $currentPath = $currentPath->getPrevious();
+        }
+
+        return !empty($stringPath) ? 'value' . $stringPath : '';
     }
 
     /**
