@@ -635,4 +635,37 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+
+    /**
+     * Does not allow non-nullable inputs to be set to null in a variable
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotAllowNonNullabeInputsToBeSetToNullInAVariable()
+    {
+        $query = 'query ($value: String!) {
+          fieldWithNonNullableStringInput(input: $value)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['value' => null]);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$value" got invalid value null; ' .
+                        'Expected non-nullable type String! not to be null.',
+                    'locations' => [
+                        [
+                            'column' => 8,
+                            'line'   => 1
+                        ]
+                    ],
+                    'path'      => []
+                ]
+            ],
+        ], $result->toArray());
+    }
 }

@@ -176,7 +176,7 @@ class ValuesHelper
                     []
                 );
             } else {
-                if (!isset($inputs[$variableName])) {
+                if (!array_key_exists($variableName, $inputs)) {
                     if ($variableType instanceof NonNullType) {
                         $errors[] = $this->buildCoerceException(
                             sprintf(
