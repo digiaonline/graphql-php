@@ -939,7 +939,7 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A']]);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'nnList' => '["A"]'
             ]
         ], $result->toArray());
@@ -960,7 +960,7 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'listNN' => null
             ]
         ], $result->toArray());
@@ -982,9 +982,44 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A']]);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'listNN' => '["A"]'
             ]
+        ], $result->toArray());
+    }
+
+
+    /**
+     * Does not allow lists of non-nulls to contain null
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotAllowsListsOfNonNullsToContainNull()
+    {
+        $query = 'query ($input: [String!]) {
+          listNN(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A', null, 'B']]);
+
+        //@TODO Fix printPath change value.1 to value[1]
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$input" got invalid value ["A",null,"B"]; ' .
+                        'Expected non-nullable type String! not to be null at value.1.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ]
+            ],
         ], $result->toArray());
     }
 }

@@ -222,8 +222,10 @@ class ValuesHelper
      */
     protected function isInputType(?TypeInterface $type)
     {
-        return ($type instanceof ScalarType) || ($type instanceof EnumType) || ($type instanceof InputObjectType)
-            || (($type instanceof WrappingTypeInterface) && $this->isInputType($type->getOfType()));
+        return ($type instanceof ScalarType) ||
+            ($type instanceof EnumType) ||
+            ($type instanceof InputObjectType) ||
+            (($type instanceof WrappingTypeInterface) && $this->isInputType($type->getOfType()));
     }
 
     /**
