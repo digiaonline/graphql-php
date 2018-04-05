@@ -517,4 +517,26 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+
+    /**
+     * Allows nullable inputs to be omitted in an unlisted variable
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsNullableInputsToBeOmittedInUnlistedVariable()
+    {
+        $query = 'query {
+          fieldWithNullableStringInput(input: $value)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data'   => [
+                'fieldWithNullableStringInput' => null
+            ],
+        ], $result->toArray());
+    }
 }
