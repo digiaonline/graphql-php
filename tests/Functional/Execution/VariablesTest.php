@@ -944,4 +944,25 @@ class VariablesTest extends TestCase
             ]
         ], $result->toArray());
     }
+
+    /**
+     * Allows lists of non-nulls to be null
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsListsOfNonNullsToBeNull()
+    {
+        $query = 'query ($input: [String!]) {
+          listNN(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
+
+        $this->assertEquals([
+            'data'   => [
+                'listNN' => null
+            ]
+        ], $result->toArray());
+    }
 }
