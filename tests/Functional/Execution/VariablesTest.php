@@ -445,7 +445,7 @@ class VariablesTest extends TestCase
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
-    public function testErrorsOnAdditionOfUnknownInputfield()
+    public function testErrorsOnAdditionOfUnknownInputField()
     {
         $params = ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => 'baz', 'extra' => 'dog']];
 
@@ -471,6 +471,31 @@ class VariablesTest extends TestCase
                     'path'      => []
                 ]
             ]
+        ], $result->toArray());
+    }
+
+    // HANDLES NULLABLE SCALARS
+
+    /**
+     * Allows nullable inputs to be omitted
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsNullableInputsToBeOmitted()
+    {
+        $params = ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => 'baz', 'extra' => 'dog']];
+
+        $query = '{
+          fieldWithNullableStringInput
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, $params);
+
+        $this->assertEquals([
+            'data'   => [
+                'fieldWithNullableStringInput' => null
+            ],
         ], $result->toArray());
     }
 }
