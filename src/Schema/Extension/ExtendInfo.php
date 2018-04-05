@@ -73,7 +73,7 @@ class ExtendInfo
      */
     public function getTypeExtensions(string $typeName): ?array
     {
-        return $this->typeExtensionsMap[$typeName] ?? null;
+        return $this->typeExtensionsMap[$typeName] ?? [];
     }
 
     /**

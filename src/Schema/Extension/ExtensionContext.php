@@ -264,14 +264,14 @@ class ExtensionContext implements ExtensionContextInterface
         }
 
         return newInterfaceType([
-            'name'           => $typeName,
-            'description'    => $type->getDescription(),
-            'fields'         => function () use ($type) {
+            'name'              => $typeName,
+            'description'       => $type->getDescription(),
+            'fields'            => function () use ($type) {
                 return $this->extendFieldMap($type);
             },
-            'astNode'        => $type->getAstNode(),
-            'typeExtensions' => $extensionASTNodes,
-            'resolveType'    => $type->getResolveType(),
+            'astNode'           => $type->getAstNode(),
+            'extensionASTNodes' => $extensionASTNodes,
+            'resolveType'       => $type->getResolveType(),
         ]);
     }
 

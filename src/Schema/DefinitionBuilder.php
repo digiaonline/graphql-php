@@ -246,9 +246,12 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         return newObjectType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'fields'      => function () use ($node) {
+            'fields'      => $node->hasFields() ? function () use ($node) {
                 return $this->buildFields($node);
-            },
+            } : [],
+            // Note: While this could make early assertions to get the correctly
+            // typed values, that would throw immediately while type system
+            // validation with validateSchema() will produce more actionable results.
             'interfaces'  => function () use ($node) {
                 return $node->hasInterfaces() ? \array_map(function (NodeInterface $interface) {
                     return $this->buildType($interface);
@@ -264,7 +267,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildFields($node): array
     {
-        return $node->hasFields() ? keyValueMap(
+        return keyValueMap(
             $node->getFields(),
             function ($value) {
                 /** @var FieldDefinitionNode|InputValueDefinitionNode $value */
@@ -278,7 +281,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
                 return $this->buildField($value, $resolve);
             }
-        ) : [];
+        );
     }
 
     /**
@@ -290,9 +293,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         return newInterfaceType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'fields'      => function () use ($node): array {
+            'fields'      => $node->hasFields() ? function () use ($node): array {
                 return $this->buildFields($node);
-            },
+            } : [],
             'astNode'     => $node,
         ]);
     }

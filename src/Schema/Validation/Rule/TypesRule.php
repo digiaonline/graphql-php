@@ -543,15 +543,16 @@ class TypesRule extends AbstractRule
      */
     protected function getAllObjectOrInterfaceNodes(NamedTypeInterface $type): array
     {
-        $node = $type->getAstNode();
+        $node              = $type->getAstNode();
+        $extensionASTNodes = $type->getExtensionAstNodes();
 
         if (null !== $node) {
-            return $type->hasExtensionAstNodes()
-                ? \array_merge([$node], $type->getExtensionAstNodes())
+            return !empty($extensionASTNodes)
+                ? \array_merge([$node], $extensionASTNodes)
                 : [$node];
         }
 
-        return $type->hasExtensionAstNodes() ? $type->getExtensionAstNodes() : [];
+        return $extensionASTNodes;
     }
 
     /**

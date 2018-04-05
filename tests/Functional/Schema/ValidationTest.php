@@ -7,6 +7,7 @@ use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\buildSchema;
+use function Digia\GraphQL\extendSchema;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Language\locationShorthandToArray;
 use function Digia\GraphQL\Language\locationsShorthandToArray;
@@ -18,8 +19,8 @@ use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
 use function Digia\GraphQL\Type\newUnionType;
+use function Digia\GraphQL\Type\String;
 use function Digia\GraphQL\Util\toString;
 
 class ValidationTest extends TestCase
@@ -989,19 +990,154 @@ class ValidationTest extends TestCase
         }
         '));
 
-        $this->markTestIncomplete('INCOMPLETE: We do not have support schema extension.');
-
         /** @noinspection PhpUnhandledExceptionInspection */
-//        $extendedSchema = extendSchema($schema, parse('extend type AnotherObject implements AnotherInterface'))
+        $extendedSchema = extendSchema(
+            $schema,
+            'extend type AnotherObject implements AnotherInterface'
+        );
+
+        $this->expectInvalid($extendedSchema, [
+            [
+                'message'   => 'Type AnotherObject can only implement AnotherInterface once.',
+                'locations' => locationsShorthandToArray([[9, 31], [1, 38]]),
+            ]
+        ]);
     }
 
     // Type System: Interface extensions should be valid
 
-    // TODO: rejects an Object implementing the extended interface due to missing field
+    // rejects an Object implementing the extended interface due to missing field
 
-    // TODO: rejects an Object implementing the extended interface due to missing field args
+    public function testRejectsAnObjectImplementingTheExtendedInterfaceDueToMissingField()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: String
+        }
+        '));
 
-    // TODO: rejects Objects implementing the extended interface due to mismatching interface type
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $extendedSchema = extendSchema(
+            $schema,
+            dedent('
+            extend interface AnotherInterface {
+              newField: String
+            }
+            ')
+        );
+
+        $this->expectInvalid($extendedSchema, [
+            [
+                'message'   =>
+                    'Interface field AnotherInterface.newField expected ' .
+                    'but AnotherObject does not provide it.',
+                'locations' => locationsShorthandToArray([[2, 3], [9, 1]]),
+            ]
+        ]);
+    }
+
+    // rejects an Object implementing the extended interface due to missing field args
+
+    public function testRejectsAnObjectImplementingTheExtendedInterfaceDueToMissingFieldArguments()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: String
+        }
+        '));
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $extendedSchema = extendSchema(
+            $schema,
+            dedent('
+            extend interface AnotherInterface {
+              newField(test: Boolean): String
+            }
+            
+            extend type AnotherObject {
+              newField: String
+            }
+            ')
+        );
+
+        $this->expectInvalid($extendedSchema, [
+            [
+                'message'   =>
+                    'Interface field argument AnotherInterface.newField(test:) expected ' .
+                    'but AnotherObject.newField does not provide it.',
+                'locations' => locationsShorthandToArray([[2, 12], [6, 3]]),
+            ]
+        ]);
+    }
+
+    // rejects Objects implementing the extended interface due to mismatching interface type
+
+    public function testRejectsObjectsImplementingTheExtendedInterfaceDueToMisMatchingInterfaceType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = buildSchema(dedent('
+        type Query {
+          test: AnotherObject
+        }
+        
+        interface AnotherInterface {
+          field: String
+        }
+        
+        type AnotherObject implements AnotherInterface {
+          field: String
+        }
+        '));
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $extendedSchema = extendSchema(
+            $schema,
+            dedent('
+            extend interface AnotherInterface {
+              newInterfaceField: NewInterface
+            }
+            
+            interface NewInterface {
+              newField: String
+            }
+            
+            interface MismatchingInterface {
+              newField: String
+            }
+            
+            extend type AnotherObject {
+              newInterfaceField: MismatchingInterface
+            }
+            ')
+        );
+
+        $this->expectInvalid($extendedSchema, [
+            [
+                'message'   =>
+                    'Interface field AnotherInterface.newInterfaceField expects type NewInterface but ' .
+                    'AnotherObject.newInterfaceField is type MismatchingInterface.',
+                'locations' => locationsShorthandToArray([[2, 22], [14, 22]]),
+            ]
+        ]);
+    }
 
     // Type System: Interface fields must have output types
 
