@@ -922,4 +922,26 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+
+    /**
+     * Allows non-null lists to contain values
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAllowsNonNullListsToContainValues()
+    {
+        $query = 'query ($input: [String]!) {
+          nnList(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A']]);
+
+        $this->assertEquals([
+            'data'   => [
+                'nnList' => '["A"]'
+            ]
+        ], $result->toArray());
+    }
 }

@@ -315,14 +315,14 @@ class ValuesHelper
             $parseResult = $type->parseValue($value);
             if (empty($parseResult)) {
                 return new CoercedValue(null, [
-                    new GraphQLException(sprintf('Expected type %s', $type->getName()))
+                    new GraphQLException(sprintf('Expected type %s', (string)$type))
                 ]);
             }
             return new CoercedValue($parseResult, null);
         } catch (\Exception $ex) {
             return new CoercedValue(null, [
                 $this->buildCoerceException(
-                    sprintf('Expected type %s', $type->getName()),
+                    sprintf('Expected type %s', (string)$type),
                     $blameNode,
                     $path,
                     $ex->getMessage(),
