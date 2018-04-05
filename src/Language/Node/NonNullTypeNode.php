@@ -25,4 +25,12 @@ class NonNullTypeNode extends AbstractNode implements TypeNodeInterface
             'loc'  => $this->getLocationAsArray(),
         ];
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString(): string
+    {
+        return (string)$this->getType() . '!';
+    }
 }

@@ -161,11 +161,17 @@ class ValuesHelper
             $variableType = typeFromAST($schema, $variableDefinitionNode->getType());
 
             if (!$this->isInputType($variableType)) {
+                $variableTypeName = (string)$variableType;
+
+                if ($variableTypeName === '') {
+                    $variableTypeName = (string)$variableDefinitionNode;
+                }
+
                 $errors[] = $this->buildCoerceException(
                     sprintf(
                         'Variable "$%s" expected value of type "%s" which cannot be used as an input type',
                         $variableName,
-                        (string)$variableType
+                        $variableTypeName
                     ),
                     $variableDefinitionNode,
                     []

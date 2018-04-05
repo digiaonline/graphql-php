@@ -1127,4 +1127,39 @@ class VariablesTest extends TestCase
             ],
         ], $result->toArray());
     }
+
+
+    /**
+     * Does not allow unknown types to be used as values
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotAllowsUnknownTypesToBeUsedAsValues()
+    {
+        $query = 'query ($input: UnknownType!) {
+          fieldWithObjectInput(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, [
+            'input' => 'whoknows'
+        ]);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$input" expected value of type "UnknownType!" which ' .
+                        'cannot be used as an input type.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ]
+            ],
+        ], $result->toArray());
+    }
 }
