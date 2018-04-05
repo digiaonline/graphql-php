@@ -19,7 +19,6 @@ use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputObjectType;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
@@ -161,17 +160,12 @@ class ValuesHelper
             $variableName = $variableDefinitionNode->getVariable()->getNameValue();
             $variableType = typeFromAST($schema, $variableDefinitionNode->getType());
 
-            $type = $variableType;
-            if ($variableType instanceof WrappingTypeInterface) {
-                $type = $variableType->getOfType();
-            }
-
-            if (!$type instanceof InputTypeInterface) {
+            if (!$this->isInputType($variableType)) {
                 $errors[] = $this->buildCoerceException(
                     sprintf(
-                        'Variable "$%s" expected value of type "%s!" which cannot be used as an input type',
+                        'Variable "$%s" expected value of type %s! which cannot be used as an input type',
                         $variableName,
-                        $type->getName()
+                        (string)$variableType
                     ),
                     $variableDefinitionNode,
                     []
@@ -181,9 +175,9 @@ class ValuesHelper
                     if ($variableType instanceof NonNullType) {
                         $errors[] = $this->buildCoerceException(
                             sprintf(
-                                'Variable "$%s" of required type "%s!" was not provided',
+                                'Variable "$%s" of required type "%s" was not provided',
                                 $variableName,
-                                $type->getName()
+                                (string)$variableType
                             ),
                             $variableDefinitionNode,
                             []
@@ -219,6 +213,17 @@ class ValuesHelper
         }
 
         return new CoercedValue($coercedValues, $errors);
+    }
+
+
+    /**
+     * @param TypeInterface|null $type
+     * @return bool
+     */
+    protected function isInputType(?TypeInterface $type)
+    {
+        return ($type instanceof ScalarType) || ($type instanceof EnumType) || ($type instanceof InputObjectType)
+            || (($type instanceof WrappingTypeInterface) && $this->isInputType($type->getOfType()));
     }
 
     /**
@@ -280,7 +285,7 @@ class ValuesHelper
         if (empty($value)) {
             return new CoercedValue(null, [
                 $this->buildCoerceException(
-                    sprintf('Expected non-nullable type %s! not to be null', $type->getOfType()->getName()),
+                    sprintf('Expected non-nullable type %s not to be null', (string)$type),
                     $blameNode,
                     $path
                 )

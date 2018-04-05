@@ -842,7 +842,7 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'list' => null
             ],
         ], $result->toArray());
@@ -863,7 +863,7 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A']]);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'list' => '["A"]'
             ],
         ], $result->toArray());
@@ -885,8 +885,40 @@ class VariablesTest extends TestCase
         $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A', null, 'B']]);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'list' => '["A",null,"B"]'
+            ],
+        ], $result->toArray());
+    }
+
+    /**
+     * Does not allow non-null lists to be null
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testDoesNotAllowNonNullListsToBeNull()
+    {
+        $query = 'query ($input: [String]!) {
+          nnList(input: $input)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
+
+        $this->assertEquals([
+            'data'   => null,
+            'errors' => [
+                [
+                    'message'   => 'Variable "$input" got invalid value null; ' .
+                        'Expected non-nullable type [String]! not to be null.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 8
+                        ]
+                    ],
+                    'path'      => []
+                ]
             ],
         ], $result->toArray());
     }
