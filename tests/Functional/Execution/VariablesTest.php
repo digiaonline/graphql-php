@@ -1181,4 +1181,22 @@ class VariablesTest extends TestCase
             'data'   => ['fieldWithDefaultArgumentValue' => '"Hello World"']
         ], $result->toArray());
     }
+
+    /**
+     * When omitted variable provided
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testWhenOmittedVariableProvied()
+    {
+        $query = 'query ($optional: String) {
+          fieldWithDefaultArgumentValue(input: $optional)
+        }';
+
+        $result = execute($this->schema, parse(dedent($query)));
+
+        $this->assertEquals([
+            'data'   => ['fieldWithDefaultArgumentValue' => '"Hello World"']
+        ], $result->toArray());
+    }
 }
