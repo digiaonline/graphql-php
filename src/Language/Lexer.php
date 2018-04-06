@@ -53,19 +53,24 @@ class Lexer implements LexerInterface
     protected $lineStart;
 
     /**
+     * The token reader.
+     *
+     * @var TokenReaderInterface
+     */
+    protected $reader;
+
+    /**
      * Lexer constructor.
      *
-     * @param ReaderInterface[] $readers
+     * @param TokenReaderInterface $reader
      */
-    public function __construct(array $readers)
+    public function __construct(TokenReaderInterface $reader)
     {
         $startOfFileToken = new Token(TokenKindEnum::SOF);
 
-        foreach ($readers as $reader) {
-            $reader->setLexer($this);
-        }
+        $this->reader    = $reader;
+        $this->reader->setLexer($this);
 
-        $this->readers   = $readers;
         $this->lastToken = $startOfFileToken;
         $this->token     = $startOfFileToken;
         $this->line      = 1;
@@ -189,8 +194,8 @@ class Lexer implements LexerInterface
      */
     public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
     {
-        if (($reader = $this->getReader($code, $pos)) !== null) {
-            return $reader->read($code, $pos, $line, $col, $prev);
+        if ($token = $this->reader->read($code, $pos, $line, $col, $prev)) {
+            return $token;
         }
 
         throw new SyntaxErrorException($this->source, $pos, $this->unexpectedCharacterMessage($code));
@@ -239,22 +244,6 @@ class Lexer implements LexerInterface
         }
 
         return sprintf('Cannot parse the unexpected character %s', printCharCode($code));
-    }
-
-    /**
-     * @param int $code
-     * @param int $pos
-     * @return ReaderInterface|null
-     */
-    protected function getReader(int $code, int $pos): ?ReaderInterface
-    {
-        foreach ($this->readers as $reader) {
-            if ($reader instanceof ReaderInterface && $reader->supportsReader($code, $pos)) {
-                return $reader;
-            }
-        }
-
-        return null;
     }
 
     /**
