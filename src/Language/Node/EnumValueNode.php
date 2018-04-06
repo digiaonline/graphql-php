@@ -11,7 +11,6 @@ class EnumValueNode extends AbstractNode implements ValueNodeInterface
      */
     protected $kind = NodeKindEnum::ENUM;
 
-
     /**
      * @inheritdoc
      */
