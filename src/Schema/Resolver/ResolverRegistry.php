@@ -31,7 +31,7 @@ class ResolverRegistry implements ResolverRegistryInterface
     /**
      * @inheritdoc
      */
-    public function lookup(string $typeName, string $fieldName): ?callable
+    public function getFieldResolver(string $typeName, string $fieldName): ?callable
     {
         $resolver = $this->getResolver($typeName);
 
@@ -44,6 +44,24 @@ class ResolverRegistry implements ResolverRegistryInterface
         }
 
         throw new ResolutionException(\sprintf('Failed to resolve field "%s" for type "%s".', $fieldName, $typeName));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTypeResolver(string $typeName): ?callable
+    {
+        $resolver = $this->getResolver($typeName);
+
+        if (null === $resolver) {
+            return null;
+        }
+
+        if ($resolver instanceof ResolverInterface) {
+            return $resolver->getTypeResolver();
+        }
+
+        throw new ResolutionException(\sprintf('Failed to resolve type for "%s".', $typeName));
     }
 
     /**

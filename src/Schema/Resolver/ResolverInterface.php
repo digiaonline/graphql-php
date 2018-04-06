@@ -9,4 +9,9 @@ interface ResolverInterface
      * @return callable|null
      */
     public function getResolveMethod(string $fieldName): ?callable;
+
+    /**
+     * @return callable|null
+     */
+    public function getTypeResolver(): ?callable;
 }
