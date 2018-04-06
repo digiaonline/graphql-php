@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Language\Reader\SupportedReaders;
 use Digia\GraphQL\Language\Writer\SupportedWriters;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 

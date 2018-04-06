@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\Language\Reader\ReaderInterface;
 
 class Lexer implements LexerInterface
 {
@@ -18,11 +17,6 @@ class Lexer implements LexerInterface
      * @var array
      */
     protected $options = [];
-
-    /**
-     * @var array|ReaderInterface[]
-     */
-    protected $readers;
 
     /**
      * The previously focused non-ignored token.
