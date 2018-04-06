@@ -2,11 +2,21 @@
 
 namespace Digia\GraphQL\Execution;
 
+/**
+ * Class Path
+ * @package Digia\GraphQL\Execution
+ */
 class Path
 {
-    private $previous;
+    /**
+     * @var Path|null
+     */
+    protected $previous;
 
-    private $key;
+    /**
+     * @var string|mixed
+     */
+    protected $key;
 
     /**
      * Path constructor.
@@ -20,7 +30,7 @@ class Path
     }
 
     /**
-     * @return mixed
+     * @return Path|null
      */
     public function getPrevious()
     {
@@ -28,30 +38,10 @@ class Path
     }
 
     /**
-     * @param mixed $previous
-     * @return Path
-     */
-    public function setPrevious($previous)
-    {
-        $this->previous = $previous;
-        return $this;
-    }
-
-    /**
-     * @return mixed
+     * @return mixed|string
      */
     public function getKey()
     {
         return $this->key;
-    }
-
-    /**
-     * @param mixed $key
-     * @return Path
-     */
-    public function setKey($key)
-    {
-        $this->key = $key;
-        return $this;
     }
 }
