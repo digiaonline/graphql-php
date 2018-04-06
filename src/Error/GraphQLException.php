@@ -78,7 +78,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
      * @param Source|null     $source
      * @param array|null      $positions
      * @param array|null      $path
-     * @param \Exception|null $originalException
+     * @param \Throwable|null $originalException
      */
     public function __construct(
         string $message,
@@ -86,7 +86,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
         ?Source $source = null,
         ?array $positions = null,
         ?array $path = null,
-        ?\Exception $originalException = null
+        ?\Throwable $originalException = null
     ) {
         parent::__construct($message);
 
