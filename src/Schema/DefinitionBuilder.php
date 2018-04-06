@@ -275,13 +275,21 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             },
             function ($value) use ($node) {
                 /** @var FieldDefinitionNode|InputValueDefinitionNode $value */
-                $resolve = null !== $this->resolverRegistry
-                    ? $this->resolverRegistry->lookup($node->getNameValue(), $value->getNameValue())
-                    : null;
-
-                return $this->buildField($value, $resolve);
+                return $this->buildField($value, $this->getFieldResolver($node->getNameValue(), $value->getNameValue()));
             }
         );
+    }
+
+    /**
+     * @param string $typeName
+     * @param string $fieldName
+     * @return callable|null
+     */
+    protected function getFieldResolver(string $typeName, string $fieldName): ?callable
+    {
+        return null !== $this->resolverRegistry
+            ? $this->resolverRegistry->getFieldResolver($typeName, $fieldName)
+            : null;
     }
 
     /**
@@ -296,6 +304,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             'fields'      => $node->hasFields() ? function () use ($node): array {
                 return $this->buildFields($node);
             } : [],
+            'resolveType' => $this->getTypeResolver($node->getNameValue()),
             'astNode'     => $node,
         ]);
     }
@@ -338,8 +347,20 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             'types'       => $node->hasTypes() ? \array_map(function (TypeNodeInterface $type) {
                 return $this->buildType($type);
             }, $node->getTypes()) : [],
+            'resolveType' => $this->getTypeResolver($node->getNameValue()),
             'astNode'     => $node,
         ]);
+    }
+
+    /**
+     * @param string $typeName
+     * @return callable|null
+     */
+    protected function getTypeResolver(string $typeName): ?callable
+    {
+        return null !== $this->resolverRegistry
+            ? $this->resolverRegistry->getTypeResolver($typeName)
+            : null;
     }
 
     /**

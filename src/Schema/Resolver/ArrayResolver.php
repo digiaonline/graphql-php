@@ -4,6 +4,8 @@ namespace Digia\GraphQL\Schema\Resolver;
 
 class ArrayResolver implements ResolverInterface
 {
+    protected const TYPE_RESOLVER_KEY = '__resolveType';
+
     /**
      * @var callable[]
      */
@@ -34,5 +36,13 @@ class ArrayResolver implements ResolverInterface
     public function getResolveMethod(string $fieldName): ?callable
     {
         return $this->resolvers[$fieldName] ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTypeResolver(): ?callable
+    {
+        return $this->resolvers[static::TYPE_RESOLVER_KEY] ?? null;
     }
 }
