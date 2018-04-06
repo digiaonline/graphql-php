@@ -6,6 +6,7 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\InterfacesTrait;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\FieldsTrait;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -13,7 +14,6 @@ use Digia\GraphQL\Type\Definition\NameTrait;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Util\suggestionList;
 use function Digia\GraphQL\Validation\undefinedFieldMessage;
 
@@ -25,6 +25,7 @@ use function Digia\GraphQL\Validation\undefinedFieldMessage;
  */
 class FieldOnCorrectTypeRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
@@ -36,9 +37,10 @@ class FieldOnCorrectTypeRule extends AbstractRule
             $fieldDefinition = $this->context->getFieldDefinition();
 
             if (null === $fieldDefinition) {
-                $schema              = $this->context->getSchema();
-                $fieldName           = $node->getNameValue();
-                $suggestedTypeNames  = $this->getSuggestedTypeNames($schema, $type, $fieldName);
+                $schema = $this->context->getSchema();
+                $fieldName = $node->getNameValue();
+                $suggestedTypeNames = $this->getSuggestedTypeNames($schema,
+                    $type, $fieldName);
                 $suggestedFieldNames = \count($suggestedTypeNames) !== 0
                     ? []
                     : $this->getSuggestedFieldNames($type, $fieldName);
@@ -67,19 +69,23 @@ class FieldOnCorrectTypeRule extends AbstractRule
      * with Interfaces.
      *
      * @param SchemaInterface $schema
-     * @param TypeInterface   $type
-     * @param string          $fieldName
+     * @param TypeInterface $type
+     * @param string $fieldName
+     *
      * @return array
      */
-    protected function getSuggestedTypeNames(SchemaInterface $schema, TypeInterface $type, string $fieldName): array
-    {
+    protected function getSuggestedTypeNames(
+        SchemaInterface $schema,
+        TypeInterface $type,
+        string $fieldName
+    ): array {
         if (!$type instanceof AbstractTypeInterface) {
             // Otherwise, must be an Object type, which does not have possible fields.
             return [];
         }
 
         $suggestedObjectTypes = [];
-        $interfaceUsageCount  = [];
+        $interfaceUsageCount = [];
 
         /** @var FieldsTrait|NameTrait|InterfacesTrait $possibleType */
         foreach ($schema->getPossibleTypes($type) as $possibleType) {
@@ -97,31 +103,35 @@ class FieldOnCorrectTypeRule extends AbstractRule
                     break;
                 }
 
-                $interfaceName                       = $possibleInterface->getName();
+                $interfaceName = $possibleInterface->getName();
                 $interfaceUsageCount[$interfaceName] = ($interfaceUsageCount[$interfaceName] ?? 0) + 1;
             }
         }
 
         $suggestedInterfaceTypes = \array_keys($interfaceUsageCount);
 
-        \uasort($suggestedInterfaceTypes, function ($a, $b) use ($interfaceUsageCount) {
-            return $interfaceUsageCount[$b] - $interfaceUsageCount[$a];
-        });
+        \uasort($suggestedInterfaceTypes,
+            function ($a, $b) use ($interfaceUsageCount) {
+                return $interfaceUsageCount[$b] - $interfaceUsageCount[$a];
+            });
 
         return \array_merge($suggestedInterfaceTypes, $suggestedObjectTypes);
     }
 
     /**
-     * For the field name provided, determine if there are any similar field names
-     * that may be the result of a typo.
+     * For the field name provided, determine if there are any similar field
+     * names that may be the result of a typo.
      *
      * @param OutputTypeInterface $type
-     * @param string              $fieldName
+     * @param string $fieldName
+     *
      * @return array
      * @throws \Exception
      */
-    protected function getSuggestedFieldNames(OutputTypeInterface $type, string $fieldName): array
-    {
+    protected function getSuggestedFieldNames(
+        OutputTypeInterface $type,
+        string $fieldName
+    ): array {
         if (!($type instanceof ObjectType || $type instanceof InterfaceType)) {
             // Otherwise, must be a Union type, which does not define fields.
             return [];
@@ -129,6 +139,7 @@ class FieldOnCorrectTypeRule extends AbstractRule
 
         /** @var FieldsTrait $type */
         $possibleFieldNames = \array_keys($type->getFields());
+
         return suggestionList($fieldName, $possibleFieldNames);
     }
 }

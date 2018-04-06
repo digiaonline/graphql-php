@@ -10,16 +10,19 @@ use Digia\GraphQL\Util\ValueHelper;
 /**
  * @param array $argumentsA
  * @param array $argumentsB
+ *
  * @return bool
  */
 function compareArguments(array $argumentsA, array $argumentsB): bool
 {
-    return GraphQL::make(ValueHelper::class)->compareArguments($argumentsA, $argumentsB);
+    return GraphQL::make(ValueHelper::class)
+        ->compareArguments($argumentsA, $argumentsB);
 }
 
 /**
  * @param $valueA
  * @param $valueB
+ *
  * @return bool
  */
 function compareValues($valueA, $valueB): bool
@@ -30,6 +33,7 @@ function compareValues($valueA, $valueB): bool
 /**
  * @param TypeInterface $typeA
  * @param TypeInterface $typeB
+ *
  * @return bool
  */
 function compareTypes(TypeInterface $typeA, TypeInterface $typeB): bool

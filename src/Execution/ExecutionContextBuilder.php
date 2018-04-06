@@ -10,18 +10,21 @@ use Digia\GraphQL\Schema\Schema;
 
 /**
  * Class ExecutionContextBuilder
+ *
  * @package Digia\GraphQL\Execution
  */
 class ExecutionContextBuilder
 {
+
     /**
-     * @param Schema        $schema
-     * @param DocumentNode  $documentNode
+     * @param Schema $schema
+     * @param DocumentNode $documentNode
      * @param               $rootValue
      * @param               $contextValue
      * @param               $rawVariableValues
-     * @param null          $operationName
+     * @param null $operationName
      * @param callable|null $fieldResolver
+     *
      * @return ExecutionContext
      * @throws ExecutionException
      * @throws \Exception
@@ -37,7 +40,7 @@ class ExecutionContextBuilder
     ): ExecutionContext {
         //@TODO validate $rawVariableValues?
 
-        $errors    = [];
+        $errors = [];
         $fragments = [];
         $operation = null;
 
@@ -50,20 +53,23 @@ class ExecutionContextBuilder
                         );
                     }
 
-                    if (!$operationName || (!empty($definition->getName()) && $definition->getName()->getValue() === $operationName)) {
+                    if (!$operationName || (!empty($definition->getName()) && $definition->getName()
+                                ->getValue() === $operationName)) {
                         $operation = $definition;
                     }
                     break;
                 case NodeKindEnum::FRAGMENT_DEFINITION:
                 case NodeKindEnum::FRAGMENT_SPREAD:
-                    $fragments[$definition->getName()->getValue()] = $definition;
+                    $fragments[$definition->getName()
+                        ->getValue()] = $definition;
                     break;
             }
         }
 
         if (null === $operation) {
             if ($operationName !== null) {
-                throw new ExecutionException(sprintf('Unknown operation named "%s".', $operationName));
+                throw new ExecutionException(sprintf('Unknown operation named "%s".',
+                    $operationName));
             }
 
             throw new ExecutionException('Must provide an operation.');

@@ -8,16 +8,18 @@ use function Digia\GraphQL\Language\wrap;
 
 class DirectiveWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|DirectiveNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string
     {
-        $name      = $this->printNode($node->getName());
+        $name = $this->printNode($node->getName());
         $arguments = $this->printNodes($node->getArguments());
 
-        return '@' . $name . wrap('(', implode(', ', $arguments), ')');
+        return '@'.$name.wrap('(', implode(', ', $arguments), ')');
     }
 
     /**

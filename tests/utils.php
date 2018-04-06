@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Test;
 
 /**
  * @param $value
+ *
  * @return string
  */
 function jsonEncode($value): string
@@ -13,6 +14,7 @@ function jsonEncode($value): string
 
 /**
  * @param string $path
+ *
  * @return string
  */
 function readFileContents(string $path): string

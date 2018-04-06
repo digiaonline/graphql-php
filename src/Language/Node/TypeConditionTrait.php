@@ -20,11 +20,13 @@ trait TypeConditionTrait
 
     /**
      * @param NamedTypeNode|null $typeCondition
+     *
      * @return $this
      */
     public function setTypeCondition(?NamedTypeNode $typeCondition)
     {
         $this->typeCondition = $typeCondition;
+
         return $this;
     }
 }

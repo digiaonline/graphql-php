@@ -52,6 +52,7 @@ use function Digia\GraphQL\Util\invariant;
 class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
     ConfigAwareInterface, NodeAwareInterface
 {
+
     use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
@@ -76,24 +77,10 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
     protected $interfaces;
 
     /**
-     * @inheritdoc
-     */
-    protected function afterConfig(): void
-    {
-        invariant(null !== $this->getName(), 'Must provide name.');
-
-        if ($this->getIsTypeOf() !== null) {
-            invariant(
-                \is_callable($this->getIsTypeOf()),
-                \sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
-            );
-        }
-    }
-
-    /**
      * @param mixed $value
      * @param mixed context
      * @param mixed $info
+     *
      * @return bool|PromiseInterface
      */
     public function isTypeOf($value, $context, $info)
@@ -112,20 +99,59 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
         if (!isset($this->interfaces)) {
             $this->interfaces = $this->buildInterfaces($this->interfacesOrThunk ?? []);
         }
+
         return $this->interfaces;
     }
 
     /**
-     * Objects are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['interfaces']`.
+     * Objects are created using the `ConfigAwareTrait` constructor which will
+     * automatically call this method when setting arguments from
+     * `$config['interfaces']`.
      *
      * @param array|callable $interfacesOrThunk
+     *
      * @return $this
      */
     protected function setInterfaces($interfacesOrThunk)
     {
         $this->interfacesOrThunk = $interfacesOrThunk;
+
         return $this;
+    }
+
+    /**
+     * @param array|callable $interfacesOrThunk
+     *
+     * @return array
+     * @throws InvariantException
+     */
+    protected function buildInterfaces($interfacesOrThunk): array
+    {
+        $interfaces = resolveThunk($interfacesOrThunk);
+
+        invariant(
+            \is_array($interfaces),
+            \sprintf('%s interfaces must be an array or a function which returns an array.',
+                $this->getName())
+        );
+
+        return $interfaces;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function afterConfig(): void
+    {
+        invariant(null !== $this->getName(), 'Must provide name.');
+
+        if ($this->getIsTypeOf() !== null) {
+            invariant(
+                \is_callable($this->getIsTypeOf()),
+                \sprintf('%s must provide "isTypeOf" as a function.',
+                    $this->getName())
+            );
+        }
     }
 
     /**
@@ -138,28 +164,13 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
 
     /**
      * @param null|callable $isTypeOfFunction
+     *
      * @return $this
      */
     protected function setIsTypeOf(?callable $isTypeOfFunction)
     {
         $this->isTypeOfFunction = $isTypeOfFunction;
+
         return $this;
-    }
-
-    /**
-     * @param array|callable $interfacesOrThunk
-     * @return array
-     * @throws InvariantException
-     */
-    protected function buildInterfaces($interfacesOrThunk): array
-    {
-        $interfaces = resolveThunk($interfacesOrThunk);
-
-        invariant(
-            \is_array($interfaces),
-            \sprintf('%s interfaces must be an array or a function which returns an array.', $this->getName())
-        );
-
-        return $interfaces;
     }
 }

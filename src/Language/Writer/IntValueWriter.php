@@ -7,8 +7,10 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class IntValueWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|IntValueNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string

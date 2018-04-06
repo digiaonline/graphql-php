@@ -17,8 +17,8 @@ use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
-use function Digia\GraphQL\Type\String;
 use function Digia\GraphQL\Type\newUnionType;
+use function Digia\GraphQL\Type\String;
 
 class PredicateTest extends TestCase
 {
@@ -55,16 +55,22 @@ class PredicateTest extends TestCase
 
     public function setUp()
     {
-        $this->objectType      = newObjectType(['name' => 'Object']);
-        $this->interfaceType   = newInterfaceType(['name' => 'Interface']);
-        $this->unionType       = newUnionType(['name' => 'Union', 'types' => [$this->objectType]]);
-        $this->enumType        = newEnumType(['name' => 'Enum', 'values' => ['foo' => []]]);
+        $this->objectType = newObjectType(['name' => 'Object']);
+        $this->interfaceType = newInterfaceType(['name' => 'Interface']);
+        $this->unionType = newUnionType([
+            'name' => 'Union',
+            'types' => [$this->objectType],
+        ]);
+        $this->enumType = newEnumType([
+            'name' => 'Enum',
+            'values' => ['foo' => []],
+        ]);
         $this->inputObjectType = newInputObjectType(['name' => 'InputObject']);
-        $this->scalarType      = newScalarType([
-            'name'         => 'Scalar',
-            'serialize'    => function () {
+        $this->scalarType = newScalarType([
+            'name' => 'Scalar',
+            'serialize' => function () {
             },
-            'parseValue'   => function () {
+            'parseValue' => function () {
             },
             'parseLiteral' => function () {
             },

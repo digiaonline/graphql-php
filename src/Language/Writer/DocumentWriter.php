@@ -7,13 +7,15 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class DocumentWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|DocumentNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string
     {
-        return implode("\n\n", $node->getDefinitions()) . "\n";
+        return implode("\n\n", $node->getDefinitions())."\n";
     }
 
     /**

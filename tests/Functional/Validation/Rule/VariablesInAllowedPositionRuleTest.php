@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\badVariablePosition;
 
 class VariablesInAllowedPositionRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return VariablesInAllowedPositionRule::class;
-    }
 
     public function testBooleanAllowsBoolean()
     {
@@ -281,7 +277,10 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
               }
             }
             '),
-            [badVariablePosition('stringVar', 'String', 'Boolean', [[1, 13], [3, 33]])]
+            [
+                badVariablePosition('stringVar', 'String', 'Boolean',
+                    [[1, 13], [3, 33]]),
+            ]
         );
     }
 
@@ -296,7 +295,10 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
               }
             }
             '),
-            [badVariablePosition('stringVar', 'String', '[String]', [[1, 13], [3, 39]])]
+            [
+                badVariablePosition('stringVar', 'String', '[String]',
+                    [[1, 13], [3, 39]]),
+            ]
         );
     }
 
@@ -309,7 +311,10 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
               dog @include(if: $boolVar)
             }
             '),
-            [badVariablePosition('boolVar', 'Boolean', 'Boolean!', [[1, 13], [2, 20]])]
+            [
+                badVariablePosition('boolVar', 'Boolean', 'Boolean!',
+                    [[1, 13], [2, 20]]),
+            ]
         );
     }
 
@@ -322,7 +327,10 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
               dog @include(if: $stringVar)
             }
             '),
-            [badVariablePosition('stringVar', 'String', 'Boolean!', [[1, 13], [2, 20]])]
+            [
+                badVariablePosition('stringVar', 'String', 'Boolean!',
+                    [[1, 13], [2, 20]]),
+            ]
         );
     }
 
@@ -337,7 +345,15 @@ class VariablesInAllowedPositionRuleTest extends RuleTestCase
               }
             }
             '),
-            [badVariablePosition('stringListVar', '[String]', '[String!]', [[1, 13], [3, 53]])]
+            [
+                badVariablePosition('stringListVar', '[String]', '[String!]',
+                    [[1, 13], [3, 53]]),
+            ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return VariablesInAllowedPositionRule::class;
     }
 }

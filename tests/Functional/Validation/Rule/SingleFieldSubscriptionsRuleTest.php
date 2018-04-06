@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\singleFieldOnly;
 
 class SingleFieldSubscriptionsRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return SingleFieldSubscriptionsRule::class;
-    }
 
     public function testValidSubscription()
     {
@@ -80,5 +76,10 @@ class SingleFieldSubscriptionsRuleTest extends RuleTestCase
             '),
             [singleFieldOnly(null, [[3, 3]])]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return SingleFieldSubscriptionsRule::class;
     }
 }

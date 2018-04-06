@@ -4,9 +4,9 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Execution\ExecutionResult;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Schema\Schema;
 use React\Promise\Promise;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
@@ -27,21 +27,26 @@ class MutationTest extends TestCase
         $schema = newSchema([
             'mutation' =>
                 new ObjectType([
-                    'name'   => 'M',
+                    'name' => 'M',
                     'fields' => [
                         'greeting' => [
-                            'type'    => String(),
-                            'resolve' => function ($source, $args, $context, $info) {
+                            'type' => String(),
+                            'resolve' => function (
+                                $source,
+                                $args,
+                                $context,
+                                $info
+                            ) {
                                 return sprintf('Hello %s.', $args['name']);
                             },
-                            'args'    => [
+                            'args' => [
                                 'name' => [
-                                    'type' => String()
-                                ]
-                            ]
-                        ]
-                    ]
-                ])
+                                    'type' => String(),
+                                ],
+                            ],
+                        ],
+                    ],
+                ]),
         ]);
 
         $source = '
@@ -49,10 +54,11 @@ class MutationTest extends TestCase
             greeting(name:$name)
         }';
 
-        $executionResult = execute($schema, parse($source), '', null, ['name' => 'Han Solo']);
+        $executionResult = execute($schema, parse($source), '', null,
+            ['name' => 'Han Solo']);
 
         $expected = new ExecutionResult([
-            'greeting' => 'Hello Han Solo.'
+            'greeting' => 'Hello Han Solo.',
         ], []);
 
         $this->assertEquals($expected, $executionResult);
@@ -86,25 +92,25 @@ class MutationTest extends TestCase
           }
         }';
 
-        $result   = execute(rootSchema(), parse($source), new Root(6));
+        $result = execute(rootSchema(), parse($source), new Root(6));
         $expected = [
             'data' => [
-                'first'  => [
-                    'theNumber' => 1
+                'first' => [
+                    'theNumber' => 1,
                 ],
                 'second' => [
-                    'theNumber' => 2
+                    'theNumber' => 2,
                 ],
-                'third'  => [
-                    'theNumber' => 3
+                'third' => [
+                    'theNumber' => 3,
                 ],
                 'fourth' => [
-                    'theNumber' => 4
+                    'theNumber' => 4,
                 ],
-                'fifth'  => [
-                    'theNumber' => 5
-                ]
-            ]
+                'fifth' => [
+                    'theNumber' => 5,
+                ],
+            ],
         ];
 
         $this->assertEquals($expected, $result->toArray());
@@ -116,7 +122,8 @@ class MutationTest extends TestCase
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
-    public function testEvaluatesMutationsCorrectlyInThePresenceOfAvailedMutation()
+    public function testEvaluatesMutationsCorrectlyInThePresenceOfAvailedMutation(
+    )
     {
         $source = 'mutation M {
           first: immediatelyChangeTheNumber(newNumber: 1) {
@@ -139,36 +146,36 @@ class MutationTest extends TestCase
           }
         }';
 
-        $result   = execute(rootSchema(), parse($source), new Root(6));
+        $result = execute(rootSchema(), parse($source), new Root(6));
         $expected = [
-            'data'   => [
-                'first'  => [
-                    'theNumber' => 1
+            'data' => [
+                'first' => [
+                    'theNumber' => 1,
                 ],
                 'second' => [
-                    'theNumber' => 2
+                    'theNumber' => 2,
                 ],
-                'third'  => null,
+                'third' => null,
                 'fourth' => [
-                    'theNumber' => 4
+                    'theNumber' => 4,
                 ],
-                'fifth'  => [
-                    'theNumber' => 5
+                'fifth' => [
+                    'theNumber' => 5,
                 ],
-                'sixth'  => null
+                'sixth' => null,
             ],
             'errors' => [
                 [
-                    'message'   => 'Cannot change the number',
+                    'message' => 'Cannot change the number',
                     'locations' => null,
-                    'path'      => ['third']
+                    'path' => ['third'],
                 ],
                 [
-                    'message'   => 'Cannot change the number',
+                    'message' => 'Cannot change the number',
                     'locations' => null,
-                    'path'      => ['sixth']
-                ]
-            ]
+                    'path' => ['sixth'],
+                ],
+            ],
         ];
 
         $this->assertEquals($expected, $result->toArray());
@@ -178,6 +185,7 @@ class MutationTest extends TestCase
 
 class NumberHolder
 {
+
     public $theNumber;
 
     public function __construct($originalNumber)
@@ -188,21 +196,12 @@ class NumberHolder
 
 class Root
 {
+
     public $numberHolder;
 
     public function __construct($originalNumber)
     {
         $this->numberHolder = new NumberHolder($originalNumber);
-    }
-
-    /**
-     * @param $newNumber
-     * @return NumberHolder
-     */
-    public function immediatelyChangeTheNumber($newNumber)
-    {
-        $this->numberHolder->theNumber = $newNumber;
-        return $this->numberHolder;
     }
 
     /**
@@ -215,6 +214,18 @@ class Root
         return new Promise(function (callable $resolve) use ($newNumber) {
             return $resolve($this->immediatelyChangeTheNumber($newNumber));
         });
+    }
+
+    /**
+     * @param $newNumber
+     *
+     * @return NumberHolder
+     */
+    public function immediatelyChangeTheNumber($newNumber)
+    {
+        $this->numberHolder->theNumber = $newNumber;
+
+        return $this->numberHolder;
     }
 
     /**
@@ -242,49 +253,49 @@ function rootSchema(): Schema
         'fields' => [
             'theNumber' => ['type' => Int()],
         ],
-        'name'   => 'NumberHolder',
+        'name' => 'NumberHolder',
     ]);
 
     $schema = newSchema([
-        'query'    => newObjectType([
+        'query' => newObjectType([
             'fields' => [
                 'numberHolder' => ['type' => $numberHolderType],
             ],
-            'name'   => 'Query',
+            'name' => 'Query',
         ]),
         'mutation' => newObjectType([
             'fields' => [
-                'immediatelyChangeTheNumber'      => [
-                    'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => Int()]],
+                'immediatelyChangeTheNumber' => [
+                    'type' => $numberHolderType,
+                    'args' => ['newNumber' => ['type' => Int()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->immediatelyChangeTheNumber($args['newNumber']);
-                    }
+                    },
                 ],
-                'promiseToChangeTheNumber'        => [
-                    'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => Int()]],
+                'promiseToChangeTheNumber' => [
+                    'type' => $numberHolderType,
+                    'args' => ['newNumber' => ['type' => Int()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->promiseToChangeTheNumber($args['newNumber']);
-                    }
+                    },
                 ],
-                'failToChangeTheNumber'           => [
-                    'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => Int()]],
+                'failToChangeTheNumber' => [
+                    'type' => $numberHolderType,
+                    'args' => ['newNumber' => ['type' => Int()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->failToChangeTheNumber($args['newNumber']);
-                    }
+                    },
                 ],
                 'promiseAndFailToChangeTheNumber' => [
-                    'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => Int()]],
+                    'type' => $numberHolderType,
+                    'args' => ['newNumber' => ['type' => Int()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->promiseAndFailToChangeTheNumber($args['newNumber']);
-                    }
-                ]
+                    },
+                ],
             ],
-            'name'   => 'Mutation',
-        ])
+            'name' => 'Mutation',
+        ]),
     ]);
 
     return $schema;

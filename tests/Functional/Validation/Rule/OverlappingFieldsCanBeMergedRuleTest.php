@@ -16,116 +16,120 @@ use function Digia\GraphQL\Type\String;
 
 class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
 {
-    protected $someBox;
-    protected $stringBox;
-    protected $intBox;
-    protected $nonNullStringBox1;
-    protected $nonNullStringBox1Impl;
-    protected $nonNullStringBox2;
-    protected $nonNullStringBox2Impl;
-    protected $connection;
-    protected $schema;
 
-    protected function getRuleClassName(): string
-    {
-        return OverlappingFieldsCanBeMergedRule::class;
-    }
+    protected $someBox;
+
+    protected $stringBox;
+
+    protected $intBox;
+
+    protected $nonNullStringBox1;
+
+    protected $nonNullStringBox1Impl;
+
+    protected $nonNullStringBox2;
+
+    protected $nonNullStringBox2Impl;
+
+    protected $connection;
+
+    protected $schema;
 
     public function setUp()
     {
         parent::setUp();
 
         $this->someBox = newInterfaceType([
-            'name'   => 'SomeBox',
+            'name' => 'SomeBox',
             'fields' => function () {
                 return [
-                    'deepBox'        => ['type' => $this->someBox],
+                    'deepBox' => ['type' => $this->someBox],
                     'unrelatedField' => ['type' => String()],
                 ];
             },
         ]);
 
         $this->stringBox = newObjectType([
-            'name'       => 'StringBox',
+            'name' => 'StringBox',
             'interfaces' => [$this->someBox],
-            'fields'     => function () {
+            'fields' => function () {
                 return [
-                    'scalar'         => ['type' => String()],
-                    'deepBox'        => ['type' => $this->stringBox],
+                    'scalar' => ['type' => String()],
+                    'deepBox' => ['type' => $this->stringBox],
                     'unrelatedField' => ['type' => String()],
-                    'listStringBox'  => ['type' => newList($this->stringBox)],
-                    'stringBox'      => ['type' => $this->stringBox],
-                    'intBox'         => ['type' => $this->intBox],
+                    'listStringBox' => ['type' => newList($this->stringBox)],
+                    'stringBox' => ['type' => $this->stringBox],
+                    'intBox' => ['type' => $this->intBox],
                 ];
             },
         ]);
 
         $this->intBox = newObjectType([
-            'name'       => 'IntBox',
+            'name' => 'IntBox',
             'interfaces' => [$this->someBox],
-            'fields'     => function () {
+            'fields' => function () {
                 return [
-                    'scalar'         => ['type' => Int()],
-                    'deepBox'        => ['type' => $this->intBox],
+                    'scalar' => ['type' => Int()],
+                    'deepBox' => ['type' => $this->intBox],
                     'unrelatedField' => ['type' => String()],
-                    'listStringBox'  => ['type' => newList($this->stringBox)],
-                    'stringBox'      => ['type' => $this->stringBox],
-                    'intBox'         => ['type' => $this->intBox],
+                    'listStringBox' => ['type' => newList($this->stringBox)],
+                    'stringBox' => ['type' => $this->stringBox],
+                    'intBox' => ['type' => $this->intBox],
                 ];
             },
         ]);
 
         $this->nonNullStringBox1 = newInterfaceType([
-            'name'   => 'NonNullStringBox1',
+            'name' => 'NonNullStringBox1',
             'fields' => [
                 'scalar' => ['type' => newNonNull(String())],
             ],
         ]);
 
         $this->nonNullStringBox1Impl = newObjectType([
-            'name'       => 'NonNullStringBox1Impl',
+            'name' => 'NonNullStringBox1Impl',
             'interfaces' => [$this->someBox, $this->nonNullStringBox1],
-            'fields'     => [
-                'scalar'         => ['type' => newNonNull(String())],
+            'fields' => [
+                'scalar' => ['type' => newNonNull(String())],
                 'unrelatedField' => ['type' => String()],
-                'deepBox'        => ['type' => $this->someBox],
+                'deepBox' => ['type' => $this->someBox],
             ],
         ]);
 
         $this->nonNullStringBox2 = newInterfaceType([
-            'name'   => 'NonNullStringBox2',
+            'name' => 'NonNullStringBox2',
             'fields' => [
                 'scalar' => ['type' => newNonNull(String())],
             ],
         ]);
 
         $this->nonNullStringBox2Impl = newObjectType([
-            'name'       => 'NonNullStringBox2Impl',
+            'name' => 'NonNullStringBox2Impl',
             'interfaces' => [$this->someBox, $this->nonNullStringBox2],
-            'fields'     => [
-                'scalar'         => ['type' => newNonNull(String())],
+            'fields' => [
+                'scalar' => ['type' => newNonNull(String())],
                 'unrelatedField' => ['type' => String()],
-                'deepBox'        => ['type' => $this->someBox],
+                'deepBox' => ['type' => $this->someBox],
             ],
         ]);
 
         $this->connection = newObjectType([
-            'name'   => 'Connection',
+            'name' => 'Connection',
             'fields' => function () {
                 return [
                     'edges' => [
                         'type' => newList(
                             newObjectType([
-                                'name'   => 'Edge',
+                                'name' => 'Edge',
                                 'fields' => [
                                     'node' => [
                                         'type' => newObjectType([
-                                            'name'   => 'Node',
+                                            'name' => 'Node',
                                             'fields' => [
-                                                'id'   => ['type' => ID()],
+                                                'id' => ['type' => ID()],
                                                 'name' => ['type' => String()],
                                             ],
-                                        ])
+                                        ]),
                                     ],
                                 ],
                             ])
@@ -137,15 +141,20 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
 
         $this->schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'QueryRoot',
+                'name' => 'QueryRoot',
                 'fields' => function () {
                     return [
-                        'someBox'    => ['type' => $this->someBox],
+                        'someBox' => ['type' => $this->someBox],
                         'connection' => ['type' => $this->connection],
                     ];
                 },
             ]),
-            'types' => [$this->intBox, $this->stringBox, $this->nonNullStringBox1Impl, $this->nonNullStringBox2Impl],
+            'types' => [
+                $this->intBox,
+                $this->stringBox,
+                $this->nonNullStringBox1Impl,
+                $this->nonNullStringBox2Impl,
+            ],
         ]);
     }
 
@@ -253,7 +262,10 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
               fido: nickname
             }
             '),
-            [fieldConflict('fido', 'name and nickname are different fields', [[2, 3], [3, 3]])]
+            [
+                fieldConflict('fido', 'name and nickname are different fields',
+                    [[2, 3], [3, 3]]),
+            ]
         );
     }
 
@@ -286,7 +298,10 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
               name
             }
             '),
-            [fieldConflict('name', 'nickname and name are different fields', [[2, 3], [3, 3]])]
+            [
+                fieldConflict('name', 'nickname and name are different fields',
+                    [[2, 3], [3, 3]]),
+            ]
         );
     }
 
@@ -300,7 +315,11 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
               doesKnowCommand(dogCommand: HEEL)
             }
             '),
-            [fieldConflict('doesKnowCommand', 'they have differing arguments', [[2, 3], [3, 3]])]
+            [
+                fieldConflict('doesKnowCommand',
+                    'they have differing arguments',
+                    [[2, 3], [3, 3]]),
+            ]
         );
     }
 
@@ -314,7 +333,11 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
               doesKnowCommand
             }
             '),
-            [fieldConflict('doesKnowCommand', 'they have differing arguments', [[2, 3], [3, 3]])]
+            [
+                fieldConflict('doesKnowCommand',
+                    'they have differing arguments',
+                    [[2, 3], [3, 3]]),
+            ]
         );
     }
 
@@ -328,7 +351,11 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
               doesKnowCommand(dogCommand: HEEL)
             }
             '),
-            [fieldConflict('doesKnowCommand', 'they have differing arguments', [[2, 3], [3, 3]])]
+            [
+                fieldConflict('doesKnowCommand',
+                    'they have differing arguments',
+                    [[2, 3], [3, 3]]),
+            ]
         );
     }
 
@@ -367,7 +394,10 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
               x: b
             }
             '),
-            [fieldConflict('x', 'a and b are different fields', [[6, 3], [9, 3]])]
+            [
+                fieldConflict('x', 'a and b are different fields',
+                    [[6, 3], [9, 3]]),
+            ]
         );
     }
 
@@ -399,9 +429,12 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             }
             '),
             [
-                fieldConflict('x', 'a and b are different fields', [[17, 3], [20, 3]]),
-                fieldConflict('x', 'c and a are different fields', [[13, 5], [17, 3]]),
-                fieldConflict('x', 'c and b are different fields', [[13, 5], [20, 3]]),
+                fieldConflict('x', 'a and b are different fields',
+                    [[17, 3], [20, 3]]),
+                fieldConflict('x', 'c and a are different fields',
+                    [[13, 5], [17, 3]]),
+                fieldConflict('x', 'c and b are different fields',
+                    [[13, 5], [20, 3]]),
             ]
         );
     }
@@ -425,7 +458,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'field',
                     [['x', 'a and b are different fields']],
                     [[2, 3], [3, 5], [5, 3], [6, 5]]
-                )
+                ),
             ]
         );
     }
@@ -454,7 +487,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                         ['y', 'c and d are different fields'],
                     ],
                     [[2, 3], [3, 5], [4, 5], [6, 3], [7, 5], [8, 5]]
-                )
+                ),
             ]
         );
     }
@@ -482,7 +515,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'field',
                     ['deepField', [['x', 'a and b are different fields']]],
                     [[2, 3], [3, 5], [4, 7], [7, 3], [8, 5], [9, 7]]
-                )
+                ),
             ]
         );
     }
@@ -513,7 +546,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'deepField',
                     ['x', 'a and b are different fields'],
                     [[3, 5], [4, 7], [6, 5], [7, 7]]
-                )
+                ),
             ]
         );
     }
@@ -552,7 +585,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'deeperField',
                     ['x', 'a and b are different fields'],
                     [[11, 5], [12, 7], [14, 5], [15, 7]]
-                )
+                ),
             ]
         );
     }
@@ -593,7 +626,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                         ['y', 'c and d are different fields'],
                     ],
                     [[2, 3], [10, 3], [14, 3], [5, 3], [21, 3], [17, 3]]
-                )
+                ),
             ]
         );
     }
@@ -642,7 +675,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'scalar',
                     'they return conflicting types Int and String!',
                     [[4, 7], [7, 7]]
-                )
+                ),
             ]
         );
     }
@@ -696,7 +729,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'scalar',
                     'they return conflicting types Int and String',
                     [[4, 7], [7, 7]]
-                )
+                ),
             ]
         );
     }
@@ -753,14 +786,18 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             [
                 fieldConflict(
                     'other',
-                    ['scalar', 'scalar and unrelatedField are different fields'],
+                    [
+                        'scalar',
+                        'scalar and unrelatedField are different fields',
+                    ],
                     [[30, 3], [38, 3], [33, 3], [41, 3]]
-                )
+                ),
             ]
         );
     }
 
-    public function testDisallowsDifferingReturnTypeNullabilityDespiteNoOverlap()
+    public function testDisallowsDifferingReturnTypeNullabilityDespiteNoOverlap(
+    )
     {
         $this->expectFailsRuleWithSchema(
             $this->schema,
@@ -782,7 +819,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'scalar',
                     'they return conflicting types String! and String',
                     [[5, 7], [8, 7]]
-                )
+                ),
             ]
         );
     }
@@ -813,7 +850,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'box',
                     'they return conflicting types [StringBox] and StringBox',
                     [[4, 7], [9, 7]]
-                )
+                ),
             ]
         );
 
@@ -841,7 +878,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'box',
                     'they return conflicting types StringBox and [StringBox]',
                     [[4, 7], [9, 7]]
-                )
+                ),
             ]
         );
     }
@@ -873,7 +910,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'val',
                     'scalar and unrelatedField are different fields',
                     [[5, 9], [6, 9]]
-                )
+                ),
             ]
         );
     }
@@ -904,7 +941,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'box',
                     ['scalar', 'they return conflicting types String and Int'],
                     [[4, 7], [5, 9], [9, 7], [10, 9]]
-                )
+                ),
             ]
         );
     }
@@ -995,7 +1032,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'edges',
                     ['node', [['id', 'name and id are different fields']]],
                     [[4, 5], [5, 7], [6, 9], [13, 3], [14, 5], [15, 7]]
-                )
+                ),
             ]
         );
     }
@@ -1068,8 +1105,13 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                     'fido',
                     'name and nickname are different fields',
                     [[3, 3], [4, 3]]
-                )
+                ),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return OverlappingFieldsCanBeMergedRule::class;
     }
 }

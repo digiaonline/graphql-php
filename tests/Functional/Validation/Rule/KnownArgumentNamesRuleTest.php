@@ -9,10 +9,6 @@ use function Digia\GraphQL\Test\Functional\Validation\unknownDirectiveArgument;
 
 class KnownArgumentNamesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return KnownArgumentNamesRule::class;
-    }
 
     public function testSingleArgumentIsKnown()
     {
@@ -155,7 +151,10 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
               doesKnowCommand(dogcommand: true)
             }
             '),
-            [unknownArgument('dogcommand', 'doesKnowCommand', 'Dog', ['dogCommand'], [2, 19])]
+            [
+                unknownArgument('dogcommand', 'doesKnowCommand', 'Dog',
+                    ['dogCommand'], [2, 19]),
+            ]
         );
     }
 
@@ -169,8 +168,10 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
             }
             '),
             [
-                unknownArgument('whoknows', 'doesKnowCommand', 'Dog', [], [2, 19]),
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [2, 49]),
+                unknownArgument('whoknows', 'doesKnowCommand', 'Dog', [],
+                    [2, 19]),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [],
+                    [2, 49]),
             ]
         );
     }
@@ -194,9 +195,16 @@ class KnownArgumentNamesRuleTest extends RuleTestCase
             }
             '),
             [
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [3, 21]),
-                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [], [8, 25]),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [],
+                    [3, 21]),
+                unknownArgument('unknown', 'doesKnowCommand', 'Dog', [],
+                    [8, 25]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return KnownArgumentNamesRule::class;
     }
 }

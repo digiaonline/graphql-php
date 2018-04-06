@@ -11,6 +11,7 @@ use function Digia\GraphQL\Test\Functional\getHuman;
 
 class ResolverRegistryTest extends TestCase
 {
+
     public function testArrayResolver()
     {
         $registry = new ResolverRegistry([
@@ -27,12 +28,14 @@ class ResolverRegistryTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
             'name' => 'Luke Skywalker',
-        ], $registry->getFieldResolver('Query', 'human')(null, ['id' => '1000']));
+        ], $registry->getFieldResolver('Query', 'human')(null,
+            ['id' => '1000']));
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
             'name' => 'R2-D2',
-        ], $registry->getFieldResolver('Query', 'droid')(null, ['id' => '2001']));
+        ], $registry->getFieldResolver('Query', 'droid')(null,
+            ['id' => '2001']));
     }
 
     public function testResolverClassMap()
@@ -44,12 +47,14 @@ class ResolverRegistryTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
             'name' => 'Luke Skywalker',
-        ], $registry->getFieldResolver('Query', 'human')(null, ['id' => '1000']));
+        ], $registry->getFieldResolver('Query', 'human')(null,
+            ['id' => '1000']));
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
             'name' => 'R2-D2',
-        ], $registry->getFieldResolver('Query', 'droid')(null, ['id' => '2001']));
+        ], $registry->getFieldResolver('Query', 'droid')(null,
+            ['id' => '2001']));
     }
 
     public function testRegisterResolver()
@@ -61,12 +66,14 @@ class ResolverRegistryTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
             'name' => 'Luke Skywalker',
-        ], $registry->getFieldResolver('Query', 'human')(null, ['id' => '1000']));
+        ], $registry->getFieldResolver('Query', 'human')(null,
+            ['id' => '1000']));
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
             'name' => 'R2-D2',
-        ], $registry->getFieldResolver('Query', 'droid')(null, ['id' => '2001']));
+        ], $registry->getFieldResolver('Query', 'droid')(null,
+            ['id' => '2001']));
     }
 
     public function testExtendExistingResolver()
@@ -85,27 +92,32 @@ class ResolverRegistryTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
             'name' => 'Luke Skywalker',
-        ], $registry->getFieldResolver('Query', 'human')(null, ['id' => '1000']));
+        ], $registry->getFieldResolver('Query', 'human')(null,
+            ['id' => '1000']));
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
             'name' => 'R2-D2',
-        ], $registry->getFieldResolver('Query', 'droid')(null, ['id' => '2001']));
+        ], $registry->getFieldResolver('Query', 'droid')(null,
+            ['id' => '2001']));
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $registry->getResolver('Query')->addResolver('hero', function ($_, $args) {
-            return getHero($args['episode'] ?? null);
-        });
+        $registry->getResolver('Query')
+            ->addResolver('hero', function ($_, $args) {
+                return getHero($args['episode'] ?? null);
+            });
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
             'name' => 'Luke Skywalker',
-        ], $registry->getFieldResolver('Query', 'hero')(null, ['episode' => 'EMPIRE']));
+        ], $registry->getFieldResolver('Query', 'hero')(null,
+            ['episode' => 'EMPIRE']));
     }
 }
 
 class QueryResolver extends AbstractResolver
 {
+
     public function resolveHero($_, $args)
     {
         return getHero($args['episode'] ?? null);

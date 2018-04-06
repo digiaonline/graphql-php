@@ -11,11 +11,18 @@ class BraceReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
         return $code === 123
-            ? new Token(TokenKindEnum::BRACE_L, $pos, $pos + 1, $line, $col, $prev)
-            : new Token(TokenKindEnum::BRACE_R, $pos, $pos + 1, $line, $col, $prev);
+            ? new Token(TokenKindEnum::BRACE_L, $pos, $pos + 1, $line, $col,
+                $prev)
+            : new Token(TokenKindEnum::BRACE_R, $pos, $pos + 1, $line, $col,
+                $prev);
     }
 
     /**

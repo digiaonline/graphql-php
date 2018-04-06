@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 trait DirectivesTrait
 {
+
     /**
      * @var DirectiveNode[]
      */
@@ -26,21 +27,23 @@ trait DirectivesTrait
     }
 
     /**
+     * @param array|DirectiveNode[] $directives
+     *
+     * @return $this
+     */
+    public function setDirectives(array $directives)
+    {
+        $this->directives = $directives;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getDirectivesAsArray(): array
     {
         // TODO: Implement this method.
         return [];
-    }
-
-    /**
-     * @param array|DirectiveNode[] $directives
-     * @return $this
-     */
-    public function setDirectives(array $directives)
-    {
-        $this->directives = $directives;
-        return $this;
     }
 }

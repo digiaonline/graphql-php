@@ -17,6 +17,7 @@ use function Digia\GraphQL\Validation\unusedFragmentMessage;
  */
 class NoUnusedFragmentsRule extends AbstractRule
 {
+
     /**
      * @var OperationDefinitionNode[]
      */
@@ -30,7 +31,8 @@ class NoUnusedFragmentsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         $this->operationDefinitions[] = $node;
 
@@ -40,7 +42,8 @@ class NoUnusedFragmentsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node
+    ): ?NodeInterface
     {
         $this->fragmentDefinitions[] = $node;
 
@@ -65,7 +68,8 @@ class NoUnusedFragmentsRule extends AbstractRule
 
             if (!isset($fragmentNamesUsed[$fragmentName])) {
                 $this->context->reportError(
-                    new ValidationException(unusedFragmentMessage($fragmentName), [$fragmentDefinition])
+                    new ValidationException(unusedFragmentMessage($fragmentName),
+                        [$fragmentDefinition])
                 );
             }
         }

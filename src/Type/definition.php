@@ -26,6 +26,7 @@ use function Digia\GraphQL\Util\invariant;
 
 /**
  * @param $thunk
+ *
  * @return null|array
  */
 function resolveThunk($thunk): ?array
@@ -35,6 +36,7 @@ function resolveThunk($thunk): ?array
 
 /**
  * @param mixed $value
+ *
  * @return bool
  */
 function isAssocArray($value): bool
@@ -46,11 +48,13 @@ function isAssocArray($value): bool
         return true;
     }
     $keys = \array_keys($value);
+
     return $keys !== \array_keys($keys);
 }
 
 /**
  * @param $type
+ *
  * @throws InvariantException
  */
 function assertType($type)
@@ -63,6 +67,7 @@ function assertType($type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertScalarType(TypeInterface $type)
@@ -75,6 +80,7 @@ function assertScalarType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertObjectType(TypeInterface $type)
@@ -87,6 +93,7 @@ function assertObjectType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertInterfaceType(TypeInterface $type)
@@ -99,6 +106,7 @@ function assertInterfaceType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertUnionType(TypeInterface $type)
@@ -111,6 +119,7 @@ function assertUnionType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertEnumType(TypeInterface $type)
@@ -123,6 +132,7 @@ function assertEnumType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertInputObjectType(TypeInterface $type)
@@ -135,6 +145,7 @@ function assertInputObjectType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertListType(TypeInterface $type)
@@ -147,6 +158,7 @@ function assertListType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertNonNullType(TypeInterface $type)
@@ -159,9 +171,11 @@ function assertNonNullType(TypeInterface $type)
 
 /**
  * Whether a type is an input type cannot be determined with `instanceof`
- * because lists and non-nulls can also be output types if the wrapped type is an output type.
+ * because lists and non-nulls can also be output types if the wrapped type is
+ * an output type.
  *
  * @param TypeInterface|null $type
+ *
  * @return bool
  */
 function isInputType(?TypeInterface $type): bool
@@ -171,6 +185,7 @@ function isInputType(?TypeInterface $type): bool
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertInputType(TypeInterface $type)
@@ -183,9 +198,11 @@ function assertInputType(TypeInterface $type)
 
 /**
  * Whether a type is an output type cannot be determined with `instanceof`
- * because lists and non-nulls can also be output types if the wrapped type is an output type.
+ * because lists and non-nulls can also be output types if the wrapped type is
+ * an output type.
  *
  * @param TypeInterface|null $type
+ *
  * @return bool
  */
 function isOutputType(?TypeInterface $type): bool
@@ -195,6 +212,7 @@ function isOutputType(?TypeInterface $type): bool
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertOutputType(TypeInterface $type)
@@ -207,6 +225,7 @@ function assertOutputType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertLeafType(TypeInterface $type)
@@ -219,6 +238,7 @@ function assertLeafType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertCompositeType(TypeInterface $type)
@@ -231,6 +251,7 @@ function assertCompositeType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertAbstractType(TypeInterface $type)
@@ -243,6 +264,7 @@ function assertAbstractType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertWrappingType(TypeInterface $type)
@@ -255,6 +277,7 @@ function assertWrappingType(TypeInterface $type)
 
 /**
  * @param TypeInterface $type
+ *
  * @return bool
  */
 function isNullableType(TypeInterface $type): bool
@@ -264,6 +287,7 @@ function isNullableType(TypeInterface $type): bool
 
 /**
  * @param TypeInterface $type
+ *
  * @return TypeInterface
  * @throws InvariantException
  */
@@ -279,6 +303,7 @@ function assertNullableType(TypeInterface $type): TypeInterface
 
 /**
  * @param TypeInterface|null $type
+ *
  * @return TypeInterface|null
  */
 function getNullableType(?TypeInterface $type): ?TypeInterface
@@ -292,6 +317,7 @@ function getNullableType(?TypeInterface $type): ?TypeInterface
 
 /**
  * @param TypeInterface $type
+ *
  * @throws InvariantException
  */
 function assertNamedType(TypeInterface $type)
@@ -304,6 +330,7 @@ function assertNamedType(TypeInterface $type)
 
 /**
  * @param TypeInterface|null $type
+ *
  * @return NamedTypeInterface|null
  */
 function getNamedType(?TypeInterface $type): ?NamedTypeInterface
@@ -323,6 +350,7 @@ function getNamedType(?TypeInterface $type): ?NamedTypeInterface
 
 /**
  * @param array $config
+ *
  * @return ScalarType
  */
 function newScalarType(array $config = []): ScalarType
@@ -332,6 +360,7 @@ function newScalarType(array $config = []): ScalarType
 
 /**
  * @param array $config
+ *
  * @return EnumType
  */
 function newEnumType(array $config = []): EnumType
@@ -341,6 +370,7 @@ function newEnumType(array $config = []): EnumType
 
 /**
  * @param array $config
+ *
  * @return InputObjectType
  */
 function newInputObjectType(array $config = []): InputObjectType
@@ -350,6 +380,7 @@ function newInputObjectType(array $config = []): InputObjectType
 
 /**
  * @param array $config
+ *
  * @return InterfaceType
  */
 function newInterfaceType(array $config = []): InterfaceType
@@ -359,6 +390,7 @@ function newInterfaceType(array $config = []): InterfaceType
 
 /**
  * @param array $config
+ *
  * @return ObjectType
  */
 function newObjectType(array $config = []): ObjectType
@@ -368,6 +400,7 @@ function newObjectType(array $config = []): ObjectType
 
 /**
  * @param array $config
+ *
  * @return UnionType
  */
 function newUnionType(array $config = []): UnionType
@@ -377,6 +410,7 @@ function newUnionType(array $config = []): UnionType
 
 /**
  * @param array $config
+ *
  * @return Schema
  */
 function newSchema(array $config = []): Schema
@@ -386,6 +420,7 @@ function newSchema(array $config = []): Schema
 
 /**
  * @param array $config
+ *
  * @return Directive
  */
 function newDirective(array $config = []): Directive
@@ -395,6 +430,7 @@ function newDirective(array $config = []): Directive
 
 /**
  * @param TypeInterface $ofType
+ *
  * @return ListType
  */
 function newList(TypeInterface $ofType): ListType
@@ -404,6 +440,7 @@ function newList(TypeInterface $ofType): ListType
 
 /**
  * @param TypeInterface $ofType
+ *
  * @return NonNullType
  * @throws InvalidTypeException
  */

@@ -56,6 +56,7 @@ use function Digia\GraphQL\Util\valueFromAST;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
+
     use CacheAwareTrait;
 
     private const CACHE_PREFIX = 'GraphQL_DefinitionBuilder_';
@@ -77,10 +78,12 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     /**
      * DefinitionBuilder constructor.
-     * @param array                          $typeDefinitionsMap
+     *
+     * @param array $typeDefinitionsMap
      * @param ResolverRegistryInterface|null $resolverRegistry
-     * @param callable|null                  $resolveTypeFunction
-     * @param CacheInterface                 $cache
+     * @param callable|null $resolveTypeFunction
+     * @param CacheInterface $cache
+     *
      * @throws InvalidArgumentException
      */
     public function __construct(
@@ -89,10 +92,13 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         ?callable $resolveTypeFunction = null,
         CacheInterface $cache
     ) {
-        $this->typeDefinitionsMap  = $typeDefinitionsMap;
-        $this->resolverRegistry    = $resolverRegistry;
-        $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
-        $this->cache               = $cache;
+        $this->typeDefinitionsMap = $typeDefinitionsMap;
+        $this->resolverRegistry = $resolverRegistry;
+        $this->resolveTypeFunction = $resolveTypeFunction ?? [
+                $this,
+                'defaultTypeResolver',
+            ];
+        $this->cache = $cache;
 
         $builtInTypes = keyMap(
             \array_merge(specifiedScalarTypes(), introspectionTypes()),
@@ -118,6 +124,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     /**
      * @param NamedTypeNode|TypeDefinitionNodeInterface $node
+     *
      * @inheritdoc
      */
     public function buildType(NodeInterface $node): TypeInterface
@@ -140,81 +147,24 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $typeName
+     *
+     * @return TypeDefinitionNodeInterface|null
      */
-    public function buildDirective(DirectiveDefinitionNode $node): DirectiveInterface
+    protected function getTypeDefinition(string $typeName
+    ): ?TypeDefinitionNodeInterface
     {
-        return newDirective([
-            'name'        => $node->getNameValue(),
-            'description' => $node->getDescriptionValue(),
-            'locations'   => \array_map(function (NameNode $node) {
-                return $node->getValue();
-            }, $node->getLocations()),
-            'args'        => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
-            'astNode'     => $node,
-        ]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function buildField($node, ?callable $resolve = null): array
-    {
-        return [
-            'type'              => $this->buildWrappedType($node->getType()),
-            'description'       => $node->getDescriptionValue(),
-            'args'              => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
-            'deprecationReason' => $this->getDeprecationReason($node),
-            'resolve'           => $resolve,
-            'astNode'           => $node,
-        ];
-    }
-
-    /**
-     * @param TypeNodeInterface $typeNode
-     * @return TypeInterface
-     * @throws InvariantException
-     * @throws InvalidTypeException
-     */
-    protected function buildWrappedType(TypeNodeInterface $typeNode): TypeInterface
-    {
-        $typeDefinition = $this->buildType($this->getNamedTypeNode($typeNode));
-        return buildWrappedType($typeDefinition, $typeNode);
-    }
-
-    /**
-     * @param array $nodes
-     * @return array
-     * @throws CoercingException
-     */
-    protected function buildArguments(array $nodes): array
-    {
-        return keyValueMap(
-            $nodes,
-            function (InputValueDefinitionNode $value) {
-                return $value->getNameValue();
-            },
-            function (InputValueDefinitionNode $value): array {
-                $type         = $this->buildWrappedType($value->getType());
-                $defaultValue = $value->getDefaultValue();
-                return [
-                    'type'         => $type,
-                    'description'  => $value->getDescriptionValue(),
-                    'defaultValue' => null !== $defaultValue
-                        ? valueFromAST($defaultValue, $type)
-                        : null,
-                    'astNode'      => $value,
-                ];
-            });
+        return $this->typeDefinitionsMap[$typeName] ?? null;
     }
 
     /**
      * @param TypeDefinitionNodeInterface $node
+     *
      * @return NamedTypeInterface
      * @throws LanguageException
      */
-    protected function buildNamedType(TypeDefinitionNodeInterface $node): NamedTypeInterface
-    {
+    protected function buildNamedType(TypeDefinitionNodeInterface $node
+    ): NamedTypeInterface {
         if ($node instanceof ObjectTypeDefinitionNode) {
             return $this->buildObjectType($node);
         }
@@ -234,35 +184,40 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             return $this->buildInputObjectType($node);
         }
 
-        throw new LanguageException(\sprintf('Type kind "%s" not supported.', $node->getKind()));
+        throw new LanguageException(\sprintf('Type kind "%s" not supported.',
+            $node->getKind()));
     }
 
     /**
      * @param ObjectTypeDefinitionNode $node
+     *
      * @return ObjectType
      */
-    protected function buildObjectType(ObjectTypeDefinitionNode $node): ObjectType
-    {
+    protected function buildObjectType(ObjectTypeDefinitionNode $node
+    ): ObjectType {
         return newObjectType([
-            'name'        => $node->getNameValue(),
+            'name' => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'fields'      => $node->hasFields() ? function () use ($node) {
+            'fields' => $node->hasFields() ? function () use ($node) {
                 return $this->buildFields($node);
             } : [],
             // Note: While this could make early assertions to get the correctly
             // typed values, that would throw immediately while type system
             // validation with validateSchema() will produce more actionable results.
-            'interfaces'  => function () use ($node) {
-                return $node->hasInterfaces() ? \array_map(function (NodeInterface $interface) {
+            'interfaces' => function () use ($node) {
+                return $node->hasInterfaces() ? \array_map(function (
+                    NodeInterface $interface
+                ) {
                     return $this->buildType($interface);
                 }, $node->getInterfaces()) : [];
             },
-            'astNode'     => $node,
+            'astNode' => $node,
         ]);
     }
 
     /**
      * @param ObjectTypeDefinitionNode|InterfaceTypeDefinitionNode|InputObjectTypeDefinitionNode $node
+     *
      * @return array
      */
     protected function buildFields($node): array
@@ -275,17 +230,111 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             },
             function ($value) use ($node) {
                 /** @var FieldDefinitionNode|InputValueDefinitionNode $value */
-                return $this->buildField($value, $this->getFieldResolver($node->getNameValue(), $value->getNameValue()));
+                return $this->buildField($value,
+                    $this->getFieldResolver($node->getNameValue(),
+                        $value->getNameValue()));
             }
         );
     }
 
     /**
+     * @inheritdoc
+     */
+    public function buildField($node, ?callable $resolve = null): array
+    {
+        return [
+            'type' => $this->buildWrappedType($node->getType()),
+            'description' => $node->getDescriptionValue(),
+            'args' => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
+            'deprecationReason' => $this->getDeprecationReason($node),
+            'resolve' => $resolve,
+            'astNode' => $node,
+        ];
+    }
+
+    /**
+     * @param TypeNodeInterface $typeNode
+     *
+     * @return TypeInterface
+     * @throws InvariantException
+     * @throws InvalidTypeException
+     */
+    protected function buildWrappedType(TypeNodeInterface $typeNode
+    ): TypeInterface {
+        $typeDefinition = $this->buildType($this->getNamedTypeNode($typeNode));
+
+        return buildWrappedType($typeDefinition, $typeNode);
+    }
+
+    /**
+     * @param TypeNodeInterface $typeNode
+     *
+     * @return NamedTypeNode
+     */
+    protected function getNamedTypeNode(TypeNodeInterface $typeNode
+    ): NamedTypeNode {
+        $namedType = $typeNode;
+
+        while ($namedType instanceof ListTypeNode || $namedType instanceof NonNullTypeNode) {
+            $namedType = $namedType->getType();
+        }
+
+        return $namedType;
+    }
+
+    /**
+     * @param array $nodes
+     *
+     * @return array
+     * @throws CoercingException
+     */
+    protected function buildArguments(array $nodes): array
+    {
+        return keyValueMap(
+            $nodes,
+            function (InputValueDefinitionNode $value) {
+                return $value->getNameValue();
+            },
+            function (InputValueDefinitionNode $value): array {
+                $type = $this->buildWrappedType($value->getType());
+                $defaultValue = $value->getDefaultValue();
+
+                return [
+                    'type' => $type,
+                    'description' => $value->getDescriptionValue(),
+                    'defaultValue' => null !== $defaultValue
+                        ? valueFromAST($defaultValue, $type)
+                        : null,
+                    'astNode' => $value,
+                ];
+            });
+    }
+
+    /**
+     * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
+     *
+     * @return null|string
+     * @throws InvariantException
+     * @throws ExecutionException
+     * @throws InvalidTypeException
+     */
+    protected function getDeprecationReason(NodeInterface $node): ?string
+    {
+        $deprecated = coerceDirectiveValues(DeprecatedDirective(), $node);
+
+        return $deprecated['reason'] ?? null;
+    }
+
+    /**
      * @param string $typeName
      * @param string $fieldName
+     *
      * @return callable|null
      */
-    protected function getFieldResolver(string $typeName, string $fieldName): ?callable
+    protected function getFieldResolver(
+        string $typeName,
+        string $fieldName
+    ): ?callable
     {
         return null !== $this->resolverRegistry
             ? $this->resolverRegistry->getFieldResolver($typeName, $fieldName)
@@ -294,66 +343,25 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     /**
      * @param InterfaceTypeDefinitionNode $node
+     *
      * @return InterfaceType
      */
-    protected function buildInterfaceType(InterfaceTypeDefinitionNode $node): InterfaceType
-    {
+    protected function buildInterfaceType(InterfaceTypeDefinitionNode $node
+    ): InterfaceType {
         return newInterfaceType([
-            'name'        => $node->getNameValue(),
+            'name' => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'fields'      => $node->hasFields() ? function () use ($node): array {
+            'fields' => $node->hasFields() ? function () use ($node): array {
                 return $this->buildFields($node);
             } : [],
             'resolveType' => $this->getTypeResolver($node->getNameValue()),
-            'astNode'     => $node,
-        ]);
-    }
-
-    /**
-     * @param EnumTypeDefinitionNode $node
-     * @return EnumType
-     */
-    protected function buildEnumType(EnumTypeDefinitionNode $node): EnumType
-    {
-        return newEnumType([
-            'name'        => $node->getNameValue(),
-            'description' => $node->getDescriptionValue(),
-            'values'      => $node->hasValues() ? keyValueMap(
-                $node->getValues(),
-                function (EnumValueDefinitionNode $value): string {
-                    return $value->getNameValue();
-                },
-                function (EnumValueDefinitionNode $value): array {
-                    return [
-                        'description'       => $value->getDescriptionValue(),
-                        'deprecationReason' => $this->getDeprecationReason($value),
-                        'astNode'           => $value,
-                    ];
-                }
-            ) : [],
-            'astNode'     => $node,
-        ]);
-    }
-
-    /**
-     * @param UnionTypeDefinitionNode $node
-     * @return UnionType
-     */
-    protected function buildUnionType(UnionTypeDefinitionNode $node): UnionType
-    {
-        return newUnionType([
-            'name'        => $node->getNameValue(),
-            'description' => $node->getDescriptionValue(),
-            'types'       => $node->hasTypes() ? \array_map(function (TypeNodeInterface $type) {
-                return $this->buildType($type);
-            }, $node->getTypes()) : [],
-            'resolveType' => $this->getTypeResolver($node->getNameValue()),
-            'astNode'     => $node,
+            'astNode' => $node,
         ]);
     }
 
     /**
      * @param string $typeName
+     *
      * @return callable|null
      */
     protected function getTypeResolver(string $typeName): ?callable
@@ -364,51 +372,101 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
+     * @param EnumTypeDefinitionNode $node
+     *
+     * @return EnumType
+     */
+    protected function buildEnumType(EnumTypeDefinitionNode $node): EnumType
+    {
+        return newEnumType([
+            'name' => $node->getNameValue(),
+            'description' => $node->getDescriptionValue(),
+            'values' => $node->hasValues() ? keyValueMap(
+                $node->getValues(),
+                function (EnumValueDefinitionNode $value): string {
+                    return $value->getNameValue();
+                },
+                function (EnumValueDefinitionNode $value): array {
+                    return [
+                        'description' => $value->getDescriptionValue(),
+                        'deprecationReason' => $this->getDeprecationReason($value),
+                        'astNode' => $value,
+                    ];
+                }
+            ) : [],
+            'astNode' => $node,
+        ]);
+    }
+
+    /**
+     * @param UnionTypeDefinitionNode $node
+     *
+     * @return UnionType
+     */
+    protected function buildUnionType(UnionTypeDefinitionNode $node): UnionType
+    {
+        return newUnionType([
+            'name' => $node->getNameValue(),
+            'description' => $node->getDescriptionValue(),
+            'types' => $node->hasTypes() ? \array_map(function (
+                TypeNodeInterface $type
+            ) {
+                return $this->buildType($type);
+            }, $node->getTypes()) : [],
+            'resolveType' => $this->getTypeResolver($node->getNameValue()),
+            'astNode' => $node,
+        ]);
+    }
+
+    /**
      * @param ScalarTypeDefinitionNode $node
+     *
      * @return ScalarType
      */
-    protected function buildScalarType(ScalarTypeDefinitionNode $node): ScalarType
-    {
+    protected function buildScalarType(ScalarTypeDefinitionNode $node
+    ): ScalarType {
         return newScalarType([
-            'name'        => $node->getNameValue(),
+            'name' => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'serialize'   => function ($value) {
+            'serialize' => function ($value) {
                 return $value;
             },
-            'astNode'     => $node,
+            'astNode' => $node,
         ]);
     }
 
     /**
      * @param InputObjectTypeDefinitionNode $node
+     *
      * @return InputObjectType
      */
-    protected function buildInputObjectType(InputObjectTypeDefinitionNode $node): InputObjectType
-    {
+    protected function buildInputObjectType(InputObjectTypeDefinitionNode $node
+    ): InputObjectType {
         return newInputObjectType([
-            'name'        => $node->getNameValue(),
+            'name' => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'fields'      => $node->hasFields() ? function () use ($node) {
+            'fields' => $node->hasFields() ? function () use ($node) {
                 return keyValueMap(
                     $node->getFields(),
                     function (InputValueDefinitionNode $value): string {
                         return $value->getNameValue();
                     },
                     function (InputValueDefinitionNode $value): array {
-                        $type         = $this->buildWrappedType($value->getType());
+                        $type = $this->buildWrappedType($value->getType());
                         $defaultValue = $value->getDefaultValue();
+
                         return [
-                            'type'         => $type,
-                            'description'  => $value->getDescriptionValue(),
+                            'type' => $type,
+                            'description' => $value->getDescriptionValue(),
                             'defaultValue' => null !== $defaultValue
                                 ? valueFromAST($defaultValue, $type)
                                 : null,
-                            'astNode'      => $value,
+                            'astNode' => $value,
                         ];
                     }
                 );
             } : [],
-            'astNode'     => $node,
+            'astNode' => $node,
         ]);
     }
 
@@ -421,50 +479,31 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function buildDirective(DirectiveDefinitionNode $node
+    ): DirectiveInterface {
+        return newDirective([
+            'name' => $node->getNameValue(),
+            'description' => $node->getDescriptionValue(),
+            'locations' => \array_map(function (NameNode $node) {
+                return $node->getValue();
+            }, $node->getLocations()),
+            'args' => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
+            'astNode' => $node,
+        ]);
+    }
+
+    /**
      * @param NamedTypeNode $node
+     *
      * @return NamedTypeInterface|null
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function defaultTypeResolver(NamedTypeNode $node): ?NamedTypeInterface
+    public function defaultTypeResolver(NamedTypeNode $node
+    ): ?NamedTypeInterface
     {
         return $this->getFromCache($node->getNameValue()) ?? null;
-    }
-
-    /**
-     * @param string $typeName
-     * @return TypeDefinitionNodeInterface|null
-     */
-    protected function getTypeDefinition(string $typeName): ?TypeDefinitionNodeInterface
-    {
-        return $this->typeDefinitionsMap[$typeName] ?? null;
-    }
-
-    /**
-     * @param TypeNodeInterface $typeNode
-     * @return NamedTypeNode
-     */
-    protected function getNamedTypeNode(TypeNodeInterface $typeNode): NamedTypeNode
-    {
-        $namedType = $typeNode;
-
-        while ($namedType instanceof ListTypeNode || $namedType instanceof NonNullTypeNode) {
-            $namedType = $namedType->getType();
-        }
-
-        return $namedType;
-    }
-
-    /**
-     * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
-     * @return null|string
-     * @throws InvariantException
-     * @throws ExecutionException
-     * @throws InvalidTypeException
-     */
-    protected function getDeprecationReason(NodeInterface $node): ?string
-    {
-        $deprecated = coerceDirectiveValues(DeprecatedDirective(), $node);
-        return $deprecated['reason'] ?? null;
     }
 
     /**
@@ -477,20 +516,24 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 }
 
 /**
- * @param TypeInterface                        $innerType
+ * @param TypeInterface $innerType
  * @param NamedTypeInterface|TypeNodeInterface $inputTypeNode
+ *
  * @return TypeInterface
  * @throws InvariantException
  * @throws InvalidTypeException
  */
-function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputTypeNode): TypeInterface
-{
+function buildWrappedType(
+    TypeInterface $innerType,
+    TypeNodeInterface $inputTypeNode
+): TypeInterface {
     if ($inputTypeNode instanceof ListTypeNode) {
         return newList(buildWrappedType($innerType, $inputTypeNode->getType()));
     }
 
     if ($inputTypeNode instanceof NonNullTypeNode) {
         $wrappedType = buildWrappedType($innerType, $inputTypeNode->getType());
+
         return newNonNull(assertNullableType($wrappedType));
     }
 

@@ -13,30 +13,40 @@ class NameReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        $body       = $this->lexer->getBody();
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
+        $body = $this->lexer->getBody();
         $bodyLength = mb_strlen($body);
-        $start      = $pos;
-        $pos        = $start + 1;
+        $start = $pos;
+        $pos = $start + 1;
 
-        while ($pos !== $bodyLength && ($code = charCodeAt($body, $pos)) !== null && $this->isAlphaNumeric($code)) {
+        while ($pos !== $bodyLength && ($code = charCodeAt($body,
+                $pos)) !== null && $this->isAlphaNumeric($code)) {
             ++$pos;
         }
 
-        return new Token(TokenKindEnum::NAME, $start, $pos, $line, $col, $prev, sliceString($body, $start, $pos));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function supportsReader(int $code, int $pos): bool
-    {
-        return $this->isLetter($code) || $this->isUnderscore($code);
+        return new Token(TokenKindEnum::NAME, $start, $pos, $line, $col, $prev,
+            sliceString($body, $start, $pos));
     }
 
     /**
      * @param int $code
+     *
+     * @return bool
+     */
+    protected function isAlphaNumeric(int $code): bool
+    {
+        return $this->isLetter($code) || $this->isNumber($code) || $this->isUnderscore($code);
+    }
+
+    /**
+     * @param int $code
+     *
      * @return bool
      */
     protected function isLetter(int $code): bool
@@ -46,6 +56,7 @@ class NameReader extends AbstractReader
 
     /**
      * @param int $code
+     *
      * @return bool
      */
     protected function isNumber(int $code): bool
@@ -55,6 +66,7 @@ class NameReader extends AbstractReader
 
     /**
      * @param int $code
+     *
      * @return bool
      */
     protected function isUnderscore(int $code): bool
@@ -63,11 +75,10 @@ class NameReader extends AbstractReader
     }
 
     /**
-     * @param int $code
-     * @return bool
+     * @inheritdoc
      */
-    protected function isAlphaNumeric(int $code): bool
+    public function supportsReader(int $code, int $pos): bool
     {
-        return $this->isLetter($code) || $this->isNumber($code) || $this->isUnderscore($code);
+        return $this->isLetter($code) || $this->isUnderscore($code);
     }
 }

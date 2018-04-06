@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 interface ArgumentsAwareInterface
 {
+
     /**
      * @return bool
      */

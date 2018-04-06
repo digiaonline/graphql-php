@@ -12,6 +12,7 @@ trait ResolveTrait
 
     /**
      * @param array ...$args
+     *
      * @return mixed
      */
     public function resolve(...$args)
@@ -38,15 +39,18 @@ trait ResolveTrait
     }
 
     /**
-     * Classes that use the `ResolveTrait` are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['resolve']`.
+     * Classes that use the `ResolveTrait` are created using the
+     * `ConfigAwareTrait` constructor which will automatically call this method
+     * when setting arguments from `$config['resolve']`.
      *
      * @param callable|null $resolveFunction
+     *
      * @return $this
      */
     protected function setResolve(?callable $resolveFunction)
     {
         $this->resolveFunction = $resolveFunction;
+
         return $this;
     }
 }

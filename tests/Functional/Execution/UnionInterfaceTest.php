@@ -11,12 +11,13 @@ use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
 use function Digia\GraphQL\Type\newUnionType;
+use function Digia\GraphQL\Type\String;
 
 
 class UnionInterfaceTest extends TestCase
 {
+
     private $schema;
 
     private $garfield;
@@ -32,40 +33,43 @@ class UnionInterfaceTest extends TestCase
         parent::setUp();
 
         $NamedType = newInterfaceType([
-            'name'   => 'Named',
+            'name' => 'Named',
             'fields' => [
-                'name' => ['type' => String()]
-            ]
+                'name' => ['type' => String()],
+            ],
         ]);
 
         $DogType = newObjectType([
-            'name'       => 'Dog',
+            'name' => 'Dog',
             'interfaces' => [$NamedType],
-            'fields'     => [
-                'name'  => ['type' => String()],
+            'fields' => [
+                'name' => ['type' => String()],
                 'woofs' => ['type' => Boolean()],
             ],
-            'isTypeOf'   => function ($obj) {
+            'isTypeOf' => function ($obj) {
                 return $obj instanceof Dog;
-            }
+            },
         ]);
 
         $CatType = newObjectType([
-            'name'       => 'Cat',
+            'name' => 'Cat',
             'interfaces' => [$NamedType],
-            'fields'     => [
-                'name'  => ['type' => String()],
+            'fields' => [
+                'name' => ['type' => String()],
                 'meows' => ['type' => Boolean()],
             ],
-            'isTypeOf'   => function ($obj) {
+            'isTypeOf' => function ($obj) {
                 return $obj instanceof Cat;
-            }
+            },
         ]);
 
         $PetType = newUnionType([
-            'name'        => 'Pet',
-            'types'       => [$DogType, $CatType],
-            'resolveType' => function ($result, $context, $info) use ($DogType, $CatType) {
+            'name' => 'Pet',
+            'types' => [$DogType, $CatType],
+            'resolveType' => function ($result, $context, $info) use (
+                $DogType,
+                $CatType
+            ) {
                 if ($result instanceof Dog) {
                     return $DogType;
                 }
@@ -75,30 +79,31 @@ class UnionInterfaceTest extends TestCase
                 }
 
                 return null;
-            }
+            },
         ]);
 
         $PersonType = newObjectType([
-            'name'       => 'Person',
+            'name' => 'Person',
             'interfaces' => [$NamedType],
-            'fields'     => [
-                'name'    => ['type' => String()],
-                'pets'    => ['type' => newList($PetType)],
+            'fields' => [
+                'name' => ['type' => String()],
+                'pets' => ['type' => newList($PetType)],
                 'friends' => ['type' => newList($NamedType)],
             ],
-            'isTypeOf'   => function ($obj) {
+            'isTypeOf' => function ($obj) {
                 return $obj instanceof Person;
-            }
+            },
         ]);
 
         $schema = newSchema([
-            'query' => $PersonType
+            'query' => $PersonType,
         ]);
 
         $this->garfield = new Cat('Garfield', false);
-        $this->odie     = new Dog('Odie', true);
-        $this->liz      = new Person('Liz');
-        $this->john     = new Person('John', [$this->garfield, $this->odie], [$this->liz, $this->odie]);
+        $this->odie = new Dog('Odie', true);
+        $this->liz = new Person('Liz');
+        $this->john = new Person('John', [$this->garfield, $this->odie],
+            [$this->liz, $this->odie]);
 
 
         $this->schema = $schema;
@@ -137,35 +142,36 @@ class UnionInterfaceTest extends TestCase
 
         $expected = [
             'Named' => [
-                'kind'          => 'INTERFACE',
-                'name'          => 'Named',
-                'fields'        => [
-                    ['name' => 'name']
+                'kind' => 'INTERFACE',
+                'name' => 'Named',
+                'fields' => [
+                    ['name' => 'name'],
                 ],
-                'interfaces'    => null,
+                'interfaces' => null,
                 'possibleTypes' => [
                     ['name' => 'Person'],
                     ['name' => 'Dog'],
-                    ['name' => 'Cat']
+                    ['name' => 'Cat'],
                 ],
-                'enumValues'    => null,
-                'inputFields'   => null
+                'enumValues' => null,
+                'inputFields' => null,
             ],
-            'Pet'   => [
-                'kind'          => 'UNION',
-                'name'          => 'Pet',
-                'fields'        => null,
-                'interfaces'    => null,
+            'Pet' => [
+                'kind' => 'UNION',
+                'name' => 'Pet',
+                'fields' => null,
+                'interfaces' => null,
                 'possibleTypes' => [
                     ['name' => 'Dog'],
-                    ['name' => 'Cat']
+                    ['name' => 'Cat'],
                 ],
-                'enumValues'    => null,
-                'inputFields'   => null
-            ]
+                'enumValues' => null,
+                'inputFields' => null,
+            ],
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source))->getData());
+        $this->assertEquals($expected,
+            execute($this->schema, parse($source))->getData());
     }
 
     /**
@@ -189,14 +195,15 @@ class UnionInterfaceTest extends TestCase
 
         $expected = [
             '__typename' => 'Person',
-            'name'       => 'John',
-            'pets'       => [
+            'name' => 'John',
+            'pets' => [
                 ['__typename' => 'Cat', 'name' => 'Garfield', 'meows' => false],
                 ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true],
-            ]
+            ],
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        $this->assertEquals($expected,
+            execute($this->schema, parse($source), $this->john)->getData());
     }
 
     /**
@@ -225,14 +232,15 @@ class UnionInterfaceTest extends TestCase
 
         $expected = [
             '__typename' => 'Person',
-            'name'       => 'John',
-            'pets'       => [
+            'name' => 'John',
+            'pets' => [
                 ['__typename' => 'Cat', 'name' => 'Garfield', 'meows' => false],
                 ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true],
-            ]
+            ],
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        $this->assertEquals($expected,
+            execute($this->schema, parse($source), $this->john)->getData());
     }
 
     /**
@@ -256,14 +264,15 @@ class UnionInterfaceTest extends TestCase
 
         $expected = [
             '__typename' => 'Person',
-            'name'       => 'John',
-            'friends'    => [
+            'name' => 'John',
+            'friends' => [
                 ['__typename' => 'Person', 'name' => 'Liz'],
                 ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true],
-            ]
+            ],
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        $this->assertEquals($expected,
+            execute($this->schema, parse($source), $this->john)->getData());
     }
 
     /**
@@ -291,14 +300,15 @@ class UnionInterfaceTest extends TestCase
 
         $expected = [
             '__typename' => 'Person',
-            'name'       => 'John',
-            'friends'    => [
+            'name' => 'John',
+            'friends' => [
                 ['__typename' => 'Person', 'name' => 'Liz'],
                 ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true],
-            ]
+            ],
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        $this->assertEquals($expected,
+            execute($this->schema, parse($source), $this->john)->getData());
     }
 
     /**
@@ -341,18 +351,19 @@ class UnionInterfaceTest extends TestCase
 
         $expected = [
             '__typename' => 'Person',
-            'name'       => 'John',
-            'pets'       => [
+            'name' => 'John',
+            'pets' => [
                 ['__typename' => 'Cat', 'name' => 'Garfield', 'meows' => false],
-                ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true]
+                ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true],
             ],
-            'friends'    => [
+            'friends' => [
                 ['__typename' => 'Person', 'name' => 'Liz'],
-                ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true]
-            ]
+                ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true],
+            ],
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        $this->assertEquals($expected,
+            execute($this->schema, parse($source), $this->john)->getData());
     }
 
     /**
@@ -364,15 +375,15 @@ class UnionInterfaceTest extends TestCase
     public function testGetsExecutionInfoInResolver()
     {
 
-        $encounteredContext   = null;
-        $encounteredSchema    = null;
+        $encounteredContext = null;
+        $encounteredSchema = null;
         $encounteredRootValue = null;
-        $PersonType2          = null;
+        $PersonType2 = null;
 
         $NamedType2 = newInterfaceType([
-            'name'        => 'Named',
-            'fields'      => [
-                'name' => ['type' => String()]
+            'name' => 'Named',
+            'fields' => [
+                'name' => ['type' => String()],
             ],
             'resolveType' => function ($obj, $context, ResolveInfo $info) use (
                 &$encounteredContext,
@@ -380,24 +391,25 @@ class UnionInterfaceTest extends TestCase
                 &$encounteredRootValue,
                 &$PersonType2
             ) {
-                $encounteredContext   = $context;
-                $encounteredSchema    = $info->getSchema();
+                $encounteredContext = $context;
+                $encounteredSchema = $info->getSchema();
                 $encounteredRootValue = $info->getRootValue();
+
                 return $PersonType2;
-            }
+            },
         ]);
 
         $PersonType2 = newObjectType([
-            'name'       => 'Person',
+            'name' => 'Person',
             'interfaces' => [$NamedType2],
-            'fields'     => [
-                'name'    => ['type' => String()],
+            'fields' => [
+                'name' => ['type' => String()],
                 'friends' => ['type' => newList($NamedType2)],
             ],
         ]);
 
         $schema2 = newSchema([
-            'query' => $PersonType2
+            'query' => $PersonType2,
         ]);
 
         $john2 = new Person('John', [], [$this->liz]);
@@ -406,7 +418,8 @@ class UnionInterfaceTest extends TestCase
 
         $this->assertEquals(
             ['name' => 'John', 'friends' => [['name' => 'Liz']]],
-            execute($schema2, parse('{ name, friends { name } }'), $john2, $context)->getData()
+            execute($schema2, parse('{ name, friends { name } }'), $john2,
+                $context)->getData()
         );
 
         $this->assertSame($context, $encounteredContext);

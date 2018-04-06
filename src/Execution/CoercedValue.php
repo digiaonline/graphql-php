@@ -6,10 +6,12 @@ use Digia\GraphQL\Error\GraphQLException;
 
 /**
  * Class CoercedValue
+ *
  * @package Digia\GraphQL\Execution
  */
 class CoercedValue
 {
+
     /**
      * @var GraphQLException[]
      */
@@ -22,13 +24,14 @@ class CoercedValue
 
     /**
      * CoercedValue constructor.
+     *
      * @param            $value
      * @param array|null $errors
      */
     public function __construct($value, ?array $errors)
     {
         $this->errors = $errors;
-        $this->value  = $value;
+        $this->value = $value;
     }
 
     /**
@@ -40,19 +43,19 @@ class CoercedValue
     }
 
     /**
-     * @return bool
-     */
-    public function hasErrors(): bool
-    {
-        return !empty($this->errors);
-    }
-
-    /**
      * @param GraphQLException[] $errors
      */
     public function setErrors(array $errors): void
     {
         $this->errors = $errors;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasErrors(): bool
+    {
+        return !empty($this->errors);
     }
 
     /**

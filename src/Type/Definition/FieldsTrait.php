@@ -10,6 +10,7 @@ use function Digia\GraphQL\Util\toString;
 
 trait FieldsTrait
 {
+
     /**
      * @var array|callable
      */
@@ -22,6 +23,7 @@ trait FieldsTrait
 
     /**
      * @param string $fieldName
+     *
      * @return Field|null
      */
     public function getField(string $fieldName): ?Field
@@ -39,24 +41,29 @@ trait FieldsTrait
         if (!isset($this->fieldMap)) {
             $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk ?? []);
         }
+
         return $this->fieldMap;
     }
 
     /**
-     * Fields are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['fields']`.
+     * Fields are created using the `ConfigAwareTrait` constructor which will
+     * automatically call this method when setting arguments from
+     * `$config['fields']`.
      *
      * @param array|callable $fieldsOrThunk
+     *
      * @return $this
      */
     protected function setFields($fieldsOrThunk)
     {
         $this->fieldsOrThunk = $fieldsOrThunk;
+
         return $this;
     }
 
     /**
      * @param mixed $fieldsOrThunk
+     *
      * @return array
      * @throws InvariantException
      */
@@ -77,7 +84,9 @@ trait FieldsTrait
         foreach ($fields as $fieldName => $fieldConfig) {
             invariant(
                 \is_array($fieldConfig),
-                \sprintf('%s.%s field config must be an array', $this->getName(), $fieldName)
+                \sprintf('%s.%s field config must be an array',
+                    $this->getName(),
+                    $fieldName)
             );
 
             invariant(

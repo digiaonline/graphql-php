@@ -23,6 +23,7 @@ use function Digia\GraphQL\Type\String;
 
 class ValueHelperTest extends TestCase
 {
+
     /**
      * @var ValueHelper
      */
@@ -45,7 +46,8 @@ class ValueHelperTest extends TestCase
     {
         $node = new StringValueNode(['value' => 'foo']);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->helper->fromAST($node, newNonNull(String())));
+        $this->assertEquals('foo',
+            $this->helper->fromAST($node, newNonNull(String())));
     }
 
     public function testResolveNonNullWithNullValue()
@@ -54,7 +56,8 @@ class ValueHelperTest extends TestCase
         $this->expectException(ResolutionException::class);
         $this->expectExceptionMessage('Cannot resolve non-null values from null value node');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(null, $this->helper->fromAST($node, newNonNull(String())));
+        $this->assertEquals(null,
+            $this->helper->fromAST($node, newNonNull(String())));
     }
 
     public function testResolveValidListOfStrings()
@@ -67,7 +70,8 @@ class ValueHelperTest extends TestCase
             ],
         ]);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newList(String())));
+        $this->assertEquals(['A', 'B', 'C'],
+            $this->helper->fromAST($node, newList(String())));
     }
 
     public function testResolveListWithMissingVariableValue()
@@ -82,7 +86,8 @@ class ValueHelperTest extends TestCase
         // Null-able inputs in a variable can be omitted
         $variables = ['$a' => 'A', '$c' => 'C'];
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', null, 'C'], $this->helper->fromAST($node, newList(String()), $variables));
+        $this->assertEquals(['A', null, 'C'],
+            $this->helper->fromAST($node, newList(String()), $variables));
     }
 
     public function testResolveValidInputObject()
@@ -90,14 +95,14 @@ class ValueHelperTest extends TestCase
         $node = new ObjectValueNode([
             'fields' => [
                 new ObjectFieldNode([
-                    'name'  => new NameNode(['value' => 'a']),
+                    'name' => new NameNode(['value' => 'a']),
                     'value' => new IntValueNode(['value' => 1]),
                 ]),
             ],
         ]);
 
         $type = newInputObjectType([
-            'name'   => 'InputObject',
+            'name' => 'InputObject',
             'fields' => [
                 'a' => ['type' => Int()],
             ],
@@ -112,7 +117,7 @@ class ValueHelperTest extends TestCase
         $node = new StringValueNode(['value' => null]);
 
         $type = newInputObjectType([
-            'name'   => 'InputObject',
+            'name' => 'InputObject',
             'fields' => [
                 'a' => ['type' => Int()],
             ],
@@ -129,14 +134,14 @@ class ValueHelperTest extends TestCase
         $node = new ObjectValueNode([
             'fields' => [
                 new ObjectFieldNode([
-                    'name'  => new NameNode(['value' => 'a']),
+                    'name' => new NameNode(['value' => 'a']),
                     'value' => new IntValueNode(['value' => 1]),
                 ]),
             ],
         ]);
 
         $type = newInputObjectType([
-            'name'   => 'InputObject',
+            'name' => 'InputObject',
             'fields' => [
                 'a' => ['type' => Int()],
                 'b' => ['type' => newNonNull(String())],
@@ -153,7 +158,7 @@ class ValueHelperTest extends TestCase
     {
         $node = new EnumValueNode(['value' => 'FOO']);
         $type = newEnumType([
-            'name'   => 'EnumType',
+            'name' => 'EnumType',
             'values' => [
                 'FOO' => ['value' => 1],
             ],
@@ -179,7 +184,7 @@ class ValueHelperTest extends TestCase
     {
         $node = new EnumValueNode(['value' => 'FOO']);
         $type = newEnumType([
-            'name'   => 'EnumType',
+            'name' => 'EnumType',
             'values' => [
                 'BAR' => ['value' => 'foo'],
             ],

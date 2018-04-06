@@ -37,6 +37,7 @@ use function Digia\GraphQL\Util\toString;
 class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     LeafTypeInterface, OutputTypeInterface, ConfigAwareInterface, NodeAwareInterface
 {
+
     use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
@@ -53,15 +54,8 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     protected $values;
 
     /**
-     * @inheritdoc
-     */
-    protected function afterConfig(): void
-    {
-        invariant(null !== $this->getName(), 'Must provide name.');
-    }
-
-    /**
      * @param $value
+     *
      * @return null|string
      * @throws InvariantException
      */
@@ -77,91 +71,8 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     }
 
     /**
-     * @param $value
-     * @return mixed|null
-     * @throws InvariantException
-     */
-    public function parseValue($value)
-    {
-        if (\is_string($value)) {
-            $enumValue = $this->getValueByName($value);
-
-            if ($enumValue !== null) {
-                return $enumValue->getValue();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param NodeInterface $node
-     * @return mixed|null
-     * @throws InvariantException
-     */
-    public function parseLiteral(NodeInterface $node)
-    {
-        if ($node instanceof EnumValueNode) {
-            $enumValue = $this->getValueByName($node->getValue());
-
-            if ($enumValue !== null) {
-                return $enumValue->getValue();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $name
-     * @return EnumValue|null
-     * @throws InvariantException
-     */
-    public function getValue(string $name): ?EnumValue
-    {
-        return $this->getValueByName($name);
-    }
-
-    /**
-     * @return EnumValue[]
-     * @throws InvariantException
-     */
-    public function getValues(): array
-    {
-        if (!isset($this->values)) {
-            $this->values = $this->buildValues($this->valueMap ?? []);
-        }
-        return $this->values;
-    }
-
-    /**
-     * @param array $valueMap
-     * @return $this
-     */
-    protected function setValues(array $valueMap): EnumType
-    {
-        $this->valueMap = $valueMap;
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @return EnumValue|null
-     * @throws InvariantException
-     */
-    protected function getValueByName(string $name): ?EnumValue
-    {
-        foreach ($this->getValues() as $enumValue) {
-            if ($enumValue->getName() === $name) {
-                return $enumValue;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * @param mixed $value
+     *
      * @return EnumValue|null
      * @throws InvariantException
      */
@@ -177,7 +88,33 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     }
 
     /**
+     * @return EnumValue[]
+     * @throws InvariantException
+     */
+    public function getValues(): array
+    {
+        if (!isset($this->values)) {
+            $this->values = $this->buildValues($this->valueMap ?? []);
+        }
+
+        return $this->values;
+    }
+
+    /**
      * @param array $valueMap
+     *
+     * @return $this
+     */
+    protected function setValues(array $valueMap): EnumType
+    {
+        $this->valueMap = $valueMap;
+
+        return $this;
+    }
+
+    /**
+     * @param array $valueMap
+     *
      * @return array
      * @throws InvariantException
      */
@@ -185,7 +122,8 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     {
         invariant(
             isAssocArray($valueMap),
-            \sprintf('%s values must be an associative array with value names as keys.', $this->getName())
+            \sprintf('%s values must be an associative array with value names as keys.',
+                $this->getName())
         );
 
         $values = [];
@@ -210,9 +148,84 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
                 )
             );
 
-            $values[] = new EnumValue(\array_merge($valueConfig, ['name' => $valueName]));
+            $values[] = new EnumValue(\array_merge($valueConfig,
+                ['name' => $valueName]));
         }
 
         return $values;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return mixed|null
+     * @throws InvariantException
+     */
+    public function parseValue($value)
+    {
+        if (\is_string($value)) {
+            $enumValue = $this->getValueByName($value);
+
+            if ($enumValue !== null) {
+                return $enumValue->getValue();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return EnumValue|null
+     * @throws InvariantException
+     */
+    protected function getValueByName(string $name): ?EnumValue
+    {
+        foreach ($this->getValues() as $enumValue) {
+            if ($enumValue->getName() === $name) {
+                return $enumValue;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param NodeInterface $node
+     *
+     * @return mixed|null
+     * @throws InvariantException
+     */
+    public function parseLiteral(NodeInterface $node)
+    {
+        if ($node instanceof EnumValueNode) {
+            $enumValue = $this->getValueByName($node->getValue());
+
+            if ($enumValue !== null) {
+                return $enumValue->getValue();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return EnumValue|null
+     * @throws InvariantException
+     */
+    public function getValue(string $name): ?EnumValue
+    {
+        return $this->getValueByName($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function afterConfig(): void
+    {
+        invariant(null !== $this->getName(), 'Must provide name.');
     }
 }

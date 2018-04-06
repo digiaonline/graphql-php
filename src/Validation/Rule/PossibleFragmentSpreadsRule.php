@@ -23,13 +23,15 @@ use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
  */
 class PossibleFragmentSpreadsRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
-    protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    protected function enterInlineFragment(InlineFragmentNode $node
+    ): ?NodeInterface
     {
         $fragmentType = $this->context->getType();
-        $parentType   = $this->context->getParentType();
+        $parentType = $this->context->getParentType();
 
         if ($fragmentType instanceof CompositeTypeInterface &&
             $parentType instanceof CompositeTypeInterface &&
@@ -37,7 +39,8 @@ class PossibleFragmentSpreadsRule extends AbstractRule
                 $fragmentType, $parentType)) {
             $this->context->reportError(
                 new ValidationException(
-                    typeIncompatibleAnonymousSpreadMessage($parentType, $fragmentType),
+                    typeIncompatibleAnonymousSpreadMessage($parentType,
+                        $fragmentType),
                     [$node]
                 )
             );
@@ -49,11 +52,12 @@ class PossibleFragmentSpreadsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
+    protected function enterFragmentSpread(FragmentSpreadNode $node
+    ): ?NodeInterface
     {
         $fragmentName = $node->getNameValue();
         $fragmentType = $this->getFragmentType($fragmentName);
-        $parentType   = $this->context->getParentType();
+        $parentType = $this->context->getParentType();
 
         if (null !== $fragmentType &&
             null !== $parentType &&
@@ -61,7 +65,8 @@ class PossibleFragmentSpreadsRule extends AbstractRule
                 $fragmentType, $parentType)) {
             $this->context->reportError(
                 new ValidationException(
-                    typeIncompatibleSpreadMessage($fragmentName, $parentType, $fragmentType),
+                    typeIncompatibleSpreadMessage($fragmentName, $parentType,
+                        $fragmentType),
                     [$node]
                 )
             );
@@ -72,6 +77,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
     /**
      * @param string $name
+     *
      * @return TypeInterface|null
      * @throws InvalidTypeException
      */
@@ -83,7 +89,8 @@ class PossibleFragmentSpreadsRule extends AbstractRule
             return null;
         }
 
-        $type = typeFromAST($this->context->getSchema(), $fragment->getTypeCondition());
+        $type = typeFromAST($this->context->getSchema(),
+            $fragment->getTypeCondition());
 
         return $type instanceof CompositeTypeInterface ? $type : null;
     }

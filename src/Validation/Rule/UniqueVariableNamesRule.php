@@ -15,6 +15,7 @@ use function Digia\GraphQL\Validation\duplicateVariableMessage;
  */
 class UniqueVariableNamesRule extends AbstractRule
 {
+
     /**
      * @var string[]
      */
@@ -23,7 +24,8 @@ class UniqueVariableNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         $this->knownVariableNames = [];
 
@@ -33,16 +35,20 @@ class UniqueVariableNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node
+    ): ?NodeInterface
     {
-        $variable     = $node->getVariable();
+        $variable = $node->getVariable();
         $variableName = $variable->getNameValue();
 
         if (isset($this->knownVariableNames[$variableName])) {
             $this->context->reportError(
                 new ValidationException(
                     duplicateVariableMessage($variableName),
-                    [$this->knownVariableNames[$variableName], $variable->getName()]
+                    [
+                        $this->knownVariableNames[$variableName],
+                        $variable->getName(),
+                    ]
                 )
             );
         } else {

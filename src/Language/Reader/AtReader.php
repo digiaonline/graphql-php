@@ -11,8 +11,13 @@ class AtReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
         return new Token(TokenKindEnum::AT, $pos, $pos + 1, $line, $col, $prev);
     }
 

@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
 class FloatValueNode extends AbstractNode implements ValueNodeInterface
 {
 
@@ -20,8 +18,8 @@ class FloatValueNode extends AbstractNode implements ValueNodeInterface
     public function toArray(): array
     {
         return [
-            'kind'  => $this->kind,
-            'loc'   => $this->getLocationAsArray(),
+            'kind' => $this->kind,
+            'loc' => $this->getLocationAsArray(),
             'value' => $this->value,
         ];
     }

@@ -4,10 +4,12 @@ namespace Digia\GraphQL\Execution;
 
 /**
  * Class Path
+ *
  * @package Digia\GraphQL\Execution
  */
 class Path
 {
+
     /**
      * @var Path|null
      */
@@ -20,13 +22,14 @@ class Path
 
     /**
      * Path constructor.
+     *
      * @param $previous
      * @param $key
      */
     public function __construct($previous, $key)
     {
         $this->previous = $previous;
-        $this->key      = $key;
+        $this->key = $key;
     }
 
     /**

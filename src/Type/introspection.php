@@ -118,6 +118,7 @@ function introspectionTypes(): array
 
 /**
  * @param TypeInterface $type
+ *
  * @return bool
  */
 function isIntrospectionType(TypeInterface $type): bool

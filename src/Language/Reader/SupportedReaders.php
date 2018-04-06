@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Reader;
 
 class SupportedReaders
 {
+
     /**
      * @var ReaderInterface[]
      */

@@ -12,6 +12,7 @@ trait ResolveTypeTrait
 
     /**
      * @param array ...$args
+     *
      * @return TypeInterface|string|null
      */
     public function resolveType(...$args)
@@ -30,15 +31,18 @@ trait ResolveTypeTrait
     }
 
     /**
-     * Classes that use the `ResolveType Trait` are created using the `ConfigAwareTrait` constructor which will
-     * automatically call this method when setting arguments from `$config['resolveType']`.
+     * Classes that use the `ResolveType Trait` are created using the
+     * `ConfigAwareTrait` constructor which will automatically call this method
+     * when setting arguments from `$config['resolveType']`.
      *
      * @param callable|null $resolveTypeFunction
+     *
      * @return $this
      */
     protected function setResolveType(?callable $resolveTypeFunction)
     {
         $this->resolveTypeFunction = $resolveTypeFunction;
+
         return $this;
     }
 }

@@ -26,8 +26,9 @@ interface LexerInterface
     public function getBody(): string;
 
     /**
-     * @param string     $name
+     * @param string $name
      * @param mixed|null $default
+     *
      * @return mixed
      */
     public function getOption(string $name, $default = null);
@@ -59,12 +60,14 @@ interface LexerInterface
 
     /**
      * @param Source $source
+     *
      * @return $this
      */
     public function setSource(Source $source);
 
     /**
      * @param array $options
+     *
      * @return $this
      */
     public function setOptions(array $options);

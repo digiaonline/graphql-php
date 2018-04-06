@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\variableDefaultValueNotAll
 
 class VariablesDefaultValueAllowedRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return VariablesDefaultValueAllowedRule::class;
-    }
 
     public function testVariablesWithNoDefaultValues()
     {
@@ -80,7 +76,8 @@ class VariablesDefaultValueAllowedRuleTest extends RuleTestCase
             '),
             [
                 variableDefaultValueNotAllowed('a', 'Int!', 'Int', [1, 43]),
-                variableDefaultValueNotAllowed('b', 'String!', 'String', [1, 60]),
+                variableDefaultValueNotAllowed('b', 'String!', 'String',
+                    [1, 60]),
             ]
         );
     }
@@ -96,8 +93,14 @@ class VariablesDefaultValueAllowedRuleTest extends RuleTestCase
             '),
             [
                 variableDefaultValueNotAllowed('a', 'Int!', 'Int', [1, 36]),
-                variableDefaultValueNotAllowed('b', 'String!', 'String', [1, 56]),
+                variableDefaultValueNotAllowed('b', 'String!', 'String',
+                    [1, 56]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return VariablesDefaultValueAllowedRule::class;
     }
 }

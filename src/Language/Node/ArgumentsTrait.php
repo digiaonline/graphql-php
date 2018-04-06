@@ -6,6 +6,7 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 trait ArgumentsTrait
 {
+
     /**
      * @var array|ArgumentNode[]
      */
@@ -28,6 +29,18 @@ trait ArgumentsTrait
     }
 
     /**
+     * @param array|ArgumentNode[] $arguments
+     *
+     * @return $this
+     */
+    public function setArguments(array $arguments)
+    {
+        $this->arguments = $arguments;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getArgumentsAsArray(): array
@@ -35,15 +48,5 @@ trait ArgumentsTrait
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->getArguments());
-    }
-
-    /**
-     * @param array|ArgumentNode[] $arguments
-     * @return $this
-     */
-    public function setArguments(array $arguments)
-    {
-        $this->arguments = $arguments;
-        return $this;
     }
 }

@@ -15,13 +15,14 @@ use function Digia\GraphQL\Validation\duplicateDirectiveMessage;
  */
 class UniqueDirectivesPerLocationRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
     public function enterNode(NodeInterface $node): ?NodeInterface
     {
         if ($node instanceof DirectivesAwareInterface) {
-            $directives      = $node->getDirectives();
+            $directives = $node->getDirectives();
             $knownDirectives = [];
 
             foreach ($directives as $directive) {

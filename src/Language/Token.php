@@ -7,6 +7,7 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 class Token implements SerializationInterface
 {
+
     use ArrayToJsonTrait;
 
     /**
@@ -52,13 +53,13 @@ class Token implements SerializationInterface
     /**
      * Token constructor.
      *
-     * @param string     $kind
-     * @param int        $start
-     * @param int        $end
-     * @param int        $line
-     * @param int        $column
+     * @param string $kind
+     * @param int $start
+     * @param int $end
+     * @param int $line
+     * @param int $column
      * @param Token|null $prev
-     * @param null       $value
+     * @param null $value
      */
     public function __construct(
         string $kind,
@@ -69,13 +70,13 @@ class Token implements SerializationInterface
         ?Token $prev = null,
         $value = null
     ) {
-        $this->kind   = $kind;
-        $this->start  = $start;
-        $this->end    = $end;
-        $this->line   = $line;
+        $this->kind = $kind;
+        $this->start = $start;
+        $this->end = $end;
+        $this->line = $line;
         $this->column = $column;
-        $this->prev   = $prev;
-        $this->value  = $value;
+        $this->prev = $prev;
+        $this->value = $value;
     }
 
     /**
@@ -136,11 +137,13 @@ class Token implements SerializationInterface
 
     /**
      * @param Token $next
+     *
      * @return $this
      */
     public function setNext(Token $next)
     {
         $this->next = $next;
+
         return $this;
     }
 
@@ -158,9 +161,9 @@ class Token implements SerializationInterface
     public function toArray(): array
     {
         return [
-            'kind'   => $this->kind,
-            'value'  => $this->value,
-            'line'   => $this->line,
+            'kind' => $this->kind,
+            'value' => $this->value,
+            'line' => $this->line,
             'column' => $this->column,
         ];
     }

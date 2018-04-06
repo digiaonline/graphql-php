@@ -18,12 +18,13 @@ use function Digia\GraphQL\Validation\requiresSubselectionMessage;
  */
 class ScalarLeafsRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
     protected function enterField(FieldNode $node): ?NodeInterface
     {
-        $type         = $this->context->getType();
+        $type = $this->context->getType();
         $selectionSet = $node->getSelectionSet();
 
         if (null !== $type) {
@@ -31,7 +32,8 @@ class ScalarLeafsRule extends AbstractRule
                 if (null !== $selectionSet) {
                     $this->context->reportError(
                         new ValidationException(
-                            noSubselectionAllowedMessage((string)$node, (string)$type),
+                            noSubselectionAllowedMessage((string)$node,
+                                (string)$type),
                             [$selectionSet]
                         )
                     );
@@ -39,7 +41,8 @@ class ScalarLeafsRule extends AbstractRule
             } elseif (null === $selectionSet) {
                 $this->context->reportError(
                     new ValidationException(
-                        requiresSubselectionMessage((string)$node, (string)$type),
+                        requiresSubselectionMessage((string)$node,
+                            (string)$type),
                         [$node]
                     )
                 );

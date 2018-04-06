@@ -8,10 +8,12 @@ use Digia\GraphQL\Schema\SchemaInterface;
 
 interface SchemaBuilderInterface
 {
+
     /**
-     * @param DocumentNode              $document
+     * @param DocumentNode $document
      * @param ResolverRegistryInterface $resolverRegistry
-     * @param array                     $options
+     * @param array $options
+     *
      * @return SchemaInterface
      */
     public function build(
@@ -21,8 +23,9 @@ interface SchemaBuilderInterface
     ): SchemaInterface;
 
     /**
-     * @param DocumentNode              $document
+     * @param DocumentNode $document
      * @param ResolverRegistryInterface $resolverRegistry
+     *
      * @return BuildingContextInterface
      */
     public function createContext(

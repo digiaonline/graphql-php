@@ -29,6 +29,18 @@ trait TypesTrait
     }
 
     /**
+     * @param array|NamedTypeNode[] $types
+     *
+     * @return $this
+     */
+    public function setTypes(array $types)
+    {
+        $this->types = $types;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getTypesAsArray(): array
@@ -36,15 +48,5 @@ trait TypesTrait
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->types);
-    }
-
-    /**
-     * @param array|NamedTypeNode[] $types
-     * @return $this
-     */
-    public function setTypes(array $types)
-    {
-        $this->types = $types;
-        return $this;
     }
 }

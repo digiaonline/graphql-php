@@ -9,6 +9,7 @@ interface PrinterInterface
 
     /**
      * @param NodeInterface $node
+     *
      * @return string
      */
     public function print(NodeInterface $node): string;

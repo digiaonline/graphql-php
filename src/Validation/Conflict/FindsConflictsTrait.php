@@ -74,6 +74,7 @@ use function Digia\GraphQL\Validation\compareTypes;
  */
 trait FindsConflictsTrait
 {
+
     /**
      * A cache for the "field map" and list of fragment names found in any given
      * selection set. Selection sets may be asked for this information multiple
@@ -84,9 +85,9 @@ trait FindsConflictsTrait
     protected $cachedFieldsAndFragmentNames;
 
     /**
-     * A memoization for when two fragments are compared "between" each other for
-     * conflicts. Two fragments may be compared many times, so memoizing this can
-     * dramatically improve the performance of this validator.
+     * A memoization for when two fragments are compared "between" each other
+     * for conflicts. Two fragments may be compared many times, so memoizing
+     * this can dramatically improve the performance of this validator.
      *
      * @var PairSet
      */
@@ -98,10 +99,11 @@ trait FindsConflictsTrait
     abstract public function getValidationContext(): ValidationContextInterface;
 
     /**
-     * @param Map                     $cachedFieldsAndFragmentNames
-     * @param PairSet                 $comparedFragmentPairs
-     * @param SelectionSetNode        $selectionSet
+     * @param Map $cachedFieldsAndFragmentNames
+     * @param PairSet $comparedFragmentPairs
+     * @param SelectionSetNode $selectionSet
      * @param NamedTypeInterface|null $parentType
+     *
      * @return array|Conflict[]
      * @throws InvalidTypeException
      * @throws InvariantException
@@ -113,7 +115,7 @@ trait FindsConflictsTrait
         ?NamedTypeInterface $parentType = null
     ): array {
         $this->cachedFieldsAndFragmentNames = $cachedFieldsAndFragmentNames;
-        $this->comparedFragmentPairs        = $comparedFragmentPairs;
+        $this->comparedFragmentPairs = $comparedFragmentPairs;
 
         $context = $this->getFieldsAndFragmentNames($selectionSet, $parentType);
 
@@ -121,14 +123,14 @@ trait FindsConflictsTrait
         // Note: this is the *only place* `collectConflictsWithin` is called.
         $this->collectConflictsWithin($context);
 
-        $fieldMap      = $context->getFieldMap();
+        $fieldMap = $context->getFieldMap();
         $fragmentNames = $context->getFragmentNames();
 
         // (B) Then collect conflicts between these fields and those represented by
         // each spread fragment name found.
         if (!empty($fragmentNames)) {
             $fragmentNamesCount = \count($fragmentNames);
-            $comparedFragments  = [];
+            $comparedFragments = [];
 
             /** @noinspection ForeachInvariantsInspection */
             for ($i = 0; $i < $fragmentNamesCount; $i++) {
@@ -159,168 +161,228 @@ trait FindsConflictsTrait
     }
 
     /**
-     * Collect all conflicts found between a set of fields and a fragment reference
-     * including via spreading in any nested fragments.
+     * Given a selection set, return the collection of fields (a mapping of
+     * response name to field nodes and definitions) as well as a list of
+     * fragment names referenced via fragment spreads.
      *
-     * @param ComparisonContext $context
-     * @param array             $comparedFragments
-     * @param array             $fieldMap
-     * @param string            $fragmentName
-     * @param bool              $areMutuallyExclusive
+     * @param SelectionSetNode $selectionSet
+     * @param NamedTypeInterface|null $parentType
+     *
+     * @return ComparisonContext
      * @throws InvalidTypeException
+     * @throws InvariantException
      */
-    protected function collectConflictsBetweenFieldsAndFragment(
+    protected function getFieldsAndFragmentNames(
+        SelectionSetNode $selectionSet,
+        ?NamedTypeInterface $parentType
+    ): ComparisonContext {
+        $cached = $this->cachedFieldsAndFragmentNames->get($selectionSet);
+
+        if (null === $cached) {
+            $cached = new ComparisonContext();
+
+            $this->collectFieldsAndFragmentNames($cached, $selectionSet,
+                $parentType);
+
+            $this->cachedFieldsAndFragmentNames->set($selectionSet, $cached);
+        }
+
+        return $cached;
+    }
+
+    /**
+     * @param ComparisonContext $context
+     * @param SelectionSetNode $selectionSet
+     * @param NamedTypeInterface|null $parentType
+     *
+     * @throws InvalidTypeException
+     * @throws InvariantException
+     */
+    protected function collectFieldsAndFragmentNames(
         ComparisonContext $context,
-        array &$comparedFragments,
-        array $fieldMap,
-        string $fragmentName,
-        bool $areMutuallyExclusive
+        SelectionSetNode $selectionSet,
+        ?NamedTypeInterface $parentType
     ): void {
-        // Memoize so a fragment is not compared for conflicts more than once.
-        if (isset($comparedFragments[$fragmentName])) {
-            return;
-        }
+        foreach ($selectionSet->getSelections() as $selection) {
+            if ($selection instanceof FieldNode) {
+                $definition = ($parentType instanceof ObjectType || $parentType instanceof InterfaceType)
+                    ? ($parentType->getFields()[$selection->getNameValue()] ?? null)
+                    : null;
 
-        $comparedFragments[$fragmentName] = true;
+                $context->registerField(new FieldContext($parentType,
+                    $selection, $definition));
+            } elseif ($selection instanceof FragmentSpreadNode) {
+                $context->registerFragment($selection);
+            } elseif ($selection instanceof InlineFragmentNode) {
+                $typeCondition = $selection->getTypeCondition();
 
-        $fragment = $this->getValidationContext()->getFragment($fragmentName);
+                $inlineFragmentType = null !== $typeCondition
+                    ? typeFromAST($this->getValidationContext()->getSchema(),
+                        $typeCondition)
+                    : $parentType;
 
-        if (null === $fragment) {
-            return;
-        }
-
-        $contextB = $this->getReferencedFieldsAndFragmentNames($fragment);
-
-        $fieldMapB = $contextB->getFieldMap();
-
-        // Do not compare a fragment's fieldMap to itself.
-        if ($fieldMap == $fieldMapB) {
-            return;
-        }
-
-        // (D) First collect any conflicts between the provided collection of fields
-        // and the collection of fields represented by the given fragment.
-        $this->collectConflictsBetween(
-            $context,
-            $fieldMap,
-            $fieldMapB,
-            $areMutuallyExclusive
-        );
-
-        $fragmentNamesB = $contextB->getFragmentNames();
-
-        // (E) Then collect any conflicts between the provided collection of fields
-        // and any fragment names found in the given fragment.
-        if (!empty($fragmentNamesB)) {
-            $fragmentNamesBCount = \count($fragmentNamesB);
-
-            /** @noinspection ForeachInvariantsInspection */
-            for ($i = 0; $i < $fragmentNamesBCount; $i++) {
-                $this->collectConflictsBetweenFieldsAndFragment(
-                    $context,
-                    $comparedFragments,
-                    $fieldMap,
-                    $fragmentNamesB[$i],
-                    $areMutuallyExclusive
-                );
+                $this->collectFieldsAndFragmentNames($context,
+                    $selection->getSelectionSet(), $inlineFragmentType);
             }
         }
     }
 
     /**
-     * Collect all conflicts found between two fragments, including via spreading in
-     * any nested fragments.
+     * Collect all Conflicts "within" one collection of fields.
      *
      * @param ComparisonContext $context
-     * @param string            $fragmentNameA
-     * @param string            $fragmentNameB
-     * @param bool              $areMutuallyExclusive
+     *
      * @throws InvalidTypeException
      */
-    protected function collectConflictsBetweenFragments(
-        ComparisonContext $context,
-        string $fragmentNameA,
-        string $fragmentNameB,
-        bool $areMutuallyExclusive
-    ): void {
-        // No need to compare a fragment to itself.
-        if ($fragmentNameA === $fragmentNameB) {
-            return;
-        }
+    protected function collectConflictsWithin(ComparisonContext $context): void
+    {
+        // A field map is a keyed collection, where each key represents a response
+        // name and the value at that key is a list of all fields which provide that
+        // response name. For every response name, if there are multiple fields, they
+        // must be compared to find a potential conflict.
+        foreach ($context->getFieldMap() as $responseName => $fields) {
+            $fieldsCount = \count($fields);
 
-        // Memoize so two fragments are not compared for conflicts more than once.
-        if ($this->comparedFragmentPairs->has($fragmentNameA, $fragmentNameB, $areMutuallyExclusive)) {
-            return;
-        }
+            // This compares every field in the list to every other field in this list
+            // (except to itself). If the list only has one item, nothing needs to
+            // be compared.
+            if ($fieldsCount > 1) {
+                /** @noinspection ForeachInvariantsInspection */
+                for ($i = 0; $i < $fieldsCount; $i++) {
+                    for ($j = $i + 1; $j < $fieldsCount; $j++) {
+                        $conflict = $this->findConflict(
+                            $responseName,
+                            $fields[$i],
+                            $fields[$j],
+                            // within one collection is never mutually exclusive
+                            false/* $areMutuallyExclusive */
+                        );
 
-        $this->comparedFragmentPairs->add($fragmentNameA, $fragmentNameB, $areMutuallyExclusive);
-
-        $fragmentA = $this->getValidationContext()->getFragment($fragmentNameA);
-        $fragmentB = $this->getValidationContext()->getFragment($fragmentNameB);
-
-        if (null === $fragmentA || null === $fragmentB) {
-            return;
-        }
-
-        $contextA = $this->getReferencedFieldsAndFragmentNames($fragmentA);
-        $contextB = $this->getReferencedFieldsAndFragmentNames($fragmentB);
-
-        // (F) First, collect all conflicts between these two collections of fields
-        // (not including any nested fragments).
-        $this->collectConflictsBetween(
-            $context,
-            $contextA->getFieldMap(),
-            $contextB->getFieldMap(),
-            $areMutuallyExclusive
-        );
-
-        $fragmentNamesB = $contextB->getFragmentNames();
-
-        // (G) Then collect conflicts between the first fragment and any nested
-        // fragments spread in the second fragment.
-        if (!empty($fragmentNamesB)) {
-            $fragmentNamesBCount = \count($fragmentNamesB);
-
-            /** @noinspection ForeachInvariantsInspection */
-            for ($j = 0; $j < $fragmentNamesBCount; $j++) {
-                $this->collectConflictsBetweenFragments(
-                    $context,
-                    $fragmentNameA,
-                    $fragmentNamesB[$j],
-                    $areMutuallyExclusive
-                );
-            }
-        }
-
-        $fragmentNamesA = $contextA->getFragmentNames();
-
-        // (G) Then collect conflicts between the second fragment and any nested
-        // fragments spread in the first fragment.
-        if (!empty($fragmentNamesA)) {
-            $fragmentNamesACount = \count($fragmentNamesA);
-
-            /** @noinspection ForeachInvariantsInspection */
-            for ($i = 0; $i < $fragmentNamesACount; $i++) {
-                $this->collectConflictsBetweenFragments(
-                    $context,
-                    $fragmentNamesA[$i],
-                    $fragmentNameB,
-                    $areMutuallyExclusive
-                );
+                        if (null !== $conflict) {
+                            $context->reportConflict($conflict);
+                        }
+                    }
+                }
             }
         }
     }
 
     /**
-     * Find all conflicts found between two selection sets, including those found
-     * via spreading in fragments. Called when determining if conflicts exist
-     * between the sub-fields of two overlapping fields.
+     * Determines if there is a conflict between two particular fields,
+     * including comparing their sub-fields.
+     *
+     * @param string $responseName
+     * @param FieldContext $fieldA
+     * @param FieldContext $fieldB
+     * @param bool $parentFieldsAreMutuallyExclusive
+     *
+     * @return Conflict|null
+     * @throws InvalidTypeException
+     */
+    protected function findConflict(
+        string $responseName,
+        FieldContext $fieldA,
+        FieldContext $fieldB,
+        bool $parentFieldsAreMutuallyExclusive
+    ): ?Conflict
+    {
+        $parentTypeA = $fieldA->getParentType();
+        $parentTypeB = $fieldB->getParentType();
+
+        // If it is known that two fields could not possibly apply at the same
+        // time, due to the parent types, then it is safe to permit them to diverge
+        // in aliased field or arguments used as they will not present any ambiguity
+        // by differing.
+        // It is known that two parent types could never overlap if they are
+        // different Object types. Interface or Union types might overlap - if not
+        // in the current state of the schema, then perhaps in some future version,
+        // thus may not safely diverge.
+        $areMutuallyExclusive = $parentFieldsAreMutuallyExclusive
+            || ($parentTypeA !== $parentTypeB
+                && $parentTypeA instanceof ObjectType
+                && $parentTypeB instanceof ObjectType);
+
+        $nodeA = $fieldA->getNode();
+        $nodeB = $fieldB->getNode();
+
+        $definitionA = $fieldA->getDefinition();
+        $definitionB = $fieldB->getDefinition();
+
+        if (!$areMutuallyExclusive) {
+            // Two aliases must refer to the same field.
+            $nameA = $nodeA->getNameValue();
+            $nameB = $nodeB->getNameValue();
+
+            if ($nameA !== $nameB) {
+                return new Conflict(
+                    $responseName,
+                    sprintf('%s and %s are different fields', $nameA, $nameB),
+                    [$nodeA],
+                    [$nodeB]
+                );
+            }
+
+            // Two field calls must have the same arguments.
+            if (!compareArguments($nodeA->getArguments(),
+                $nodeB->getArguments())) {
+                return new Conflict(
+                    $responseName,
+                    'they have differing arguments',
+                    [$nodeA],
+                    [$nodeB]
+                );
+            }
+        }
+
+        // The return type for each field.
+        $typeA = null !== $definitionA ? $definitionA->getType() : null;
+        $typeB = null !== $definitionB ? $definitionB->getType() : null;
+
+        if (null !== $typeA && null !== $typeB && compareTypes($typeA,
+                $typeB)) {
+            return new Conflict(
+                $responseName,
+                sprintf('they return conflicting types %s and %s',
+                    (string)$typeA,
+                    (string)$typeB),
+                [$nodeA],
+                [$nodeB]
+            );
+        }
+
+        // Collect and compare sub-fields. Use the same "visited fragment names" list
+        // for both collections so fields in a fragment reference are never
+        // compared to themselves.
+        $selectionSetA = $nodeA->getSelectionSet();
+        $selectionSetB = $nodeB->getSelectionSet();
+
+        if (null !== $selectionSetA && null !== $selectionSetB) {
+            $conflicts = $this->findConflictsBetweenSubSelectionSets(
+                getNamedType($typeA),
+                $selectionSetA,
+                getNamedType($typeB),
+                $selectionSetB,
+                $areMutuallyExclusive
+            );
+
+            return $this->subfieldConflicts($conflicts, $responseName, $nodeA,
+                $nodeB);
+        }
+
+        return null;
+    }
+
+    /**
+     * Find all conflicts found between two selection sets, including those
+     * found via spreading in fragments. Called when determining if conflicts
+     * exist between the sub-fields of two overlapping fields.
      *
      * @param NamedTypeInterface|null $parentTypeA
-     * @param SelectionSetNode        $selectionSetA
+     * @param SelectionSetNode $selectionSetA
      * @param NamedTypeInterface|null $parentTypeB
-     * @param SelectionSetNode        $selectionSetB
-     * @param bool                    $areMutuallyExclusive
+     * @param SelectionSetNode $selectionSetB
+     * @param bool $areMutuallyExclusive
+     *
      * @return Conflict[]
      * @throws InvalidTypeException
      */
@@ -333,8 +395,10 @@ trait FindsConflictsTrait
     ): array {
         $context = new ComparisonContext();
 
-        $contextA = $this->getFieldsAndFragmentNames($selectionSetA, $parentTypeA);
-        $contextB = $this->getFieldsAndFragmentNames($selectionSetB, $parentTypeB);
+        $contextA = $this->getFieldsAndFragmentNames($selectionSetA,
+            $parentTypeA);
+        $contextB = $this->getFieldsAndFragmentNames($selectionSetB,
+            $parentTypeB);
 
         $fieldMapA = $contextA->getFieldMap();
         $fieldMapB = $contextB->getFieldMap();
@@ -404,55 +468,17 @@ trait FindsConflictsTrait
     }
 
     /**
-     * Collect all Conflicts "within" one collection of fields.
+     * Collect all Conflicts between two collections of fields. This is similar
+     * to, but different from the `collectConflictsWithin` function above. This
+     * check assumes that `collectConflictsWithin` has already been called on
+     * each provided collection of fields. This is true because this validator
+     * traverses each individual selection set.
      *
      * @param ComparisonContext $context
-     * @throws InvalidTypeException
-     */
-    protected function collectConflictsWithin(ComparisonContext $context): void
-    {
-        // A field map is a keyed collection, where each key represents a response
-        // name and the value at that key is a list of all fields which provide that
-        // response name. For every response name, if there are multiple fields, they
-        // must be compared to find a potential conflict.
-        foreach ($context->getFieldMap() as $responseName => $fields) {
-            $fieldsCount = \count($fields);
-
-            // This compares every field in the list to every other field in this list
-            // (except to itself). If the list only has one item, nothing needs to
-            // be compared.
-            if ($fieldsCount > 1) {
-                /** @noinspection ForeachInvariantsInspection */
-                for ($i = 0; $i < $fieldsCount; $i++) {
-                    for ($j = $i + 1; $j < $fieldsCount; $j++) {
-                        $conflict = $this->findConflict(
-                            $responseName,
-                            $fields[$i],
-                            $fields[$j],
-                            // within one collection is never mutually exclusive
-                            false/* $areMutuallyExclusive */
-                        );
-
-                        if (null !== $conflict) {
-                            $context->reportConflict($conflict);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Collect all Conflicts between two collections of fields. This is similar to,
-     * but different from the `collectConflictsWithin` function above. This check
-     * assumes that `collectConflictsWithin` has already been called on each
-     * provided collection of fields. This is true because this validator traverses
-     * each individual selection set.
+     * @param array $fieldMapA
+     * @param array $fieldMapB
+     * @param bool $parentFieldsAreMutuallyExclusive
      *
-     * @param ComparisonContext $context
-     * @param array             $fieldMapA
-     * @param array             $fieldMapB
-     * @param bool              $parentFieldsAreMutuallyExclusive
      * @throws InvalidTypeException
      */
     protected function collectConflictsBetween(
@@ -493,141 +519,88 @@ trait FindsConflictsTrait
     }
 
     /**
-     * Determines if there is a conflict between two particular fields, including
-     * comparing their sub-fields.
+     * Collect all conflicts found between a set of fields and a fragment
+     * reference including via spreading in any nested fragments.
      *
-     * @param string       $responseName
-     * @param FieldContext $fieldA
-     * @param FieldContext $fieldB
-     * @param bool         $parentFieldsAreMutuallyExclusive
-     * @return Conflict|null
+     * @param ComparisonContext $context
+     * @param array $comparedFragments
+     * @param array $fieldMap
+     * @param string $fragmentName
+     * @param bool $areMutuallyExclusive
+     *
      * @throws InvalidTypeException
      */
-    protected function findConflict(
-        string $responseName,
-        FieldContext $fieldA,
-        FieldContext $fieldB,
-        bool $parentFieldsAreMutuallyExclusive
-    ): ?Conflict {
-        $parentTypeA = $fieldA->getParentType();
-        $parentTypeB = $fieldB->getParentType();
+    protected function collectConflictsBetweenFieldsAndFragment(
+        ComparisonContext $context,
+        array &$comparedFragments,
+        array $fieldMap,
+        string $fragmentName,
+        bool $areMutuallyExclusive
+    ): void {
+        // Memoize so a fragment is not compared for conflicts more than once.
+        if (isset($comparedFragments[$fragmentName])) {
+            return;
+        }
 
-        // If it is known that two fields could not possibly apply at the same
-        // time, due to the parent types, then it is safe to permit them to diverge
-        // in aliased field or arguments used as they will not present any ambiguity
-        // by differing.
-        // It is known that two parent types could never overlap if they are
-        // different Object types. Interface or Union types might overlap - if not
-        // in the current state of the schema, then perhaps in some future version,
-        // thus may not safely diverge.
-        $areMutuallyExclusive = $parentFieldsAreMutuallyExclusive
-            || ($parentTypeA !== $parentTypeB
-                && $parentTypeA instanceof ObjectType
-                && $parentTypeB instanceof ObjectType);
+        $comparedFragments[$fragmentName] = true;
 
-        $nodeA = $fieldA->getNode();
-        $nodeB = $fieldB->getNode();
+        $fragment = $this->getValidationContext()->getFragment($fragmentName);
 
-        $definitionA = $fieldA->getDefinition();
-        $definitionB = $fieldB->getDefinition();
+        if (null === $fragment) {
+            return;
+        }
 
-        if (!$areMutuallyExclusive) {
-            // Two aliases must refer to the same field.
-            $nameA = $nodeA->getNameValue();
-            $nameB = $nodeB->getNameValue();
+        $contextB = $this->getReferencedFieldsAndFragmentNames($fragment);
 
-            if ($nameA !== $nameB) {
-                return new Conflict(
-                    $responseName,
-                    sprintf('%s and %s are different fields', $nameA, $nameB),
-                    [$nodeA],
-                    [$nodeB]
+        $fieldMapB = $contextB->getFieldMap();
+
+        // Do not compare a fragment's fieldMap to itself.
+        if ($fieldMap == $fieldMapB) {
+            return;
+        }
+
+        // (D) First collect any conflicts between the provided collection of fields
+        // and the collection of fields represented by the given fragment.
+        $this->collectConflictsBetween(
+            $context,
+            $fieldMap,
+            $fieldMapB,
+            $areMutuallyExclusive
+        );
+
+        $fragmentNamesB = $contextB->getFragmentNames();
+
+        // (E) Then collect any conflicts between the provided collection of fields
+        // and any fragment names found in the given fragment.
+        if (!empty($fragmentNamesB)) {
+            $fragmentNamesBCount = \count($fragmentNamesB);
+
+            /** @noinspection ForeachInvariantsInspection */
+            for ($i = 0; $i < $fragmentNamesBCount; $i++) {
+                $this->collectConflictsBetweenFieldsAndFragment(
+                    $context,
+                    $comparedFragments,
+                    $fieldMap,
+                    $fragmentNamesB[$i],
+                    $areMutuallyExclusive
                 );
             }
-
-            // Two field calls must have the same arguments.
-            if (!compareArguments($nodeA->getArguments(), $nodeB->getArguments())) {
-                return new Conflict(
-                    $responseName,
-                    'they have differing arguments',
-                    [$nodeA],
-                    [$nodeB]
-                );
-            }
         }
-
-        // The return type for each field.
-        $typeA = null !== $definitionA ? $definitionA->getType() : null;
-        $typeB = null !== $definitionB ? $definitionB->getType() : null;
-
-        if (null !== $typeA && null !== $typeB && compareTypes($typeA, $typeB)) {
-            return new Conflict(
-                $responseName,
-                sprintf('they return conflicting types %s and %s', (string)$typeA, (string)$typeB),
-                [$nodeA],
-                [$nodeB]
-            );
-        }
-
-        // Collect and compare sub-fields. Use the same "visited fragment names" list
-        // for both collections so fields in a fragment reference are never
-        // compared to themselves.
-        $selectionSetA = $nodeA->getSelectionSet();
-        $selectionSetB = $nodeB->getSelectionSet();
-
-        if (null !== $selectionSetA && null !== $selectionSetB) {
-            $conflicts = $this->findConflictsBetweenSubSelectionSets(
-                getNamedType($typeA),
-                $selectionSetA,
-                getNamedType($typeB),
-                $selectionSetB,
-                $areMutuallyExclusive
-            );
-
-            return $this->subfieldConflicts($conflicts, $responseName, $nodeA, $nodeB);
-        }
-
-        return null;
     }
 
     /**
-     * Given a selection set, return the collection of fields (a mapping of response
-     * name to field nodes and definitions) as well as a list of fragment names
-     * referenced via fragment spreads.
-     *
-     * @param SelectionSetNode        $selectionSet
-     * @param NamedTypeInterface|null $parentType
-     * @return ComparisonContext
-     * @throws InvalidTypeException
-     * @throws InvariantException
-     */
-    protected function getFieldsAndFragmentNames(
-        SelectionSetNode $selectionSet,
-        ?NamedTypeInterface $parentType
-    ): ComparisonContext {
-        $cached = $this->cachedFieldsAndFragmentNames->get($selectionSet);
-
-        if (null === $cached) {
-            $cached = new ComparisonContext();
-
-            $this->collectFieldsAndFragmentNames($cached, $selectionSet, $parentType);
-
-            $this->cachedFieldsAndFragmentNames->set($selectionSet, $cached);
-        }
-
-        return $cached;
-    }
-
-    /**
-     * Given a reference to a fragment, return the represented collection of fields
-     * as well as a list of nested fragment names referenced via fragment spreads.
+     * Given a reference to a fragment, return the represented collection of
+     * fields as well as a list of nested fragment names referenced via
+     * fragment spreads.
      *
      * @param FragmentDefinitionNode $fragment
+     *
      * @return ComparisonContext
      * @throws InvalidTypeException
      */
-    protected function getReferencedFieldsAndFragmentNames(FragmentDefinitionNode $fragment): ComparisonContext
-    {
+    protected function getReferencedFieldsAndFragmentNames(
+        FragmentDefinitionNode $fragment
+    ): ComparisonContext {
         $cached = $this->cachedFieldsAndFragmentNames->get($fragment);
 
         if (null !== $cached) {
@@ -635,52 +608,109 @@ trait FindsConflictsTrait
         }
 
         /** @var NamedTypeInterface $fragmentType */
-        $fragmentType = typeFromAST($this->getValidationContext()->getSchema(), $fragment->getTypeCondition());
+        $fragmentType = typeFromAST($this->getValidationContext()->getSchema(),
+            $fragment->getTypeCondition());
 
-        return $this->getFieldsAndFragmentNames($fragment->getSelectionSet(), $fragmentType);
+        return $this->getFieldsAndFragmentNames($fragment->getSelectionSet(),
+            $fragmentType);
     }
 
     /**
-     * @param ComparisonContext       $context
-     * @param SelectionSetNode        $selectionSet
-     * @param NamedTypeInterface|null $parentType
+     * Collect all conflicts found between two fragments, including via
+     * spreading in any nested fragments.
+     *
+     * @param ComparisonContext $context
+     * @param string $fragmentNameA
+     * @param string $fragmentNameB
+     * @param bool $areMutuallyExclusive
+     *
      * @throws InvalidTypeException
-     * @throws InvariantException
      */
-    protected function collectFieldsAndFragmentNames(
+    protected function collectConflictsBetweenFragments(
         ComparisonContext $context,
-        SelectionSetNode $selectionSet,
-        ?NamedTypeInterface $parentType
+        string $fragmentNameA,
+        string $fragmentNameB,
+        bool $areMutuallyExclusive
     ): void {
-        foreach ($selectionSet->getSelections() as $selection) {
-            if ($selection instanceof FieldNode) {
-                $definition = ($parentType instanceof ObjectType || $parentType instanceof InterfaceType)
-                    ? ($parentType->getFields()[$selection->getNameValue()] ?? null)
-                    : null;
+        // No need to compare a fragment to itself.
+        if ($fragmentNameA === $fragmentNameB) {
+            return;
+        }
 
-                $context->registerField(new FieldContext($parentType, $selection, $definition));
-            } elseif ($selection instanceof FragmentSpreadNode) {
-                $context->registerFragment($selection);
-            } elseif ($selection instanceof InlineFragmentNode) {
-                $typeCondition = $selection->getTypeCondition();
+        // Memoize so two fragments are not compared for conflicts more than once.
+        if ($this->comparedFragmentPairs->has($fragmentNameA, $fragmentNameB,
+            $areMutuallyExclusive)) {
+            return;
+        }
 
-                $inlineFragmentType = null !== $typeCondition
-                    ? typeFromAST($this->getValidationContext()->getSchema(), $typeCondition)
-                    : $parentType;
+        $this->comparedFragmentPairs->add($fragmentNameA, $fragmentNameB,
+            $areMutuallyExclusive);
 
-                $this->collectFieldsAndFragmentNames($context, $selection->getSelectionSet(), $inlineFragmentType);
+        $fragmentA = $this->getValidationContext()->getFragment($fragmentNameA);
+        $fragmentB = $this->getValidationContext()->getFragment($fragmentNameB);
+
+        if (null === $fragmentA || null === $fragmentB) {
+            return;
+        }
+
+        $contextA = $this->getReferencedFieldsAndFragmentNames($fragmentA);
+        $contextB = $this->getReferencedFieldsAndFragmentNames($fragmentB);
+
+        // (F) First, collect all conflicts between these two collections of fields
+        // (not including any nested fragments).
+        $this->collectConflictsBetween(
+            $context,
+            $contextA->getFieldMap(),
+            $contextB->getFieldMap(),
+            $areMutuallyExclusive
+        );
+
+        $fragmentNamesB = $contextB->getFragmentNames();
+
+        // (G) Then collect conflicts between the first fragment and any nested
+        // fragments spread in the second fragment.
+        if (!empty($fragmentNamesB)) {
+            $fragmentNamesBCount = \count($fragmentNamesB);
+
+            /** @noinspection ForeachInvariantsInspection */
+            for ($j = 0; $j < $fragmentNamesBCount; $j++) {
+                $this->collectConflictsBetweenFragments(
+                    $context,
+                    $fragmentNameA,
+                    $fragmentNamesB[$j],
+                    $areMutuallyExclusive
+                );
+            }
+        }
+
+        $fragmentNamesA = $contextA->getFragmentNames();
+
+        // (G) Then collect conflicts between the second fragment and any nested
+        // fragments spread in the first fragment.
+        if (!empty($fragmentNamesA)) {
+            $fragmentNamesACount = \count($fragmentNamesA);
+
+            /** @noinspection ForeachInvariantsInspection */
+            for ($i = 0; $i < $fragmentNamesACount; $i++) {
+                $this->collectConflictsBetweenFragments(
+                    $context,
+                    $fragmentNamesA[$i],
+                    $fragmentNameB,
+                    $areMutuallyExclusive
+                );
             }
         }
     }
 
     /**
-     * Given a series of Conflicts which occurred between two sub-fields, generate
-     * a single Conflict.
+     * Given a series of Conflicts which occurred between two sub-fields,
+     * generate a single Conflict.
      *
      * @param array|Conflict[] $conflicts
-     * @param string           $responseName
-     * @param FieldNode        $nodeA
-     * @param FieldNode        $nodeB
+     * @param string $responseName
+     * @param FieldNode $nodeA
+     * @param FieldNode $nodeB
+     *
      * @return Conflict|null
      */
     protected function subfieldConflicts(
@@ -688,7 +718,8 @@ trait FindsConflictsTrait
         string $responseName,
         FieldNode $nodeA,
         FieldNode $nodeB
-    ): ?Conflict {
+    ): ?Conflict
+    {
         if (empty($conflicts)) {
             return null;
         }

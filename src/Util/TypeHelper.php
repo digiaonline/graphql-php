@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\ListTypeNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\NonNullTypeNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
@@ -15,19 +16,22 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
-use Digia\GraphQL\Schema\SchemaInterface;
 
 class TypeHelper
 {
+
     /**
      * Provided two types, return true if the types are equal (invariant).
      *
      * @param TypeInterface $typeA
      * @param TypeInterface $typeB
+     *
      * @return bool
      */
-    public function isEqualType(TypeInterface $typeA, TypeInterface $typeB): bool
-    {
+    public function isEqualType(
+        TypeInterface $typeA,
+        TypeInterface $typeB
+    ): bool {
         // Equivalent types are equal.
         if ($typeA === $typeB) {
             return true;
@@ -52,8 +56,9 @@ class TypeHelper
      * equal or a subset of the second super type (covariant).
      *
      * @param SchemaInterface $schema
-     * @param TypeInterface   $maybeSubtype
-     * @param TypeInterface   $superType
+     * @param TypeInterface $maybeSubtype
+     * @param TypeInterface $superType
+     *
      * @return bool
      */
     public function isTypeSubtypeOf(
@@ -69,21 +74,26 @@ class TypeHelper
         // If superType is non-null, maybeSubType must also be non-null.
         if ($superType instanceof NonNullType) {
             if ($maybeSubtype instanceof NonNullType) {
-                return $this->isTypeSubtypeOf($schema, $maybeSubtype->getOfType(), $superType->getOfType());
+                return $this->isTypeSubtypeOf($schema,
+                    $maybeSubtype->getOfType(), $superType->getOfType());
             }
+
             return false;
         }
 
         if ($maybeSubtype instanceof NonNullType) {
             // If superType is nullable, maybeSubType may be non-null or nullable.
-            return $this->isTypeSubtypeOf($schema, $maybeSubtype->getOfType(), $superType);
+            return $this->isTypeSubtypeOf($schema, $maybeSubtype->getOfType(),
+                $superType);
         }
 
         // If superType type is a list, maybeSubType type must also be a list.
         if ($superType instanceof ListType) {
             if ($maybeSubtype instanceof ListType) {
-                return $this->isTypeSubtypeOf($schema, $maybeSubtype->getOfType(), $superType->getOfType());
+                return $this->isTypeSubtypeOf($schema,
+                    $maybeSubtype->getOfType(), $superType->getOfType());
             }
+
             return false;
         }
 
@@ -106,18 +116,23 @@ class TypeHelper
 
     /**
      * Provided two composite types, determine if they "overlap". Two composite
-     * types overlap when the Sets of possible concrete types for each intersect.
+     * types overlap when the Sets of possible concrete types for each
+     * intersect.
      *
-     * This is often used to determine if a fragment of a given type could possibly
-     * be visited in a context of another type.
+     * This is often used to determine if a fragment of a given type could
+     * possibly be visited in a context of another type.
      *
      * @param SchemaInterface $schema
-     * @param TypeInterface   $typeA
-     * @param TypeInterface   $typeB
+     * @param TypeInterface $typeA
+     * @param TypeInterface $typeB
+     *
      * @return bool
      */
-    public function doTypesOverlap(SchemaInterface $schema, TypeInterface $typeA, TypeInterface $typeB): bool
-    {
+    public function doTypesOverlap(
+        SchemaInterface $schema,
+        TypeInterface $typeA,
+        TypeInterface $typeB
+    ): bool {
         // Equivalent types overlap
         if ($typeA === $typeB) {
             return true;
@@ -134,6 +149,7 @@ class TypeHelper
             }
 
             // Determine if the latter type is a possible concrete type of the former.
+
             /** @noinspection PhpParamsInspection */
             return $schema->isPossibleType($typeA, $typeB);
         }
@@ -149,16 +165,20 @@ class TypeHelper
     }
 
     /**
-     * Two types conflict if both types could not apply to a value simultaneously.
-     * Composite types are ignored as their individual field types will be compared
-     * later recursively. However List and Non-Null types must match.
+     * Two types conflict if both types could not apply to a value
+     * simultaneously. Composite types are ignored as their individual field
+     * types will be compared later recursively. However List and Non-Null
+     * types must match.
      *
      * @param TypeInterface $typeA
      * @param TypeInterface $typeB
+     *
      * @return bool
      */
-    public function compareTypes(TypeInterface $typeA, TypeInterface $typeB): bool
-    {
+    public function compareTypes(
+        TypeInterface $typeA,
+        TypeInterface $typeB
+    ): bool {
         if ($typeA instanceof ListType) {
             return $typeB instanceof ListType
                 ? $this->compareTypes($typeA->getOfType(), $typeB->getOfType())
@@ -178,32 +198,39 @@ class TypeHelper
         if ($typeA instanceof LeafTypeInterface || $typeB instanceof LeafTypeInterface) {
             return $typeA !== $typeB;
         }
+
         return false;
     }
 
     /**
      * Given a Schema and an AST node describing a type, return a GraphQLType
-     * definition which applies to that type. For example, if provided the parsed
-     * AST node for `[User]`, a GraphQLList instance will be returned, containing
-     * the type called "User" found in the schema. If a type called "User" is not
-     * found in the schema, then undefined will be returned.
+     * definition which applies to that type. For example, if provided the
+     * parsed AST node for `[User]`, a GraphQLList instance will be returned,
+     * containing the type called "User" found in the schema. If a type called
+     * "User" is not found in the schema, then undefined will be returned.
      *
-     * @param SchemaInterface   $schema
+     * @param SchemaInterface $schema
      * @param TypeNodeInterface $typeNode
+     *
      * @return TypeInterface|null
      * @throws InvalidTypeException
      */
-    public function fromAST(SchemaInterface $schema, TypeNodeInterface $typeNode): ?TypeInterface
+    public function fromAST(
+        SchemaInterface $schema,
+        TypeNodeInterface $typeNode
+    ): ?TypeInterface
     {
         $innerType = null;
 
         if ($typeNode instanceof ListTypeNode) {
             $innerType = $this->fromAST($schema, $typeNode->getType());
+
             return null !== $innerType ? newList($innerType) : null;
         }
 
         if ($typeNode instanceof NonNullTypeNode) {
             $innerType = $this->fromAST($schema, $typeNode->getType());
+
             return null !== $innerType ? newNonNull($innerType) : null;
         }
 
@@ -211,6 +238,7 @@ class TypeHelper
             return $schema->getType($typeNode->getNameValue());
         }
 
-        throw new InvalidTypeException(sprintf('Unexpected type kind: %s', $typeNode->getKind()));
+        throw new InvalidTypeException(sprintf('Unexpected type kind: %s',
+            $typeNode->getKind()));
     }
 }

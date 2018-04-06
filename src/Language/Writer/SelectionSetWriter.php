@@ -8,8 +8,10 @@ use function Digia\GraphQL\Language\block;
 
 class SelectionSetWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|SelectionSetNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string

@@ -9,10 +9,6 @@ use function Digia\GraphQL\Test\Functional\Validation\typeIncompatibleSpread;
 
 class PossibleFragmentSpreadsRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return PossibleFragmentSpreadsRule::class;
-    }
 
     public function testOfTheSameObject()
     {
@@ -189,7 +185,10 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
             fragment invalidObjectWithinUnion on CatOrDog { ...humanFragment }
             fragment humanFragment on Human { pets { name } }
             '),
-            [typeIncompatibleSpread('humanFragment', 'CatOrDog', 'Human', [1, 49])]
+            [
+                typeIncompatibleSpread('humanFragment', 'CatOrDog', 'Human',
+                    [1, 49]),
+            ]
         );
     }
 
@@ -201,7 +200,10 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
             fragment invalidUnionWithinObject on Human { ...catOrDogFragment }
             fragment catOrDogFragment on CatOrDog { __typename }
             '),
-            [typeIncompatibleSpread('catOrDogFragment', 'Human', 'CatOrDog', [1, 46])]
+            [
+                typeIncompatibleSpread('catOrDogFragment', 'Human', 'CatOrDog',
+                    [1, 46]),
+            ]
         );
     }
 
@@ -213,7 +215,10 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
             fragment invalidUnionWithinInterface on Pet { ...humanOrAlienFragment }
             fragment humanOrAlienFragment on HumanOrAlien { __typename }
             '),
-            [typeIncompatibleSpread('humanOrAlienFragment', 'Pet', 'HumanOrAlien', [1, 47])]
+            [
+                typeIncompatibleSpread('humanOrAlienFragment', 'Pet',
+                    'HumanOrAlien', [1, 47]),
+            ]
         );
     }
 
@@ -225,7 +230,10 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
             fragment invalidUnionWithinUnion on CatOrDog { ...humanOrAlienFragment }
             fragment humanOrAlienFragment on HumanOrAlien { __typename }
             '),
-            [typeIncompatibleSpread('humanOrAlienFragment', 'CatOrDog', 'HumanOrAlien', [1, 48])]
+            [
+                typeIncompatibleSpread('humanOrAlienFragment', 'CatOrDog',
+                    'HumanOrAlien', [1, 48]),
+            ]
         );
     }
 
@@ -237,7 +245,11 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
             fragment invalidInterfaceWithinObject on Cat { ...intelligentFragment }
             fragment intelligentFragment on Intelligent { iq }
             '),
-            [typeIncompatibleSpread('intelligentFragment', 'Cat', 'Intelligent', [1, 48])]
+            [
+                typeIncompatibleSpread('intelligentFragment', 'Cat',
+                    'Intelligent',
+                    [1, 48]),
+            ]
         );
     }
 
@@ -251,7 +263,11 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
             }
             fragment intelligentFragment on Intelligent { iq }
             '),
-            [typeIncompatibleSpread('intelligentFragment', 'Pet', 'Intelligent', [2, 3])]
+            [
+                typeIncompatibleSpread('intelligentFragment', 'Pet',
+                    'Intelligent',
+                    [2, 3]),
+            ]
         );
     }
 
@@ -276,7 +292,15 @@ class PossibleFragmentSpreadsRuleTest extends RuleTestCase
             fragment invalidInterfaceWithinUnion on HumanOrAlien { ...petFragment }
             fragment petFragment on Pet { name }
             '),
-            [typeIncompatibleSpread('petFragment', 'HumanOrAlien', 'Pet', [1, 56])]
+            [
+                typeIncompatibleSpread('petFragment', 'HumanOrAlien', 'Pet',
+                    [1, 56]),
+            ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return PossibleFragmentSpreadsRule::class;
     }
 }

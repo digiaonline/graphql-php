@@ -48,12 +48,14 @@ use Digia\GraphQL\Language\Node\VariableNode;
 
 class SpecificKindVisitor implements VisitorInterface
 {
+
     /**
      * @inheritdoc
      */
     public function enterNode(NodeInterface $node): ?NodeInterface
     {
-        $enterMethod = 'enter' . $node->getKind();
+        $enterMethod = 'enter'.$node->getKind();
+
         return $this->{$enterMethod}($node);
     }
 
@@ -62,12 +64,14 @@ class SpecificKindVisitor implements VisitorInterface
      */
     public function leaveNode(NodeInterface $node): ?NodeInterface
     {
-        $leaveMethod = 'leave' . $node->getKind();
+        $leaveMethod = 'leave'.$node->getKind();
+
         return $this->{$leaveMethod}($node);
     }
 
     /**
      * @param ArgumentNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterArgument(ArgumentNode $node): ?NodeInterface
@@ -77,6 +81,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param ArgumentNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveArgument(ArgumentNode $node): ?NodeInterface
@@ -86,6 +91,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param BooleanValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterBooleanValue(BooleanValueNode $node): ?NodeInterface
@@ -95,6 +101,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param BooleanValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveBooleanValue(BooleanValueNode $node): ?NodeInterface
@@ -104,24 +111,29 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param DirectiveDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterDirectiveDefinition(DirectiveDefinitionNode $node): ?NodeInterface
+    protected function enterDirectiveDefinition(DirectiveDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param DirectiveDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveDirectiveDefinition(DirectiveDefinitionNode $node): ?NodeInterface
+    protected function leaveDirectiveDefinition(DirectiveDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param DirectiveNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterDirective(DirectiveNode $node): ?NodeInterface
@@ -131,6 +143,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param DirectiveNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveDirective(DirectiveNode $node): ?NodeInterface
@@ -140,6 +153,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param DocumentNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterDocument(DocumentNode $node): ?NodeInterface
@@ -149,6 +163,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param DocumentNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveDocument(DocumentNode $node): ?NodeInterface
@@ -158,60 +173,73 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param EnumTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterEnumTypeDefinition(EnumTypeDefinitionNode $node): ?NodeInterface
+    protected function enterEnumTypeDefinition(EnumTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param EnumTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveEnumTypeDefinition(EnumTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveEnumTypeDefinition(EnumTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param EnumTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterEnumTypeExtension(EnumTypeExtensionNode $node): ?NodeInterface
+    protected function enterEnumTypeExtension(EnumTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param EnumTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveEnumTypeExtension(EnumTypeExtensionNode $node): ?NodeInterface
+    protected function leaveEnumTypeExtension(EnumTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param EnumValueDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterEnumValueDefinition(EnumValueDefinitionNode $node): ?NodeInterface
+    protected function enterEnumValueDefinition(EnumValueDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param EnumValueDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveEnumValueDefinition(EnumValueDefinitionNode $node): ?NodeInterface
+    protected function leaveEnumValueDefinition(EnumValueDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param EnumValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterEnumValue(EnumValueNode $node): ?NodeInterface
@@ -221,6 +249,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param EnumValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveEnumValue(EnumValueNode $node): ?NodeInterface
@@ -230,24 +259,29 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param FieldDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterFieldDefinition(FieldDefinitionNode $node): ?NodeInterface
+    protected function enterFieldDefinition(FieldDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param FieldDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveFieldDefinition(FieldDefinitionNode $node): ?NodeInterface
+    protected function leaveFieldDefinition(FieldDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param FieldNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterField(FieldNode $node): ?NodeInterface
@@ -257,6 +291,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param FieldNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveField(FieldNode $node): ?NodeInterface
@@ -266,6 +301,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param FloatValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterFloatValue(FloatValueNode $node): ?NodeInterface
@@ -275,6 +311,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param FloatValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveFloatValue(FloatValueNode $node): ?NodeInterface
@@ -284,114 +321,143 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param FragmentDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param FragmentDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function leaveFragmentDefinition(FragmentDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param FragmentSpreadNode $node
+     *
      * @return FragmentSpreadNode|null
      */
-    protected function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
+    protected function enterFragmentSpread(FragmentSpreadNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param FragmentSpreadNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
+    protected function leaveFragmentSpread(FragmentSpreadNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InlineFragmentNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    protected function enterInlineFragment(InlineFragmentNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InlineFragmentNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    protected function leaveInlineFragment(InlineFragmentNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InputObjectTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterInputObjectTypeDefinition(InputObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function enterInputObjectTypeDefinition(
+        InputObjectTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InputObjectTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveInputObjectTypeDefinition(InputObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveInputObjectTypeDefinition(
+        InputObjectTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InputObjectTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterInputObjectTypeExtension(InputObjectTypeExtensionNode $node): ?NodeInterface
+    protected function enterInputObjectTypeExtension(
+        InputObjectTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InputObjectTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveInputObjectTypeExtension(InputObjectTypeExtensionNode $node): ?NodeInterface
+    protected function leaveInputObjectTypeExtension(
+        InputObjectTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InputValueDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterInputValueDefinition(InputValueDefinitionNode $node): ?NodeInterface
+    protected function enterInputValueDefinition(InputValueDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InputValueDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveInputValueDefinition(InputValueDefinitionNode $node): ?NodeInterface
+    protected function leaveInputValueDefinition(InputValueDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param IntValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterIntValue(IntValueNode $node): ?NodeInterface
@@ -401,6 +467,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param IntValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveIntValue(IntValueNode $node): ?NodeInterface
@@ -410,42 +477,55 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param InterfaceTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?NodeInterface
+    protected function enterInterfaceTypeDefinition(
+        InterfaceTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InterfaceTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveInterfaceTypeDefinition(
+        InterfaceTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InterfaceTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterInterfaceTypeExtension(InterfaceTypeExtensionNode $node): ?NodeInterface
+    protected function enterInterfaceTypeExtension(
+        InterfaceTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param InterfaceTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveInterfaceTypeExtension(InterfaceTypeExtensionNode $node): ?NodeInterface
+    protected function leaveInterfaceTypeExtension(
+        InterfaceTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param ListTypeNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterListType(ListTypeNode $node): ?NodeInterface
@@ -455,6 +535,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param ListTypeNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveListType(ListTypeNode $node): ?NodeInterface
@@ -464,6 +545,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param ListValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterListValue(ListValueNode $node): ?NodeInterface
@@ -473,6 +555,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param ListValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveListValue(ListValueNode $node): ?NodeInterface
@@ -482,6 +565,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param NamedTypeNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterNamedType(NamedTypeNode $node): ?NodeInterface
@@ -491,6 +575,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param NamedTypeNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveNamedType(NamedTypeNode $node): ?NodeInterface
@@ -500,6 +585,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param NameNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterName(NameNode $node): ?NodeInterface
@@ -509,6 +595,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param NameNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveName(NameNode $node): ?NodeInterface
@@ -518,6 +605,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param NonNullTypeNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterNonNullType(NonNullTypeNode $node): ?NodeInterface
@@ -527,6 +615,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param NonNullTypeNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveNonNullType(NonNullTypeNode $node): ?NodeInterface
@@ -536,6 +625,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param NullValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterNullValue(NullValueNode $node): ?NodeInterface
@@ -545,6 +635,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param NullValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveNullValue(NullValueNode $node): ?NodeInterface
@@ -554,6 +645,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param ObjectFieldNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterObjectField(ObjectFieldNode $node): ?NodeInterface
@@ -563,6 +655,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param ObjectFieldNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveObjectField(ObjectFieldNode $node): ?NodeInterface
@@ -572,42 +665,51 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param ObjectTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterObjectTypeDefinition(ObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function enterObjectTypeDefinition(ObjectTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param ObjectTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveObjectTypeDefinition(ObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveObjectTypeDefinition(ObjectTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param ObjectTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterObjectTypeExtension(ObjectTypeExtensionNode $node): ?NodeInterface
+    protected function enterObjectTypeExtension(ObjectTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param ObjectTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveObjectTypeExtension(ObjectTypeExtensionNode $node): ?NodeInterface
+    protected function leaveObjectTypeExtension(ObjectTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param ObjectValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterObjectValue(ObjectValueNode $node): ?NodeInterface
@@ -617,6 +719,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param ObjectValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveObjectValue(ObjectValueNode $node): ?NodeInterface
@@ -626,96 +729,119 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param OperationDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param OperationDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function leaveOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param OperationTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterOperationTypeDefinition(OperationTypeDefinitionNode $node): ?NodeInterface
+    protected function enterOperationTypeDefinition(
+        OperationTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param OperationTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveOperationTypeDefinition(OperationTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveOperationTypeDefinition(
+        OperationTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param ScalarTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterScalarTypeDefinition(ScalarTypeDefinitionNode $node): ?NodeInterface
+    protected function enterScalarTypeDefinition(ScalarTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param ScalarTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveScalarTypeDefinition(ScalarTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveScalarTypeDefinition(ScalarTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param ScalarTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterScalarTypeExtension(ScalarTypeExtensionNode $node): ?NodeInterface
+    protected function enterScalarTypeExtension(ScalarTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param ScalarTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveScalarTypeExtension(ScalarTypeExtensionNode $node): ?NodeInterface
+    protected function leaveScalarTypeExtension(ScalarTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param SchemaDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterSchemaDefinition(SchemaDefinitionNode $node): ?NodeInterface
+    protected function enterSchemaDefinition(SchemaDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param SchemaDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveSchemaDefinition(SchemaDefinitionNode $node): ?NodeInterface
+    protected function leaveSchemaDefinition(SchemaDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param SelectionSetNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterSelectionSet(SelectionSetNode $node): ?NodeInterface
@@ -725,6 +851,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param SelectionSetNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveSelectionSet(SelectionSetNode $node): ?NodeInterface
@@ -734,6 +861,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param StringValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterStringValue(StringValueNode $node): ?NodeInterface
@@ -743,6 +871,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param StringValueNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveStringValue(StringValueNode $node): ?NodeInterface
@@ -752,60 +881,73 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param UnionTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterUnionTypeDefinition(UnionTypeDefinitionNode $node): ?NodeInterface
+    protected function enterUnionTypeDefinition(UnionTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param UnionTypeDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveUnionTypeDefinition(UnionTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveUnionTypeDefinition(UnionTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param UnionTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterUnionTypeExtension(UnionTypeExtensionNode $node): ?NodeInterface
+    protected function enterUnionTypeExtension(UnionTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param UnionTypeExtensionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveUnionTypeExtension(UnionTypeExtensionNode $node): ?NodeInterface
+    protected function leaveUnionTypeExtension(UnionTypeExtensionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param VariableDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param VariableDefinitionNode $node
+     *
      * @return NodeInterface|null
      */
-    protected function leaveVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function leaveVariableDefinition(VariableDefinitionNode $node
+    ): ?NodeInterface
     {
         return $node;
     }
 
     /**
      * @param VariableNode $node
+     *
      * @return NodeInterface|null
      */
     protected function enterVariable(VariableNode $node): ?NodeInterface
@@ -815,6 +957,7 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param VariableNode $node
+     *
      * @return NodeInterface|null
      */
     protected function leaveVariable(VariableNode $node): ?NodeInterface

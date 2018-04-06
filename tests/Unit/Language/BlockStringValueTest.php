@@ -7,6 +7,7 @@ use function Digia\GraphQL\Language\blockStringValue;
 
 /**
  * Class BlockStringValueTest
+ *
  * @package Digia\GraphQL\Test\Unit\Language
  */
 class BlockStringValueTest extends TestCase
@@ -20,7 +21,7 @@ class BlockStringValueTest extends TestCase
             '      World!',
             '',
             '    Yours,',
-            '      GraphQL.'
+            '      GraphQL.',
         ];
 
         $expectedBlockStringLines = [
@@ -28,10 +29,25 @@ class BlockStringValueTest extends TestCase
             '  World!',
             '',
             'Yours,',
-            '  GraphQL.'
+            '  GraphQL.',
         ];
 
-        $this->assertBlockStringEquals($expectedBlockStringLines, $rawStringLines);
+        $this->assertBlockStringEquals($expectedBlockStringLines,
+            $rawStringLines);
+    }
+
+    /**
+     * @param array $expectedBlockStringLines
+     * @param array $rawStringLines
+     */
+    private function assertBlockStringEquals(
+        array $expectedBlockStringLines,
+        array $rawStringLines
+    ): void {
+        $actualBlockString = blockStringValue(implode("\n", $rawStringLines));
+
+        $this->assertEquals(implode("\n", $expectedBlockStringLines),
+            $actualBlockString);
     }
 
     public function testRemovesEmptyLeadingAndTrailingLines(): void
@@ -53,10 +69,11 @@ class BlockStringValueTest extends TestCase
             '  World!',
             '',
             'Yours,',
-            '  GraphQL.'
+            '  GraphQL.',
         ];
 
-        $this->assertBlockStringEquals($expectedBlockStringLines, $rawStringLines);
+        $this->assertBlockStringEquals($expectedBlockStringLines,
+            $rawStringLines);
     }
 
     public function testRemovesBlankLeadingAndTrailingLines(): void
@@ -78,10 +95,11 @@ class BlockStringValueTest extends TestCase
             '  World!',
             '',
             'Yours,',
-            '  GraphQL.'
+            '  GraphQL.',
         ];
 
-        $this->assertBlockStringEquals($expectedBlockStringLines, $rawStringLines);
+        $this->assertBlockStringEquals($expectedBlockStringLines,
+            $rawStringLines);
     }
 
     public function testRetainsIndentationFromFirstLine(): void
@@ -101,10 +119,11 @@ class BlockStringValueTest extends TestCase
             '  World!',
             '',
             'Yours,',
-            '  GraphQL.'
+            '  GraphQL.',
         ];
 
-        $this->assertBlockStringEquals($expectedBlockStringLines, $rawStringLines);
+        $this->assertBlockStringEquals($expectedBlockStringLines,
+            $rawStringLines);
     }
 
     public function testDoesNotAlterTrailingSpaces(): void
@@ -127,17 +146,7 @@ class BlockStringValueTest extends TestCase
             '  GraphQL. ',
         ];
 
-        $this->assertBlockStringEquals($expectedBlockStringLines, $rawStringLines);
-    }
-
-    /**
-     * @param array $expectedBlockStringLines
-     * @param array $rawStringLines
-     */
-    private function assertBlockStringEquals(array $expectedBlockStringLines, array $rawStringLines): void
-    {
-        $actualBlockString = blockStringValue(implode("\n", $rawStringLines));
-
-        $this->assertEquals(implode("\n", $expectedBlockStringLines), $actualBlockString);
+        $this->assertBlockStringEquals($expectedBlockStringLines,
+            $rawStringLines);
     }
 }

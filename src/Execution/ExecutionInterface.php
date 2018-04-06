@@ -7,14 +7,16 @@ use Digia\GraphQL\Schema\Schema;
 
 interface ExecutionInterface
 {
+
     /**
-     * @param Schema        $schema
-     * @param DocumentNode  $documentNode
-     * @param null          $rootValue
-     * @param null          $contextValue
-     * @param array         $variableValues
-     * @param null          $operationName
+     * @param Schema $schema
+     * @param DocumentNode $documentNode
+     * @param null $rootValue
+     * @param null $contextValue
+     * @param array $variableValues
+     * @param null $operationName
      * @param callable|null $fieldResolver
+     *
      * @return mixed
      */
     public function execute(

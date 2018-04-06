@@ -4,8 +4,11 @@ namespace Digia\GraphQL\Type\Definition;
 
 class SpecifiedDirectiveEnum
 {
-    public const INCLUDE    = 'include';
-    public const SKIP       = 'skip';
+
+    public const INCLUDE = 'include';
+
+    public const SKIP = 'skip';
+
     public const DEPRECATED = 'deprecated';
 
     /**

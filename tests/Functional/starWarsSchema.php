@@ -7,7 +7,7 @@ use function Digia\GraphQL\Test\readFileContents;
 
 function starWarsSchema()
 {
-    $source = readFileContents(__DIR__ . '/starWars.graphqls');
+    $source = readFileContents(__DIR__.'/starWars.graphqls');
 
     /** @noinspection PhpUnhandledExceptionInspection */
     return buildSchema($source, [

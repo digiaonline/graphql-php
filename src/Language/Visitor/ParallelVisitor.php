@@ -6,6 +6,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class ParallelVisitor implements VisitorInterface
 {
+
     /**
      * @var array|VisitorInterface[]
      */
@@ -18,6 +19,7 @@ class ParallelVisitor implements VisitorInterface
 
     /**
      * ParallelVisitor constructor.
+     *
      * @param array|VisitorInterface[] $visitors
      */
     public function __construct($visitors)

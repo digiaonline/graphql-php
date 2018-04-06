@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Language\Node;
 class FieldNode extends AbstractNode implements SelectionNodeInterface, ArgumentsAwareInterface,
     DirectivesAwareInterface, NameAwareInterface
 {
+
     use AliasTrait;
     use NameTrait;
     use ArgumentsTrait;
@@ -22,12 +23,12 @@ class FieldNode extends AbstractNode implements SelectionNodeInterface, Argument
     public function toArray(): array
     {
         return [
-            'kind'         => $this->kind,
-            'loc'          => $this->getLocationAsArray(),
-            'alias'        => $this->getAliasAsArray(),
-            'name'         => $this->getNameAsArray(),
-            'arguments'    => $this->getArgumentsAsArray(),
-            'directives'   => $this->getDirectivesAsArray(),
+            'kind' => $this->kind,
+            'loc' => $this->getLocationAsArray(),
+            'alias' => $this->getAliasAsArray(),
+            'name' => $this->getNameAsArray(),
+            'arguments' => $this->getArgumentsAsArray(),
+            'directives' => $this->getDirectivesAsArray(),
             'selectionSet' => $this->getSelectionSetAsArray(),
         ];
     }

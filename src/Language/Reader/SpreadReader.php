@@ -12,9 +12,15 @@ class SpreadReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        return new Token(TokenKindEnum::SPREAD, $pos, $pos + 3, $line, $col, $prev);
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
+        return new Token(TokenKindEnum::SPREAD, $pos, $pos + 3, $line, $col,
+            $prev);
     }
 
     /**
@@ -24,6 +30,7 @@ class SpreadReader extends AbstractReader
     {
         $body = $this->lexer->getBody();
 
-        return $code === 46 && charCodeAt($body, $pos + 1) === 46 && charCodeAt($body, $pos + 2) === 46; // ...
+        return $code === 46 && charCodeAt($body,
+                $pos + 1) === 46 && charCodeAt($body, $pos + 2) === 46; // ...
     }
 }

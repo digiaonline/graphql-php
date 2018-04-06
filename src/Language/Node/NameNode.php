@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
 class NameNode extends AbstractNode implements NodeInterface
 {
 
@@ -20,9 +18,9 @@ class NameNode extends AbstractNode implements NodeInterface
     public function toArray(): array
     {
         return [
-            'kind'  => $this->kind,
+            'kind' => $this->kind,
             'value' => $this->value,
-            'loc'   => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

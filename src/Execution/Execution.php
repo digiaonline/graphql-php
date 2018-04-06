@@ -8,10 +8,12 @@ use Digia\GraphQL\Schema\Schema;
 
 /**
  * Class Execution
+ *
  * @package Digia\GraphQL\Execution
  */
 class Execution implements ExecutionInterface
 {
+
     /**
      * @var ExecutionContextBuilder
      */
@@ -19,6 +21,7 @@ class Execution implements ExecutionInterface
 
     /**
      * Execution constructor.
+     *
      * @param $contextBuilder
      */
     public function __construct(ExecutionContextBuilder $contextBuilder)
@@ -27,13 +30,14 @@ class Execution implements ExecutionInterface
     }
 
     /**
-     * @param Schema        $schema
-     * @param DocumentNode  $documentNode
-     * @param null          $rootValue
-     * @param null          $contextValue
-     * @param null          $variableValues
-     * @param null          $operationName
+     * @param Schema $schema
+     * @param DocumentNode $documentNode
+     * @param null $rootValue
+     * @param null $contextValue
+     * @param null $variableValues
+     * @param null $operationName
      * @param callable|null $fieldResolver
+     *
      * @return ExecutionResult
      * @throws \Exception
      */

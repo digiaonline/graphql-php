@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\duplicateVariable;
 
 class UniqueVariableNamesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return UniqueVariableNamesRule::class;
-    }
 
     public function testUniqueVariableNames()
     {
@@ -40,5 +36,10 @@ class UniqueVariableNamesRuleTest extends RuleTestCase
                 duplicateVariable('x', [[3, 10], [3, 19]]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return UniqueVariableNamesRule::class;
     }
 }

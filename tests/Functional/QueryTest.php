@@ -8,6 +8,7 @@ use function Digia\GraphQL\Test\Functional\starWarsSchema;
 
 class QueryTest extends TestCase
 {
+
     // Star Wars Query Tests
 
     // Basic Queries
@@ -60,8 +61,8 @@ class QueryTest extends TestCase
         $this->assertEquals([
             'data' => [
                 'hero' => [
-                    'id'      => '2001',
-                    'name'    => 'R2-D2',
+                    'id' => '2001',
+                    'name' => 'R2-D2',
                     'friends' => [
                         ['name' => 'Luke Skywalker'],
                         ['name' => 'Han Solo'],
@@ -99,36 +100,36 @@ class QueryTest extends TestCase
         $this->assertEquals([
             'data' => [
                 'hero' => [
-                    'name'    => 'R2-D2',
+                    'name' => 'R2-D2',
                     'friends' => [
                         [
-                            'name'      => 'Luke Skywalker',
+                            'name' => 'Luke Skywalker',
                             'appearsIn' => ['NEWHOPE', 'EMPIRE', 'JEDI'],
-                            'friends'   => [
+                            'friends' => [
                                 ['name' => 'Han Solo'],
                                 ['name' => 'Leia Organa'],
                                 ['name' => 'C-3PO'],
                                 ['name' => 'R2-D2'],
-                            ]
+                            ],
                         ],
                         [
-                            'name'      => 'Han Solo',
+                            'name' => 'Han Solo',
                             'appearsIn' => ['NEWHOPE', 'EMPIRE', 'JEDI'],
-                            'friends'   => [
+                            'friends' => [
                                 ['name' => 'Luke Skywalker'],
                                 ['name' => 'Leia Organa'],
                                 ['name' => 'R2-D2'],
-                            ]
+                            ],
                         ],
                         [
-                            'name'      => 'Leia Organa',
+                            'name' => 'Leia Organa',
                             'appearsIn' => ['NEWHOPE', 'EMPIRE', 'JEDI'],
-                            'friends'   => [
+                            'friends' => [
                                 ['name' => 'Luke Skywalker'],
                                 ['name' => 'Han Solo'],
                                 ['name' => 'C-3PO'],
                                 ['name' => 'R2-D2'],
-                            ]
+                            ],
                         ],
                     ],
                 ],
@@ -164,7 +165,8 @@ class QueryTest extends TestCase
 
     // Allows us to create a generic query, then use it to fetch Luke Skywalker using his ID
 
-    public function testAllowsUsToCreateAGenericQueryThenUseItToFetchLukeSkywalkerUsingHisID()
+    public function testAllowsUsToCreateAGenericQueryThenUseItToFetchLukeSkywalkerUsingHisID(
+    )
     {
         $query = '
         query FetchSomeIDQuery($someId: String!) {
@@ -175,7 +177,8 @@ class QueryTest extends TestCase
         ';
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $result = graphql(starWarsSchema(), $query, null, null, ['someId' => '1000']);
+        $result = graphql(starWarsSchema(), $query, null, null,
+            ['someId' => '1000']);
 
         $this->assertEquals([
             'data' => [
@@ -188,7 +191,8 @@ class QueryTest extends TestCase
 
     // Allows us to create a generic query, then use it to fetch Han Solo using his ID
 
-    public function testAllowsUsToCreateAGenericQueryThenUseItToFetchHanSoloUsingHisID()
+    public function testAllowsUsToCreateAGenericQueryThenUseItToFetchHanSoloUsingHisID(
+    )
     {
         $query = '
         query FetchSomeIDQuery($someId: String!) {
@@ -199,7 +203,8 @@ class QueryTest extends TestCase
         ';
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $result = graphql(starWarsSchema(), $query, null, null, ['someId' => '1002']);
+        $result = graphql(starWarsSchema(), $query, null, null,
+            ['someId' => '1002']);
 
         $this->assertEquals([
             'data' => [
@@ -212,7 +217,8 @@ class QueryTest extends TestCase
 
     // Allows us to create a generic query, then pass an invalid ID to get null back
 
-    public function testAllowsUsToCreateAGenericQueryThenPassAnInvalidIdToGetBackNull()
+    public function testAllowsUsToCreateAGenericQueryThenPassAnInvalidIdToGetBackNull(
+    )
     {
         $query = '
         query FetchSomeIDQuery($someId: String!) {
@@ -223,7 +229,8 @@ class QueryTest extends TestCase
         ';
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $result = graphql(starWarsSchema(), $query, null, null, ['someId' => 'not a valid id']);
+        $result = graphql(starWarsSchema(), $query, null, null,
+            ['someId' => 'not a valid id']);
 
         $this->assertEquals([
             'data' => [
@@ -260,7 +267,8 @@ class QueryTest extends TestCase
 
     // Allows us to query for both Luke and Leia, using two root fields and an alias
 
-    public function testAllowsUsToQueryForBothLukeAndLeiaUsingTwoRootFieldsAndAnAlias()
+    public function testAllowsUsToQueryForBothLukeAndLeiaUsingTwoRootFieldsAndAnAlias(
+    )
     {
         $query = '
         query FetchLukeAndLeiaAliased {
@@ -313,11 +321,11 @@ class QueryTest extends TestCase
         $this->assertEquals([
             'data' => [
                 'luke' => [
-                    'name'       => 'Luke Skywalker',
+                    'name' => 'Luke Skywalker',
                     'homePlanet' => 'Tatooine',
                 ],
                 'leia' => [
-                    'name'       => 'Leia Organa',
+                    'name' => 'Leia Organa',
                     'homePlanet' => 'Alderaan',
                 ],
             ],
@@ -350,11 +358,11 @@ class QueryTest extends TestCase
         $this->assertEquals([
             'data' => [
                 'luke' => [
-                    'name'       => 'Luke Skywalker',
+                    'name' => 'Luke Skywalker',
                     'homePlanet' => 'Tatooine',
                 ],
                 'leia' => [
-                    'name'       => 'Leia Organa',
+                    'name' => 'Leia Organa',
                     'homePlanet' => 'Alderaan',
                 ],
             ],
@@ -383,7 +391,7 @@ class QueryTest extends TestCase
             'data' => [
                 'hero' => [
                     '__typename' => 'Droid',
-                    'name'       => 'R2-D2',
+                    'name' => 'R2-D2',
                 ],
             ],
         ], $result->toArray());
@@ -409,7 +417,7 @@ class QueryTest extends TestCase
             'data' => [
                 'hero' => [
                     '__typename' => 'Human',
-                    'name'       => 'Luke Skywalker',
+                    'name' => 'Luke Skywalker',
                 ],
             ],
         ], $result->toArray());
@@ -434,18 +442,18 @@ class QueryTest extends TestCase
         $result = graphql(starWarsSchema(), $query);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'hero' => [
-                    'name'            => 'R2-D2',
+                    'name' => 'R2-D2',
                     'secretBackstory' => null,
                 ],
             ],
             'errors' => [
                 [
-                    'message'   => 'secretBackstory is secret.',
+                    'message' => 'secretBackstory is secret.',
                     'locations' => [locationShorthandToArray([5, 13])],
-                    'path'      => ['hero', 'secretBackstory'],
-                ]
+                    'path' => ['hero', 'secretBackstory'],
+                ],
             ],
         ], $result->toArray());
     }
@@ -470,20 +478,20 @@ class QueryTest extends TestCase
         $result = graphql(starWarsSchema(), $query);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'hero' => [
-                    'name'    => 'R2-D2',
+                    'name' => 'R2-D2',
                     'friends' => [
                         [
-                            'name'            => 'Luke Skywalker',
+                            'name' => 'Luke Skywalker',
                             'secretBackstory' => null,
                         ],
                         [
-                            'name'            => 'Han Solo',
+                            'name' => 'Han Solo',
                             'secretBackstory' => null,
                         ],
                         [
-                            'name'            => 'Leia Organa',
+                            'name' => 'Leia Organa',
                             'secretBackstory' => null,
                         ],
                     ],
@@ -491,20 +499,20 @@ class QueryTest extends TestCase
             ],
             'errors' => [
                 [
-                    'message'   => 'secretBackstory is secret.',
+                    'message' => 'secretBackstory is secret.',
                     'locations' => [locationShorthandToArray([7, 15])],
-                    'path'      => ['hero', 'friends', 0, 'secretBackstory'],
+                    'path' => ['hero', 'friends', 0, 'secretBackstory'],
                 ],
                 [
-                    'message'   => 'secretBackstory is secret.',
+                    'message' => 'secretBackstory is secret.',
                     'locations' => [locationShorthandToArray([7, 15])],
-                    'path'      => ['hero', 'friends', 1, 'secretBackstory'],
+                    'path' => ['hero', 'friends', 1, 'secretBackstory'],
                 ],
                 [
-                    'message'   => 'secretBackstory is secret.',
+                    'message' => 'secretBackstory is secret.',
                     'locations' => [locationShorthandToArray([7, 15])],
-                    'path'      => ['hero', 'friends', 2, 'secretBackstory'],
-                ]
+                    'path' => ['hero', 'friends', 2, 'secretBackstory'],
+                ],
             ],
         ], $result->toArray());
     }
@@ -526,18 +534,18 @@ class QueryTest extends TestCase
         $result = graphql(starWarsSchema(), $query);
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'mainHero' => [
-                    'name'  => 'R2-D2',
+                    'name' => 'R2-D2',
                     'story' => null,
                 ],
             ],
             'errors' => [
                 [
-                    'message'   => 'secretBackstory is secret.',
+                    'message' => 'secretBackstory is secret.',
                     'locations' => [locationShorthandToArray([5, 13])],
-                    'path'      => ['mainHero', 'story'],
-                ]
+                    'path' => ['mainHero', 'story'],
+                ],
             ],
         ], $result->toArray());
     }

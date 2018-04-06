@@ -9,10 +9,6 @@ use function Digia\GraphQL\Test\Functional\Validation\unknownDirective;
 
 class KnownDirectivesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return KnownDirectivesRule::class;
-    }
 
     public function testWithNoDirectives()
     {
@@ -237,5 +233,10 @@ class KnownDirectivesRuleTest extends RuleTestCase
                 misplacedDirective('onObject', 'SCHEMA', [21, 8]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return KnownDirectivesRule::class;
     }
 }

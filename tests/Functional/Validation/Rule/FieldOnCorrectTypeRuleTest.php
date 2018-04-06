@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\undefinedField;
 
 class FieldOnCorrectTypeRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return FieldOnCorrectTypeRule::class;
-    }
 
     public function testObjectFieldSelection()
     {
@@ -37,7 +33,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
             ')
         );
     }
-
 
     public function testInterfaceFieldSelection()
     {
@@ -214,7 +209,10 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
               nickname
             }
             '),
-            [undefinedField('nickname', 'Pet', ['Dog', 'Cat'], ['name'], [2, 3])]
+            [
+                undefinedField('nickname', 'Pet', ['Dog', 'Cat'], ['name'],
+                    [2, 3]),
+            ]
         );
     }
 
@@ -263,7 +261,7 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
                     ['Being', 'Pet', 'Canine', 'Dog', 'Cat'],
                     [],
                     [2, 3]
-                )
+                ),
             ]
         );
     }
@@ -283,5 +281,10 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
             }
             ')
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return FieldOnCorrectTypeRule::class;
     }
 }

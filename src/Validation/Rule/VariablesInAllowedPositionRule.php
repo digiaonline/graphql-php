@@ -22,6 +22,7 @@ use function Digia\GraphQL\Validation\badVariablePositionMessage;
  */
 class VariablesInAllowedPositionRule extends AbstractRule
 {
+
     /**
      * @var VariableDefinitionNode[]|null
      */
@@ -30,7 +31,8 @@ class VariablesInAllowedPositionRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         $this->variableDefinitionMap = [];
 
@@ -40,16 +42,17 @@ class VariablesInAllowedPositionRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function leaveOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         $usages = $this->context->getRecursiveVariableUsages($node);
 
         /**
-         * @var VariableNode  $variableNode
+         * @var VariableNode $variableNode
          * @var TypeInterface $type
          */
         foreach ($usages as ['node' => $variableNode, 'type' => $type]) {
-            $variableName       = $variableNode->getNameValue();
+            $variableName = $variableNode->getNameValue();
             $variableDefinition = $this->variableDefinitionMap[$variableName];
 
             if (null !== $variableDefinition && null !== $type) {
@@ -58,15 +61,20 @@ class VariablesInAllowedPositionRule extends AbstractRule
                 // the variable type is non-null when the expected type is nullable.
                 // If both are list types, the variable item type can be more strict
                 // than the expected item type (contravariant).
-                $schema       = $this->context->getSchema();
-                $variableType = typeFromAST($schema, $variableDefinition->getType());
+                $schema = $this->context->getSchema();
+                $variableType = typeFromAST($schema,
+                    $variableDefinition->getType());
 
                 if (null !== $variableType &&
                     !isTypeSubTypeOf($schema,
-                        $this->getEffectiveType($variableType, $variableDefinition), $type)) {
+                        $this->getEffectiveType($variableType,
+                            $variableDefinition),
+                        $type)) {
                     $this->context->reportError(
                         new ValidationException(
-                            badVariablePositionMessage($variableName, $variableType, $type),
+                            badVariablePositionMessage($variableName,
+                                $variableType,
+                                $type),
                             [$variableDefinition, $variableNode]
                         )
                     );
@@ -78,20 +86,11 @@ class VariablesInAllowedPositionRule extends AbstractRule
     }
 
     /**
-     * @inheritdoc
-     */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
-    {
-        $this->variableDefinitionMap[$node->getVariable()->getNameValue()] = $node;
-
-        return $node;
-    }
-
-    /**
      * If a variable definition has a default value, it's effectively non-null.
      *
-     * @param TypeInterface          $variableType
+     * @param TypeInterface $variableType
      * @param VariableDefinitionNode $variableDefinition
+     *
      * @return TypeInterface
      * @throws InvalidTypeException
      */
@@ -102,5 +101,17 @@ class VariablesInAllowedPositionRule extends AbstractRule
         return (!$variableDefinition->hasDefaultValue() || $variableType instanceof NonNullType)
             ? $variableType
             : newNonNull($variableType);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterVariableDefinition(VariableDefinitionNode $node
+    ): ?NodeInterface
+    {
+        $this->variableDefinitionMap[$node->getVariable()
+            ->getNameValue()] = $node;
+
+        return $node;
     }
 }

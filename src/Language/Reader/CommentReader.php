@@ -13,9 +13,14 @@ class CommentReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        $body  = $this->lexer->getBody();
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
+        $body = $this->lexer->getBody();
         $start = $pos;
 
         do {

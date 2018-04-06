@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\NodeTrait;
 
 class Argument implements ConfigAwareInterface, NodeAwareInterface
 {
+
     use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;

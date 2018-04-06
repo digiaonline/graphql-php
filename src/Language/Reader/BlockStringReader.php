@@ -24,16 +24,22 @@ class BlockStringReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        $body       = $this->lexer->getBody();
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
+        $body = $this->lexer->getBody();
         $bodyLength = mb_strlen($body);
-        $start      = $pos;
-        $pos        = $start + 3;
+        $start = $pos;
+        $pos = $start + 3;
         $chunkStart = $pos;
-        $rawValue   = '';
+        $rawValue = '';
 
-        while ($pos < $bodyLength && ($code = charCodeAt($body, $pos)) !== null) {
+        while ($pos < $bodyLength && ($code = charCodeAt($body,
+                $pos)) !== null) {
             // Closing Triple-Quote (""")
             if ($this->isTripleQuote($body, $code, $pos)) {
                 $rawValue .= sliceString($body, $chunkStart, $pos);
@@ -53,20 +59,53 @@ class BlockStringReader extends AbstractReader
                 throw new SyntaxErrorException(
                     $this->lexer->getSource(),
                     $pos,
-                    sprintf('Invalid character within String: %s', printCharCode($code))
+                    sprintf('Invalid character within String: %s',
+                        printCharCode($code))
                 );
             }
 
             if ($this->isEscapedTripleQuote($body, $code, $pos)) {
-                $rawValue   .= sliceString($body, $chunkStart, $pos) . '"""';
-                $pos        += 4;
+                $rawValue .= sliceString($body, $chunkStart, $pos).'"""';
+                $pos += 4;
                 $chunkStart = $pos;
             } else {
                 ++$pos;
             }
         }
 
-        throw new SyntaxErrorException($this->lexer->getSource(), $pos, 'Unterminated string.');
+        throw new SyntaxErrorException($this->lexer->getSource(), $pos,
+            'Unterminated string.');
+    }
+
+    /**
+     * @param string $body
+     * @param int $code
+     * @param int $pos
+     *
+     * @return bool
+     */
+    protected function isTripleQuote(string $body, int $code, int $pos): bool
+    {
+        return $code === 34 && charCodeAt($body,
+                $pos + 1) === 34 && charCodeAt($body, $pos + 2) === 34; // """
+    }
+
+    /**
+     * @param string $body
+     * @param int $code
+     * @param int $pos
+     *
+     * @return bool
+     */
+    protected function isEscapedTripleQuote(
+        string $body,
+        int $code,
+        int $pos
+    ): bool {
+        return $code === 92 &&
+            charCodeAt($body, $pos + 1) === 34 &&
+            charCodeAt($body, $pos + 2) === 34 &&
+            charCodeAt($body, $pos + 3) === 34;
     }
 
     /**
@@ -75,30 +114,5 @@ class BlockStringReader extends AbstractReader
     public function supportsReader(int $code, int $pos): bool
     {
         return $this->isTripleQuote($this->lexer->getBody(), $code, $pos);
-    }
-
-    /**
-     * @param string $body
-     * @param int    $code
-     * @param int    $pos
-     * @return bool
-     */
-    protected function isTripleQuote(string $body, int $code, int $pos): bool
-    {
-        return $code === 34 && charCodeAt($body, $pos + 1) === 34 && charCodeAt($body, $pos + 2) === 34; // """
-    }
-
-    /**
-     * @param string $body
-     * @param int    $code
-     * @param int    $pos
-     * @return bool
-     */
-    protected function isEscapedTripleQuote(string $body, int $code, int $pos): bool
-    {
-        return $code === 92 &&
-            charCodeAt($body, $pos + 1) === 34 &&
-            charCodeAt($body, $pos + 2) === 34 &&
-            charCodeAt($body, $pos + 3) === 34;
     }
 }

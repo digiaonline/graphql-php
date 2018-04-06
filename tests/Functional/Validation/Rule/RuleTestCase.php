@@ -12,6 +12,7 @@ use function Digia\GraphQL\Test\Functional\Validation\testSchema;
 
 abstract class RuleTestCase extends TestCase
 {
+
     /**
      * @var ValidatorInterface
      */
@@ -22,13 +23,13 @@ abstract class RuleTestCase extends TestCase
      */
     protected $rule;
 
-    abstract protected function getRuleClassName(): string;
-
     public function setUp()
     {
         $this->validator = GraphQL::make(ValidatorInterface::class);
-        $this->rule      = GraphQL::make($this->getRuleClassName());
+        $this->rule = GraphQL::make($this->getRuleClassName());
     }
+
+    abstract protected function getRuleClassName(): string;
 
     protected function expectPassesRule($rule, $query)
     {
@@ -40,27 +41,38 @@ abstract class RuleTestCase extends TestCase
         return $this->expectValid($schema, [$rule], $query);
     }
 
-    protected function expectFailsRule($rule, $query, $expectedErrors = [])
-    {
-        return $this->expectFailsRuleWithSchema(testSchema(), $rule, $query, $expectedErrors);
-    }
-
-    protected function expectFailsRuleWithSchema($schema, $rule, $query, $expectedErrors = [])
-    {
-        return $this->expectInvalid($schema, [$rule], $query, $expectedErrors);
-    }
-
     protected function expectValid($schema, $rules, $query)
     {
         $errors = $this->validator->validate($schema, parse($query), $rules);
         $this->assertEmpty($errors, 'Should validate');
     }
 
-    protected function expectInvalid($schema, $rules, $query, $expectedErrors): array
+    protected function expectFailsRule($rule, $query, $expectedErrors = [])
     {
+        return $this->expectFailsRuleWithSchema(testSchema(), $rule, $query,
+            $expectedErrors);
+    }
+
+    protected function expectFailsRuleWithSchema(
+        $schema,
+        $rule,
+        $query,
+        $expectedErrors = []
+    ) {
+        return $this->expectInvalid($schema, [$rule], $query, $expectedErrors);
+    }
+
+    protected function expectInvalid(
+        $schema,
+        $rules,
+        $query,
+        $expectedErrors
+    ): array {
         $errors = $this->validator->validate($schema, parse($query), $rules);
         $this->assertTrue(count($errors) >= 1, 'Should not validate');
-        $this->assertEquals($expectedErrors, array_map('Digia\GraphQL\Error\formatError', $errors));
+        $this->assertEquals($expectedErrors,
+            array_map('Digia\GraphQL\Error\formatError', $errors));
+
         return $errors;
     }
 }

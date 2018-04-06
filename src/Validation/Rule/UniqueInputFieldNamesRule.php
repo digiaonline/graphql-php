@@ -16,6 +16,7 @@ use function Digia\GraphQL\Validation\duplicateInputFieldMessage;
  */
 class UniqueInputFieldNamesRule extends AbstractRule
 {
+
     /**
      * @var array[]git
      */

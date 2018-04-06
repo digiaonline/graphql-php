@@ -8,6 +8,7 @@ use Digia\GraphQL\Type\Definition\Field;
 
 class FieldContext
 {
+
     /**
      * @var CompositeTypeInterface|null
      */
@@ -25,9 +26,10 @@ class FieldContext
 
     /**
      * FieldContext constructor.
+     *
      * @param CompositeTypeInterface|null $parentType
-     * @param FieldNode                   $node
-     * @param Field|null                  $definition
+     * @param FieldNode $node
+     * @param Field|null $definition
      */
     public function __construct(
         ?CompositeTypeInterface $parentType,
@@ -35,7 +37,7 @@ class FieldContext
         ?Field $definition = null
     ) {
         $this->parentType = $parentType;
-        $this->node       = $node;
+        $this->node = $node;
         $this->definition = $definition;
     }
 

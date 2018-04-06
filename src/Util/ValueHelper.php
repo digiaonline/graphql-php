@@ -25,9 +25,11 @@ use function Digia\GraphQL\printNode;
 
 class ValueHelper
 {
+
     /**
      * @param array $argumentsA
      * @param array $argumentsB
+     *
      * @return bool
      */
     function compareArguments(array $argumentsA, array $argumentsB): bool
@@ -36,22 +38,26 @@ class ValueHelper
             return false;
         }
 
-        return arrayEvery($argumentsA, function (ArgumentNode $argumentA) use ($argumentsB) {
-            $argumentB = find($argumentsB, function (ArgumentNode $argument) use ($argumentA) {
-                return $argument->getNameValue() === $argumentA->getNameValue();
+        return arrayEvery($argumentsA,
+            function (ArgumentNode $argumentA) use ($argumentsB) {
+                $argumentB = find($argumentsB,
+                    function (ArgumentNode $argument) use ($argumentA) {
+                        return $argument->getNameValue() === $argumentA->getNameValue();
+                    });
+
+                if (null === $argumentB) {
+                    return false;
+                }
+
+                return $this->compareValues($argumentA->getValue(),
+                    $argumentB->getValue());
             });
-
-            if (null === $argumentB) {
-                return false;
-            }
-
-            return $this->compareValues($argumentA->getValue(), $argumentB->getValue());
-        });
     }
 
     /**
      * @param $valueA
      * @param $valueB
+     *
      * @return bool
      */
     public function compareValues($valueA, $valueB): bool
@@ -62,11 +68,11 @@ class ValueHelper
     /**
      * Produces a PHP value given a GraphQL Value AST.
      *
-     * A GraphQL type must be provided, which will be used to interpret different
-     * GraphQL Value literals.
+     * A GraphQL type must be provided, which will be used to interpret
+     * different GraphQL Value literals.
      *
-     * Returns `undefined` when the value could not be validly resolved according to
-     * the provided type.
+     * Returns `undefined` when the value could not be validly resolved
+     * according to the provided type.
      *
      * | GraphQL Value        | JSON Value    |
      * | -------------------- | ------------- |
@@ -78,16 +84,20 @@ class ValueHelper
      * | Enum Value           | Mixed         |
      * | NullValue            | null          |
      *
-     * @param NodeInterface|ValueNodeInterface|null   $node
+     * @param NodeInterface|ValueNodeInterface|null $node
      * @param InputTypeInterface|NonNullType|ListType $type
-     * @param array                                   $variables
+     * @param array $variables
+     *
      * @return mixed|null
      * @throws InvalidTypeException
      * @throws InvariantException
      * @throws ResolutionException
      */
-    public function fromAST(?NodeInterface $node, TypeInterface $type, array $variables = [])
-    {
+    public function fromAST(
+        ?NodeInterface $node,
+        TypeInterface $type,
+        array $variables = []
+    ) {
         if (null === $node) {
             throw new ResolutionException('Node is not defined.');
         }
@@ -106,7 +116,8 @@ class ValueHelper
 
             if (!isset($variables[$variableName])) {
                 throw new ResolutionException(
-                    \sprintf('Cannot resolve value for missing variable "%s".', $variableName)
+                    \sprintf('Cannot resolve value for missing variable "%s".',
+                        $variableName)
                 );
             }
 
@@ -137,15 +148,19 @@ class ValueHelper
 
     /**
      * @param NodeInterface|ValueNodeInterface $node
-     * @param NonNullType                      $type
-     * @param array                            $variables
+     * @param NonNullType $type
+     * @param array $variables
+     *
      * @return mixed|null
      * @throws InvalidTypeException
      * @throws InvariantException
      * @throws ResolutionException
      */
-    protected function resolveNonNullType(NodeInterface $node, NonNullType $type, array $variables = [])
-    {
+    protected function resolveNonNullType(
+        NodeInterface $node,
+        NonNullType $type,
+        array $variables = []
+    ) {
         if ($node instanceof NullValueNode) {
             throw new ResolutionException('Cannot resolve non-null values from null value node.');
         }
@@ -155,14 +170,18 @@ class ValueHelper
 
     /**
      * @param NodeInterface|ValueNodeInterface $node
-     * @param ListType                         $type
+     * @param ListType $type
+     *
      * @return array|null
      * @throws InvalidTypeException
      * @throws InvariantException
      * @throws ResolutionException
      */
-    protected function resolveListType(NodeInterface $node, ListType $type, array $variables = [])
-    {
+    protected function resolveListType(
+        NodeInterface $node,
+        ListType $type,
+        array $variables = []
+    ) {
         $itemType = $type->getOfType();
 
         if ($node instanceof ListValueNode) {
@@ -178,7 +197,8 @@ class ValueHelper
 
                     $resolvedValues[] = null;
                 } else {
-                    $resolvedValues[] = $this->fromAST($value, $itemType, $variables);
+                    $resolvedValues[] = $this->fromAST($value, $itemType,
+                        $variables);
                 }
             }
 
@@ -189,16 +209,33 @@ class ValueHelper
     }
 
     /**
+     * @param ValueNodeInterface $node
+     * @param array $variables
+     *
+     * @return bool
+     */
+    protected function isMissingVariable(
+        ValueNodeInterface $node,
+        array $variables
+    ): bool {
+        return $node instanceof VariableNode && !isset($variables[$node->getNameValue()]);
+    }
+
+    /**
      * @param NodeInterface|ValueNodeInterface $node
-     * @param InputObjectType                  $type
-     * @param array                            $variables
+     * @param InputObjectType $type
+     * @param array $variables
+     *
      * @return array|null
      * @throws InvalidTypeException
      * @throws InvariantException
      * @throws ResolutionException
      */
-    protected function resolveInputObjectType(NodeInterface $node, InputObjectType $type, array $variables = [])
-    {
+    protected function resolveInputObjectType(
+        NodeInterface $node,
+        InputObjectType $type,
+        array $variables = []
+    ) {
         if (!$node instanceof ObjectValueNode) {
             throw new ResolutionException('Input object values can only be resolved form object value nodes.');
         }
@@ -206,15 +243,17 @@ class ValueHelper
         $resolvedValues = [];
 
         /** @var ObjectFieldNode[] $fieldNodes */
-        $fieldNodes = keyMap($node->getFields(), function (ObjectFieldNode $value) {
-            return $value->getNameValue();
-        });
+        $fieldNodes = keyMap($node->getFields(),
+            function (ObjectFieldNode $value) {
+                return $value->getNameValue();
+            });
 
         foreach ($type->getFields() as $field) {
-            $name      = $field->getName();
+            $name = $field->getName();
             $fieldNode = $fieldNodes[$name] ?? null;
 
-            if (null === $fieldNode || $this->isMissingVariable($fieldNode->getValue(), $variables)) {
+            if (null === $fieldNode || $this->isMissingVariable($fieldNode->getValue(),
+                    $variables)) {
                 if (null !== $field->getDefaultValue()) {
                     $resolvedValues[$name] = $field->getDefaultValue();
                 } elseif ($field->getType() instanceof NonNullType) {
@@ -223,7 +262,8 @@ class ValueHelper
                 continue;
             }
 
-            $fieldValue = $this->fromAST($fieldNode->getValue(), $field->getType(), $variables);
+            $fieldValue = $this->fromAST($fieldNode->getValue(),
+                $field->getType(), $variables);
 
             $resolvedValues[$name] = $fieldValue;
         }
@@ -233,7 +273,8 @@ class ValueHelper
 
     /**
      * @param NodeInterface|ValueNodeInterface $node
-     * @param EnumType                         $type
+     * @param EnumType $type
+     *
      * @return mixed|null
      * @throws InvariantException
      * @throws ResolutionException
@@ -249,7 +290,8 @@ class ValueHelper
         $enumValue = $type->getValue($name);
 
         if (null === $enumValue) {
-            throw new ResolutionException(\sprintf('Cannot resolve enum value for missing value "%s".', $name));
+            throw new ResolutionException(\sprintf('Cannot resolve enum value for missing value "%s".',
+                $name));
         }
 
         return $enumValue->getValue();
@@ -257,13 +299,17 @@ class ValueHelper
 
     /**
      * @param NodeInterface|ValueNodeInterface $node
-     * @param ScalarType                       $type
-     * @param array                            $variables
+     * @param ScalarType $type
+     * @param array $variables
+     *
      * @return mixed|null
      * @throws ResolutionException
      */
-    protected function resolveScalarType(NodeInterface $node, ScalarType $type, array $variables = [])
-    {
+    protected function resolveScalarType(
+        NodeInterface $node,
+        ScalarType $type,
+        array $variables = []
+    ) {
         // Scalars fulfill parsing a literal value via parseLiteral().
         // Invalid values represent a failure to parse correctly, in which case
         // no value is returned.
@@ -276,19 +322,10 @@ class ValueHelper
         }
 
         if (null === $result) {
-            throw new ResolutionException(\sprintf('Failed to parse literal for scalar type "%s".', (string)$type));
+            throw new ResolutionException(\sprintf('Failed to parse literal for scalar type "%s".',
+                (string)$type));
         }
 
         return $result;
-    }
-
-    /**
-     * @param ValueNodeInterface $node
-     * @param array              $variables
-     * @return bool
-     */
-    protected function isMissingVariable(ValueNodeInterface $node, array $variables): bool
-    {
-        return $node instanceof VariableNode && !isset($variables[$node->getNameValue()]);
     }
 }

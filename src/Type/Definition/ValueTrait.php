@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait ValueTrait
 {
+
     /**
      * @var mixed|null
      */

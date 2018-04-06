@@ -10,6 +10,7 @@ use function Digia\GraphQL\Util\invariant;
 
 /**
  * @param GraphQLException|null $error
+ *
  * @return array
  * @throws InvariantException
  */
@@ -18,9 +19,9 @@ function formatError(?GraphQLException $error): array
     invariant(null !== $error, 'Received null error.');
 
     return [
-        'message'   => $error->getMessage(),
+        'message' => $error->getMessage(),
         'locations' => $error->getLocationsAsArray(),
-        'path'      => $error->getPath(),
+        'path' => $error->getPath(),
     ];
 }
 
@@ -28,12 +29,13 @@ function formatError(?GraphQLException $error): array
 
 /**
  * @param GraphQLException $error
+ *
  * @return string
  */
 function printError(GraphQLException $error): string
 {
     $printedLocations = [];
-    $nodes            = $error->getNodes();
+    $nodes = $error->getNodes();
 
     if (!empty($nodes)) {
         foreach ($nodes as $node) {
@@ -41,46 +43,55 @@ function printError(GraphQLException $error): string
             if (null !== $location) {
                 $printedLocations[] = highlightSourceAtLocation(
                     $location->getSource(),
-                    SourceLocation::fromSource($location->getSource(), $location->getStart())
+                    SourceLocation::fromSource($location->getSource(),
+                        $location->getStart())
                 );
             }
         }
     } elseif ($error->hasSource() && $error->hasLocations()) {
         foreach ($error->getLocations() as $location) {
-            $printedLocations[] = highlightSourceAtLocation($error->getSource(), $location);
+            $printedLocations[] = highlightSourceAtLocation($error->getSource(),
+                $location);
         }
     }
 
     return empty($printedLocations)
         ? $error->getMessage()
-        : \implode("\n\n", \array_merge([$error->getMessage()], $printedLocations)) . "\n";
+        : \implode("\n\n",
+            \array_merge([$error->getMessage()], $printedLocations))."\n";
 }
 
 /**
- * @param Source         $source
+ * @param Source $source
  * @param SourceLocation $location
+ *
  * @return string
  */
-function highlightSourceAtLocation(Source $source, SourceLocation $location): string
-{
-    $line           = $location->getLine();
+function highlightSourceAtLocation(
+    Source $source,
+    SourceLocation $location
+): string {
+    $line = $location->getLine();
     $locationOffset = $source->getLocationOffset();
-    $lineOffset     = $locationOffset->getLine() - 1;
-    $columnOffset   = getColumnOffset($source, $location);
-    $contextLine    = $line + $lineOffset;
-    $contextColumn  = $location->getColumn() + $columnOffset;
-    $prevLineNum    = (string)($contextLine - 1);
-    $lineNum        = (string)$contextLine;
-    $nextLineNum    = (string)($contextLine + 1);
-    $padLen         = \mb_strlen($nextLineNum);
-    $lines          = \preg_split("/\r\n|[\n\r]/", $source->getBody());
-    $lines[0]       = whitespace($locationOffset->getColumn() - 1) . $lines[0];
-    $outputLines    = [
-        \sprintf('%s (%s:%s)', $source->getName(), $contextLine, $contextColumn),
-        $line >= 2 ? leftPad($padLen, $prevLineNum) . ': ' . $lines[$line - 2] : null,
-        leftPad($padLen, $lineNum) . ': ' . $lines[$line - 1],
-        whitespace(2 + $padLen + $contextColumn - 1) . '^',
-        $line < \count($lines) ? leftPad($padLen, $nextLineNum) . ': ' . $lines[$line] : null,
+    $lineOffset = $locationOffset->getLine() - 1;
+    $columnOffset = getColumnOffset($source, $location);
+    $contextLine = $line + $lineOffset;
+    $contextColumn = $location->getColumn() + $columnOffset;
+    $prevLineNum = (string)($contextLine - 1);
+    $lineNum = (string)$contextLine;
+    $nextLineNum = (string)($contextLine + 1);
+    $padLen = \mb_strlen($nextLineNum);
+    $lines = \preg_split("/\r\n|[\n\r]/", $source->getBody());
+    $lines[0] = whitespace($locationOffset->getColumn() - 1).$lines[0];
+    $outputLines = [
+        \sprintf('%s (%s:%s)', $source->getName(), $contextLine,
+            $contextColumn),
+        $line >= 2 ? leftPad($padLen,
+                $prevLineNum).': '.$lines[$line - 2] : null,
+        leftPad($padLen, $lineNum).': '.$lines[$line - 1],
+        whitespace(2 + $padLen + $contextColumn - 1).'^',
+        $line < \count($lines) ? leftPad($padLen,
+                $nextLineNum).': '.$lines[$line] : null,
     ];
 
     return \implode("\n", \array_filter($outputLines, function ($line) {
@@ -89,17 +100,20 @@ function highlightSourceAtLocation(Source $source, SourceLocation $location): st
 }
 
 /**
- * @param Source         $source
+ * @param Source $source
  * @param SourceLocation $location
+ *
  * @return int
  */
 function getColumnOffset(Source $source, SourceLocation $location): int
 {
-    return $location->getLine() === 1 ? $source->getLocationOffset()->getColumn() - 1 : 0;
+    return $location->getLine() === 1 ? $source->getLocationOffset()
+            ->getColumn() - 1 : 0;
 }
 
 /**
  * @param int $length
+ *
  * @return string
  */
 function whitespace(int $length): string
@@ -108,11 +122,12 @@ function whitespace(int $length): string
 }
 
 /**
- * @param int    $length
+ * @param int $length
  * @param string $str
+ *
  * @return string
  */
 function leftPad(int $length, string $str): string
 {
-    return whitespace($length - \mb_strlen($str)) . $str;
+    return whitespace($length - \mb_strlen($str)).$str;
 }

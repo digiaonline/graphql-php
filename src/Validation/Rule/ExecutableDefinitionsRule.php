@@ -17,6 +17,7 @@ use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
  */
 class ExecutableDefinitionsRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */

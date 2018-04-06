@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\nonInputTypeOnVariable;
 
 class VariablesAreInputTypesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return VariablesAreInputTypesRule::class;
-    }
 
     public function testInputTypesAreValid()
     {
@@ -40,5 +36,10 @@ class VariablesAreInputTypesRuleTest extends RuleTestCase
                 nonInputTypeOnVariable('c', 'Pet', [1, 44]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return VariablesAreInputTypesRule::class;
     }
 }

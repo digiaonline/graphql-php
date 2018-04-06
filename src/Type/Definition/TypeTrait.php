@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait TypeTrait
 {
+
     /**
      * @var mixed
      */
@@ -18,14 +19,17 @@ trait TypeTrait
     }
 
     /**
-     * Note: We do not type-hint the `$type`, because we want the `SchemaValidator` to catch these errors.
+     * Note: We do not type-hint the `$type`, because we want the
+     * `SchemaValidator` to catch these errors.
      *
      * @param mixed $type
+     *
      * @return $this
      */
     protected function setType($type)
     {
         $this->type = $type;
+
         return $this;
     }
 }

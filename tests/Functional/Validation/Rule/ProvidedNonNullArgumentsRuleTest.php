@@ -9,10 +9,6 @@ use function Digia\GraphQL\Test\Functional\Validation\missingFieldArgument;
 
 class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return ProvidedNonNullArgumentsRule::class;
-    }
 
     public function testIgnoresUnknownArguments()
     {
@@ -261,5 +257,10 @@ class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
                 missingDirectiveArgument('skip', 'if', 'Boolean!', [3, 10]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return ProvidedNonNullArgumentsRule::class;
     }
 }

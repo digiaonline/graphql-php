@@ -8,6 +8,7 @@ namespace Digia\GraphQL\Validation\Conflict;
  */
 class PairSet
 {
+
     /**
      * @var array
      */
@@ -16,12 +17,13 @@ class PairSet
     /**
      * @param string $a
      * @param string $b
-     * @param bool   $areMutuallyExclusive
+     * @param bool $areMutuallyExclusive
+     *
      * @return bool
      */
     public function has(string $a, string $b, bool $areMutuallyExclusive): bool
     {
-        $first  = $this->data[$a] ?? null;
+        $first = $this->data[$a] ?? null;
         $result = (null !== $first && isset($first[$b])) ? $first[$b] : null;
 
         if (null === $result) {
@@ -41,7 +43,7 @@ class PairSet
     /**
      * @param string $a
      * @param string $b
-     * @param bool   $areMutuallyExclusive
+     * @param bool $areMutuallyExclusive
      */
     public function add(string $a, string $b, bool $areMutuallyExclusive): void
     {
@@ -52,10 +54,13 @@ class PairSet
     /**
      * @param string $a
      * @param string $b
-     * @param bool   $areMutuallyExclusive
+     * @param bool $areMutuallyExclusive
      */
-    protected function addToData(string $a, string $b, bool $areMutuallyExclusive): void
-    {
+    protected function addToData(
+        string $a,
+        string $b,
+        bool $areMutuallyExclusive
+    ): void {
         $map = $this->data[$a] ?? [];
 
         $map[$b] = $areMutuallyExclusive;

@@ -16,10 +16,10 @@ class SchemaPrinterTest extends TestCase
         // This test seems kind of dumb test, but it makes sure that our parser
         // can handle the kitchen sink schema.
 
-        $kitchenSink = readFileContents(__DIR__ . '/schema-kitchen-sink.graphqls');
+        $kitchenSink = readFileContents(__DIR__.'/schema-kitchen-sink.graphqls');
 
         /** @var DocumentNode $ast */
-        $ast       = parse($kitchenSink);
+        $ast = parse($kitchenSink);
         $astBefore = $ast->toJSON();
 
         printNode($ast);

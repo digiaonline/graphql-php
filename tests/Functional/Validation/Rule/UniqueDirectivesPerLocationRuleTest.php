@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\duplicateDirective;
 
 class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return UniqueDirectivesPerLocationRule::class;
-    }
 
     public function testNoDirectives()
     {
@@ -133,5 +129,10 @@ class UniqueDirectivesPerLocationRuleTest extends RuleTestCase
                 duplicateDirective('directive', [[2, 9], [2, 20]]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return UniqueDirectivesPerLocationRule::class;
     }
 }

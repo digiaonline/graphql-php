@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\unusedVariable;
 
 class NoUnusedVariablesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return NoUnusedVariablesRule::class;
-    }
 
     public function testUsesAllVariables()
     {
@@ -250,5 +246,10 @@ class NoUnusedVariablesRuleTest extends RuleTestCase
                 unusedVariable('a', 'Bar', [4, 11]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return NoUnusedVariablesRule::class;
     }
 }

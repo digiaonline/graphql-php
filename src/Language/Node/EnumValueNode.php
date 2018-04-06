@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 class EnumValueNode extends AbstractNode implements ValueNodeInterface
 {
+
     use ValueTrait;
 
     /**

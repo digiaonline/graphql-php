@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Validation;
 
 trait ValidationContextAwareTrait
 {
+
     /**
      * @var ValidationContextInterface
      */
@@ -19,11 +20,13 @@ trait ValidationContextAwareTrait
 
     /**
      * @param ValidationContextInterface $context
+     *
      * @return $this
      */
     public function setContext(ValidationContextInterface $context)
     {
         $this->context = $context;
+
         return $this;
     }
 }

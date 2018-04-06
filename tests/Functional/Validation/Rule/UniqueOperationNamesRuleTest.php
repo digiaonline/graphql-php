@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\duplicateOperation;
 
 class UniqueOperationNamesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return UniqueOperationNamesRule::class;
-    }
 
     public function testNoOperations()
     {
@@ -118,7 +114,8 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
         );
     }
 
-    public function testMultipleOperationsWithTheSameNameOfDifferentTypesMutation()
+    public function testMultipleOperationsWithTheSameNameOfDifferentTypesMutation(
+    )
     {
         $this->expectFailsRule(
             $this->rule,
@@ -135,7 +132,8 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
         );
     }
 
-    public function testMultipleOperationsWithTheSameNameOfDifferentTypesSubscription()
+    public function testMultipleOperationsWithTheSameNameOfDifferentTypesSubscription(
+    )
     {
         $this->expectFailsRule(
             $this->rule,
@@ -150,5 +148,10 @@ class UniqueOperationNamesRuleTest extends RuleTestCase
             '),
             [duplicateOperation('Foo', [[1, 7], [5, 14]])]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return UniqueOperationNamesRule::class;
     }
 }

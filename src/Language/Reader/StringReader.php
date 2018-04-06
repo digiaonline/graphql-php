@@ -23,28 +23,36 @@ class StringReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        $body       = $this->lexer->getBody();
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
+        $body = $this->lexer->getBody();
         $bodyLength = mb_strlen($body);
-        $start      = $pos;
-        $pos        = $start + 1;
+        $start = $pos;
+        $pos = $start + 1;
         $chunkStart = $pos;
-        $value      = '';
+        $value = '';
 
-        while ($pos < $bodyLength && ($code = charCodeAt($body, $pos)) !== null && !$this->isLineTerminator($code)) {
+        while ($pos < $bodyLength && ($code = charCodeAt($body,
+                $pos)) !== null && !$this->isLineTerminator($code)) {
             // Closing Quote (")
             if ($code === 34) {
                 $value .= sliceString($body, $chunkStart, $pos);
 
-                return new Token(TokenKindEnum::STRING, $start, $pos + 1, $line, $col, $prev, $value);
+                return new Token(TokenKindEnum::STRING, $start, $pos + 1, $line,
+                    $col, $prev, $value);
             }
 
             if ($this->isSourceCharacter($code)) {
                 throw new SyntaxErrorException(
                     $this->lexer->getSource(),
                     $pos,
-                    sprintf('Invalid character within String: %s', printCharCode($code))
+                    sprintf('Invalid character within String: %s',
+                        printCharCode($code))
                 );
             }
 
@@ -53,7 +61,7 @@ class StringReader extends AbstractReader
             if ($code === 92) {
                 // \
                 $value .= sliceString($body, $chunkStart, $pos + 1);
-                $code  = charCodeAt($body, $pos);
+                $code = charCodeAt($body, $pos);
 
                 switch ($code) {
                     case 34:
@@ -99,13 +107,14 @@ class StringReader extends AbstractReader
                             );
                         }
                         $value .= chr($charCode);
-                        $pos   += 4;
+                        $pos += 4;
                         break;
                     default:
                         throw new SyntaxErrorException(
                             $this->lexer->getSource(),
                             $pos,
-                            sprintf('Invalid character escape sequence: \\%s', chr($code))
+                            sprintf('Invalid character escape sequence: \\%s',
+                                chr($code))
                         );
                 }
 
@@ -114,7 +123,28 @@ class StringReader extends AbstractReader
             }
         }
 
-        throw new SyntaxErrorException($this->lexer->getSource(), $pos, 'Unterminated string.');
+        throw new SyntaxErrorException($this->lexer->getSource(), $pos,
+            'Unterminated string.');
+    }
+
+    /**
+     * @param int $code
+     *
+     * @return bool
+     */
+    protected function isLineTerminator(int $code): bool
+    {
+        return $code === 0x000a || $code === 0x000d;
+    }
+
+    /**
+     * @param int $code
+     *
+     * @return bool
+     */
+    protected function isSourceCharacter(int $code): bool
+    {
+        return $code < 0x0020 && $code !== 0x0009;
     }
 
     /**
@@ -125,23 +155,5 @@ class StringReader extends AbstractReader
         $body = $this->lexer->getBody();
 
         return $code === 34 && charCodeAt($body, $pos + 1) !== 34;
-    }
-
-    /**
-     * @param int $code
-     * @return bool
-     */
-    protected function isLineTerminator(int $code): bool
-    {
-        return $code === 0x000a || $code === 0x000d;
-    }
-
-    /**
-     * @param int $code
-     * @return bool
-     */
-    protected function isSourceCharacter(int $code): bool
-    {
-        return $code < 0x0020 && $code !== 0x0009;
     }
 }

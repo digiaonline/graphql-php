@@ -17,6 +17,7 @@ use function Digia\GraphQL\Validation\unusedVariableMessage;
  */
 class NoUnusedVariablesRule extends AbstractRule
 {
+
     /**
      * @var VariableDefinitionNode[]
      */
@@ -25,7 +26,8 @@ class NoUnusedVariablesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         $this->variableDefinitions = [];
 
@@ -35,7 +37,8 @@ class NoUnusedVariablesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node
+    ): ?NodeInterface
     {
         $this->variableDefinitions[] = $node;
 
@@ -45,12 +48,13 @@ class NoUnusedVariablesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function leaveOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         $variableNamesUsed = [];
-        $usages            = $this->context->getRecursiveVariableUsages($node);
+        $usages = $this->context->getRecursiveVariableUsages($node);
         $operationNameNode = $node->getName();
-        $operationName     = null !== $operationNameNode ? $operationNameNode->getValue() : null;
+        $operationName = null !== $operationNameNode ? $operationNameNode->getValue() : null;
 
         /** @var VariableNode $variableNode */
         foreach ($usages as ['node' => $variableNode]) {

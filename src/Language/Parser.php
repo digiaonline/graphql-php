@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class Parser implements ParserInterface
 {
+
     use LexerUtilsTrait;
 
     /**
@@ -21,12 +22,15 @@ class Parser implements ParserInterface
 
     /**
      * Parser constructor.
-     * @param ASTBuilderInterface  $astBuilder
+     *
+     * @param ASTBuilderInterface $astBuilder
      * @param NodeBuilderInterface $nodeBuilder
      */
-    public function __construct(ASTBuilderInterface $astBuilder, NodeBuilderInterface $nodeBuilder)
-    {
-        $this->astBuilder  = $astBuilder;
+    public function __construct(
+        ASTBuilderInterface $astBuilder,
+        NodeBuilderInterface $nodeBuilder
+    ) {
+        $this->astBuilder = $astBuilder;
         $this->nodeBuilder = $nodeBuilder;
     }
 
@@ -40,25 +44,8 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @inheritdoc
-     * @return NodeInterface
-     */
-    public function parseValue(LexerInterface $lexer): NodeInterface
-    {
-        return $this->nodeBuilder->build($this->parseValueAST($lexer));
-    }
-
-    /**
-     * @inheritdoc
-     * @return NodeInterface
-     */
-    public function parseType(LexerInterface $lexer): NodeInterface
-    {
-        return $this->nodeBuilder->build($this->parseTypeAST($lexer));
-    }
-
-    /**
      * @param LexerInterface $lexer
+     *
      * @return array
      * @throws SyntaxErrorException
      * @throws \ReflectionException
@@ -69,7 +56,17 @@ class Parser implements ParserInterface
     }
 
     /**
+     * @inheritdoc
+     * @return NodeInterface
+     */
+    public function parseValue(LexerInterface $lexer): NodeInterface
+    {
+        return $this->nodeBuilder->build($this->parseValueAST($lexer));
+    }
+
+    /**
      * @param LexerInterface $lexer
+     *
      * @return array
      * @throws SyntaxErrorException
      */
@@ -83,7 +80,17 @@ class Parser implements ParserInterface
     }
 
     /**
+     * @inheritdoc
+     * @return NodeInterface
+     */
+    public function parseType(LexerInterface $lexer): NodeInterface
+    {
+        return $this->nodeBuilder->build($this->parseTypeAST($lexer));
+    }
+
+    /**
      * @param LexerInterface $lexer
+     *
      * @return array
      * @throws SyntaxErrorException
      */

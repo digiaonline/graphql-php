@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Language\Node;
 class EnumTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface, DirectivesAwareInterface,
     NameAwareInterface
 {
+
     use NameTrait;
     use DirectivesTrait;
     use EnumValuesTrait;
@@ -20,11 +21,11 @@ class EnumTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInt
     public function toArray(): array
     {
         return [
-            'kind'       => $this->kind,
-            'name'       => $this->getNameAsArray(),
+            'kind' => $this->kind,
+            'name' => $this->getNameAsArray(),
             'directives' => $this->getDirectivesAsArray(),
-            'values'     => $this->getValuesAsArray(),
-            'loc'        => $this->getLocationAsArray(),
+            'values' => $this->getValuesAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

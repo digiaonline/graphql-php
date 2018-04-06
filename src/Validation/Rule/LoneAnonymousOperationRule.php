@@ -16,6 +16,7 @@ use function Digia\GraphQL\Validation\anonymousOperationNotAloneMessage;
  */
 class LoneAnonymousOperationRule extends AbstractRule
 {
+
     /**
      * @var int
      */
@@ -26,9 +27,10 @@ class LoneAnonymousOperationRule extends AbstractRule
      */
     protected function enterDocument(DocumentNode $node): ?NodeInterface
     {
-        $this->operationCount = \count(\array_filter($node->getDefinitions(), function ($definition) {
-            return $definition instanceof OperationDefinitionNode;
-        }));
+        $this->operationCount = \count(\array_filter($node->getDefinitions(),
+            function ($definition) {
+                return $definition instanceof OperationDefinitionNode;
+            }));
 
         return $node;
     }
@@ -36,11 +38,13 @@ class LoneAnonymousOperationRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         if (null === $node->getName() && $this->operationCount > 1) {
             $this->context->reportError(
-                new ValidationException(anonymousOperationNotAloneMessage(), [$node])
+                new ValidationException(anonymousOperationNotAloneMessage(),
+                    [$node])
             );
         }
 

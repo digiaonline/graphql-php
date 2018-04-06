@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\fragmentOnNonComposite;
 
 class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return FragmentsOnCompositeTypesRule::class;
-    }
 
     public function testObjectIsValidFragmentType()
     {
@@ -88,5 +84,10 @@ class FragmentsOnCompositeTypesRuleTest extends RuleTestCase
             '),
             [fragmentOnNonComposite('scalarFragment', 'Boolean', [1, 28])]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return FragmentsOnCompositeTypesRule::class;
     }
 }

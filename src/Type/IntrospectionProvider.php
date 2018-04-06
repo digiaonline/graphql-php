@@ -24,6 +24,7 @@ use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class IntrospectionProvider extends AbstractServiceProvider
 {
+
     /**
      * @var array
      */
@@ -59,170 +60,177 @@ class IntrospectionProvider extends AbstractServiceProvider
     {
         $this->container->add(GraphQL::SCHEMA_INTROSPECTION, function () {
             return newObjectType([
-                'name'            => GraphQL::SCHEMA_INTROSPECTION,
+                'name' => GraphQL::SCHEMA_INTROSPECTION,
                 'isIntrospection' => true,
-                'description'     =>
-                    'A GraphQL Schema defines the capabilities of a GraphQL server. It ' .
-                    'exposes all available types and directives on the server, as well as ' .
+                'description' =>
+                    'A GraphQL Schema defines the capabilities of a GraphQL server. It '.
+                    'exposes all available types and directives on the server, as well as '.
                     'the entry points for query, mutation, and subscription operations.',
-                'fields'          => function () {
+                'fields' => function () {
                     return [
-                        'types'            => [
+                        'types' => [
                             'description' => 'A list of all types supported by this server.',
-                            'type'        => newNonNull(newList(newNonNull(__Type()))),
-                            'resolve'     => function (SchemaInterface $schema): array {
+                            'type' => newNonNull(newList(newNonNull(__Type()))),
+                            'resolve' => function (SchemaInterface $schema
+                            ): array {
                                 return array_values($schema->getTypeMap());
                             },
                         ],
-                        'queryType'        => [
+                        'queryType' => [
                             'description' => 'The type that query operations will be rooted at.',
-                            'type'        => newNonNull(__Type()),
-                            'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
+                            'type' => newNonNull(__Type()),
+                            'resolve' => function (SchemaInterface $schema
+                            ): ?TypeInterface {
                                 return $schema->getQueryType();
                             },
                         ],
-                        'mutationType'     => [
+                        'mutationType' => [
                             'description' =>
-                                'If this server supports mutation, the type that ' .
+                                'If this server supports mutation, the type that '.
                                 'mutation operations will be rooted at.',
-                            'type'        => __Type(),
-                            'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
+                            'type' => __Type(),
+                            'resolve' => function (SchemaInterface $schema
+                            ): ?TypeInterface {
                                 return $schema->getMutationType();
                             },
                         ],
                         'subscriptionType' => [
                             'description' =>
-                                'If this server support subscription, the type that ' .
+                                'If this server support subscription, the type that '.
                                 'subscription operations will be rooted at.',
-                            'type'        => __Type(),
-                            'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
+                            'type' => __Type(),
+                            'resolve' => function (SchemaInterface $schema
+                            ): ?TypeInterface {
                                 return $schema->getSubscriptionType();
                             },
                         ],
-                        'directives'       => [
+                        'directives' => [
                             'description' => 'A list of all directives supported by this server.',
-                            'type'        => newNonNull(newList(newNonNull(__Directive()))),
-                            'resolve'     => function (SchemaInterface $schema): array {
+                            'type' => newNonNull(newList(newNonNull(__Directive()))),
+                            'resolve' => function (SchemaInterface $schema
+                            ): array {
                                 return $schema->getDirectives();
                             },
                         ],
                     ];
-                }
+                },
             ]);
         }, true/* $shared */);
 
         $this->container->add(GraphQL::DIRECTIVE_INTROSPECTION, function () {
             return newObjectType([
-                'name'            => GraphQL::DIRECTIVE_INTROSPECTION,
+                'name' => GraphQL::DIRECTIVE_INTROSPECTION,
                 'isIntrospection' => true,
-                'description'     =>
-                    'A Directive provides a way to describe alternate runtime execution and ' .
-                    'type validation behavior in a GraphQL document.' .
-                    "\n\nIn some cases, you need to provide options to alter GraphQL's " .
-                    'execution behavior in ways field arguments will not suffice, such as ' .
-                    'conditionally including or skipping a field. Directives provide this by ' .
+                'description' =>
+                    'A Directive provides a way to describe alternate runtime execution and '.
+                    'type validation behavior in a GraphQL document.'.
+                    "\n\nIn some cases, you need to provide options to alter GraphQL's ".
+                    'execution behavior in ways field arguments will not suffice, such as '.
+                    'conditionally including or skipping a field. Directives provide this by '.
                     'describing additional information to the executor.',
-                'fields'          => function () {
+                'fields' => function () {
                     return [
-                        'name'        => ['type' => newNonNull(String())],
+                        'name' => ['type' => newNonNull(String())],
                         'description' => ['type' => String()],
-                        'locations'   => [
+                        'locations' => [
                             'type' => newNonNull(newList(newNonNull(__DirectiveLocation()))),
                         ],
-                        'args'        => [
-                            'type'    => newNonNull(newList(newNonNull(__InputValue()))),
-                            'resolve' => function (DirectiveInterface $directive): array {
+                        'args' => [
+                            'type' => newNonNull(newList(newNonNull(__InputValue()))),
+                            'resolve' => function (DirectiveInterface $directive
+                            ): array {
                                 return $directive->getArguments() ?: [];
                             },
                         ],
                     ];
-                }
+                },
             ]);
         }, true/* $shared */);
 
-        $this->container->add(GraphQL::DIRECTIVE_LOCATION_INTROSPECTION, function () {
-            return newEnumType([
-                'name'            => GraphQL::DIRECTIVE_LOCATION_INTROSPECTION,
-                'isIntrospection' => true,
-                'description'     =>
-                    'A Directive can be adjacent to many parts of the GraphQL language, a ' .
-                    '__DirectiveLocation describes one such possible adjacencies.',
-                'values'          => [
-                    DirectiveLocationEnum::QUERY                  => [
-                        'description' => 'Location adjacent to a query operation.',
+        $this->container->add(GraphQL::DIRECTIVE_LOCATION_INTROSPECTION,
+            function () {
+                return newEnumType([
+                    'name' => GraphQL::DIRECTIVE_LOCATION_INTROSPECTION,
+                    'isIntrospection' => true,
+                    'description' =>
+                        'A Directive can be adjacent to many parts of the GraphQL language, a '.
+                        '__DirectiveLocation describes one such possible adjacencies.',
+                    'values' => [
+                        DirectiveLocationEnum::QUERY => [
+                            'description' => 'Location adjacent to a query operation.',
+                        ],
+                        DirectiveLocationEnum::MUTATION => [
+                            'description' => 'Location adjacent to a mutation operation.',
+                        ],
+                        DirectiveLocationEnum::SUBSCRIPTION => [
+                            'description' => 'Location adjacent to a subscription operation.',
+                        ],
+                        DirectiveLocationEnum::FIELD => [
+                            'description' => 'Location adjacent to a field.',
+                        ],
+                        DirectiveLocationEnum::FRAGMENT_DEFINITION => [
+                            'description' => 'Location adjacent to a fragment definition.',
+                        ],
+                        DirectiveLocationEnum::FRAGMENT_SPREAD => [
+                            'description' => 'Location adjacent to a fragment spread.',
+                        ],
+                        DirectiveLocationEnum::INLINE_FRAGMENT => [
+                            'description' => 'Location adjacent to an inline fragment.',
+                        ],
+                        DirectiveLocationEnum::SCHEMA => [
+                            'description' => 'Location adjacent to a schema definition.',
+                        ],
+                        DirectiveLocationEnum::SCALAR => [
+                            'description' => 'Location adjacent to a scalar definition.',
+                        ],
+                        DirectiveLocationEnum::OBJECT => [
+                            'description' => 'Location adjacent to an object type definition.',
+                        ],
+                        DirectiveLocationEnum::FIELD_DEFINITION => [
+                            'description' => 'Location adjacent to a field definition.',
+                        ],
+                        DirectiveLocationEnum::ARGUMENT_DEFINITION => [
+                            'description' => 'Location adjacent to an argument definition.',
+                        ],
+                        DirectiveLocationEnum::INTERFACE => [
+                            'description' => 'Location adjacent to an interface definition.',
+                        ],
+                        DirectiveLocationEnum::UNION => [
+                            'description' => 'Location adjacent to a union definition.',
+                        ],
+                        DirectiveLocationEnum::ENUM => [
+                            'description' => 'Location adjacent to an enum definition.',
+                        ],
+                        DirectiveLocationEnum::ENUM_VALUE => [
+                            'description' => 'Location adjacent to an enum value definition.',
+                        ],
+                        DirectiveLocationEnum::INPUT_OBJECT => [
+                            'description' => 'Location adjacent to an input object type definition.',
+                        ],
+                        DirectiveLocationEnum::INPUT_FIELD_DEFINITION => [
+                            'description' => 'Location adjacent to an input object field definition.',
+                        ],
                     ],
-                    DirectiveLocationEnum::MUTATION               => [
-                        'description' => 'Location adjacent to a mutation operation.',
-                    ],
-                    DirectiveLocationEnum::SUBSCRIPTION           => [
-                        'description' => 'Location adjacent to a subscription operation.',
-                    ],
-                    DirectiveLocationEnum::FIELD                  => [
-                        'description' => 'Location adjacent to a field.',
-                    ],
-                    DirectiveLocationEnum::FRAGMENT_DEFINITION    => [
-                        'description' => 'Location adjacent to a fragment definition.',
-                    ],
-                    DirectiveLocationEnum::FRAGMENT_SPREAD        => [
-                        'description' => 'Location adjacent to a fragment spread.',
-                    ],
-                    DirectiveLocationEnum::INLINE_FRAGMENT        => [
-                        'description' => 'Location adjacent to an inline fragment.',
-                    ],
-                    DirectiveLocationEnum::SCHEMA                 => [
-                        'description' => 'Location adjacent to a schema definition.',
-                    ],
-                    DirectiveLocationEnum::SCALAR                 => [
-                        'description' => 'Location adjacent to a scalar definition.',
-                    ],
-                    DirectiveLocationEnum::OBJECT                 => [
-                        'description' => 'Location adjacent to an object type definition.',
-                    ],
-                    DirectiveLocationEnum::FIELD_DEFINITION       => [
-                        'description' => 'Location adjacent to a field definition.',
-                    ],
-                    DirectiveLocationEnum::ARGUMENT_DEFINITION    => [
-                        'description' => 'Location adjacent to an argument definition.',
-                    ],
-                    DirectiveLocationEnum::INTERFACE              => [
-                        'description' => 'Location adjacent to an interface definition.',
-                    ],
-                    DirectiveLocationEnum::UNION                  => [
-                        'description' => 'Location adjacent to a union definition.',
-                    ],
-                    DirectiveLocationEnum::ENUM                   => [
-                        'description' => 'Location adjacent to an enum definition.',
-                    ],
-                    DirectiveLocationEnum::ENUM_VALUE             => [
-                        'description' => 'Location adjacent to an enum value definition.',
-                    ],
-                    DirectiveLocationEnum::INPUT_OBJECT           => [
-                        'description' => 'Location adjacent to an input object type definition.',
-                    ],
-                    DirectiveLocationEnum::INPUT_FIELD_DEFINITION => [
-                        'description' => 'Location adjacent to an input object field definition.',
-                    ],
-                ],
-            ]);
-        }, true/* $shared */);
+                ]);
+            }, true/* $shared */);
 
         $this->container->add(GraphQL::TYPE_INTROSPECTION, function () {
             return newObjectType([
-                'name'            => GraphQL::TYPE_INTROSPECTION,
+                'name' => GraphQL::TYPE_INTROSPECTION,
                 'isIntrospection' => true,
-                'description'     =>
-                    'The fundamental unit of any GraphQL Schema is the type. There are ' .
-                    'many kinds of types in GraphQL as represented by the `__TypeKind` enum.' .
-                    '\n\nDepending on the kind of a type, certain fields describe ' .
-                    'information about that type. Scalar types provide no information ' .
-                    'beyond a name and description, while Enum types provide their values. ' .
-                    'Object and Interface types provide the fields they describe. Abstract ' .
-                    'types, Union and Interface, provide the Object types possible ' .
+                'description' =>
+                    'The fundamental unit of any GraphQL Schema is the type. There are '.
+                    'many kinds of types in GraphQL as represented by the `__TypeKind` enum.'.
+                    '\n\nDepending on the kind of a type, certain fields describe '.
+                    'information about that type. Scalar types provide no information '.
+                    'beyond a name and description, while Enum types provide their values. '.
+                    'Object and Interface types provide the fields they describe. Abstract '.
+                    'types, Union and Interface, provide the Object types possible '.
                     'at runtime. List and NonNull types compose other types.',
-                'fields'          => function () {
+                'fields' => function () {
                     return [
-                        'kind'          => [
-                            'type'    => newNonNull(__TypeKind()),
+                        'kind' => [
+                            'type' => newNonNull(__TypeKind()),
                             'resolve' => function (TypeInterface $type) {
                                 if ($type instanceof ScalarType) {
                                     return TypeKindEnum::SCALAR;
@@ -249,17 +257,24 @@ class IntrospectionProvider extends AbstractServiceProvider
                                     return TypeKindEnum::NON_NULL;
                                 }
 
-                                throw new InvalidTypeException(sprintf('Unknown kind of type: %s', $type));
+                                throw new InvalidTypeException(sprintf('Unknown kind of type: %s',
+                                    $type));
                             },
                         ],
-                        'name'          => ['type' => String()],
-                        'description'   => ['type' => String()],
-                        'fields'        => [
-                            'type'    => newList(newNonNull(__Field())),
-                            'args'    => [
-                                'includeDeprecated' => ['type' => Boolean(), 'defaultValue' => false],
+                        'name' => ['type' => String()],
+                        'description' => ['type' => String()],
+                        'fields' => [
+                            'type' => newList(newNonNull(__Field())),
+                            'args' => [
+                                'includeDeprecated' => [
+                                    'type' => Boolean(),
+                                    'defaultValue' => false,
+                                ],
                             ],
-                            'resolve' => function (TypeInterface $type, array $args):
+                            'resolve' => function (
+                                TypeInterface $type,
+                                array $args
+                            ):
                             ?array {
                                 ['includeDeprecated' => $includeDeprecated] = $args;
 
@@ -267,9 +282,10 @@ class IntrospectionProvider extends AbstractServiceProvider
                                     $fields = array_values($type->getFields());
 
                                     if (!$includeDeprecated) {
-                                        $fields = array_filter($fields, function (Field $field) {
-                                            return !$field->getIsDeprecated();
-                                        });
+                                        $fields = array_filter($fields,
+                                            function (Field $field) {
+                                                return !$field->getIsDeprecated();
+                                            });
                                     }
 
                                     return $fields;
@@ -278,14 +294,15 @@ class IntrospectionProvider extends AbstractServiceProvider
                                 return null;
                             },
                         ],
-                        'interfaces'    => [
-                            'type'    => newList(newNonNull(__Type())),
-                            'resolve' => function (TypeInterface $type): ?array {
+                        'interfaces' => [
+                            'type' => newList(newNonNull(__Type())),
+                            'resolve' => function (TypeInterface $type
+                            ): ?array {
                                 return $type instanceof ObjectType ? $type->getInterfaces() : null;
                             },
                         ],
                         'possibleTypes' => [
-                            'type'    => newList(newNonNull(__Type())),
+                            'type' => newList(newNonNull(__Type())),
                             'resolve' => function (
                                 TypeInterface $type,
                                 array $args,
@@ -295,25 +312,33 @@ class IntrospectionProvider extends AbstractServiceProvider
                             ?array {
                                 /** @var SchemaInterface $schema */
                                 $schema = $info->getSchema();
+
                                 /** @noinspection PhpParamsInspection */
                                 return $type instanceof AbstractTypeInterface ? $schema->getPossibleTypes($type) : null;
                             },
                         ],
-                        'enumValues'    => [
-                            'type'    => newList(newNonNull(__EnumValue())),
-                            'args'    => [
-                                'includeDeprecated' => ['type' => Boolean(), 'defaultValue' => false],
+                        'enumValues' => [
+                            'type' => newList(newNonNull(__EnumValue())),
+                            'args' => [
+                                'includeDeprecated' => [
+                                    'type' => Boolean(),
+                                    'defaultValue' => false,
+                                ],
                             ],
-                            'resolve' => function (TypeInterface $type, array $args): ?array {
+                            'resolve' => function (
+                                TypeInterface $type,
+                                array $args
+                            ): ?array {
                                 ['includeDeprecated' => $includeDeprecated] = $args;
 
                                 if ($type instanceof EnumType) {
                                     $values = array_values($type->getValues());
 
                                     if (!$includeDeprecated) {
-                                        $values = array_filter($values, function (Field $field) {
-                                            return !$field->getIsDeprecated();
-                                        });
+                                        $values = array_filter($values,
+                                            function (Field $field) {
+                                                return !$field->getIsDeprecated();
+                                            });
                                     }
 
                                     return $values;
@@ -322,118 +347,121 @@ class IntrospectionProvider extends AbstractServiceProvider
                                 return null;
                             },
                         ],
-                        'inputFields'   => [
-                            'type'    => newList(newNonNull(__InputValue())),
-                            'resolve' => function (TypeInterface $type): ?array {
+                        'inputFields' => [
+                            'type' => newList(newNonNull(__InputValue())),
+                            'resolve' => function (TypeInterface $type
+                            ): ?array {
                                 return $type instanceof InputObjectType ? $type->getFields() : null;
                             },
                         ],
-                        'ofType'        => ['type' => __Type()],
+                        'ofType' => ['type' => __Type()],
                     ];
-                }
+                },
             ]);
         }, true/* $shared */);
 
         $this->container->add(GraphQL::FIELD_INTROSPECTION, function () {
             return newObjectType([
-                'name'            => GraphQL::FIELD_INTROSPECTION,
+                'name' => GraphQL::FIELD_INTROSPECTION,
                 'isIntrospection' => true,
-                'description'     =>
-                    'Object and Interface types are described by a list of Fields, each of ' .
+                'description' =>
+                    'Object and Interface types are described by a list of Fields, each of '.
                     'which has a name, potentially a list of arguments, and a return type.',
-                'fields'          => function () {
+                'fields' => function () {
                     return [
-                        'name'              => ['type' => newNonNull(String())],
-                        'description'       => ['type' => String()],
-                        'args'              => [
-                            'type'    => newNonNull(newList(newNonNull(__InputValue()))),
-                            'resolve' => function (ArgumentsAwareInterface $directive): array {
+                        'name' => ['type' => newNonNull(String())],
+                        'description' => ['type' => String()],
+                        'args' => [
+                            'type' => newNonNull(newList(newNonNull(__InputValue()))),
+                            'resolve' => function (
+                                ArgumentsAwareInterface $directive
+                            ): array {
                                 return $directive->getArguments() ?? [];
                             },
                         ],
-                        'type'              => ['type' => newNonNull(__Type())],
-                        'isDeprecated'      => ['type' => newNonNull(Boolean())],
+                        'type' => ['type' => newNonNull(__Type())],
+                        'isDeprecated' => ['type' => newNonNull(Boolean())],
                         'deprecationReason' => ['type' => String()],
                     ];
-                }
+                },
             ]);
         }, true/* $shared */);
 
         $this->container->add(GraphQL::INPUT_VALUE_INTROSPECTION, function () {
             return newObjectType([
-                'name'            => GraphQL::INPUT_VALUE_INTROSPECTION,
+                'name' => GraphQL::INPUT_VALUE_INTROSPECTION,
                 'isIntrospection' => true,
-                'description'     =>
-                    'Arguments provided to Fields or Directives and the input fields of an ' .
-                    'InputObject are represented as Input Values which describe their type ' .
+                'description' =>
+                    'Arguments provided to Fields or Directives and the input fields of an '.
+                    'InputObject are represented as Input Values which describe their type '.
                     'and optionally a default value.',
-                'fields'          => function () {
+                'fields' => function () {
                     return [
-                        'name'         => ['type' => newNonNull(String())],
-                        'description'  => ['type' => String()],
-                        'type'         => ['type' => newNonNull(__Type())],
+                        'name' => ['type' => newNonNull(String())],
+                        'description' => ['type' => String()],
+                        'type' => ['type' => newNonNull(__Type())],
                         'defaultValue' => [
-                            'type'        => String(),
+                            'type' => String(),
                             'description' =>
-                                'A GraphQL-formatted string representing the default value for this ' .
+                                'A GraphQL-formatted string representing the default value for this '.
                                 'input value.',
-                            'resolve'     => function ($inputValue) {
+                            'resolve' => function ($inputValue) {
                                 // TODO: Implement this when we have support for printing AST.
                                 return null;
-                            }
+                            },
                         ],
                     ];
-                }
+                },
             ]);
         }, true/* $shared */);
 
         $this->container->add(GraphQL::ENUM_VALUE_INTROSPECTION, function () {
             return newObjectType([
-                'name'            => GraphQL::ENUM_VALUE_INTROSPECTION,
+                'name' => GraphQL::ENUM_VALUE_INTROSPECTION,
                 'isIntrospection' => true,
-                'description'     =>
-                    'One possible value for a given Enum. Enum values are unique values, not ' .
-                    'a placeholder for a string or numeric value. However an Enum value is ' .
+                'description' =>
+                    'One possible value for a given Enum. Enum values are unique values, not '.
+                    'a placeholder for a string or numeric value. However an Enum value is '.
                     'returned in a JSON response as a string.',
-                'fields'          => function () {
+                'fields' => function () {
                     return [
-                        'name'              => ['type' => newNonNull(String())],
-                        'description'       => ['type' => String()],
-                        'isDeprecated'      => ['type' => newNonNull(Boolean())],
+                        'name' => ['type' => newNonNull(String())],
+                        'description' => ['type' => String()],
+                        'isDeprecated' => ['type' => newNonNull(Boolean())],
                         'deprecationReason' => ['type' => String()],
                     ];
-                }
+                },
             ]);
         }, true/* $shared */);
 
         $this->container->add(GraphQL::TYPE_KIND_INTROSPECTION, function () {
             return newEnumType([
-                'name'            => GraphQL::TYPE_KIND_INTROSPECTION,
+                'name' => GraphQL::TYPE_KIND_INTROSPECTION,
                 'isIntrospection' => true,
-                'description'     => 'An enum describing what kind of type a given `__Type` is.',
-                'values'          => [
-                    TypeKindEnum::SCALAR       => [
+                'description' => 'An enum describing what kind of type a given `__Type` is.',
+                'values' => [
+                    TypeKindEnum::SCALAR => [
                         'description' => 'Indicates this type is a scalar.',
                     ],
-                    TypeKindEnum::OBJECT       => [
+                    TypeKindEnum::OBJECT => [
                         'description' => 'Indicates this type is an object. `fields` and `interfaces` are valid fields.',
                     ],
-                    TypeKindEnum::INTERFACE    => [
+                    TypeKindEnum::INTERFACE => [
                         'description' => 'Indicates this type is an interface. `fields` and `possibleTypes` are valid fields.',
                     ],
-                    TypeKindEnum::UNION        => [
+                    TypeKindEnum::UNION => [
                         'description' => 'Indicates this type is a union. `possibleTypes` is a valid field.',
                     ],
-                    TypeKindEnum::ENUM         => [
+                    TypeKindEnum::ENUM => [
                         'description' => 'Indicates this type is an enum. `enumValues` is a valid field.',
                     ],
                     TypeKindEnum::INPUT_OBJECT => [
                         'description' => 'Indicates this type is an input object. `inputFields` is a valid field.',
                     ],
-                    TypeKindEnum::LIST         => [
+                    TypeKindEnum::LIST => [
                         'description' => 'Indicates this type is a list. `ofType` is a valid field.',
                     ],
-                    TypeKindEnum::NON_NULL     => [
+                    TypeKindEnum::NON_NULL => [
                         'description' => 'Indicates this type is a non-null. `ofType` is a valid field.',
                     ],
                 ],
@@ -446,45 +474,65 @@ class IntrospectionProvider extends AbstractServiceProvider
      */
     protected function registerMetaFields()
     {
-        $this->container->add(GraphQL::SCHEMA_META_FIELD_DEFINITION, function ($__Schema) {
-            return new Field([
-                'name'        => '__schema',
-                'type'        => newNonNull($__Schema),
-                'description' => 'Access the current type schema of this server.',
-                'resolve'     => function ($source, $args, $context, ResolveInfo $info): SchemaInterface {
-                    return $info->getSchema();
-                }
-            ]);
-        })
+        $this->container->add(GraphQL::SCHEMA_META_FIELD_DEFINITION,
+            function ($__Schema) {
+                return new Field([
+                    'name' => '__schema',
+                    'type' => newNonNull($__Schema),
+                    'description' => 'Access the current type schema of this server.',
+                    'resolve' => function (
+                        $source,
+                        $args,
+                        $context,
+                        ResolveInfo $info
+                    ): SchemaInterface {
+                        return $info->getSchema();
+                    },
+                ]);
+            })
             ->withArgument(GraphQL::SCHEMA_INTROSPECTION);
 
-        $this->container->add(GraphQL::TYPE_META_FIELD_DEFINITION, function ($__Type) {
-            return new Field([
-                'name'        => '__type',
-                'type'        => $__Type,
-                'description' => 'Request the type information of a single type.',
-                'args'        => [
-                    'name' => ['type' => newNonNull(String())],
-                ],
-                'resolve'     => function ($source, $args, $context, ResolveInfo $info): TypeInterface {
-                    ['name' => $name] = $args;
-                    $schema = $info->getSchema();
-                    return $schema->getType($name);
-                }
-            ]);
-        })
+        $this->container->add(GraphQL::TYPE_META_FIELD_DEFINITION,
+            function ($__Type) {
+                return new Field([
+                    'name' => '__type',
+                    'type' => $__Type,
+                    'description' => 'Request the type information of a single type.',
+                    'args' => [
+                        'name' => ['type' => newNonNull(String())],
+                    ],
+                    'resolve' => function (
+                        $source,
+                        $args,
+                        $context,
+                        ResolveInfo $info
+                    ): TypeInterface {
+                        ['name' => $name] = $args;
+                        $schema = $info->getSchema();
+
+                        return $schema->getType($name);
+                    },
+                ]);
+            })
             ->withArgument(GraphQL::TYPE_INTROSPECTION);
 
-        $this->container->add(GraphQL::TYPE_NAME_META_FIELD_DEFINITION, function () {
-            return new Field([
-                'name'        => '__typename',
-                'type'        => newNonNull(String()),
-                'description' => 'The name of the current Object type at runtime.',
-                'resolve'     => function ($source, $args, $context, ResolveInfo $info): string {
-                    $parentType = $info->getParentType();
-                    return null !== $parentType ? $parentType->getName() : null;
-                }
-            ]);
-        });
+        $this->container->add(GraphQL::TYPE_NAME_META_FIELD_DEFINITION,
+            function () {
+                return new Field([
+                    'name' => '__typename',
+                    'type' => newNonNull(String()),
+                    'description' => 'The name of the current Object type at runtime.',
+                    'resolve' => function (
+                        $source,
+                        $args,
+                        $context,
+                        ResolveInfo $info
+                    ): string {
+                        $parentType = $info->getParentType();
+
+                        return null !== $parentType ? $parentType->getName() : null;
+                    },
+                ]);
+            });
     }
 }

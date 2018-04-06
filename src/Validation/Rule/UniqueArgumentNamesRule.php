@@ -17,6 +17,7 @@ use function Digia\GraphQL\Validation\duplicateArgumentMessage;
  */
 class UniqueArgumentNamesRule extends AbstractRule
 {
+
     /**
      * @var string[]
      */

@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Schema\Resolver;
 
 class ArrayResolver implements ResolverInterface
 {
+
     protected const TYPE_RESOLVER_KEY = '__resolveType';
 
     /**
@@ -13,6 +14,7 @@ class ArrayResolver implements ResolverInterface
 
     /**
      * MapResolver constructor.
+     *
      * @param callable[] $resolvers
      */
     public function __construct(array $resolvers)
@@ -21,7 +23,7 @@ class ArrayResolver implements ResolverInterface
     }
 
     /**
-     * @param string   $fieldName
+     * @param string $fieldName
      * @param callable $resolver
      */
     public function addResolver(string $fieldName, callable $resolver)
@@ -31,6 +33,7 @@ class ArrayResolver implements ResolverInterface
 
     /**
      * @param string $fieldName
+     *
      * @return callable|null
      */
     public function getResolveMethod(string $fieldName): ?callable

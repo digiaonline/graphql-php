@@ -17,6 +17,7 @@ use function Digia\GraphQL\Validation\undefinedVariableMessage;
  */
 class NoUndefinedVariablesRule extends AbstractRule
 {
+
     /**
      * @var array
      */
@@ -25,7 +26,8 @@ class NoUndefinedVariablesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         $this->definedVariableNames = [];
 
@@ -35,9 +37,11 @@ class NoUndefinedVariablesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node
+    ): ?NodeInterface
     {
-        $this->definedVariableNames[$node->getVariable()->getNameValue()] = true;
+        $this->definedVariableNames[$node->getVariable()
+            ->getNameValue()] = true;
 
         return $node;
     }
@@ -45,7 +49,8 @@ class NoUndefinedVariablesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function leaveOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         $usages = $this->context->getRecursiveVariableUsages($node);
 
@@ -57,7 +62,8 @@ class NoUndefinedVariablesRule extends AbstractRule
                 $operationName = $node->getName();
                 $this->context->reportError(
                     new ValidationException(
-                        undefinedVariableMessage($variableName, $operationName ? $operationName->getValue() : null),
+                        undefinedVariableMessage($variableName,
+                            $operationName ? $operationName->getValue() : null),
                         [$variableNode, $node]
                     )
                 );

@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\fragmentCycle;
 
 class NoFragmentCyclesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return NoFragmentCyclesRule::class;
-    }
 
     public function testSingleReferenceIsValid()
     {
@@ -181,7 +177,7 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
                     'fragO',
                     ['fragP', 'fragX', 'fragY', 'fragZ'],
                     [[7, 25], [8, 35], [4, 25], [5, 25], [6, 25]]
-                )
+                ),
             ]
         );
     }
@@ -229,9 +225,15 @@ class NoFragmentCyclesRuleTest extends RuleTestCase
             '),
             [
                 fragmentCycle('fragB', [], [[2, 25]]),
-                fragmentCycle('fragA', ['fragB', 'fragC'], [[1, 25], [2, 35], [3, 25]]),
+                fragmentCycle('fragA', ['fragB', 'fragC'],
+                    [[1, 25], [2, 35], [3, 25]]),
                 fragmentCycle('fragB', ['fragC'], [[2, 35], [3, 35]]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return NoFragmentCyclesRule::class;
     }
 }

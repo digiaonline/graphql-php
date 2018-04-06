@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\duplicateArgument;
 
 class UniqueArgumentNamesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return UniqueArgumentNamesRule::class;
-    }
 
     public function testNoArgumentsOnField()
     {
@@ -166,5 +162,10 @@ class UniqueArgumentNamesRuleTest extends RuleTestCase
                 duplicateArgument('arg1', [[2, 20], [2, 50]]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return UniqueArgumentNamesRule::class;
     }
 }

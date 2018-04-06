@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionNodeInterface
@@ -29,22 +28,14 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
     }
 
     /**
-     * @return array
-     */
-    public function getOperationTypesAsArray(): array
-    {
-        return array_map(function (SerializationInterface $node) {
-            return $node->toArray();
-        }, $this->operationTypes);
-    }
-
-    /**
      * @param array|OperationTypeDefinitionNode[] $operationTypes
+     *
      * @return $this
      */
     public function setOperationTypes(array $operationTypes)
     {
         $this->operationTypes = $operationTypes;
+
         return $this;
     }
 
@@ -54,10 +45,20 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
     public function toArray(): array
     {
         return [
-            'kind'           => $this->kind,
-            'directives'     => $this->getDirectivesAsArray(),
+            'kind' => $this->kind,
+            'directives' => $this->getDirectivesAsArray(),
             'operationTypes' => $this->getOperationTypesAsArray(),
-            'loc'            => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getOperationTypesAsArray(): array
+    {
+        return array_map(function (SerializationInterface $node) {
+            return $node->toArray();
+        }, $this->operationTypes);
     }
 }

@@ -8,6 +8,7 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 
 interface BuildingContextInterface
 {
+
     /**
      * @return TypeInterface|null
      */

@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Validation\Conflict;
 
 class Map
 {
+
     /**
      * @var array
      */
@@ -16,12 +17,13 @@ class Map
 
     /**
      * Map constructor.
+     *
      * @param array $values
      */
     public function __construct(array $values = [])
     {
         foreach ($values as $key => $value) {
-            $this->keys[]   = $key;
+            $this->keys[] = $key;
             $this->values[] = $value;
         }
     }
@@ -33,12 +35,23 @@ class Map
      */
     public function set($key, $value): void
     {
-        $this->keys[]   = $key;
+        $this->keys[] = $key;
         $this->values[] = $value;
     }
 
     /**
      * @param $key
+     *
+     * @return bool
+     */
+    public function has($key): bool
+    {
+        return null !== $this->get($key);
+    }
+
+    /**
+     * @param $key
+     *
      * @return mixed|null
      */
     public function get($key)
@@ -50,15 +63,6 @@ class Map
         }
 
         return $this->values[$index] ?? null;
-    }
-
-    /**
-     * @param $key
-     * @return bool
-     */
-    public function has($key): bool
-    {
-        return null !== $this->get($key);
     }
 
     /**
@@ -93,7 +97,7 @@ class Map
      */
     public function clear(): void
     {
-        $this->keys   = [];
+        $this->keys = [];
         $this->values = [];
     }
 }

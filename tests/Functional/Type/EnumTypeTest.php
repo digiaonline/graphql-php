@@ -2,13 +2,13 @@
 
 namespace Digia\GraphQL\Test\Functional\Type;
 
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\Type\Boolean;
-use function Digia\GraphQL\Type\newEnumType;
 use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\newEnumType;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
 use function Digia\GraphQL\Type\String;
@@ -59,12 +59,12 @@ class EnumTypeTest extends TestCase
     public function setUp()
     {
         $this->colorType = newEnumType([
-            'name'   => 'Color',
+            'name' => 'Color',
             'values' => [
-                'RED'   => ['value' => 0],
+                'RED' => ['value' => 0],
                 'GREEN' => ['value' => 1],
-                'BLUE'  => ['value' => 2],
-            ]
+                'BLUE' => ['value' => 2],
+            ],
         ]);
 
         $this->complex1 = [
@@ -77,7 +77,7 @@ class EnumTypeTest extends TestCase
         ];
 
         $this->complexEnum = newEnumType([
-            'name'   => 'Complex',
+            'name' => 'Complex',
             'values' => [
                 'ONE' => ['value' => $this->complex1],
                 'TWO' => ['value' => $this->complex2],
@@ -85,38 +85,38 @@ class EnumTypeTest extends TestCase
         ]);
 
         $this->queryType = newObjectType([
-            'name'   => 'Query',
+            'name' => 'Query',
             'fields' => [
-                'colorEnum'   => [
-                    'type'    => $this->colorType,
-                    'args'    => [
-                        'fromEnum'   => ['type' => $this->colorType],
-                        'fromInt'    => ['type' => Int()],
+                'colorEnum' => [
+                    'type' => $this->colorType,
+                    'args' => [
+                        'fromEnum' => ['type' => $this->colorType],
+                        'fromInt' => ['type' => Int()],
                         'fromString' => ['type' => String()],
                     ],
                     'resolve' => function ($value, $args) {
                         return $args['fromInt'] ?? $args['fromString'] ?? $args['fromEnum'];
                     },
                 ],
-                'colorInt'    => [
-                    'type'    => Int(),
-                    'args'    => [
+                'colorInt' => [
+                    'type' => Int(),
+                    'args' => [
                         'fromEnum' => ['type' => $this->colorType],
-                        'fromInt'  => ['type' => Int()],
+                        'fromInt' => ['type' => Int()],
                     ],
                     'resolve' => function ($value, $args) {
                         return $args['fromInt'] ?? $args['fromEnum'];
                     },
                 ],
                 'complexEnum' => [
-                    'type'    => $this->complexEnum,
-                    'args'    => [
-                        'fromEnum'          => [
-                            'type'         => $this->complexEnum,
+                    'type' => $this->complexEnum,
+                    'args' => [
+                        'fromEnum' => [
+                            'type' => $this->complexEnum,
                             'defaultValue' => $this->complex1,
                         ],
                         'providedGoodValue' => ['type' => Boolean()],
-                        'providedBadValue'  => ['type' => Boolean()],
+                        'providedBadValue' => ['type' => Boolean()],
                     ],
                     'resolve' => function ($value, $args) {
                         if ($args['providedGoodValue']) {
@@ -125,18 +125,19 @@ class EnumTypeTest extends TestCase
                         if ($args['providedBadValue']) {
                             return ['someRandomValue' => 123];
                         }
+
                         return $args['fromEnum'];
-                    }
+                    },
                 ],
             ],
         ]);
 
         $this->mutationType = newObjectType([
-            'name'   => 'Mutation',
+            'name' => 'Mutation',
             'fields' => [
                 'favoriteEnum' => [
-                    'type'    => $this->colorType,
-                    'args'    => ['color' => ['type' => $this->colorType]],
+                    'type' => $this->colorType,
+                    'args' => ['color' => ['type' => $this->colorType]],
                     'resolve' => function ($value, $args) {
                         return $args['color'];
                     },
@@ -145,11 +146,11 @@ class EnumTypeTest extends TestCase
         ]);
 
         $this->subscriptionType = newObjectType([
-            'name'   => 'Subscription',
+            'name' => 'Subscription',
             'fields' => [
                 'subscribeToEnum' => [
-                    'type'    => $this->colorType,
-                    'args'    => ['color' => ['type' => $this->colorType]],
+                    'type' => $this->colorType,
+                    'args' => ['color' => ['type' => $this->colorType]],
                     'resolve' => function ($value, $args) {
                         return $args['color'];
                     },
@@ -158,8 +159,8 @@ class EnumTypeTest extends TestCase
         ]);
 
         $this->schema = newSchema([
-            'query'        => $this->queryType,
-            'mutation'     => $this->mutationType,
+            'query' => $this->queryType,
+            'mutation' => $this->mutationType,
             'subscription' => $this->subscriptionType,
         ]);
     }

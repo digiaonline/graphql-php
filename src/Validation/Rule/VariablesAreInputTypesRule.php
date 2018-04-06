@@ -18,10 +18,12 @@ use function Digia\GraphQL\Validation\nonInputTypeOnVariableMessage;
  */
 class VariablesAreInputTypesRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node
+    ): ?NodeInterface
     {
         $type = typeFromAST($this->context->getSchema(), $node->getType());
 
@@ -30,7 +32,8 @@ class VariablesAreInputTypesRule extends AbstractRule
 
             $this->context->reportError(
                 new ValidationException(
-                    nonInputTypeOnVariableMessage($variableName, printNode($node->getType())),
+                    nonInputTypeOnVariableMessage($variableName,
+                        printNode($node->getType())),
                     [$node->getType()]
                 )
             );

@@ -2,12 +2,12 @@
 
 namespace Digia\GraphQL\Test\Functional\Schema;
 
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\Type\newDirective;
 use function Digia\GraphQL\Type\newInputObjectType;
 use function Digia\GraphQL\Type\newInterfaceType;
@@ -55,7 +55,7 @@ class SchemaTest extends TestCase
     public function setUp()
     {
         $this->interfaceType = newInterfaceType([
-            'name'   => 'Interface',
+            'name' => 'Interface',
             'fields' => [
                 'fieldName' => [
                     'type' => String(),
@@ -64,29 +64,29 @@ class SchemaTest extends TestCase
         ]);
 
         $this->implementingType = newObjectType([
-            'name'       => 'Object',
+            'name' => 'Object',
             'interfaces' => [$this->interfaceType],
-            'fields'     => [
+            'fields' => [
                 'fieldName' => [
-                    'type'    => String(),
+                    'type' => String(),
                     'resolve' => function () {
                         return '';
                     },
-                ]
+                ],
             ],
         ]);
 
         $this->directiveInputType = newInputObjectType([
-            'name'   => 'DirInput',
+            'name' => 'DirInput',
             'fields' => [
                 'field' => [
                     'type' => String(),
-                ]
+                ],
             ],
         ]);
 
         $this->wrappedDirectiveInputType = newInputObjectType([
-            'name'   => 'WrappedDirInput',
+            'name' => 'WrappedDirInput',
             'fields' => [
                 'field' => [
                     'type' => String(),
@@ -95,17 +95,17 @@ class SchemaTest extends TestCase
         ]);
 
         $this->directive = newDirective([
-            'name'      => 'dir',
+            'name' => 'dir',
             'locations' => ['OBJECT'],
-            'args'      => [
-                'arg'     => [
+            'args' => [
+                'arg' => [
                     'type' => $this->directiveInputType,
                 ],
                 'argList' => [
                     'type' => newList($this->wrappedDirectiveInputType),
                 ],
             ],
-            'fields'    => [
+            'fields' => [
                 'field' => [
                     'type' => String(),
                 ],
@@ -113,14 +113,14 @@ class SchemaTest extends TestCase
         ]);
 
         $this->schema = newSchema([
-            'query'      => newObjectType([
-                'name'   => 'Query',
+            'query' => newObjectType([
+                'name' => 'Query',
                 'fields' => [
                     'getObject' => [
-                        'type'    => $this->interfaceType,
+                        'type' => $this->interfaceType,
                         'resolve' => function () {
                             return '';
-                        }
+                        },
                     ],
                 ],
             ]),
@@ -137,7 +137,8 @@ class SchemaTest extends TestCase
      */
     public function testThrowsHumanReadableErrorIfSchemaTypesIsNotDefined()
     {
-        $this->schema->isPossibleType($this->interfaceType, $this->implementingType);
+        $this->schema->isPossibleType($this->interfaceType,
+            $this->implementingType);
     }
 
     public function testIncludesInputTypesOnlyUsedInDirectives()

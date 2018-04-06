@@ -11,9 +11,15 @@ class PipeReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        return new Token(TokenKindEnum::PIPE, $pos, $pos + 1, $line, $col, $prev);
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
+        return new Token(TokenKindEnum::PIPE, $pos, $pos + 1, $line, $col,
+            $prev);
     }
 
     /**

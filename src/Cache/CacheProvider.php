@@ -7,6 +7,7 @@ use Psr\SimpleCache\CacheInterface;
 
 class CacheProvider extends AbstractServiceProvider
 {
+
     /**
      * @var array
      */

@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 class ObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface, DirectivesAwareInterface
 {
+
     use DescriptionTrait;
     use NameTrait;
     use InterfacesTrait;
@@ -21,13 +22,13 @@ class ObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNod
     public function toArray(): array
     {
         return [
-            'kind'        => $this->kind,
+            'kind' => $this->kind,
             'description' => $this->getDescriptionAsArray(),
-            'name'        => $this->getNameAsArray(),
-            'interfaces'  => $this->getInterfacesAsArray(),
-            'directives'  => $this->getDirectivesAsArray(),
-            'fields'      => $this->getFieldsAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'name' => $this->getNameAsArray(),
+            'interfaces' => $this->getInterfacesAsArray(),
+            'directives' => $this->getDirectivesAsArray(),
+            'fields' => $this->getFieldsAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

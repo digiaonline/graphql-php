@@ -11,11 +11,18 @@ class ParenthesisReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
         return $code === 40
-            ? new Token(TokenKindEnum::PAREN_L, $pos, $pos + 1, $line, $col, $prev)
-            : new Token(TokenKindEnum::PAREN_R, $pos, $pos + 1, $line, $col, $prev);
+            ? new Token(TokenKindEnum::PAREN_L, $pos, $pos + 1, $line, $col,
+                $prev)
+            : new Token(TokenKindEnum::PAREN_R, $pos, $pos + 1, $line, $col,
+                $prev);
     }
 
     /**

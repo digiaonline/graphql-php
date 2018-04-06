@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\Writer\WriterInterface;
 
 class Printer implements PrinterInterface
 {
+
     /**
      * @var array|WriterInterface[]
      */
@@ -15,6 +16,7 @@ class Printer implements PrinterInterface
 
     /**
      * Printer constructor.
+     *
      * @param array|WriterInterface[] $writers
      */
     public function __construct(array $writers)
@@ -36,11 +38,13 @@ class Printer implements PrinterInterface
             return $writer->write($node);
         }
 
-        throw new LanguageException(sprintf('Invalid AST Node: %s', (string)$node));
+        throw new LanguageException(sprintf('Invalid AST Node: %s',
+            (string)$node));
     }
 
     /**
      * @param NodeInterface $node
+     *
      * @return WriterInterface|null
      */
     protected function getWriter(NodeInterface $node): ?WriterInterface

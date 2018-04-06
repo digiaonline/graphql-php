@@ -9,11 +9,13 @@ use Digia\GraphQL\Util\TypeInfo;
 
 interface ValidatorInterface
 {
+
     /**
      * @param SchemaInterface $schema
-     * @param DocumentNode    $document
-     * @param array|null      $rules
-     * @param TypeInfo|null   $typeInfo
+     * @param DocumentNode $document
+     * @param array|null $rules
+     * @param TypeInfo|null $typeInfo
+     *
      * @return ValidationException[]
      */
     public function validate(
@@ -25,8 +27,9 @@ interface ValidatorInterface
 
     /**
      * @param SchemaInterface $schema
-     * @param DocumentNode    $document
-     * @param TypeInfo        $typeInfo
+     * @param DocumentNode $document
+     * @param TypeInfo $typeInfo
+     *
      * @return ValidationContextInterface
      */
     public function createContext(

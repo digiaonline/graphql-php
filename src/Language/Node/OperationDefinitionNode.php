@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 class OperationDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface, DirectivesAwareInterface
 {
+
     use NameTrait;
     use DirectivesTrait;
     use VariableDefinitionsTrait;
@@ -30,13 +31,13 @@ class OperationDefinitionNode extends AbstractNode implements ExecutableDefiniti
     public function toArray(): array
     {
         return [
-            'kind'                => $this->kind,
-            'loc'                 => $this->getLocationAsArray(),
-            'operation'           => $this->operation,
-            'name'                => $this->getNameAsArray(),
+            'kind' => $this->kind,
+            'loc' => $this->getLocationAsArray(),
+            'operation' => $this->operation,
+            'name' => $this->getNameAsArray(),
             'variableDefinitions' => $this->getVariableDefinitionsAsArray(),
-            'directives'          => $this->getDirectivesAsArray(),
-            'selectionSet'        => $this->getSelectionSetAsArray(),
+            'directives' => $this->getDirectivesAsArray(),
+            'selectionSet' => $this->getSelectionSetAsArray(),
         ];
     }
 }

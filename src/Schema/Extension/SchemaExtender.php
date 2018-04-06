@@ -25,6 +25,7 @@ use function Digia\GraphQL\Util\toString;
 
 class SchemaExtender implements SchemaExtenderInterface
 {
+
     /**
      * @var CacheInterface
      */
@@ -32,6 +33,7 @@ class SchemaExtender implements SchemaExtenderInterface
 
     /**
      * BuilderContextCreator constructor.
+     *
      * @param CacheInterface $cache
      */
     public function __construct(CacheInterface $cache)
@@ -57,12 +59,12 @@ class SchemaExtender implements SchemaExtenderInterface
         }
 
         return newSchema([
-            'query'        => $context->getExtendedQueryType(),
-            'mutation'     => $context->getExtendedMutationType(),
+            'query' => $context->getExtendedQueryType(),
+            'mutation' => $context->getExtendedMutationType(),
             'subscription' => $context->getExtendedSubscriptionType(),
-            'types'        => $context->getExtendedTypes(),
-            'directives'   => $context->getExtendedDirectives(),
-            'astNode'      => $schema->getAstNode(),
+            'types' => $context->getExtendedTypes(),
+            'directives' => $context->getExtendedDirectives(),
+            'astNode' => $schema->getAstNode(),
         ]);
     }
 
@@ -92,26 +94,29 @@ class SchemaExtender implements SchemaExtenderInterface
 
     /**
      * @param SchemaInterface $schema
-     * @param DocumentNode    $document
+     * @param DocumentNode $document
+     *
      * @return ExtendInfo
      * @throws ExtensionException
      */
-    protected function createInfo(SchemaInterface $schema, DocumentNode $document): ExtendInfo
-    {
-        $typeDefinitionMap    = [];
-        $typeExtensionsMap    = [];
+    protected function createInfo(
+        SchemaInterface $schema,
+        DocumentNode $document
+    ): ExtendInfo {
+        $typeDefinitionMap = [];
+        $typeExtensionsMap = [];
         $directiveDefinitions = [];
 
         foreach ($document->getDefinitions() as $definition) {
             if ($definition instanceof TypeDefinitionNodeInterface) {
                 // Sanity check that none of the defined types conflict with the schema's existing types.
-                $typeName     = $definition->getNameValue();
+                $typeName = $definition->getNameValue();
                 $existingType = $schema->getType($typeName);
 
                 if (null !== $existingType) {
                     throw new ExtensionException(
                         \sprintf(
-                            'Type "%s" already exists in the schema. It cannot also ' .
+                            'Type "%s" already exists in the schema. It cannot also '.
                             'be defined in this type definition.',
                             $typeName
                         ),
@@ -127,7 +132,7 @@ class SchemaExtender implements SchemaExtenderInterface
             if ($definition instanceof ObjectTypeExtensionNode || $definition instanceof InterfaceTypeExtensionNode) {
                 // Sanity check that this type extension exists within the schema's existing types.
                 $extendedTypeName = $definition->getNameValue();
-                $existingType     = $schema->getType($extendedTypeName);
+                $existingType = $schema->getType($extendedTypeName);
 
                 if (null === $existingType) {
                     throw new ExtensionException(
@@ -150,7 +155,7 @@ class SchemaExtender implements SchemaExtenderInterface
             }
 
             if ($definition instanceof DirectiveDefinitionNode) {
-                $directiveName     = $definition->getNameValue();
+                $directiveName = $definition->getNameValue();
                 $existingDirective = $schema->getDirective($directiveName);
 
                 if (null !== $existingDirective) {
@@ -173,7 +178,8 @@ class SchemaExtender implements SchemaExtenderInterface
                 $definition instanceof EnumTypeExtensionNode ||
                 $definition instanceof InputObjectTypeExtensionNode) {
                 throw new ExtensionException(
-                    \sprintf('The %s kind is not yet supported by extendSchema().', $definition->getKind())
+                    \sprintf('The %s kind is not yet supported by extendSchema().',
+                        $definition->getKind())
                 );
             }
         }
@@ -190,20 +196,25 @@ class SchemaExtender implements SchemaExtenderInterface
     /**
      * @param TypeInterface $type
      * @param NodeInterface $node
+     *
      * @throws ExtensionException
      */
-    protected function checkExtensionNode(TypeInterface $type, NodeInterface $node): void
-    {
+    protected function checkExtensionNode(
+        TypeInterface $type,
+        NodeInterface $node
+    ): void {
         if ($node instanceof ObjectTypeExtensionNode && !($type instanceof ObjectType)) {
             throw new ExtensionException(
-                \sprintf('Cannot extend non-object type "%s".', toString($type)),
+                \sprintf('Cannot extend non-object type "%s".',
+                    toString($type)),
                 [$node]
             );
         }
 
         if ($node instanceof InterfaceTypeExtensionNode && !($type instanceof InterfaceType)) {
             throw new ExtensionException(
-                \sprintf('Cannot extend non-interface type "%s".', toString($type)),
+                \sprintf('Cannot extend non-interface type "%s".',
+                    toString($type)),
                 [$node]
             );
         }

@@ -6,6 +6,7 @@ use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 
 trait ExtensionASTNodesTrait
 {
+
     /**
      * @var ObjectTypeExtensionNode[]
      */
@@ -29,11 +30,13 @@ trait ExtensionASTNodesTrait
 
     /**
      * @param ObjectTypeExtensionNode[] $extensionAstNodes
+     *
      * @return $this
      */
     protected function setExtensionAstNodes(array $extensionAstNodes)
     {
         $this->extensionAstNodes = $extensionAstNodes;
+
         return $this;
     }
 }

@@ -11,6 +11,7 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 
 interface SchemaInterface
 {
+
     /**
      * @return TypeInterface|ObjectType|null
      */
@@ -28,6 +29,7 @@ interface SchemaInterface
 
     /**
      * @param string $name
+     *
      * @return Directive|null
      */
     public function getDirective(string $name): ?Directive;
@@ -49,19 +51,26 @@ interface SchemaInterface
 
     /**
      * @param AbstractTypeInterface $abstractType
-     * @param TypeInterface         $possibleType
+     * @param TypeInterface $possibleType
+     *
      * @return bool
      */
-    public function isPossibleType(AbstractTypeInterface $abstractType, TypeInterface $possibleType): bool;
+    public function isPossibleType(
+        AbstractTypeInterface $abstractType,
+        TypeInterface $possibleType
+    ): bool;
 
     /**
      * @param AbstractTypeInterface $abstractType
+     *
      * @return null|TypeInterface[]
      */
-    public function getPossibleTypes(AbstractTypeInterface $abstractType): ?array;
+    public function getPossibleTypes(AbstractTypeInterface $abstractType
+    ): ?array;
 
     /**
      * @param string $name
+     *
      * @return TypeInterface|null
      */
     public function getType(string $name): ?TypeInterface;

@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\duplicateFragment;
 
 class UniqueFragmentNamesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return UniqueFragmentNamesRule::class;
-    }
 
     public function testNoFragments()
     {
@@ -113,5 +109,10 @@ class UniqueFragmentNamesRuleTest extends RuleTestCase
             '),
             [duplicateFragment('fragA', [[1, 10], [4, 10]])]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return UniqueFragmentNamesRule::class;
     }
 }

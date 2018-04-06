@@ -8,17 +8,18 @@ namespace Digia\GraphQL\Language;
  * This implements the GraphQL spec's BlockStringValue() static algorithm.
  *
  * @param string $rawString
+ *
  * @return string
  */
 function blockStringValue(string $rawString): string
 {
-    $lines     = preg_split("/\r\n|[\n\r]/", $rawString);
+    $lines = preg_split("/\r\n|[\n\r]/", $rawString);
     $lineCount = count($lines);
 
     $commonIndent = null;
 
     for ($i = 1; $i < $lineCount; $i++) {
-        $line   = $lines[$i];
+        $line = $lines[$i];
         $indent = leadingWhitespace($line);
 
         if ($indent < mb_strlen($line) && ($commonIndent === null || $indent < $commonIndent)) {
@@ -49,20 +50,23 @@ function blockStringValue(string $rawString): string
 
 /**
  * @param string $string
+ *
  * @return int
  */
 function leadingWhitespace(string $string): int
 {
-    $i      = 0;
+    $i = 0;
     $length = mb_strlen($string);
     while ($i < $length && ($string[$i] === ' ' || $string[$i] === "\t")) {
         $i++;
     }
+
     return $i;
 }
 
 /**
  * @param string $string
+ *
  * @return bool
  */
 function isBlank(string $string): bool

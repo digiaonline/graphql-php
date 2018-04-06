@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
 class ListTypeNode extends AbstractNode implements TypeNodeInterface
 {
 
@@ -22,7 +20,7 @@ class ListTypeNode extends AbstractNode implements TypeNodeInterface
         return [
             'kind' => $this->kind,
             'type' => $this->getTypeAsArray(),
-            'loc'  => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

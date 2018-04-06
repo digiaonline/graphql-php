@@ -12,6 +12,7 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 abstract class AbstractNode implements SerializationInterface, AcceptsVisitorsInterface, ConfigAwareInterface
 {
+
     use ConfigAwareTrait;
     use AcceptsVisitorsTrait;
     use ArrayToJsonTrait;
@@ -43,14 +44,6 @@ abstract class AbstractNode implements SerializationInterface, AcceptsVisitorsIn
     }
 
     /**
-     * @return array|null
-     */
-    public function getLocationAsArray(): ?array
-    {
-        return null !== $this->location ? $this->location->toArray() : null;
-    }
-
-    /**
      * @return array
      */
     public function toArray(): array
@@ -59,8 +52,16 @@ abstract class AbstractNode implements SerializationInterface, AcceptsVisitorsIn
 
         return [
             'kind' => $this->kind,
-            'loc'  => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getLocationAsArray(): ?array
+    {
+        return null !== $this->location ? $this->location->toArray() : null;
     }
 
     /**

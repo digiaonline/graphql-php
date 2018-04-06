@@ -33,6 +33,7 @@ use function Digia\GraphQL\Util\invariant;
 class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInterface, ConfigAwareInterface,
     NodeAwareInterface
 {
+
     use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
@@ -49,14 +50,6 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
     protected $fieldMap;
 
     /**
-     * @inheritdoc
-     */
-    protected function afterConfig(): void
-    {
-        invariant(null !== $this->getName(), 'Must provide name.');
-    }
-
-    /**
      * @return InputField[]
      * @throws InvariantException
      */
@@ -65,24 +58,13 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
         if (!isset($this->fieldMap)) {
             $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk ?? []);
         }
+
         return $this->fieldMap;
     }
 
     /**
-     * Input fields are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['fields']`.
+     * @param array|callable $fieldsOrThunk
      *
-     * @param array|callable $fieldsOrThunk
-     * @return $this
-     */
-    protected function setFields($fieldsOrThunk)
-    {
-        $this->fieldsOrThunk = $fieldsOrThunk;
-        return $this;
-    }
-
-    /**
-     * @param array|callable $fieldsOrThunk
      * @return array
      * @throws InvariantException
      */
@@ -110,10 +92,34 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
                 )
             );
 
-            $fieldConfig['name']  = $fieldName;
+            $fieldConfig['name'] = $fieldName;
             $fieldMap[$fieldName] = new InputField($fieldConfig);
         }
 
         return $fieldMap;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function afterConfig(): void
+    {
+        invariant(null !== $this->getName(), 'Must provide name.');
+    }
+
+    /**
+     * Input fields are created using the `ConfigAwareTrait` constructor which
+     * will automatically call this method when setting arguments from
+     * `$config['fields']`.
+     *
+     * @param array|callable $fieldsOrThunk
+     *
+     * @return $this
+     */
+    protected function setFields($fieldsOrThunk)
+    {
+        $this->fieldsOrThunk = $fieldsOrThunk;
+
+        return $this;
     }
 }

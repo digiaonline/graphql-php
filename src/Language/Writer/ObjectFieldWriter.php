@@ -7,16 +7,18 @@ use Digia\GraphQL\Language\Node\ObjectFieldNode;
 
 class ObjectFieldWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|ObjectFieldNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string
     {
-        $name  = $this->printNode($node->getName());
+        $name = $this->printNode($node->getName());
         $value = $this->printNode($node->getValue());
 
-        return $name . ': ' . $value;
+        return $name.': '.$value;
     }
 
     /**

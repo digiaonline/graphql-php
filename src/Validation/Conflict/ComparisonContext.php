@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class ComparisonContext
 {
+
     /**
      * @var array
      */
@@ -25,6 +26,7 @@ class ComparisonContext
 
     /**
      * @param FieldContext $field
+     *
      * @return $this
      */
     public function registerField(FieldContext $field)
@@ -42,6 +44,7 @@ class ComparisonContext
 
     /**
      * @param NodeInterface|FragmentSpreadNode|FragmentDefinitionNode $fragment
+     *
      * @return $this
      */
     public function registerFragment(NodeInterface $fragment)
@@ -53,6 +56,7 @@ class ComparisonContext
 
     /**
      * @param Conflict $conflict
+     *
      * @return $this
      */
     public function reportConflict(Conflict $conflict)

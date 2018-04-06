@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Util;
 
 trait ArrayToJsonTrait
 {
+
     /**
      * @return array
      */

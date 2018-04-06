@@ -45,6 +45,7 @@ function specifiedDirectives(): array
 
 /**
  * @param DirectiveInterface $directive
+ *
  * @return bool
  */
 function isSpecifiedDirective(DirectiveInterface $directive): bool

@@ -7,6 +7,7 @@ use function Digia\GraphQL\graphql;
 
 class IntrospectionTest extends TestCase
 {
+
     // Star Wars Introspection Tests
 
     // Basic Introspection
@@ -182,7 +183,7 @@ class IntrospectionTest extends TestCase
         $this->assertEquals([
             'data' => [
                 '__type' => [
-                    'name'   => 'Droid',
+                    'name' => 'Droid',
                     'fields' => [
                         [
                             'name' => 'id',
@@ -261,13 +262,13 @@ class IntrospectionTest extends TestCase
         $this->assertEquals([
             'data' => [
                 '__type' => [
-                    'name'   => 'Droid',
+                    'name' => 'Droid',
                     'fields' => [
                         [
                             'name' => 'id',
                             'type' => [
-                                'name'   => null,
-                                'kind'   => 'NON_NULL',
+                                'name' => null,
+                                'kind' => 'NON_NULL',
                                 'ofType' => [
                                     'name' => 'String',
                                     'kind' => 'SCALAR',
@@ -277,16 +278,16 @@ class IntrospectionTest extends TestCase
                         [
                             'name' => 'name',
                             'type' => [
-                                'name'   => 'String',
-                                'kind'   => 'SCALAR',
+                                'name' => 'String',
+                                'kind' => 'SCALAR',
                                 'ofType' => null,
                             ],
                         ],
                         [
                             'name' => 'friends',
                             'type' => [
-                                'name'   => null,
-                                'kind'   => 'LIST',
+                                'name' => null,
+                                'kind' => 'LIST',
                                 'ofType' => [
                                     'name' => 'Character',
                                     'kind' => 'INTERFACE',
@@ -296,8 +297,8 @@ class IntrospectionTest extends TestCase
                         [
                             'name' => 'appearsIn',
                             'type' => [
-                                'name'   => null,
-                                'kind'   => 'LIST',
+                                'name' => null,
+                                'kind' => 'LIST',
                                 'ofType' => [
                                     'name' => 'Episode',
                                     'kind' => 'ENUM',
@@ -307,16 +308,16 @@ class IntrospectionTest extends TestCase
                         [
                             'name' => 'secretBackstory',
                             'type' => [
-                                'name'   => 'String',
-                                'kind'   => 'SCALAR',
+                                'name' => 'String',
+                                'kind' => 'SCALAR',
                                 'ofType' => null,
                             ],
                         ],
                         [
                             'name' => 'primaryFunction',
                             'type' => [
-                                'name'   => 'String',
-                                'kind'   => 'SCALAR',
+                                'name' => 'String',
+                                'kind' => 'SCALAR',
                                 'ofType' => null,
                             ],
                         ],
@@ -368,14 +369,14 @@ class IntrospectionTest extends TestCase
                                 'args' => [
                                     [
                                         'defaultValue' => null,
-                                        'description'  =>
-                                            'If omitted, returns the hero of the whole ' .
-                                            'saga. If provided, returns the hero of ' .
+                                        'description' =>
+                                            'If omitted, returns the hero of the whole '.
+                                            'saga. If provided, returns the hero of '.
                                             'that particular episode.',
-                                        'name'         => 'episode',
-                                        'type'         => [
-                                            'kind'   => 'ENUM',
-                                            'name'   => 'Episode',
+                                        'name' => 'episode',
+                                        'type' => [
+                                            'kind' => 'ENUM',
+                                            'name' => 'Episode',
                                             'ofType' => null,
                                         ],
                                     ],
@@ -385,11 +386,11 @@ class IntrospectionTest extends TestCase
                                 'name' => 'human',
                                 'args' => [
                                     [
-                                        'name'         => 'id',
-                                        'description'  => 'id of the human',
-                                        'type'         => [
-                                            'kind'   => 'NON_NULL',
-                                            'name'   => null,
+                                        'name' => 'id',
+                                        'description' => 'id of the human',
+                                        'type' => [
+                                            'kind' => 'NON_NULL',
+                                            'name' => null,
                                             'ofType' => [
                                                 'kind' => 'SCALAR',
                                                 'name' => 'String',
@@ -403,11 +404,11 @@ class IntrospectionTest extends TestCase
                                 'name' => 'droid',
                                 'args' => [
                                     [
-                                        'name'         => 'id',
-                                        'description'  => 'id of the droid',
-                                        'type'         => [
-                                            'kind'   => 'NON_NULL',
-                                            'name'   => null,
+                                        'name' => 'id',
+                                        'description' => 'id of the droid',
+                                        'type' => [
+                                            'kind' => 'NON_NULL',
+                                            'name' => null,
                                             'ofType' => [
                                                 'kind' => 'SCALAR',
                                                 'name' => 'String',
@@ -443,7 +444,7 @@ class IntrospectionTest extends TestCase
         $this->assertEquals([
             'data' => [
                 '__type' => [
-                    'name'        => 'Droid',
+                    'name' => 'Droid',
                     'description' => 'A mechanical creature in the Star Wars universe.',
                 ],
             ],

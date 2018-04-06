@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Writer;
 
 class SupportedWriters
 {
+
     /**
      * @var WriterInterface[]
      */
