@@ -329,7 +329,7 @@ class ValuesHelper
                 ]);
             }
             return new CoercedValue($parseResult, null);
-        } catch (\Exception $ex) {
+        } catch (InvalidTypeException|CoercingException $ex) {
             return new CoercedValue(null, [
                 $this->buildCoerceException(
                     sprintf('Expected type %s', (string)$type),
