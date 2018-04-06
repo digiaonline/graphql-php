@@ -15,7 +15,7 @@ class TokenReader implements TokenReaderInterface
     protected $lexer;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function setLexer(LexerInterface $lexer)
     {
@@ -24,7 +24,7 @@ class TokenReader implements TokenReaderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getLexer(): LexerInterface
     {
@@ -32,7 +32,7 @@ class TokenReader implements TokenReaderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function read(
       int $code,
@@ -103,9 +103,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readName(
       int $code,
@@ -133,10 +132,9 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @param Token $prev
+     * @return Token
+     * @throws SyntaxErrorException
      */
     protected function readBlockString(
       int $code,
@@ -196,10 +194,9 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @param Token $prev
+     * @return Token
+     * @throws SyntaxErrorException
      */
     protected function readNumber(
       int $code,
@@ -270,10 +267,9 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @param Token $prev
+     * @return Token
+     * @throws SyntaxErrorException
      */
     protected function readString(
       int $code,
@@ -384,9 +380,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readSpread(
       int $code,
@@ -404,9 +399,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readDollar(
       int $code,
@@ -424,9 +418,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readPipe(
       int $code,
@@ -444,9 +437,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readParenthesis(
       int $code,
@@ -467,9 +459,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readEquals(
       int $code,
@@ -487,9 +478,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readAt(
       int $code,
@@ -506,9 +496,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readComment(
       int $code,
@@ -540,9 +529,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readColon(
       int $code,
@@ -560,9 +548,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readAmp(
       int $code,
@@ -580,9 +567,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readBang(
       int $code,
@@ -600,9 +586,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readBrace(
       int $code,
@@ -623,9 +608,8 @@ class TokenReader implements TokenReaderInterface
      * @param int $pos
      * @param int $line
      * @param int $col
-     * @param \Digia\GraphQL\Language\Token $prev
-     *
-     * @return \Digia\GraphQL\Language\Token
+     * @param Token $prev
+     * @return Token
      */
     protected function readBracket(
       int $code,
@@ -644,7 +628,6 @@ class TokenReader implements TokenReaderInterface
     /**
      * @param int $code
      * @param int $pos
-     *
      * @return int
      * @throws SyntaxErrorException
      */
@@ -672,7 +655,6 @@ class TokenReader implements TokenReaderInterface
      * @TODO Move to utils.
      *
      * @param int $code
-     *
      * @return bool
      */
     protected function isLineTerminator(int $code): bool
@@ -684,7 +666,6 @@ class TokenReader implements TokenReaderInterface
      * @TODO Move to utils.
      *
      * @param int $code
-     *
      * @return bool
      */
     protected function isSourceCharacter(int $code): bool
@@ -698,7 +679,6 @@ class TokenReader implements TokenReaderInterface
      * @param string $body
      * @param int $code
      * @param int $pos
-     *
      * @return bool
      */
     protected function isTripleQuote(string $body, int $code, int $pos): bool
@@ -713,7 +693,6 @@ class TokenReader implements TokenReaderInterface
      * @param string $body
      * @param int $code
      * @param int $pos
-     *
      * @return bool
      */
     protected function isEscapedTripleQuote(
@@ -731,7 +710,6 @@ class TokenReader implements TokenReaderInterface
      * @TODO Move to utils.
      *
      * @param int $code
-     *
      * @return bool
      */
     protected function isLetter(int $code): bool
@@ -743,7 +721,6 @@ class TokenReader implements TokenReaderInterface
      * @TODO Move to utils.
      *
      * @param int $code
-     *
      * @return bool
      */
     protected function isNumber(int $code): bool
@@ -755,7 +732,6 @@ class TokenReader implements TokenReaderInterface
      * @TODO Move to utils.
      *
      * @param int $code
-     *
      * @return bool
      */
     protected function isUnderscore(int $code): bool
@@ -767,7 +743,6 @@ class TokenReader implements TokenReaderInterface
      * @TODO Move to utils.
      *
      * @param int $code
-     *
      * @return bool
      */
     protected function isAlphaNumeric(int $code): bool

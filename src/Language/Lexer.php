@@ -62,9 +62,8 @@ class Lexer implements LexerInterface
     {
         $startOfFileToken = new Token(TokenKindEnum::SOF);
 
+        $reader->setLexer($this);
         $this->reader    = $reader;
-        $this->reader->setLexer($this);
-
         $this->lastToken = $startOfFileToken;
         $this->token     = $startOfFileToken;
         $this->line      = 1;

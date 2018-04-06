@@ -11,7 +11,6 @@ interface TokenReaderInterface
      * @param int $line
      * @param int $col
      * @param Token $prev
-     *
      * @return Token
      */
     public function read(
@@ -23,14 +22,13 @@ interface TokenReaderInterface
     ): Token;
 
     /**
-     * @param \Digia\GraphQL\Language\LexerInterface $lexer
-     *
+     * @param LexerInterface $lexer
      * @return $this
      */
     public function setLexer(LexerInterface $lexer);
 
     /**
-     * @return \Digia\GraphQL\Language\LexerInterface
+     * @return LexerInterface
      */
     public function getLexer(): LexerInterface;
 
