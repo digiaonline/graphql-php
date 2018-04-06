@@ -20,6 +20,7 @@ use function Digia\GraphQL\Validation\missingFieldArgumentMessage;
  */
 class ProvidedNonNullArgumentsRule extends AbstractRule
 {
+
     // Validate on leave to allow for deeper errors to appear first.
 
     /**
@@ -33,10 +34,11 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
             return null;
         }
 
-        $argumentNodes   = $node->getArguments();
-        $argumentNodeMap = keyMap($argumentNodes, function (ArgumentNode $argument) {
-            return $argument->getNameValue();
-        });
+        $argumentNodes = $node->getArguments();
+        $argumentNodeMap = keyMap($argumentNodes,
+            function (ArgumentNode $argument) {
+                return $argument->getNameValue();
+            });
 
         foreach ($fieldDefinition->getArguments() as $argumentDefinition) {
             $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;
@@ -70,10 +72,11 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
             return null;
         }
 
-        $argumentNodes   = $node->getArguments();
-        $argumentNodeMap = keyMap($argumentNodes, function (ArgumentNode $argument) {
-            return $argument->getNameValue();
-        });
+        $argumentNodes = $node->getArguments();
+        $argumentNodeMap = keyMap($argumentNodes,
+            function (ArgumentNode $argument) {
+                return $argument->getNameValue();
+            });
 
         foreach ($directiveDefinition->getArguments() as $argumentDefinition) {
             $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;

@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
 class OperationTypeDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {
 
@@ -33,10 +31,10 @@ class OperationTypeDefinitionNode extends AbstractNode implements DefinitionNode
     public function toArray(): array
     {
         return [
-            'kind'      => $this->kind,
+            'kind' => $this->kind,
             'operation' => $this->operation,
-            'type'      => $this->getTypeAsArray(),
-            'loc'       => $this->getLocationAsArray(),
+            'type' => $this->getTypeAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

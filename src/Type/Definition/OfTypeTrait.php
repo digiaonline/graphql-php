@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait OfTypeTrait
 {
+
     /**
      * @var TypeInterface
      */
@@ -19,11 +20,13 @@ trait OfTypeTrait
 
     /**
      * @param TypeInterface $ofType
+     *
      * @return $this
      */
     protected function setOfType(TypeInterface $ofType)
     {
         $this->ofType = $ofType;
+
         return $this;
     }
 }

@@ -6,14 +6,14 @@ use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use Digia\GraphQL\Schema\Validation\ValidationContext;
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Util\find;
 
 class RootTypesRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
@@ -22,8 +22,8 @@ class RootTypesRule extends AbstractRule
         $schema = $this->context->getSchema();
 
         $rootTypes = [
-            'query'        => $schema->getQueryType(),
-            'mutation'     => $schema->getMutationType(),
+            'query' => $schema->getQueryType(),
+            'mutation' => $schema->getMutationType(),
             'subscription' => $schema->getSubscriptionType(),
         ];
 
@@ -34,16 +34,19 @@ class RootTypesRule extends AbstractRule
 
     /**
      * @param TypeInterface|null $rootType
-     * @param string             $operation
+     * @param string $operation
      */
-    protected function validateRootType(?TypeInterface $rootType, string $operation): void
-    {
+    protected function validateRootType(
+        ?TypeInterface $rootType,
+        string $operation
+    ): void {
         $schema = $this->context->getSchema();
 
         if ($operation === 'query' && null === $rootType) {
             $this->context->reportError(
                 new SchemaValidationException(
-                    \sprintf('%s root type must be provided.', \ucfirst($operation)),
+                    \sprintf('%s root type must be provided.',
+                        \ucfirst($operation)),
                     $schema->hasAstNode() ? [$schema->getAstNode()] : null
                 )
             );
@@ -61,7 +64,10 @@ class RootTypesRule extends AbstractRule
                         \ucfirst($operation),
                         (string)$rootType
                     ),
-                    null !== $rootType ? [$this->getOperationTypeNode($schema, $rootType, $operation)] : null
+                    null !== $rootType ? [
+                        $this->getOperationTypeNode($schema, $rootType,
+                            $operation),
+                    ] : null
                 )
             );
 
@@ -70,16 +76,18 @@ class RootTypesRule extends AbstractRule
     }
 
     /**
-     * @param SchemaInterface          $schema
+     * @param SchemaInterface $schema
      * @param TypeInterface|ObjectType $type
-     * @param string                   $operation
+     * @param string $operation
+     *
      * @return NodeInterface|null
      */
     protected function getOperationTypeNode(
         SchemaInterface $schema,
         TypeInterface $type,
         string $operation
-    ): ?NodeInterface {
+    ): ?NodeInterface
+    {
         /** @var SchemaDefinitionNode $node */
         $node = $schema->getAstNode();
 
@@ -90,7 +98,9 @@ class RootTypesRule extends AbstractRule
         /** @var OperationTypeDefinitionNode $operationTypeNode */
         $operationTypeNode = find(
             $node->getOperationTypes(),
-            function (OperationTypeDefinitionNode $operationType) use ($operation) {
+            function (OperationTypeDefinitionNode $operationType) use (
+                $operation
+            ) {
                 return $operationType->getOperation() === $operation;
             }
         );

@@ -12,11 +12,12 @@ use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
 use function Digia\GraphQL\Type\newUnionType;
+use function Digia\GraphQL\Type\String;
 
 class AbstractTest extends TestCase
 {
+
     // EXECUTE: HANDLES EXECUTION OF ABSTRACT TYPES
 
     /**
@@ -28,49 +29,54 @@ class AbstractTest extends TestCase
     public function testIsTypeOfUsedToResolveFunctionForInterface()
     {
         $PetInterfaceType = newInterfaceType([
-            'name'   => 'Pet',
+            'name' => 'Pet',
             'fields' => [
-                'name' => ['type' => String()]
-            ]
+                'name' => ['type' => String()],
+            ],
         ]);
 
         $DogType = newObjectType([
-            'name'       => 'Dog',
+            'name' => 'Dog',
             'interfaces' => [$PetInterfaceType],
-            'fields'     => [
-                'name'  => ['type' => String()],
+            'fields' => [
+                'name' => ['type' => String()],
                 'woofs' => ['type' => Boolean()],
             ],
-            'isTypeOf'   => function ($obj) {
+            'isTypeOf' => function ($obj) {
                 return $obj instanceof Dog;
-            }
+            },
         ]);
 
         $CatType = newObjectType([
-            'name'       => 'Cat',
+            'name' => 'Cat',
             'interfaces' => [$PetInterfaceType],
-            'fields'     => [
-                'name'  => ['type' => String()],
+            'fields' => [
+                'name' => ['type' => String()],
                 'meows' => ['type' => Boolean()],
             ],
-            'isTypeOf'   => function ($obj) {
+            'isTypeOf' => function ($obj) {
                 return $obj instanceof Cat;
-            }
+            },
         ]);
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Query',
+                'name' => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newList($PetInterfaceType),
-                        'resolve' => function ($source, $args, $context, $info) {
+                        'type' => newList($PetInterfaceType),
+                        'resolve' => function (
+                            $source,
+                            $args,
+                            $context,
+                            $info
+                        ) {
                             return [
                                 new Dog('Odie', true),
-                                new Cat('Garfield', false)
+                                new Cat('Garfield', false),
                             ];
-                        }
-                    ]
+                        },
+                    ],
                 ],
             ]),
             'types' => [$DogType, $CatType],
@@ -94,14 +100,14 @@ class AbstractTest extends TestCase
         $expected = new ExecutionResult([
             'pets' => [
                 [
-                    'name'  => 'Odie',
+                    'name' => 'Odie',
                     'woofs' => true,
                 ],
                 [
-                    'name'  => 'Garfield',
+                    'name' => 'Garfield',
                     'meows' => false,
-                ]
-            ]
+                ],
+            ],
         ], []);
 
         $this->assertEquals($expected, $result);
@@ -116,31 +122,34 @@ class AbstractTest extends TestCase
     public function testIsTypeOfUsedToResolveRuntimeTypeForUnion()
     {
         $DogType = newObjectType([
-            'name'     => 'Dog',
-            'fields'   => [
-                'name'  => ['type' => String()],
+            'name' => 'Dog',
+            'fields' => [
+                'name' => ['type' => String()],
                 'woofs' => ['type' => Boolean()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Dog;
-            }
+            },
         ]);
 
         $CatType = newObjectType([
-            'name'     => 'Cat',
-            'fields'   => [
-                'name'  => ['type' => String()],
+            'name' => 'Cat',
+            'fields' => [
+                'name' => ['type' => String()],
                 'meows' => ['type' => Boolean()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Cat;
-            }
+            },
         ]);
 
         $PetUnionType = newUnionType([
-            'name'        => 'Pet',
-            'types'       => [$DogType, $CatType],
-            'resolveType' => function ($result, $context, $info) use ($DogType, $CatType) {
+            'name' => 'Pet',
+            'types' => [$DogType, $CatType],
+            'resolveType' => function ($result, $context, $info) use (
+                $DogType,
+                $CatType
+            ) {
                 if ($result instanceof Dog) {
                     return $DogType;
                 }
@@ -150,23 +159,28 @@ class AbstractTest extends TestCase
                 }
 
                 return null;
-            }
+            },
         ]);
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Query',
+                'name' => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newList($PetUnionType),
-                        'resolve' => function ($source, $args, $context, $info) {
+                        'type' => newList($PetUnionType),
+                        'resolve' => function (
+                            $source,
+                            $args,
+                            $context,
+                            $info
+                        ) {
                             return [
                                 new Dog('Odie', true),
-                                new Cat('Garfield', false)
+                                new Cat('Garfield', false),
                             ];
-                        }
-                    ]
-                ]
+                        },
+                    ],
+                ],
             ]),
         ]);
 
@@ -188,14 +202,14 @@ class AbstractTest extends TestCase
         $expected = new ExecutionResult([
             'pets' => [
                 [
-                    'name'  => 'Odie',
+                    'name' => 'Odie',
                     'woofs' => true,
                 ],
                 [
-                    'name'  => 'Garfield',
+                    'name' => 'Garfield',
                     'meows' => false,
-                ]
-            ]
+                ],
+            ],
         ], []);
 
         $this->assertEquals($expected->getData(), $result->getData());
@@ -210,8 +224,13 @@ class AbstractTest extends TestCase
     public function testResolveTypeOnInterfaceYieldsUsefulError()
     {
         $PetInterfaceType = newInterfaceType([
-            'name'        => 'Pet',
-            'resolveType' => function ($result, $context, $info) use (&$DogType, &$CatType, &$HumanType) {
+            'name' => 'Pet',
+            'resolveType' => function ($result, $context, $info) use (
+                &$DogType,
+                &
+                $CatType,
+                &$HumanType
+            ) {
                 if ($result instanceof Dog) {
                     return $DogType;
                 }
@@ -223,61 +242,67 @@ class AbstractTest extends TestCase
                 if ($result instanceof Human) {
                     return $HumanType;
                 }
+
                 return null;
-            }
+            },
         ]);
 
         $DogType = newObjectType([
-            'name'       => 'Dog',
+            'name' => 'Dog',
             'interfaces' => [$PetInterfaceType],
-            'fields'     => [
-                'name'  => ['type' => String()],
+            'fields' => [
+                'name' => ['type' => String()],
                 'woofs' => ['type' => Boolean()],
             ],
-            'isTypeOf'   => function ($obj) {
+            'isTypeOf' => function ($obj) {
                 return $obj instanceof Dog;
-            }
+            },
         ]);
 
         $CatType = newObjectType([
-            'name'       => 'Cat',
+            'name' => 'Cat',
             'interfaces' => [$PetInterfaceType],
-            'fields'     => [
-                'name'  => ['type' => String()],
+            'fields' => [
+                'name' => ['type' => String()],
                 'meows' => ['type' => Boolean()],
             ],
-            'isTypeOf'   => function ($obj) {
+            'isTypeOf' => function ($obj) {
                 return $obj instanceof Cat;
-            }
+            },
         ]);
 
         $HumanType = newObjectType([
-            'name'     => 'Human',
-            'fields'   => [
-                'name' => ['type' => String()]
+            'name' => 'Human',
+            'fields' => [
+                'name' => ['type' => String()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Human;
-            }
+            },
         ]);
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Query',
+                'name' => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newList($PetInterfaceType),
-                        'resolve' => function ($source, $args, $context, $info) {
+                        'type' => newList($PetInterfaceType),
+                        'resolve' => function (
+                            $source,
+                            $args,
+                            $context,
+                            $info
+                        ) {
                             return [
                                 new Dog('Odie', true),
                                 new Cat('Garfield', false),
-                                new Human('John')
+                                new Human('John'),
                             ];
-                        }
-                    ]
-                ]
+                        },
+                    ],
+                ],
             ]),
-            'types' => [$DogType, $CatType]
+            'types' => [$DogType, $CatType],
         ]);
 
         $source = '{
@@ -298,15 +323,15 @@ class AbstractTest extends TestCase
         $expected = new ExecutionResult([
             'pets' => [
                 [
-                    'name'  => 'Odie',
+                    'name' => 'Odie',
                     'woofs' => true,
                 ],
                 [
-                    'name'  => 'Garfield',
+                    'name' => 'Garfield',
                     'meows' => false,
                 ],
-                null
-            ]
+                null,
+            ],
         ], [
             new ExecutionException(
                 'Runtime Object type "Human" is not a possible type for "Pet".',
@@ -329,41 +354,45 @@ class AbstractTest extends TestCase
     public function testResolveTypeOnUnionYieldsUseFulError()
     {
         $DogType = newObjectType([
-            'name'     => 'Dog',
-            'fields'   => [
-                'name'  => ['type' => String()],
+            'name' => 'Dog',
+            'fields' => [
+                'name' => ['type' => String()],
                 'woofs' => ['type' => Boolean()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Dog;
-            }
+            },
         ]);
 
         $CatType = newObjectType([
-            'name'     => 'Cat',
-            'fields'   => [
-                'name'  => ['type' => String()],
+            'name' => 'Cat',
+            'fields' => [
+                'name' => ['type' => String()],
                 'meows' => ['type' => Boolean()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Cat;
-            }
+            },
         ]);
 
         $HumanType = newObjectType([
-            'name'     => 'Human',
-            'fields'   => [
-                'name' => ['type' => String()]
+            'name' => 'Human',
+            'fields' => [
+                'name' => ['type' => String()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Human;
-            }
+            },
         ]);
 
         $PetUnionType = newUnionType([
-            'name'        => 'Pet',
-            'types'       => [$DogType, $CatType],
-            'resolveType' => function ($result, $context, $info) use ($DogType, $CatType, $HumanType) {
+            'name' => 'Pet',
+            'types' => [$DogType, $CatType],
+            'resolveType' => function ($result, $context, $info) use (
+                $DogType,
+                $CatType,
+                $HumanType
+            ) {
                 if ($result instanceof Dog) {
                     return $DogType;
                 }
@@ -377,24 +406,29 @@ class AbstractTest extends TestCase
                 }
 
                 return null;
-            }
+            },
         ]);
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Query',
+                'name' => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newList($PetUnionType),
-                        'resolve' => function ($source, $args, $context, $info) {
+                        'type' => newList($PetUnionType),
+                        'resolve' => function (
+                            $source,
+                            $args,
+                            $context,
+                            $info
+                        ) {
                             return [
                                 new Dog('Odie', true),
                                 new Cat('Garfield', false),
-                                new Human('John')
+                                new Human('John'),
                             ];
-                        }
-                    ]
-                ]
+                        },
+                    ],
+                ],
             ]),
         ]);
 
@@ -416,15 +450,15 @@ class AbstractTest extends TestCase
         $expected = new ExecutionResult([
             'pets' => [
                 [
-                    'name'  => 'Odie',
+                    'name' => 'Odie',
                     'woofs' => true,
                 ],
                 [
-                    'name'  => 'Garfield',
+                    'name' => 'Garfield',
                     'meows' => false,
                 ],
-                null
-            ]
+                null,
+            ],
         ], [
             new ExecutionException(
                 'Runtime Object type "Human" is not a possible type for "Pet".',
@@ -447,7 +481,7 @@ class AbstractTest extends TestCase
     public function testResolveTypeAllowsResolvingWithTypeName()
     {
         $PetInterfaceType = newInterfaceType([
-            'name'        => 'Pet',
+            'name' => 'Pet',
             'resolveType' => function ($result, $context, $info) {
                 if ($result instanceof Dog) {
                     return 'Dog';
@@ -458,49 +492,54 @@ class AbstractTest extends TestCase
                 }
 
                 return null;
-            }
+            },
         ]);
 
         $DogType = newObjectType([
-            'name'       => 'Dog',
+            'name' => 'Dog',
             'interfaces' => [$PetInterfaceType],
-            'fields'     => [
-                'name'  => ['type' => String()],
+            'fields' => [
+                'name' => ['type' => String()],
                 'woofs' => ['type' => Boolean()],
             ],
-            'isTypeOf'   => function ($obj) {
+            'isTypeOf' => function ($obj) {
                 return $obj instanceof Dog;
-            }
+            },
         ]);
 
         $CatType = newObjectType([
-            'name'       => 'Cat',
+            'name' => 'Cat',
             'interfaces' => [$PetInterfaceType],
-            'fields'     => [
-                'name'  => ['type' => String()],
+            'fields' => [
+                'name' => ['type' => String()],
                 'meows' => ['type' => Boolean()],
             ],
-            'isTypeOf'   => function ($obj) {
+            'isTypeOf' => function ($obj) {
                 return $obj instanceof Cat;
-            }
+            },
         ]);
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Query',
+                'name' => 'Query',
                 'fields' => [
                     'pets' => [
-                        'type'    => newList($PetInterfaceType),
-                        'resolve' => function ($source, $args, $context, $info) {
+                        'type' => newList($PetInterfaceType),
+                        'resolve' => function (
+                            $source,
+                            $args,
+                            $context,
+                            $info
+                        ) {
                             return [
                                 new Dog('Odie', true),
-                                new Cat('Garfield', false)
+                                new Cat('Garfield', false),
                             ];
-                        }
-                    ]
-                ]
+                        },
+                    ],
+                ],
             ]),
-            'types' => [$DogType, $CatType]
+            'types' => [$DogType, $CatType],
         ]);
 
         $source = '{
@@ -521,14 +560,14 @@ class AbstractTest extends TestCase
         $expected = new ExecutionResult([
             'pets' => [
                 [
-                    'name'  => 'Odie',
+                    'name' => 'Odie',
                     'woofs' => true,
                 ],
                 [
-                    'name'  => 'Garfield',
+                    'name' => 'Garfield',
                     'meows' => false,
-                ]
-            ]
+                ],
+            ],
         ], []);
 
         $this->assertEquals($expected, $result);

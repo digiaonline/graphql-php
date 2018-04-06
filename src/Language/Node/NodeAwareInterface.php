@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 interface NodeAwareInterface
 {
+
     /**
      * @return bool
      */

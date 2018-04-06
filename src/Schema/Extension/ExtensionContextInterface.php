@@ -7,6 +7,7 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 
 interface ExtensionContextInterface
 {
+
     /**
      * @return bool
      */

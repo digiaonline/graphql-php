@@ -25,10 +25,15 @@ class NumberReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        $body    = $this->lexer->getBody();
-        $start   = $pos;
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
+        $body = $this->lexer->getBody();
+        $start = $pos;
         $isFloat = false;
 
         if ($code === 45) {
@@ -43,26 +48,27 @@ class NumberReader extends AbstractReader
                 throw new SyntaxErrorException(
                     $this->lexer->getSource(),
                     $pos,
-                    sprintf('Invalid number, unexpected digit after 0: %s.', printCharCode($code))
+                    sprintf('Invalid number, unexpected digit after 0: %s.',
+                        printCharCode($code))
                 );
             }
         } else {
-            $pos  = $this->readDigits($code, $pos);
+            $pos = $this->readDigits($code, $pos);
             $code = charCodeAt($body, $pos);
         }
 
         if ($code === 46) {
             // .
             $isFloat = true;
-            $code    = charCodeAt($body, ++$pos);
-            $pos     = $this->readDigits($code, $pos);
-            $code    = charCodeAt($body, $pos);
+            $code = charCodeAt($body, ++$pos);
+            $pos = $this->readDigits($code, $pos);
+            $code = charCodeAt($body, $pos);
         }
 
         if ($code === 69 || $code === 101) {
             // e or E
             $isFloat = true;
-            $code    = charCodeAt($body, ++$pos);
+            $code = charCodeAt($body, ++$pos);
 
             if ($code === 43 || $code === 45) {
                 // + or -
@@ -84,16 +90,9 @@ class NumberReader extends AbstractReader
     }
 
     /**
-     * @inheritdoc
-     */
-    public function supportsReader(int $code, int $pos): bool
-    {
-        return isNumber($code);
-    }
-
-    /**
      * @param int $code
      * @param int $pos
+     *
      * @return int
      * @throws SyntaxErrorException
      */
@@ -112,7 +111,16 @@ class NumberReader extends AbstractReader
         throw new SyntaxErrorException(
             $this->lexer->getSource(),
             $pos,
-            sprintf('Invalid number, expected digit but got: %s', printCharCode($code))
+            sprintf('Invalid number, expected digit but got: %s',
+                printCharCode($code))
         );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function supportsReader(int $code, int $pos): bool
+    {
+        return isNumber($code);
     }
 }

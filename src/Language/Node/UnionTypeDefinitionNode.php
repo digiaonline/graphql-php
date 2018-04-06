@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
 class UnionTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface
 {
 
@@ -23,12 +21,12 @@ class UnionTypeDefinitionNode extends AbstractNode implements TypeDefinitionNode
     public function toArray(): array
     {
         return [
-            'kind'        => $this->kind,
+            'kind' => $this->kind,
             'description' => $this->getDescriptionAsArray(),
-            'name'        => $this->getNameAsArray(),
-            'directives'  => $this->getDirectivesAsArray(),
-            'types'       => $this->getTypesAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'name' => $this->getNameAsArray(),
+            'directives' => $this->getDirectivesAsArray(),
+            'types' => $this->getTypesAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

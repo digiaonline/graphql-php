@@ -65,10 +65,10 @@ class Lexer implements LexerInterface
             $reader->setLexer($this);
         }
 
-        $this->readers   = $readers;
+        $this->readers = $readers;
         $this->lastToken = $startOfFileToken;
-        $this->token     = $startOfFileToken;
-        $this->line      = 1;
+        $this->token = $startOfFileToken;
+        $this->line = 1;
         $this->lineStart = 0;
     }
 
@@ -101,117 +101,23 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function getOption(string $name, $default = null)
-    {
-        return $this->options[$name] ?? $default;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getBody(): string
-    {
-        return $this->getSource()->getBody();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getTokenKind(): string
-    {
-        return $this->token->getKind();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getTokenValue(): ?string
-    {
-        return $this->token->getValue();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getToken(): Token
-    {
-        return $this->token;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSource(): Source
-    {
-        if ($this->source instanceof Source) {
-            return $this->source;
-        }
-
-        throw new LanguageException('No source has been set.');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getLastToken(): Token
-    {
-        return $this->lastToken;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setSource(Source $source)
-    {
-        $this->source = $source;
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setOptions(array $options)
-    {
-        $this->options = $options;
-        return $this;
-    }
-
-    /**
-     * @param int   $code
-     * @param int   $pos
-     * @param int   $line
-     * @param int   $col
      * @param Token $prev
-     * @return Token
-     * @throws SyntaxErrorException
-     */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        if (($reader = $this->getReader($code, $pos)) !== null) {
-            return $reader->read($code, $pos, $line, $col, $prev);
-        }
-
-        throw new SyntaxErrorException($this->source, $pos, $this->unexpectedCharacterMessage($code));
-    }
-
-    /**
-     * @param Token $prev
+     *
      * @return Token
      * @throws SyntaxErrorException
      */
     protected function readToken(Token $prev): Token
     {
-        $body       = $this->source->getBody();
+        $body = $this->source->getBody();
         $bodyLength = mb_strlen($body);
 
-        $pos  = $this->positionAfterWhitespace($body, $prev->getEnd());
+        $pos = $this->positionAfterWhitespace($body, $prev->getEnd());
         $line = $this->line;
-        $col  = 1 + $pos - $this->lineStart;
+        $col = 1 + $pos - $this->lineStart;
 
         if ($pos >= $bodyLength) {
-            return new Token(TokenKindEnum::EOF, $bodyLength, $bodyLength, $line, $col, $prev);
+            return new Token(TokenKindEnum::EOF, $bodyLength, $bodyLength,
+                $line, $col, $prev);
         }
 
         $code = charCodeAt($body, $pos);
@@ -220,7 +126,8 @@ class Lexer implements LexerInterface
             throw new SyntaxErrorException(
                 $this->source,
                 $pos,
-                sprintf('Cannot contain the invalid character %s', printCharCode($code))
+                sprintf('Cannot contain the invalid character %s',
+                    printCharCode($code))
             );
         }
 
@@ -228,44 +135,17 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @param int $code
-     * @return string
-     */
-    protected function unexpectedCharacterMessage(int $code): string
-    {
-        if ($code === 39) {
-            // '
-            return 'Unexpected single quote character (\'), did you mean to use a double quote (")?';
-        }
-
-        return sprintf('Cannot parse the unexpected character %s', printCharCode($code));
-    }
-
-    /**
-     * @param int $code
-     * @param int $pos
-     * @return ReaderInterface|null
-     */
-    protected function getReader(int $code, int $pos): ?ReaderInterface
-    {
-        foreach ($this->readers as $reader) {
-            if ($reader instanceof ReaderInterface && $reader->supportsReader($code, $pos)) {
-                return $reader;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * @param string $body
-     * @param int    $startPosition
+     * @param int $startPosition
+     *
      * @return int
      */
-    protected function positionAfterWhitespace(string $body, int $startPosition): int
-    {
+    protected function positionAfterWhitespace(
+        string $body,
+        int $startPosition
+    ): int {
         $bodyLength = mb_strlen($body);
-        $pos        = $startPosition;
+        $pos = $startPosition;
 
         while ($pos < $bodyLength) {
             $code = charCodeAt($body, $pos);
@@ -300,5 +180,144 @@ class Lexer implements LexerInterface
     {
         ++$this->line;
         $this->lineStart = $pos;
+    }
+
+    /**
+     * @param int $code
+     * @param int $pos
+     * @param int $line
+     * @param int $col
+     * @param Token $prev
+     *
+     * @return Token
+     * @throws SyntaxErrorException
+     */
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
+        if (($reader = $this->getReader($code, $pos)) !== null) {
+            return $reader->read($code, $pos, $line, $col, $prev);
+        }
+
+        throw new SyntaxErrorException($this->source, $pos,
+            $this->unexpectedCharacterMessage($code));
+    }
+
+    /**
+     * @param int $code
+     * @param int $pos
+     *
+     * @return ReaderInterface|null
+     */
+    protected function getReader(int $code, int $pos): ?ReaderInterface
+    {
+        foreach ($this->readers as $reader) {
+            if ($reader instanceof ReaderInterface && $reader->supportsReader($code,
+                    $pos)) {
+                return $reader;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param int $code
+     *
+     * @return string
+     */
+    protected function unexpectedCharacterMessage(int $code): string
+    {
+        if ($code === 39) {
+            // '
+            return 'Unexpected single quote character (\'), did you mean to use a double quote (")?';
+        }
+
+        return sprintf('Cannot parse the unexpected character %s',
+            printCharCode($code));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOption(string $name, $default = null)
+    {
+        return $this->options[$name] ?? $default;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBody(): string
+    {
+        return $this->getSource()->getBody();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSource(): Source
+    {
+        if ($this->source instanceof Source) {
+            return $this->source;
+        }
+
+        throw new LanguageException('No source has been set.');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSource(Source $source)
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTokenKind(): string
+    {
+        return $this->token->getKind();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTokenValue(): ?string
+    {
+        return $this->token->getValue();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getToken(): Token
+    {
+        return $this->token;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLastToken(): Token
+    {
+        return $this->lastToken;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+
+        return $this;
     }
 }

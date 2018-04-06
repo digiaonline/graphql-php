@@ -8,12 +8,15 @@ use function Digia\GraphQL\Validation\undefinedFieldMessage;
 
 class MessagesTest extends TestCase
 {
+
     public function testUndefinedFieldMessageWorksWithoutSuggestions()
     {
-        $this->assertEquals(undefinedFieldMessage('f', 'T', [], []), 'Cannot query field "f" on type "T".');
+        $this->assertEquals(undefinedFieldMessage('f', 'T', [], []),
+            'Cannot query field "f" on type "T".');
     }
 
-    public function testUndefinedFieldMessageWorksWithNoSmallNumbersOfTypeSuggestions()
+    public function testUndefinedFieldMessageWorksWithNoSmallNumbersOfTypeSuggestions(
+    )
     {
         $this->assertEquals(
             undefinedFieldMessage('f', 'T', ['A', 'B'], []),
@@ -21,7 +24,8 @@ class MessagesTest extends TestCase
         );
     }
 
-    public function testUndefinedFieldMessageWorksWithNoSmallNumbersOfFieldSuggestions()
+    public function testUndefinedFieldMessageWorksWithNoSmallNumbersOfFieldSuggestions(
+    )
     {
         $this->assertEquals(
             undefinedFieldMessage('f', 'T', [], ['z', 'y']),
@@ -29,7 +33,8 @@ class MessagesTest extends TestCase
         );
     }
 
-    public function testUndefinedFieldMessageOnlyShowsOneSetOfSuggestionsAtATimePreferringTypes()
+    public function testUndefinedFieldMessageOnlyShowsOneSetOfSuggestionsAtATimePreferringTypes(
+    )
     {
         $this->assertEquals(
             undefinedFieldMessage('f', 'T', ['A', 'B'], ['z', 'y']),

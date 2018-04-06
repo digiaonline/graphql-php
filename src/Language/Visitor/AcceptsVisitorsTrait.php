@@ -9,6 +9,108 @@ trait AcceptsVisitorsTrait
 {
 
     /**
+     * @var array
+     */
+    protected static $kindToNodesToVisitMap = [
+        'Name' => [],
+
+        'Document' => ['definitions'],
+        'OperationDefinition' => [
+            'name',
+            'variableDefinitions',
+            'directives',
+            'selectionSet',
+        ],
+        'VariableDefinition' => ['variable', 'type', 'defaultValue'],
+        'Variable' => ['name'],
+        'SelectionSet' => ['selections'],
+        'Field' => ['alias', 'name', 'arguments', 'directives', 'selectionSet'],
+        'Argument' => ['name', 'value'],
+
+        'FragmentSpread' => ['name', 'directives'],
+        'InlineFragment' => ['typeCondition', 'directives', 'selectionSet'],
+        'FragmentDefinition' => [
+            'name',
+            // Note: fragment variable definitions are experimental and may be changed or removed in the future.
+            'variableDefinitions',
+            'typeCondition',
+            'directives',
+            'selectionSet',
+        ],
+
+        'IntValue' => [],
+        'FloatValue' => [],
+        'StringValue' => [],
+        'BooleanValue' => [],
+        'NullValue' => [],
+        'EnumValue' => [],
+        'ListValue' => ['values'],
+        'ObjectValue' => ['fields'],
+        'ObjectField' => ['name', 'value'],
+
+        'Directive' => ['name', 'arguments'],
+
+        'NamedType' => ['name'],
+        'ListType' => ['type'],
+        'NonNullType' => ['type'],
+
+        'SchemaDefinition' => ['directives', 'operationTypes'],
+        'OperationTypeDefinition' => ['type'],
+
+        'ScalarTypeDefinition' => ['description', 'name', 'directives'],
+        'ObjectTypeDefinition' => [
+            'description',
+            'name',
+            'interfaces',
+            'directives',
+            'fields',
+        ],
+        'FieldDefinition' => [
+            'description',
+            'name',
+            'arguments',
+            'type',
+            'directives',
+        ],
+        'InputValueDefinition' => [
+            'description',
+            'name',
+            'type',
+            'defaultValue',
+            'directives',
+        ],
+        'InterfaceTypeDefinition' => [
+            'description',
+            'name',
+            'directives',
+            'fields',
+        ],
+        'UnionTypeDefinition' => ['description', 'name', 'directives', 'types'],
+        'EnumTypeDefinition' => ['description', 'name', 'directives', 'values'],
+        'EnumValueDefinition' => ['description', 'name', 'directives'],
+        'InputObjectTypeDefinition' => [
+            'description',
+            'name',
+            'directives',
+            'fields',
+        ],
+
+        'ScalarTypeExtension' => ['name', 'directives'],
+        'ObjectTypeExtension' => ['name', 'interfaces', 'directives', 'fields'],
+        'InterfaceTypeExtension' => ['name', 'directives', 'fields'],
+        'UnionTypeExtension' => ['name', 'directives', 'types'],
+        'EnumTypeExtension' => ['name', 'directives', 'values'],
+        'InputObjectTypeExtension' => ['name', 'directives', 'fields'],
+
+        'DirectiveDefinition' => [
+            'description',
+            'name',
+            'arguments',
+            'locations',
+        ],
+    ];
+
+    /**
      * @var VisitorInterface
      */
     protected $visitor;
@@ -39,11 +141,12 @@ trait AcceptsVisitorsTrait
     protected $isEdited = false;
 
     /**
-     * @param VisitorInterface      $visitor
-     * @param string|int|null       $key
-     * @param NodeInterface|null    $parent
-     * @param array|string[]        $path
+     * @param VisitorInterface $visitor
+     * @param string|int|null $key
+     * @param NodeInterface|null $parent
+     * @param array|string[] $path
      * @param array|NodeInterface[] $ancestors
+     *
      * @return NodeInterface|AcceptsVisitorsTrait|SerializationInterface|null
      */
     public function acceptVisitor(
@@ -52,11 +155,12 @@ trait AcceptsVisitorsTrait
         ?NodeInterface $parent = null,
         array $path = [],
         array $ancestors = []
-    ): ?NodeInterface {
-        $this->visitor   = $visitor;
-        $this->key       = $key;
-        $this->parent    = $parent;
-        $this->path      = $path;
+    ): ?NodeInterface
+    {
+        $this->visitor = $visitor;
+        $this->key = $key;
+        $this->parent = $parent;
+        $this->path = $path;
         $this->ancestors = $ancestors;
 
         /** @var NodeInterface|AcceptsVisitorsTrait|null $newNode */
@@ -86,7 +190,7 @@ trait AcceptsVisitorsTrait
                 continue;
             }
 
-            $setter = 'set' . ucfirst($name);
+            $setter = 'set'.ucfirst($name);
 
             if (method_exists($newNode, $setter)) {
                 $newNode->{$setter}($newNodeOrNodes);
@@ -94,6 +198,136 @@ trait AcceptsVisitorsTrait
         }
 
         return $visitor->leaveNode($newNode);
+    }
+
+    /**
+     * @param NodeInterface|AcceptsVisitorsTrait $node
+     *
+     * @return bool
+     */
+    protected function determineIsEdited(NodeInterface $node): bool
+    {
+        $this->isEdited = $this->isEdited || !$this->compareNode($node);
+
+        return $this->isEdited;
+    }
+
+    /**
+     * @param NodeInterface $other
+     *
+     * @return bool
+     */
+    protected function compareNode(NodeInterface $other)
+    {
+        // TODO: Figure out a better way to solve this.
+        return $this->toJSON() === $other->toJSON();
+    }
+
+    /**
+     * @param string|int $key
+     *
+     * @return array|NodeInterface|NodeInterface[]|null
+     */
+    protected function getNodeOrNodes($key)
+    {
+        return $this->{$key};
+    }
+
+    /**
+     * @param            $nodeOrNodes
+     * @param string|int $key
+     *
+     * @return array|NodeInterface|NodeInterface[]|null
+     */
+    protected function visitNodeOrNodes($nodeOrNodes, $key)
+    {
+        $this->addAncestor($this);
+
+        $newNodeOrNodes = \is_array($nodeOrNodes)
+            ? $this->visitNodes($nodeOrNodes, $key)
+            : $this->visitNode($nodeOrNodes, $key, $this);
+
+        $this->removeAncestor();
+
+        return $newNodeOrNodes;
+    }
+
+    /**
+     * Adds an ancestor.
+     *
+     * @param NodeInterface $node
+     */
+    protected function addAncestor(NodeInterface $node)
+    {
+        $this->ancestors[] = $node;
+    }
+
+    /**
+     * @param NodeInterface[] $nodes
+     * @param string|int $key
+     * @param NodeInterface|null $parent
+     *
+     * @return NodeInterface[]
+     */
+    protected function visitNodes(array $nodes, $key): array
+    {
+        $this->addOneToPath($key);
+
+        $index = 0;
+        $newNodes = [];
+
+        foreach ($nodes as $node) {
+            $newNode = $this->visitNode($node, $index, null);
+
+            if (null !== $newNode) {
+                $newNodes[$index] = $newNode;
+                $index++;
+            }
+        }
+
+        $this->removeOneFromPath();
+
+        return $newNodes;
+    }
+
+    /**
+     * Appends a key to the path.
+     *
+     * @param string $key
+     */
+    protected function addOneToPath(string $key)
+    {
+        $this->path[] = $key;
+    }
+
+    /**
+     * @param NodeInterface|AcceptsVisitorsTrait $node
+     * @param string|int $key
+     * @param NodeInterface|null $parent
+     *
+     * @return NodeInterface|null
+     */
+    protected function visitNode(
+        NodeInterface $node,
+        $key,
+        ?NodeInterface $parent
+    ): ?NodeInterface
+    {
+        $this->addOneToPath($key);
+
+        $newNode = $node->acceptVisitor($this->visitor, $key, $parent,
+            $this->path, $this->ancestors);
+
+        // If the node was edited, we need to revisit it
+        // to produce the expected result.
+        if (null !== $newNode && $newNode->isEdited()) {
+            $newNode = $newNode->acceptVisitor($this->visitor, $key, $parent,
+                $this->path, $this->ancestors);
+        }
+
+        $this->removeOneFromPath();
+
+        return $newNode;
     }
 
     /**
@@ -106,16 +340,35 @@ trait AcceptsVisitorsTrait
 
     /**
      * @param bool $isEdited
+     *
      * @return $this
      */
     public function setIsEdited(bool $isEdited)
     {
         $this->isEdited = $isEdited;
+
         return $this;
     }
 
     /**
+     * Removes the last item from the path.
+     */
+    protected function removeOneFromPath()
+    {
+        $this->path = \array_slice($this->path, 0, -1);
+    }
+
+    /**
+     *  Removes the last ancestor.
+     */
+    protected function removeAncestor()
+    {
+        $this->ancestors = \array_slice($this->ancestors, 0, -1);
+    }
+
+    /**
      * @param int $depth
+     *
      * @return NodeInterface|null
      */
     public function getAncestor(int $depth = 1): ?NodeInterface
@@ -154,216 +407,4 @@ trait AcceptsVisitorsTrait
     {
         return $this->path;
     }
-
-    /**
-     * @param string|int $key
-     * @return array|NodeInterface|NodeInterface[]|null
-     */
-    protected function getNodeOrNodes($key)
-    {
-        return $this->{$key};
-    }
-
-    /**
-     * @param            $nodeOrNodes
-     * @param string|int $key
-     * @return array|NodeInterface|NodeInterface[]|null
-     */
-    protected function visitNodeOrNodes($nodeOrNodes, $key)
-    {
-        $this->addAncestor($this);
-
-        $newNodeOrNodes = \is_array($nodeOrNodes)
-            ? $this->visitNodes($nodeOrNodes, $key)
-            : $this->visitNode($nodeOrNodes, $key, $this);
-
-        $this->removeAncestor();
-
-        return $newNodeOrNodes;
-    }
-
-    /**
-     * @param NodeInterface[]    $nodes
-     * @param string|int         $key
-     * @param NodeInterface|null $parent
-     * @return NodeInterface[]
-     */
-    protected function visitNodes(array $nodes, $key): array
-    {
-        $this->addOneToPath($key);
-
-        $index    = 0;
-        $newNodes = [];
-
-        foreach ($nodes as $node) {
-            $newNode = $this->visitNode($node, $index, null);
-
-            if (null !== $newNode) {
-                $newNodes[$index] = $newNode;
-                $index++;
-            }
-        }
-
-        $this->removeOneFromPath();
-
-        return $newNodes;
-    }
-
-    /**
-     * @param NodeInterface|AcceptsVisitorsTrait $node
-     * @param string|int                         $key
-     * @param NodeInterface|null                 $parent
-     * @return NodeInterface|null
-     */
-    protected function visitNode(NodeInterface $node, $key, ?NodeInterface $parent): ?NodeInterface
-    {
-        $this->addOneToPath($key);
-
-        $newNode = $node->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
-
-        // If the node was edited, we need to revisit it
-        // to produce the expected result.
-        if (null !== $newNode && $newNode->isEdited()) {
-            $newNode = $newNode->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
-        }
-
-        $this->removeOneFromPath();
-
-        return $newNode;
-    }
-
-    /**
-     * @param NodeInterface|AcceptsVisitorsTrait $node
-     * @return bool
-     */
-    protected function determineIsEdited(NodeInterface $node): bool
-    {
-        $this->isEdited = $this->isEdited || !$this->compareNode($node);
-        return $this->isEdited;
-    }
-
-    /**
-     * @param NodeInterface $other
-     * @return bool
-     */
-    protected function compareNode(NodeInterface $other)
-    {
-        // TODO: Figure out a better way to solve this.
-        return $this->toJSON() === $other->toJSON();
-    }
-
-    /**
-     * Appends a key to the path.
-     * @param string $key
-     */
-    protected function addOneToPath(string $key)
-    {
-        $this->path[] = $key;
-    }
-
-    /**
-     * Removes the last item from the path.
-     */
-    protected function removeOneFromPath()
-    {
-        $this->path = \array_slice($this->path, 0, -1);
-    }
-
-    /**
-     * Adds an ancestor.
-     * @param NodeInterface $node
-     */
-    protected function addAncestor(NodeInterface $node)
-    {
-        $this->ancestors[] = $node;
-    }
-
-    /**
-     *  Removes the last ancestor.
-     */
-    protected function removeAncestor()
-    {
-        $this->ancestors = \array_slice($this->ancestors, 0, -1);
-    }
-
-    /**
-     * @var array
-     */
-    protected static $kindToNodesToVisitMap = [
-        'Name' => [],
-
-        'Document'            => ['definitions'],
-        'OperationDefinition' => [
-            'name',
-            'variableDefinitions',
-            'directives',
-            'selectionSet',
-        ],
-        'VariableDefinition'  => ['variable', 'type', 'defaultValue'],
-        'Variable'            => ['name'],
-        'SelectionSet'        => ['selections'],
-        'Field'               => ['alias', 'name', 'arguments', 'directives', 'selectionSet'],
-        'Argument'            => ['name', 'value'],
-
-        'FragmentSpread'     => ['name', 'directives'],
-        'InlineFragment'     => ['typeCondition', 'directives', 'selectionSet'],
-        'FragmentDefinition' => [
-            'name',
-            // Note: fragment variable definitions are experimental and may be changed or removed in the future.
-            'variableDefinitions',
-            'typeCondition',
-            'directives',
-            'selectionSet',
-        ],
-
-        'IntValue'     => [],
-        'FloatValue'   => [],
-        'StringValue'  => [],
-        'BooleanValue' => [],
-        'NullValue'    => [],
-        'EnumValue'    => [],
-        'ListValue'    => ['values'],
-        'ObjectValue'  => ['fields'],
-        'ObjectField'  => ['name', 'value'],
-
-        'Directive' => ['name', 'arguments'],
-
-        'NamedType'   => ['name'],
-        'ListType'    => ['type'],
-        'NonNullType' => ['type'],
-
-        'SchemaDefinition'        => ['directives', 'operationTypes'],
-        'OperationTypeDefinition' => ['type'],
-
-        'ScalarTypeDefinition'      => ['description', 'name', 'directives'],
-        'ObjectTypeDefinition'      => [
-            'description',
-            'name',
-            'interfaces',
-            'directives',
-            'fields',
-        ],
-        'FieldDefinition'           => ['description', 'name', 'arguments', 'type', 'directives'],
-        'InputValueDefinition'      => [
-            'description',
-            'name',
-            'type',
-            'defaultValue',
-            'directives',
-        ],
-        'InterfaceTypeDefinition'   => ['description', 'name', 'directives', 'fields'],
-        'UnionTypeDefinition'       => ['description', 'name', 'directives', 'types'],
-        'EnumTypeDefinition'        => ['description', 'name', 'directives', 'values'],
-        'EnumValueDefinition'       => ['description', 'name', 'directives'],
-        'InputObjectTypeDefinition' => ['description', 'name', 'directives', 'fields'],
-
-        'ScalarTypeExtension'      => ['name', 'directives'],
-        'ObjectTypeExtension'      => ['name', 'interfaces', 'directives', 'fields'],
-        'InterfaceTypeExtension'   => ['name', 'directives', 'fields'],
-        'UnionTypeExtension'       => ['name', 'directives', 'types'],
-        'EnumTypeExtension'        => ['name', 'directives', 'values'],
-        'InputObjectTypeExtension' => ['name', 'directives', 'fields'],
-
-        'DirectiveDefinition' => ['description', 'name', 'arguments', 'locations'],
-    ];
 }

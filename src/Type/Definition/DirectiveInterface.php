@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 interface DirectiveInterface
 {
+
     /**
      * @return string|null
      */

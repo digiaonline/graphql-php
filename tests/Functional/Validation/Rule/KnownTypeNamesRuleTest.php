@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\unknownType;
 
 class KnownTypeNamesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return KnownTypeNamesRule::class;
-    }
 
     public function testKnownTypeNamesAreValid()
     {
@@ -76,5 +72,10 @@ class KnownTypeNamesRuleTest extends RuleTestCase
             '),
             [unknownType('NotInTheSchema', [], [11, 17])]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return KnownTypeNamesRule::class;
     }
 }

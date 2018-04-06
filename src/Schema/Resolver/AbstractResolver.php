@@ -6,12 +6,13 @@ use Digia\GraphQL\Execution\ResolveInfo;
 
 class AbstractResolver implements ResolverInterface
 {
+
     /**
      * @inheritdoc
      */
     public function getResolveMethod(string $fieldName): ?callable
     {
-        $resolveMethod = 'resolve' . \ucfirst($fieldName);
+        $resolveMethod = 'resolve'.\ucfirst($fieldName);
 
         if (\method_exists($this, $resolveMethod)) {
             return [$this, $resolveMethod];
@@ -31,12 +32,17 @@ class AbstractResolver implements ResolverInterface
     }
 
     /**
-     * @param mixed       $rootValue
-     * @param mixed       $contextValues
+     * @param mixed $rootValue
+     * @param mixed $contextValues
      * @param ResolveInfo $info
+     *
      * @return callable|null
      */
-    protected function resolveType($rootValue, $contextValues, ResolveInfo $info): ?callable
+    protected function resolveType(
+        $rootValue,
+        $contextValues,
+        ResolveInfo $info
+    ): ?callable
     {
         return null;
     }

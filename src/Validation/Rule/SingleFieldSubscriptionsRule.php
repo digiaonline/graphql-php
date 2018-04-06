@@ -14,10 +14,12 @@ use function Digia\GraphQL\Validation\singleFieldOnlyMessage;
  */
 class SingleFieldSubscriptionsRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         if ($node->getOperation() !== 'subscription') {
             return $node;
@@ -29,7 +31,8 @@ class SingleFieldSubscriptionsRule extends AbstractRule
             $selections = $selectionSet->getSelections();
             if (\count($selections) !== 1) {
                 $this->context->reportError(
-                    new ValidationException(singleFieldOnlyMessage((string)$node), \array_slice($selections, 1))
+                    new ValidationException(singleFieldOnlyMessage((string)$node),
+                        \array_slice($selections, 1))
                 );
             }
         }

@@ -8,6 +8,7 @@ use function Digia\GraphQL\Util\invariant;
 
 trait ArgumentsTrait
 {
+
     /**
      * @var Argument[]
      */
@@ -30,10 +31,12 @@ trait ArgumentsTrait
     }
 
     /**
-     * Arguments are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['args']`.
+     * Arguments are created using the `ConfigAwareTrait` constructor which
+     * will automatically call this method when setting arguments from
+     * `$config['args']`.
      *
      * @param Argument[] $arguments
+     *
      * @return $this
      * @throws InvariantException
      */
@@ -47,7 +50,8 @@ trait ArgumentsTrait
         foreach ($arguments as $argumentName => $argument) {
             $this->arguments[] = $argument instanceof Argument
                 ? $argument
-                : new Argument(\array_merge($argument, ['name' => $argumentName]));
+                : new Argument(\array_merge($argument,
+                    ['name' => $argumentName]));
         }
 
         return $this;

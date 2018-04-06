@@ -63,6 +63,7 @@ function specifiedScalarTypes(): array
 
 /**
  * @param TypeInterface $type
+ *
  * @return bool
  */
 function isSpecifiedScalarType(TypeInterface $type): bool

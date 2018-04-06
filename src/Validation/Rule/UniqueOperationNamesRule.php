@@ -14,6 +14,7 @@ use function Digia\GraphQL\Validation\duplicateOperationMessage;
  */
 class UniqueOperationNamesRule extends AbstractRule
 {
+
     /**
      * @var string[]
      */
@@ -22,7 +23,8 @@ class UniqueOperationNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         $operationName = $node->getNameValue();
 
@@ -31,7 +33,10 @@ class UniqueOperationNamesRule extends AbstractRule
                 $this->context->reportError(
                     new ValidationException(
                         duplicateOperationMessage($operationName),
-                        [$this->knownOperationNames[$operationName], $node->getName()]
+                        [
+                            $this->knownOperationNames[$operationName],
+                            $node->getName(),
+                        ]
                     )
                 );
             } else {

@@ -7,6 +7,7 @@ use Psr\SimpleCache\CacheInterface;
 
 class SchemaBuildingProvider extends AbstractServiceProvider
 {
+
     /**
      * @var array
      */
@@ -19,7 +20,8 @@ class SchemaBuildingProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class)
+        $this->container->add(SchemaBuilderInterface::class,
+            SchemaBuilder::class)
             ->withArgument(CacheInterface::class);
     }
 }

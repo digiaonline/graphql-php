@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Language\Node;
 class FieldDefinitionNode extends AbstractNode implements DefinitionNodeInterface, DirectivesAwareInterface,
     NameAwareInterface
 {
+
     use DescriptionTrait;
     use NameTrait;
     use InputArgumentsTrait;
@@ -22,13 +23,13 @@ class FieldDefinitionNode extends AbstractNode implements DefinitionNodeInterfac
     public function toArray(): array
     {
         return [
-            'kind'        => $this->kind,
+            'kind' => $this->kind,
             'description' => $this->description,
-            'name'        => $this->getNameAsArray(),
-            'arguments'   => $this->getArgumentsAsArray(),
-            'type'        => $this->getTypeAsArray(),
-            'directives'  => $this->getDirectivesAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'name' => $this->getNameAsArray(),
+            'arguments' => $this->getArgumentsAsArray(),
+            'type' => $this->getTypeAsArray(),
+            'directives' => $this->getDirectivesAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

@@ -6,6 +6,7 @@ use Digia\GraphQL\Schema\Validation\ValidationContextInterface;
 
 abstract class AbstractRule implements RuleInterface
 {
+
     /**
      * @var ValidationContextInterface
      */
@@ -13,11 +14,13 @@ abstract class AbstractRule implements RuleInterface
 
     /**
      * @param ValidationContextInterface $context
+     *
      * @return $this
      */
     public function setContext(ValidationContextInterface $context)
     {
         $this->context = $context;
+
         return $this;
     }
 }

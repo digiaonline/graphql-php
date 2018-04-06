@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Validation\Conflict;
 
 class Conflict
 {
+
     /**
      * @var string
      */
@@ -26,17 +27,22 @@ class Conflict
 
     /**
      * Conflict constructor.
-     * @param string     $responseName
-     * @param mixed      $reason
+     *
+     * @param string $responseName
+     * @param mixed $reason
      * @param array|null $fieldsA
      * @param array|null $fieldsB
      */
-    public function __construct(string $responseName, $reason, array $fieldsA, array $fieldsB)
-    {
+    public function __construct(
+        string $responseName,
+        $reason,
+        array $fieldsA,
+        array $fieldsB
+    ) {
         $this->responseName = $responseName;
-        $this->reason       = $reason;
-        $this->fieldsA      = $fieldsA;
-        $this->fieldsB      = $fieldsB;
+        $this->reason = $reason;
+        $this->fieldsA = $fieldsA;
+        $this->fieldsB = $fieldsB;
     }
 
     /**

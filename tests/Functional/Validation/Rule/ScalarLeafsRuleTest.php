@@ -9,10 +9,6 @@ use function Digia\GraphQL\Test\Functional\Validation\requiredSubselection;
 
 class ScalarLeafsRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return ScalarLeafsRule::class;
-    }
 
     public function testValidScalarSelection()
     {
@@ -127,5 +123,10 @@ class ScalarLeafsRuleTest extends RuleTestCase
             '),
             [noSubselectionAllowed('doesKnowCommand', 'Boolean', [2, 55])]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return ScalarLeafsRule::class;
     }
 }

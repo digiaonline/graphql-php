@@ -29,6 +29,7 @@ use function Digia\GraphQL\Util\keyMap;
 
 class ExtensionContext implements ExtensionContextInterface
 {
+
     /**
      * @var ExtendInfo
      */
@@ -46,6 +47,7 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * ExtensionContext constructor.
+     *
      * @param ExtendInfo $info
      */
     public function __construct(ExtendInfo $info)
@@ -79,104 +81,8 @@ class ExtensionContext implements ExtensionContextInterface
     }
 
     /**
-     * @return TypeInterface|null
-     * @throws InvalidArgumentException
-     * @throws InvariantException
-     */
-    public function getExtendedMutationType(): ?TypeInterface
-    {
-        $existingMutationType = $this->info->getSchema()->getMutationType();
-
-        return null !== $existingMutationType
-            ? $this->getExtendedType($existingMutationType)
-            : null;
-    }
-
-    /**
-     * @return TypeInterface|null
-     * @throws InvalidArgumentException
-     * @throws InvariantException
-     */
-    public function getExtendedSubscriptionType(): ?TypeInterface
-    {
-        $existingSubscriptionType = $this->info->getSchema()->getSubscriptionType();
-
-        return null !== $existingSubscriptionType
-            ? $this->getExtendedType($existingSubscriptionType)
-            : null;
-    }
-
-    /**
-     * @return TypeInterface[]
-     */
-    public function getExtendedTypes(): array
-    {
-        $extendedTypes = \array_map(function ($type) {
-            return $this->getExtendedType($type);
-        }, $this->info->getSchema()->getTypeMap());
-
-        return \array_merge(
-            $extendedTypes,
-            $this->definitionBuilder->buildTypes($this->info->getTypeDefinitionMap())
-        );
-    }
-
-    /**
-     * @return Directive[]
-     * @throws InvariantException
-     */
-    public function getExtendedDirectives(): array
-    {
-        $existingDirectives = $this->info->getSchema()->getDirectives();
-
-        invariant(!empty($existingDirectives), 'schema must have default directives');
-
-        return \array_merge(
-            $existingDirectives,
-            \array_map(function (DirectiveDefinitionNode $node) {
-                return $this->definitionBuilder->buildDirective($node);
-            }, $this->info->getDirectiveDefinitions())
-        );
-    }
-
-    /**
-     * @param DefinitionBuilderInterface $definitionBuilder
-     * @return ExtensionContext
-     */
-    public function setDefinitionBuilder(DefinitionBuilderInterface $definitionBuilder): ExtensionContext
-    {
-        $this->definitionBuilder = $definitionBuilder;
-        return $this;
-    }
-
-    /**
-     * @param NamedTypeNode $node
-     * @return TypeInterface|null
-     * @throws ExtensionException
-     * @throws InvalidArgumentException
-     * @throws InvariantException
-     */
-    public function resolveType(NamedTypeNode $node): ?TypeInterface
-    {
-        $typeName     = $node->getNameValue();
-        $existingType = $this->info->getSchema()->getType($typeName);
-
-        if (null !== $existingType) {
-            return $this->getExtendedType($existingType);
-        }
-
-        throw new ExtensionException(
-            \sprintf(
-                'Unknown type: "%s". Ensure that this type exists ' .
-                'either in the original schema, or is added in a type definition.',
-                $typeName
-            ),
-            [$node]
-        );
-    }
-
-    /**
      * @param TypeInterface $type
+     *
      * @return TypeInterface
      * @throws InvalidArgumentException
      * @throws InvariantException
@@ -195,6 +101,7 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * @param TypeInterface $type
+     *
      * @return TypeInterface
      * @throws InvariantException
      */
@@ -224,88 +131,53 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * @param ObjectType $type
+     *
      * @return ObjectType
      */
     protected function extendObjectType(ObjectType $type): ObjectType
     {
-        $typeName          = $type->getName();
+        $typeName = $type->getName();
         $extensionASTNodes = $type->getExtensionAstNodes();
 
         if ($this->info->hasTypeExtensions($typeName)) {
-            $extensionASTNodes = $this->extendExtensionASTNodes($typeName, $extensionASTNodes);
+            $extensionASTNodes = $this->extendExtensionASTNodes($typeName,
+                $extensionASTNodes);
         }
 
         return newObjectType([
-            'name'              => $typeName,
-            'description'       => $type->getDescription(),
-            'interfaces'        => function () use ($type) {
+            'name' => $typeName,
+            'description' => $type->getDescription(),
+            'interfaces' => function () use ($type) {
                 return $this->extendImplementedInterfaces($type);
             },
-            'fields'            => function () use ($type) {
+            'fields' => function () use ($type) {
                 return $this->extendFieldMap($type);
             },
-            'astNode'           => $type->getAstNode(),
+            'astNode' => $type->getAstNode(),
             'extensionASTNodes' => $extensionASTNodes,
-            'isTypeOf'          => $type->getIsTypeOf(),
-        ]);
-    }
-
-    /**
-     * @param InterfaceType $type
-     * @return InterfaceType
-     */
-    protected function extendInterfaceType(InterfaceType $type): InterfaceType
-    {
-        $typeName          = $type->getName();
-        $extensionASTNodes = $this->info->getTypeExtensions($typeName);
-
-        if ($this->info->hasTypeExtensions($typeName)) {
-            $extensionASTNodes = $this->extendExtensionASTNodes($typeName, $extensionASTNodes);
-        }
-
-        return newInterfaceType([
-            'name'              => $typeName,
-            'description'       => $type->getDescription(),
-            'fields'            => function () use ($type) {
-                return $this->extendFieldMap($type);
-            },
-            'astNode'           => $type->getAstNode(),
-            'extensionASTNodes' => $extensionASTNodes,
-            'resolveType'       => $type->getResolveType(),
+            'isTypeOf' => $type->getIsTypeOf(),
         ]);
     }
 
     /**
      * @param string $typeName
-     * @param array  $nodes
+     * @param array $nodes
+     *
      * @return array
      */
-    protected function extendExtensionASTNodes(string $typeName, array $nodes): array
-    {
+    protected function extendExtensionASTNodes(
+        string $typeName,
+        array $nodes
+    ): array {
         $typeExtensions = $this->info->getTypeExtensions($typeName);
-        return !empty($nodes) ? \array_merge($typeExtensions, $nodes) : $typeExtensions;
-    }
 
-    /**
-     * @param UnionType $type
-     * @return UnionType
-     * @throws InvariantException
-     */
-    protected function extendUnionType(UnionType $type): UnionType
-    {
-        return newUnionType([
-            'name'        => $type->getName(),
-            'description' => $type->getDescription(),
-            'types'       => \array_map(function ($unionType) {
-                return $this->getExtendedType($unionType);
-            }, $type->getTypes()),
-            'astNode'     => $type->getAstNode(),
-            'resolveType' => $type->getResolveType(),
-        ]);
+        return !empty($nodes) ? \array_merge($typeExtensions,
+            $nodes) : $typeExtensions;
     }
 
     /**
      * @param ObjectType $type
+     *
      * @return array
      * @throws InvariantException
      */
@@ -336,6 +208,7 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * @param TypeInterface|ObjectType|InterfaceType $type
+     *
      * @return array
      * @throws InvalidTypeException
      * @throws InvariantException
@@ -344,7 +217,7 @@ class ExtensionContext implements ExtensionContextInterface
      */
     protected function extendFieldMap(TypeInterface $type): array
     {
-        $typeName    = $type->getName();
+        $typeName = $type->getName();
         $newFieldMap = [];
         $oldFieldMap = $type->getFields();
 
@@ -352,14 +225,15 @@ class ExtensionContext implements ExtensionContextInterface
             $field = $oldFieldMap[$fieldName];
 
             $newFieldMap[$fieldName] = [
-                'description'       => $field->getDescription(),
+                'description' => $field->getDescription(),
                 'deprecationReason' => $field->getDeprecationReason(),
-                'type'              => $this->extendFieldType($field->getType()),
-                'args'              => keyMap($field->getArguments(), function (Argument $argument) {
-                    return $argument->getName();
-                }),
-                'astNode'           => $field->getAstNode(),
-                'resolve'           => $field->getResolve(),
+                'type' => $this->extendFieldType($field->getType()),
+                'args' => keyMap($field->getArguments(),
+                    function (Argument $argument) {
+                        return $argument->getName();
+                    }),
+                'astNode' => $field->getAstNode(),
+                'resolve' => $field->getResolve(),
             ];
         }
 
@@ -374,7 +248,7 @@ class ExtensionContext implements ExtensionContextInterface
                     if (isset($oldFieldMap[$fieldName])) {
                         throw new ExtensionException(
                             \sprintf(
-                                'Field "%s.%s" already exists in the schema. ' .
+                                'Field "%s.%s" already exists in the schema. '.
                                 'It cannot also be defined in this type extension.',
                                 $typeName, $fieldName
                             ),
@@ -392,13 +266,14 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * @param TypeInterface $typeDefinition
+     *
      * @return TypeInterface
      * @throws InvalidArgumentException
      * @throws InvalidTypeException
      * @throws InvariantException
      */
-    protected function extendFieldType(TypeInterface $typeDefinition): TypeInterface
-    {
+    protected function extendFieldType(TypeInterface $typeDefinition
+    ): TypeInterface {
         if ($typeDefinition instanceof ListType) {
             return newList($this->extendFieldType($typeDefinition->getOfType()));
         }
@@ -408,5 +283,154 @@ class ExtensionContext implements ExtensionContextInterface
         }
 
         return $this->getExtendedType($typeDefinition);
+    }
+
+    /**
+     * @param InterfaceType $type
+     *
+     * @return InterfaceType
+     */
+    protected function extendInterfaceType(InterfaceType $type): InterfaceType
+    {
+        $typeName = $type->getName();
+        $extensionASTNodes = $this->info->getTypeExtensions($typeName);
+
+        if ($this->info->hasTypeExtensions($typeName)) {
+            $extensionASTNodes = $this->extendExtensionASTNodes($typeName,
+                $extensionASTNodes);
+        }
+
+        return newInterfaceType([
+            'name' => $typeName,
+            'description' => $type->getDescription(),
+            'fields' => function () use ($type) {
+                return $this->extendFieldMap($type);
+            },
+            'astNode' => $type->getAstNode(),
+            'extensionASTNodes' => $extensionASTNodes,
+            'resolveType' => $type->getResolveType(),
+        ]);
+    }
+
+    /**
+     * @param UnionType $type
+     *
+     * @return UnionType
+     * @throws InvariantException
+     */
+    protected function extendUnionType(UnionType $type): UnionType
+    {
+        return newUnionType([
+            'name' => $type->getName(),
+            'description' => $type->getDescription(),
+            'types' => \array_map(function ($unionType) {
+                return $this->getExtendedType($unionType);
+            }, $type->getTypes()),
+            'astNode' => $type->getAstNode(),
+            'resolveType' => $type->getResolveType(),
+        ]);
+    }
+
+    /**
+     * @return TypeInterface|null
+     * @throws InvalidArgumentException
+     * @throws InvariantException
+     */
+    public function getExtendedMutationType(): ?TypeInterface
+    {
+        $existingMutationType = $this->info->getSchema()->getMutationType();
+
+        return null !== $existingMutationType
+            ? $this->getExtendedType($existingMutationType)
+            : null;
+    }
+
+    /**
+     * @return TypeInterface|null
+     * @throws InvalidArgumentException
+     * @throws InvariantException
+     */
+    public function getExtendedSubscriptionType(): ?TypeInterface
+    {
+        $existingSubscriptionType = $this->info->getSchema()
+            ->getSubscriptionType();
+
+        return null !== $existingSubscriptionType
+            ? $this->getExtendedType($existingSubscriptionType)
+            : null;
+    }
+
+    /**
+     * @return TypeInterface[]
+     */
+    public function getExtendedTypes(): array
+    {
+        $extendedTypes = \array_map(function ($type) {
+            return $this->getExtendedType($type);
+        }, $this->info->getSchema()->getTypeMap());
+
+        return \array_merge(
+            $extendedTypes,
+            $this->definitionBuilder->buildTypes($this->info->getTypeDefinitionMap())
+        );
+    }
+
+    /**
+     * @return Directive[]
+     * @throws InvariantException
+     */
+    public function getExtendedDirectives(): array
+    {
+        $existingDirectives = $this->info->getSchema()->getDirectives();
+
+        invariant(!empty($existingDirectives),
+            'schema must have default directives');
+
+        return \array_merge(
+            $existingDirectives,
+            \array_map(function (DirectiveDefinitionNode $node) {
+                return $this->definitionBuilder->buildDirective($node);
+            }, $this->info->getDirectiveDefinitions())
+        );
+    }
+
+    /**
+     * @param DefinitionBuilderInterface $definitionBuilder
+     *
+     * @return ExtensionContext
+     */
+    public function setDefinitionBuilder(
+        DefinitionBuilderInterface $definitionBuilder
+    ): ExtensionContext {
+        $this->definitionBuilder = $definitionBuilder;
+
+        return $this;
+    }
+
+    /**
+     * @param NamedTypeNode $node
+     *
+     * @return TypeInterface|null
+     * @throws ExtensionException
+     * @throws InvalidArgumentException
+     * @throws InvariantException
+     */
+    public function resolveType(NamedTypeNode $node): ?TypeInterface
+    {
+        $typeName = $node->getNameValue();
+        $existingType = $this->info->getSchema()->getType($typeName);
+
+        if (null !== $existingType) {
+            return $this->getExtendedType($existingType);
+        }
+
+        throw new ExtensionException(
+            \sprintf(
+                'Unknown type: "%s". Ensure that this type exists '.
+                'either in the original schema, or is added in a type definition.',
+                $typeName
+            ),
+            [$node]
+        );
     }
 }

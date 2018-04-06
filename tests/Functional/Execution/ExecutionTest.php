@@ -4,9 +4,9 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Execution\ResolveInfo;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\parse;
@@ -19,8 +19,10 @@ use function Digia\GraphQL\Type\String;
 
 class ExecutionTest extends TestCase
 {
+
     /**
      * throws if no document is provided
+     *
      * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function testNoDocumentIsProvided()
@@ -30,13 +32,13 @@ class ExecutionTest extends TestCase
         $schema = newSchema([
             'query' =>
                 new ObjectType([
-                    'name'   => 'Type',
+                    'name' => 'Type',
                     'fields' => [
                         'a' => [
-                            'type' => String()
-                        ]
-                    ]
-                ])
+                            'type' => String(),
+                        ],
+                    ],
+                ]),
         ]);
 
         graphql($schema, null);
@@ -56,6 +58,7 @@ class ExecutionTest extends TestCase
 
     /**
      * Test accepts an object with named properties as arguments
+     *
      * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function testAcceptAnObjectWithNamedPropertiesAsArguments()
@@ -63,20 +66,25 @@ class ExecutionTest extends TestCase
         $schema = new Schema([
             'query' =>
                 new ObjectType([
-                    'name'   => 'Greeting',
+                    'name' => 'Greeting',
                     'fields' => [
                         'a' => [
-                            'type'    => String(),
-                            'resolve' => function ($source, $args, $context, $info) {
+                            'type' => String(),
+                            'resolve' => function (
+                                $source,
+                                $args,
+                                $context,
+                                $info
+                            ) {
                                 return $source;
-                            }
-                        ]
-                    ]
-                ])
+                            },
+                        ],
+                    ],
+                ]),
         ]);
 
         $rootValue = 'rootValue';
-        $source    = 'query Example { a }';
+        $source = 'query Example { a }';
 
         /** @var ExecutionResult $executionResult */
         $result = graphql($schema, $source, $rootValue);
@@ -92,16 +100,16 @@ class ExecutionTest extends TestCase
         $schema = new Schema([
             'query' =>
                 new ObjectType([
-                    'name'   => 'Greeting',
+                    'name' => 'Greeting',
                     'fields' => [
                         'hello' => [
-                            'type'    => String(),
+                            'type' => String(),
                             'resolve' => function () {
                                 return 'world';
-                            }
-                        ]
-                    ]
-                ])
+                            },
+                        ],
+                    ],
+                ]),
         ]);
 
         /** @var ExecutionResult $executionResult */
@@ -117,29 +125,29 @@ class ExecutionTest extends TestCase
     public function testExecuteArbitraryCode()
     {
         $deep = new ObjectType([
-            'name'   => 'DeepDataType',
+            'name' => 'DeepDataType',
             'fields' => function () use (&$dataType) {
                 return [
-                    'a'      => [
-                        'type'    => String(),
+                    'a' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Already Been Done';
-                        }
+                        },
                     ],
-                    'b'      => [
-                        'type'    => String(),
+                    'b' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Boring';
-                        }
+                        },
                     ],
-                    'c'      => [
-                        'type'    => newList(String()),
+                    'c' => [
+                        'type' => newList(String()),
                         'resolve' => function () {
                             return ['Contrived', null, 'Confusing'];
-                        }
+                        },
                     ],
                     'deeper' => [
-                        'type'    => newList($dataType),
+                        'type' => newList($dataType),
                         'resolve' => function () {
                             return [
                                 [
@@ -151,79 +159,79 @@ class ExecutionTest extends TestCase
                                 [
                                     'a' => 'Apple',
                                     'b' => 'Banana',
-                                ]
+                                ],
                             ];
-                        }
-                    ]
+                        },
+                    ],
                 ];
-            }
+            },
         ]);
 
         $dataType = new ObjectType([
-            'name'   => 'DataType',
+            'name' => 'DataType',
             'fields' => function () use (&$dataType, &$deep) {
                 return [
-                    'a'       => [
-                        'type'    => String(),
+                    'a' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Apple';
-                        }
+                        },
                     ],
-                    'b'       => [
-                        'type'    => String(),
+                    'b' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Banana';
-                        }
+                        },
                     ],
-                    'c'       => [
-                        'type'    => String(),
+                    'c' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Cookie';
-                        }
+                        },
                     ],
-                    'd'       => [
-                        'type'    => String(),
+                    'd' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Donut';
-                        }
+                        },
                     ],
-                    'e'       => [
-                        'type'    => String(),
+                    'e' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Egg';
-                        }
+                        },
                     ],
-                    'f'       => [
-                        'type'    => String(),
+                    'f' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Fish';
-                        }
-                    ],
-                    'pic'     => [
-                        'type'    => String(),
-                        'resolve' => function ($src, $args) {
-                            return 'Pic of size: ' . ($args['size'] ?? 50);
                         },
-                        'args'    => [
+                    ],
+                    'pic' => [
+                        'type' => String(),
+                        'resolve' => function ($src, $args) {
+                            return 'Pic of size: '.($args['size'] ?? 50);
+                        },
+                        'args' => [
                             'size' => [
                                 'type' => Int(),
-                            ]
+                            ],
                         ],
                     ],
                     'promise' => [
-                        'type'    => $dataType,
+                        'type' => $dataType,
                         'resolve' => function () {
                             return [];
-                        }
+                        },
                     ],
-                    'deep'    => [
-                        'type'    => $deep,
+                    'deep' => [
+                        'type' => $deep,
                         'resolve' => function () {
                             return [];
-                        }
-                    ]
+                        },
+                    ],
                 ];
-            }
+            },
         ]);
 
         $source = '
@@ -257,33 +265,34 @@ class ExecutionTest extends TestCase
     ';
 
         $schema = new Schema([
-            'query' => $dataType
+            'query' => $dataType,
         ]);
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = execute($schema, parse($source), null, null, ['size' => 100]);
+        $executionResult = execute($schema, parse($source), null, null,
+            ['size' => 100]);
 
         $expected = new ExecutionResult([
-            'a'       => 'Apple',
-            'b'       => 'Banana',
-            'x'       => 'Cookie',
-            'd'       => 'Donut',
-            'e'       => 'Egg',
-            'f'       => 'Fish',
-            'pic'     => 'Pic of size: 100',
+            'a' => 'Apple',
+            'b' => 'Banana',
+            'x' => 'Cookie',
+            'd' => 'Donut',
+            'e' => 'Egg',
+            'f' => 'Fish',
+            'pic' => 'Pic of size: 100',
             'promise' => [
-                'a' => 'Apple'
+                'a' => 'Apple',
             ],
-            'deep'    => [
-                'a'      => 'Already Been Done',
-                'b'      => 'Boring',
-                'c'      => ['Contrived', null, 'Confusing'],
+            'deep' => [
+                'a' => 'Already Been Done',
+                'b' => 'Boring',
+                'c' => ['Contrived', null, 'Confusing'],
                 'deeper' => [
                     ['a' => 'Apple', 'b' => 'Banana'],
                     null,
                     ['a' => 'Apple', 'b' => 'Banana'],
-                ]
-            ]
+                ],
+            ],
         ], []);
 
         $this->assertEquals($expected, $executionResult);
@@ -297,30 +306,36 @@ class ExecutionTest extends TestCase
         $schema = newSchema([
             'query' =>
                 newObjectType([
-                    'name'   => 'Greeting',
+                    'name' => 'Greeting',
                     'fields' => [
                         'greeting' => [
-                            'type'    => String(),
-                            'resolve' => function ($source, $args, $context, $info) {
+                            'type' => String(),
+                            'resolve' => function (
+                                $source,
+                                $args,
+                                $context,
+                                $info
+                            ) {
                                 return sprintf('Hello %s', $args['name']);
                             },
-                            'args'    => [
+                            'args' => [
                                 'name' => [
                                     'type' => String(),
-                                ]
-                            ]
-                        ]
-                    ]
-                ])
+                                ],
+                            ],
+                        ],
+                    ],
+                ]),
         ]);
 
-        $source         = 'query Hello($name: String) {greeting(name: $name)}';
+        $source = 'query Hello($name: String) {greeting(name: $name)}';
         $variableValues = ['name' => 'Han Solo'];
 
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, $source, '', null, $variableValues);
 
-        $this->assertEquals(['data' => ['greeting' => 'Hello Han Solo']], $executionResult);
+        $this->assertEquals(['data' => ['greeting' => 'Hello Han Solo']],
+            $executionResult);
     }
 
     /**
@@ -331,53 +346,54 @@ class ExecutionTest extends TestCase
         $schema = new Schema([
             'query' =>
                 new ObjectType([
-                    'name'   => 'Human',
+                    'name' => 'Human',
                     'fields' => [
-                        'id'         => [
-                            'type'    => Int(),
+                        'id' => [
+                            'type' => Int(),
                             'resolve' => function () {
                                 return 1000;
-                            }
+                            },
                         ],
-                        'type'       => [
-                            'type'    => String(),
+                        'type' => [
+                            'type' => String(),
                             'resolve' => function () {
                                 return 'Human';
-                            }
+                            },
                         ],
-                        'friends'    => [
-                            'type'    => newList(String()),
+                        'friends' => [
+                            'type' => newList(String()),
                             'resolve' => function () {
                                 return ['1002', '1003', '2000', '2001'];
-                            }
+                            },
                         ],
-                        'appearsIn'  => [
-                            'type'    => newList(Int()),
+                        'appearsIn' => [
+                            'type' => newList(Int()),
                             'resolve' => function () {
                                 return [4, 5, 6];
-                            }
+                            },
                         ],
                         'homePlanet' => [
-                            'type'    => String(),
+                            'type' => String(),
                             'resolve' => function () {
                                 return 'Tatooine';
-                            }
+                            },
                         ],
-                    ]
-                ])
+                    ],
+                ]),
         ]);
 
         /** @var ExecutionResult $executionResult */
-        $executionResult = graphql($schema, 'query Human {id, type, friends, appearsIn, homePlanet}');
+        $executionResult = graphql($schema,
+            'query Human {id, type, friends, appearsIn, homePlanet}');
 
         $this->assertEquals([
             'data' => [
-                'id'         => 1000,
-                'type'       => 'Human',
-                'friends'    => ['1002', '1003', '2000', '2001'],
-                'appearsIn'  => [4, 5, 6],
-                'homePlanet' => 'Tatooine'
-            ]
+                'id' => 1000,
+                'type' => 'Human',
+                'friends' => ['1002', '1003', '2000', '2001'],
+                'appearsIn' => [4, 5, 6],
+                'homePlanet' => 'Tatooine',
+            ],
         ], $executionResult);
     }
 
@@ -399,39 +415,39 @@ fragment FragTwo on Type {
 SRC;
 
         $Type = new ObjectType([
-            'name'   => 'Type',
+            'name' => 'Type',
             'fields' => function () use (&$Type) {
                 return [
-                    'a'    => [
-                        'type'    => String(),
+                    'a' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Apple';
-                        }
+                        },
                     ],
-                    'b'    => [
-                        'type'    => String(),
+                    'b' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Banana';
-                        }
+                        },
                     ],
-                    'c'    => [
-                        'type'    => String(),
+                    'c' => [
+                        'type' => String(),
                         'resolve' => function () {
                             return 'Cherry';
-                        }
+                        },
                     ],
                     'deep' => [
-                        'type'    => $Type,
+                        'type' => $Type,
                         'resolve' => function () {
                             return [];
-                        }
-                    ]
+                        },
+                    ],
                 ];
-            }
+            },
         ]);
 
         $schema = new Schema([
-            'query' => $Type
+            'query' => $Type,
         ]);
 
         /** @var ExecutionResult $executionResult */
@@ -439,18 +455,18 @@ SRC;
 
         $this->assertEquals([
             'data' => [
-                'a'    => 'Apple',
-                'b'    => 'Banana',
-                'c'    => 'Cherry',
+                'a' => 'Apple',
+                'b' => 'Banana',
+                'c' => 'Cherry',
                 'deep' => [
-                    'b'      => 'Banana',
-                    'c'      => 'Cherry',
+                    'b' => 'Banana',
+                    'c' => 'Cherry',
                     'deeper' => [
                         'b' => 'Banana',
-                        'c' => 'Cherry'
-                    ]
-                ]
-            ]
+                        'c' => 'Cherry',
+                    ],
+                ],
+            ],
         ], $executionResult);
     }
 
@@ -462,24 +478,31 @@ SRC;
      */
     public function testProvidesInfoAboutCurrentExecutionState()
     {
-        $info   = null;
+        $info = null;
         $schema = new Schema([
             'query' =>
                 new ObjectType([
-                    'name'   => 'Test',
+                    'name' => 'Test',
                     'fields' => [
                         'test' => [
-                            'type'    => String(),
-                            'resolve' => function ($source, $args, $context, $_info) use (&$info) {
+                            'type' => String(),
+                            'resolve' => function (
+                                $source,
+                                $args,
+                                $context,
+                                $_info
+                            ) use (
+                                &$info
+                            ) {
                                 $info = $_info;
-                            }
-                        ]
-                    ]
-                ])
+                            },
+                        ],
+                    ],
+                ]),
         ]);
 
         $rootValue = [
-            'rootValue' => 'val'
+            'rootValue' => 'val',
         ];
 
         $ast = parse('query ($var: String) { result: test }');
@@ -494,7 +517,8 @@ SRC;
         );
         $this->assertEquals(String(), $info->getReturnType());
         $this->assertEquals($schema->getQueryType(), $info->getParentType());
-        $this->assertEquals(["result"], $info->getPath()); // { prev: undefined, key: 'result' }
+        $this->assertEquals(["result"],
+            $info->getPath()); // { prev: undefined, key: 'result' }
         $this->assertEquals($schema, $info->getSchema());
         $this->assertEquals($rootValue, $info->getRootValue());
         $this->assertEquals($ast->getDefinitions()[0], $info->getOperation());
@@ -510,19 +534,22 @@ SRC;
     public function testThreadsRootValueContextCorrectly()
     {
         $resolvedRootValue = null;
-        $schema            = new Schema([
+        $schema = new Schema([
             'query' =>
                 new ObjectType([
-                    'name'   => 'Test',
+                    'name' => 'Test',
                     'fields' => [
                         'a' => [
-                            'type'    => String(),
-                            'resolve' => function ($rootValue) use (&$resolvedRootValue) {
+                            'type' => String(),
+                            'resolve' => function ($rootValue) use (
+                                &
+                                $resolvedRootValue
+                            ) {
                                 $resolvedRootValue = $rootValue;
-                            }
-                        ]
-                    ]
-                ])
+                            },
+                        ],
+                    ],
+                ]),
         ]);
 
         $data = ['contextThing' => 'thing'];
@@ -547,25 +574,30 @@ SRC;
         $schema = new Schema([
             'query' =>
                 new ObjectType([
-                    'name'   => 'Type',
+                    'name' => 'Type',
                     'fields' => [
                         'b' => [
-                            'type'    => Int(),
-                            'args'    => [
-                                'numArg'    => ['type' => Int()],
-                                'stringArg' => ['type' => String()]
+                            'type' => Int(),
+                            'args' => [
+                                'numArg' => ['type' => Int()],
+                                'stringArg' => ['type' => String()],
                             ],
-                            'resolve' => function ($source, $args) use (&$resolvedArgs) {
+                            'resolve' => function ($source, $args) use (
+                                &
+                                $resolvedArgs
+                            ) {
                                 $resolvedArgs = $args;
-                            }
-                        ]
-                    ]
-                ])
+                            },
+                        ],
+                    ],
+                ]),
         ]);
 
-        execute($schema, parse('query Example { b(numArg: 123, stringArg: "foo") }'));
+        execute($schema,
+            parse('query Example { b(numArg: 123, stringArg: "foo") }'));
 
-        $this->assertEquals(['numArg' => 123, 'stringArg' => 'foo'], $resolvedArgs);
+        $this->assertEquals(['numArg' => 123, 'stringArg' => 'foo'],
+            $resolvedArgs);
     }
 
     /**
@@ -592,16 +624,16 @@ SRC;
         }';
 
         $data = [
-            'sync'                => function () {
+            'sync' => function () {
                 return 'sync';
             },
-            'syncError'           => function () {
+            'syncError' => function () {
                 throw new \Exception('Error getting syncError');
             },
-            'syncRawError'        => function () {
+            'syncRawError' => function () {
                 throw new \Exception('Error getting syncRawError');
             },
-            'syncReturnError'     => function () {
+            'syncReturnError' => function () {
                 return new \Exception('Error getting syncReturnError');
             },
             'syncReturnErrorList' => function () {
@@ -612,31 +644,31 @@ SRC;
                     new \Exception('Error getting syncReturnErrorList3'),
                 ];
             },
-            'async'               => function () {
+            'async' => function () {
                 return \React\Promise\resolve('async');
             },
-            'asyncReject'         => function () {
+            'asyncReject' => function () {
                 return new \React\Promise\Promise(function ($resolve, $reject) {
                     $reject(new \Exception('Error getting asyncReject'));
                 });
             },
-            'asyncRawReject'      => function () {
+            'asyncRawReject' => function () {
                 return \React\Promise\reject('Error getting asyncRawReject');
             },
-            'asyncEmptyReject'    => function () {
+            'asyncEmptyReject' => function () {
                 return \React\Promise\reject(null);
             },
-            'asyncError'          => function () {
+            'asyncError' => function () {
                 return new \React\Promise\Promise(function ($resolve, $reject) {
                     throw new \Exception('Error getting asyncError');
                 });
             },
-            'asyncRawError'       => function () {
+            'asyncRawError' => function () {
                 return new \React\Promise\Promise(function () {
                     throw new \Exception('Error getting asyncRawError');
                 });
             },
-            'asyncReturnError'    => function () {
+            'asyncReturnError' => function () {
                 return \React\Promise\resolve(new \Exception('Error getting asyncReturnError'));
             },
         ];
@@ -644,143 +676,143 @@ SRC;
         $schema = new Schema([
             'query' =>
                 new ObjectType([
-                    'name'   => 'Type',
+                    'name' => 'Type',
                     'fields' => [
-                        'sync'                => ['type' => String()],
-                        'syncError'           => ['type' => String()],
-                        'syncRawError'        => ['type' => String()],
-                        'syncReturnError'     => ['type' => String()],
+                        'sync' => ['type' => String()],
+                        'syncError' => ['type' => String()],
+                        'syncRawError' => ['type' => String()],
+                        'syncReturnError' => ['type' => String()],
                         'syncReturnErrorList' => ['type' => newList(String())],
-                        'async'               => ['type' => String()],
-                        'asyncReject'         => ['type' => String()],
-                        'asyncRawReject'      => ['type' => String()],
-                        'asyncEmptyReject'    => ['type' => String()],
-                        'asyncError'          => ['type' => String()],
-                        'asyncRawError'       => ['type' => String()],
-                        'asyncReturnError'    => ['type' => String()],
-                    ]
-                ])
+                        'async' => ['type' => String()],
+                        'asyncReject' => ['type' => String()],
+                        'asyncRawReject' => ['type' => String()],
+                        'asyncEmptyReject' => ['type' => String()],
+                        'asyncError' => ['type' => String()],
+                        'asyncRawError' => ['type' => String()],
+                        'asyncReturnError' => ['type' => String()],
+                    ],
+                ]),
         ]);
 
         $result = execute($schema, parse($source), $data);
 
         $this->assertEquals([
-            'data'   => [
-                'sync'                => 'sync',
-                'syncError'           => null,
-                'syncRawError'        => null,
-                'syncReturnError'     => null,
+            'data' => [
+                'sync' => 'sync',
+                'syncError' => null,
+                'syncRawError' => null,
+                'syncReturnError' => null,
                 'syncReturnErrorList' => ['sync0', null, 'sync2', null],
-                'async'               => 'async',
-                'asyncReject'         => null,
-                'asyncRawReject'      => null,
-                'asyncEmptyReject'    => null,
-                'asyncError'          => null,
-                'asyncRawError'       => null,
-                'asyncReturnError'    => null,
+                'async' => 'async',
+                'asyncReject' => null,
+                'asyncRawReject' => null,
+                'asyncEmptyReject' => null,
+                'asyncError' => null,
+                'asyncRawError' => null,
+                'asyncReturnError' => null,
             ],
             'errors' => [
                 [
-                    'message'   => 'Error getting syncError',
+                    'message' => 'Error getting syncError',
                     'locations' => [
                         [
-                            'line'   => 3,
-                            'column' => 11
-                        ]
+                            'line' => 3,
+                            'column' => 11,
+                        ],
                     ],
-                    'path'      => ['syncError']
+                    'path' => ['syncError'],
                 ],
                 [
-                    'message'   => 'Error getting syncRawError',
+                    'message' => 'Error getting syncRawError',
                     'locations' => [
                         [
-                            'line'   => 4,
-                            'column' => 11
-                        ]
+                            'line' => 4,
+                            'column' => 11,
+                        ],
                     ],
-                    'path'      => ['syncRawError']
+                    'path' => ['syncRawError'],
                 ],
                 [
-                    'message'   => 'Error getting syncReturnError',
+                    'message' => 'Error getting syncReturnError',
                     'locations' => [
                         [
-                            'line'   => 5,
-                            'column' => 11
-                        ]
+                            'line' => 5,
+                            'column' => 11,
+                        ],
                     ],
-                    'path'      => ['syncReturnError']
+                    'path' => ['syncReturnError'],
                 ],
                 [
-                    'message'   => 'Error getting syncReturnErrorList1',
+                    'message' => 'Error getting syncReturnErrorList1',
                     'locations' => [
                         [
-                            'line'   => 6,
-                            'column' => 11
-                        ]
+                            'line' => 6,
+                            'column' => 11,
+                        ],
                     ],
-                    'path'      => ['syncReturnErrorList', 1]
+                    'path' => ['syncReturnErrorList', 1],
                 ],
                 [
-                    'message'   => 'Error getting syncReturnErrorList3',
+                    'message' => 'Error getting syncReturnErrorList3',
                     'locations' => [
                         [
-                            'line'   => 6,
-                            'column' => 11
-                        ]
+                            'line' => 6,
+                            'column' => 11,
+                        ],
                     ],
-                    'path'      => ['syncReturnErrorList', 3]
+                    'path' => ['syncReturnErrorList', 3],
                 ],
                 [
-                    'message'   => 'Error getting asyncReject',
+                    'message' => 'Error getting asyncReject',
                     'locations' => [
                         [
-                            'line'   => 8,
-                            'column' => 11
-                        ]
+                            'line' => 8,
+                            'column' => 11,
+                        ],
                     ],
-                    'path'      => ['asyncReject']
+                    'path' => ['asyncReject'],
                 ],
                 [
-                    'message'   => 'Error getting asyncRawReject',
+                    'message' => 'Error getting asyncRawReject',
                     'locations' => null, //@TODO This should not be null
-                    'path'      => ['asyncRawReject']
+                    'path' => ['asyncRawReject'],
                 ],
                 [
-                    'message'   => 'An unknown error occurred.',
+                    'message' => 'An unknown error occurred.',
                     'locations' => null, //@TODO This should not be null
-                    'path'      => ['asyncEmptyReject']
+                    'path' => ['asyncEmptyReject'],
                 ],
                 [
-                    'message'   => 'Error getting asyncError',
+                    'message' => 'Error getting asyncError',
                     'locations' => [
                         [
-                            'line'   => 11,
-                            'column' => 11
-                        ]
+                            'line' => 11,
+                            'column' => 11,
+                        ],
                     ],
-                    'path'      => ['asyncError']
+                    'path' => ['asyncError'],
                 ],
                 [
-                    'message'   => 'Error getting asyncRawError',
+                    'message' => 'Error getting asyncRawError',
                     'locations' => [
                         [
-                            'line'   => 12,
-                            'column' => 11
-                        ]
+                            'line' => 12,
+                            'column' => 11,
+                        ],
                     ],
-                    'path'      => ['asyncRawError']
+                    'path' => ['asyncRawError'],
                 ],
                 [
-                    'message'   => 'Error getting asyncReturnError',
+                    'message' => 'Error getting asyncReturnError',
                     'locations' => [
                         [
-                            'line'   => 13,
-                            'column' => 11
-                        ]
+                            'line' => 13,
+                            'column' => 11,
+                        ],
                     ],
-                    'path'      => ['asyncReturnError']
+                    'path' => ['asyncReturnError'],
                 ],
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -802,43 +834,43 @@ SRC;
 
         $schema = new Schema([
             'query' => new ObjectType([
-                'name'   => 'Type',
+                'name' => 'Type',
                 'fields' => [
                     'foods' => [
-                        'type'    => newList(newObjectType([
-                            'name'   => 'Food',
+                        'type' => newList(newObjectType([
+                            'name' => 'Food',
                             'fields' => [
                                 'name' => [
-                                    'type' => String()
-                                ]
-                            ]
+                                    'type' => String(),
+                                ],
+                            ],
                         ])),
                         'resolve' => function () {
                             return \React\Promise\reject(new \Exception('Dangit'));
-                        }
+                        },
                     ],
-                ]
-            ])
+                ],
+            ]),
         ]);
 
         $result = execute($schema, parse($query));
 
         $this->assertEquals([
-            'data'   => [
-                'foods' => null
+            'data' => [
+                'foods' => null,
             ],
             'errors' => [
                 [
-                    'message'   => 'Dangit',
+                    'message' => 'Dangit',
                     'locations' => [
                         [
-                            'line'   => 3,
-                            'column' => 13
-                        ]
+                            'line' => 3,
+                            'column' => 13,
+                        ],
                     ],
-                    'path'      => ['foods']
-                ]
-            ]
+                    'path' => ['foods'],
+                ],
+            ],
         ], $result->toArray());
     }
 
@@ -851,47 +883,47 @@ SRC;
     public function testFullResponsePathIsIncludedForNonNullableFields()
     {
         $A = newObjectType([
-            'name'   => 'A',
+            'name' => 'A',
             'fields' => function () use (&$A) {
                 return [
                     'nullableA' => [
-                        'type'    => $A,
+                        'type' => $A,
                         'resolve' => function () {
                             return [];
-                        }
+                        },
                     ],
-                    'nonNullA'  => [
-                        'type'    => newNonNull($A),
+                    'nonNullA' => [
+                        'type' => newNonNull($A),
                         'resolve' => function () {
                             return [];
-                        }
+                        },
                     ],
-                    'throws'    => [
-                        'type'    => newNonNull(String()),
+                    'throws' => [
+                        'type' => newNonNull(String()),
                         'resolve' => function () {
                             throw new \Exception('Catch me if you can!');
-                        }
-                    ]
+                        },
+                    ],
                 ];
-            }
+            },
         ]);
 
         $queryType = newObjectType([
-            'name'   => 'query',
+            'name' => 'query',
             'fields' => function () use (&$A) {
                 return [
                     'nullableA' => [
-                        'type'    => $A,
+                        'type' => $A,
                         'resolve' => function () {
                             return [];
-                        }
-                    ]
+                        },
+                    ],
                 ];
-            }
+            },
         ]);
 
         $schema = newSchema([
-            'query' => $queryType
+            'query' => $queryType,
         ]);
 
         $query = '
@@ -910,29 +942,29 @@ SRC;
         $result = execute($schema, parse($query));
 
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'nullableA' => [
-                    'aliasedA' => null
-                ]
+                    'aliasedA' => null,
+                ],
             ],
             'errors' => [
                 [
-                    'message'   => 'Catch me if you can!',
+                    'message' => 'Catch me if you can!',
                     'locations' => [
                         [
-                            'line'   => 7,
-                            'column' => 21
-                        ]
+                            'line' => 7,
+                            'column' => 21,
+                        ],
                     ],
-                    'path'      => [
+                    'path' => [
                         'nullableA',
                         'aliasedA',
                         'nonNullA',
                         'anotherA',
-                        'throws'
-                    ]
-                ]
-            ]
+                        'throws',
+                    ],
+                ],
+            ],
         ], $result->toArray());
     }
 
@@ -948,13 +980,13 @@ SRC;
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Type',
+                'name' => 'Type',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
         $result = execute($schema, parse('{ a }'), $rootValue);
@@ -962,7 +994,7 @@ SRC;
         $this->assertEquals([
             'data' => [
                 'a' => 'b',
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -978,22 +1010,23 @@ SRC;
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Type',
+                'name' => 'Type',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
-        $query  = 'query Example { first: a } query OtherExample { second: a }';
-        $result = execute($schema, parse($query), $rootValue, null, [], 'OtherExample');
+        $query = 'query Example { first: a } query OtherExample { second: a }';
+        $result = execute($schema, parse($query), $rootValue, null, [],
+            'OtherExample');
 
         $this->assertEquals([
             'data' => [
                 'second' => 'b',
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -1009,27 +1042,27 @@ SRC;
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Type',
+                'name' => 'Type',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
-        $query  = 'fragment Example on Type { a }';
+        $query = 'fragment Example on Type { a }';
         $result = execute($schema, parse($query), $rootValue);
 
         $this->assertEquals([
-            'data'   => null,
+            'data' => null,
             'errors' => [
                 [
-                    'message'   => 'Must provide an operation.',
+                    'message' => 'Must provide an operation.',
                     'locations' => null,
-                    'path'      => null
-                ]
-            ]
+                    'path' => null,
+                ],
+            ],
         ], $result->toArray());
     }
 
@@ -1046,27 +1079,27 @@ SRC;
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Type',
+                'name' => 'Type',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
-        $query  = 'query Example { a } query OtherExample { a }';
+        $query = 'query Example { a } query OtherExample { a }';
         $result = execute($schema, parse($query), $rootValue);
 
         $this->assertEquals([
-            'data'   => null,
+            'data' => null,
             'errors' => [
                 [
-                    'message'   => 'Must provide operation name if query contains multiple operations.',
+                    'message' => 'Must provide operation name if query contains multiple operations.',
                     'locations' => null,
-                    'path'      => null
-                ]
-            ]
+                    'path' => null,
+                ],
+            ],
         ], $result->toArray());
     }
 
@@ -1082,27 +1115,28 @@ SRC;
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Type',
+                'name' => 'Type',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
-        $query  = 'query Example { a } query OtherExample { a }';
-        $result = execute($schema, parse($query), $rootValue, [], [], 'UnknownExample');
+        $query = 'query Example { a } query OtherExample { a }';
+        $result = execute($schema, parse($query), $rootValue, [], [],
+            'UnknownExample');
 
         $this->assertEquals([
-            'data'   => null,
+            'data' => null,
             'errors' => [
                 [
-                    'message'   => 'Unknown operation named "UnknownExample".',
+                    'message' => 'Unknown operation named "UnknownExample".',
                     'locations' => null,
-                    'path'      => null
-                ]
-            ]
+                    'path' => null,
+                ],
+            ],
         ], $result->toArray());
     }
 
@@ -1118,39 +1152,39 @@ SRC;
         $rootValue = ['a' => 'b'];
 
         $schema = newSchema([
-            'query'        => newObjectType([
-                'name'   => 'Q',
+            'query' => newObjectType([
+                'name' => 'Q',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
+                    ],
+                ],
             ]),
-            'mutation'     => newObjectType([
-                'name'   => 'M',
+            'mutation' => newObjectType([
+                'name' => 'M',
                 'fields' => [
                     'c' => [
                         'type' => String(),
-                    ]
-                ]
+                    ],
+                ],
             ]),
             'subscription' => newObjectType([
-                'name'   => 'S',
+                'name' => 'S',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
-        $query  = 'query Q { a } mutation M { c } subscription S { a }';
+        $query = 'query Q { a } mutation M { c } subscription S { a }';
         $result = execute($schema, parse($query), $rootValue, [], [], 'Q');
 
         $this->assertEquals([
             'data' => [
                 'a' => 'b',
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -1165,31 +1199,31 @@ SRC;
         $rootValue = ['a' => 'b', 'c' => 'd'];
 
         $schema = newSchema([
-            'query'    => newObjectType([
-                'name'   => 'Q',
+            'query' => newObjectType([
+                'name' => 'Q',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
+                    ],
+                ],
             ]),
             'mutation' => newObjectType([
-                'name'   => 'M',
+                'name' => 'M',
                 'fields' => [
                     'c' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
-        $query  = 'query Q { a } mutation M { c } subscription S { a }';
+        $query = 'query Q { a } mutation M { c } subscription S { a }';
         $result = execute($schema, parse($query), $rootValue, [], [], 'M');
 
         $this->assertEquals([
             'data' => [
                 'c' => 'd',
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -1204,31 +1238,31 @@ SRC;
         $rootValue = ['a' => 'b'];
 
         $schema = newSchema([
-            'query'        => newObjectType([
-                'name'   => 'Q',
+            'query' => newObjectType([
+                'name' => 'Q',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
+                    ],
+                ],
             ]),
             'subscription' => newObjectType([
-                'name'   => 'S',
+                'name' => 'S',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
-        $query  = 'query Q { a } subscription S { a }';
+        $query = 'query Q { a } subscription S { a }';
         $result = execute($schema, parse($query), $rootValue, [], [], 'S');
 
         $this->assertEquals([
             'data' => [
                 'a' => 'b',
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -1249,23 +1283,23 @@ SRC;
             'd' => function () {
                 return \React\Promise\resolve('d');
             },
-            'e' => 'e'
+            'e' => 'e',
         ];
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Q',
+                'name' => 'Q',
                 'fields' => [
                     'a' => ['type' => String()],
                     'b' => ['type' => String()],
                     'c' => ['type' => String()],
                     'd' => ['type' => String()],
                     'e' => ['type' => String()],
-                ]
-            ])
+                ],
+            ]),
         ]);
 
-        $query  = '{ a, b, c, d, e }';
+        $query = '{ a, b, c, d, e }';
         $result = execute($schema, parse($query), $rootValue);
 
         $this->assertEquals([
@@ -1275,7 +1309,7 @@ SRC;
                 'c' => 'c',
                 'd' => 'd',
                 'e' => 'e',
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -1291,16 +1325,16 @@ SRC;
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Type',
+                'name' => 'Type',
                 'fields' => [
                     'a' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
-        $query  = 'query Q {
+        $query = 'query Q {
             a
             ...Frag
             ...Frag
@@ -1315,7 +1349,7 @@ SRC;
         $this->assertEquals([
             'data' => [
                 'a' => 'b',
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -1328,22 +1362,23 @@ SRC;
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
         $schema = newSchema([
-            'query'    => new ObjectType([
-                'name'   => 'Q',
+            'query' => new ObjectType([
+                'name' => 'Q',
                 'fields' => [
                     'a' => ['type' => String()],
-                ]
+                ],
             ]),
             'mutation' => new ObjectType([
-                'name'   => 'M',
+                'name' => 'M',
                 'fields' => [
                     'c' => ['type' => String()],
-                ]
-            ])
+                ],
+            ]),
         ]);
 
 
-        $executionResult = execute($schema, parse('mutation M { thisIsIllegalDontIncludeMe }'));
+        $executionResult = execute($schema,
+            parse('mutation M { thisIsIllegalDontIncludeMe }'));
 
         $expected = new ExecutionResult([], []);
 
@@ -1360,11 +1395,11 @@ SRC;
     public function testFailsWhenAnIsTypeOfCheckIsNotMet()
     {
         $SpecialType = newObjectType([
-            'name'     => 'SpecialType',
-            'fields'   => [
+            'name' => 'SpecialType',
+            'fields' => [
                 'value' => [
-                    'type' => String()
-                ]
+                    'type' => String(),
+                ],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Special;
@@ -1373,45 +1408,45 @@ SRC;
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Query',
+                'name' => 'Query',
                 'fields' => function () use (&$SpecialType) {
                     return [
                         'specials' => [
-                            'type'    => newList($SpecialType),
+                            'type' => newList($SpecialType),
                             'resolve' => function ($root) {
                                 return $root['specials'];
-                            }
-                        ]
+                            },
+                        ],
                     ];
-                }
-            ])
+                },
+            ]),
         ]);
 
         $rootValue = [
             'specials' => [
                 new Special('foo'),
-                new NotSpecial('bar')
-            ]
+                new NotSpecial('bar'),
+            ],
         ];
 
-        $query  = '{ specials { value } }';
+        $query = '{ specials { value } }';
         $result = execute($schema, parse($query), $rootValue);
 
         $this->assertEquals(1, count($result->getErrors()));
         $this->assertEquals([
-            'data'   => [
+            'data' => [
                 'specials' => [
                     ['value' => 'foo'],
-                    null
-                ]
+                    null,
+                ],
             ],
             'errors' => [
                 [
-                    'message'   => 'Expected value of type "SpecialType" but received: Object.',
+                    'message' => 'Expected value of type "SpecialType" but received: Object.',
                     'locations' => null,
-                    'path'      => ['specials', 1]
+                    'path' => ['specials', 1],
                 ],
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -1425,13 +1460,13 @@ SRC;
     {
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Query',
+                'name' => 'Query',
                 'fields' => [
                     'foo' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
         $query = '{ foo } type Query { bar: String }';
@@ -1441,7 +1476,7 @@ SRC;
         $this->assertEquals([
             'data' => [
                 'foo' => null,
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -1455,33 +1490,40 @@ SRC;
     {
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Query',
+                'name' => 'Query',
                 'fields' => [
                     'foo' => [
                         'type' => String(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
         $query = '{ foo }';
 
-        $customResolver = function ($source, $args, $context, ResolveInfo $info) {
+        $customResolver = function (
+            $source,
+            $args,
+            $context,
+            ResolveInfo $info
+        ) {
             return $info->getFieldName();
         };
 
-        $result = execute($schema, parse($query), [], [], [], null, $customResolver);
+        $result = execute($schema, parse($query), [], [], [], null,
+            $customResolver);
 
         $this->assertEquals([
             'data' => [
                 'foo' => 'foo',
-            ]
+            ],
         ], $result->toArray());
     }
 }
 
 class Special
 {
+
     public $value;
 
     public function __construct($value)
@@ -1492,6 +1534,7 @@ class Special
 
 class NotSpecial
 {
+
     public $value;
 
     public function __construct($value)

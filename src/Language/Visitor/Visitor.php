@@ -19,11 +19,14 @@ class Visitor implements VisitorInterface
 
     /**
      * TestableVisitor constructor.
+     *
      * @param callable|null $enterFunction
      * @param callable|null $leaveFunction
      */
-    public function __construct(?callable $enterFunction = null, ?callable $leaveFunction = null)
-    {
+    public function __construct(
+        ?callable $enterFunction = null,
+        ?callable $leaveFunction = null
+    ) {
         $this->enterFunction = $enterFunction;
         $this->leaveFunction = $leaveFunction;
     }

@@ -9,6 +9,7 @@ use function Digia\GraphQL\validate;
 
 class ValidationTest extends TestCase
 {
+
     // Star Wars Validation Tests
 
     // Basic Queries
@@ -41,6 +42,17 @@ class ValidationTest extends TestCase
 
     // Notes that non-existent fields are invalid
 
+    protected function validateQuery($query)
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $source = new Source($query, 'StarWars.graphql');
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        return validate(starWarsSchema(), parse($source));
+    }
+
+    // Requires fields on objects
+
     public function testNodesThatNonExistentFieldsAreInvalid()
     {
         $query = '
@@ -54,7 +66,7 @@ class ValidationTest extends TestCase
         $this->assertNotEmpty($this->validateQuery($query));
     }
 
-    // Requires fields on objects
+    // Disallows fields on scalars
 
     public function testRequiresFieldsOnObjects()
     {
@@ -67,7 +79,7 @@ class ValidationTest extends TestCase
         $this->assertNotEmpty($this->validateQuery($query));
     }
 
-    // Disallows fields on scalars
+    // Disallows object fields on interfaces
 
     public function testDisallowsFieldsOnScalars()
     {
@@ -84,7 +96,7 @@ class ValidationTest extends TestCase
         $this->assertNotEmpty($this->validateQuery($query));
     }
 
-    // Disallows object fields on interfaces
+    // Allows object fields in fragments
 
     public function testDisallowsObjectFieldsOnInterfaces()
     {
@@ -100,7 +112,7 @@ class ValidationTest extends TestCase
         $this->assertNotEmpty($this->validateQuery($query));
     }
 
-    // Allows object fields in fragments
+    // Allows object fields in inline fragments
 
     public function testAllowsObjectFieldsInFragments()
     {
@@ -120,8 +132,6 @@ class ValidationTest extends TestCase
         $this->assertEmpty($this->validateQuery($query));
     }
 
-    // Allows object fields in inline fragments
-
     public function testAllowsObjectFieldsInInlineFragments()
     {
         $query = '
@@ -136,13 +146,5 @@ class ValidationTest extends TestCase
         ';
 
         $this->assertEmpty($this->validateQuery($query));
-    }
-
-    protected function validateQuery($query)
-    {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $source = new Source($query, 'StarWars.graphql');
-        /** @noinspection PhpUnhandledExceptionInspection */
-        return validate(starWarsSchema(), parse($source));
     }
 }

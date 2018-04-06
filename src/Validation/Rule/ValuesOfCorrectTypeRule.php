@@ -40,6 +40,7 @@ use function Digia\GraphQL\Validation\unknownFieldMessage;
  */
 class ValuesOfCorrectTypeRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
@@ -70,10 +71,100 @@ class ValuesOfCorrectTypeRule extends AbstractRule
 
         if (!($type instanceof ListType)) {
             $this->isValidScalar($node);
+
             return null; // Don't traverse further.
         }
 
         return $node;
+    }
+
+    /**
+     * Any value literal may be a valid representation of a Scalar, depending on
+     * that scalar type.
+     *
+     * @param ValueNodeInterface $node
+     *
+     * @throws InvariantException
+     */
+    protected function isValidScalar(ValueNodeInterface $node): void
+    {
+        $locationType = $this->context->getInputType();
+
+        if (null === $locationType) {
+            return;
+        }
+
+        $type = getNamedType($locationType);
+
+        if (!($type instanceof ScalarType)) {
+            $didYouMean = $this->getEnumTypeSuggestion($type, $node) ?? null;
+
+            $this->context->reportError(
+                new ValidationException(
+                    badValueMessage((string)$locationType, printNode($node),
+                        $didYouMean),
+                    [$node]
+                )
+            );
+
+            return;
+        }
+
+        // Scalars determine if a literal value is valid via parseLiteral() which
+        // may throw or return an invalid value to indicate failure.
+        try {
+            $result = $type->parseLiteral($node, null/* $variables */);
+
+            if (null === $result) {
+                $this->context->reportError(
+                    new ValidationException(
+                        badValueMessage((string)$locationType,
+                            printNode($node)),
+                        [$node]
+                    )
+                );
+            }
+        } catch (\Exception $ex) {
+            // Ensure a reference to the original error is maintained.
+            $this->context->reportError(
+                new ValidationException(
+                    badValueMessage((string)$locationType, printNode($node),
+                        $ex->getMessage()),
+                    [$node],
+                    null,
+                    null,
+                    null,
+                    $ex
+                )
+            );
+        }
+    }
+
+    /**
+     * @param NamedTypeInterface $type
+     * @param ValueNodeInterface $node
+     *
+     * @return null|string
+     * @throws InvariantException
+     */
+    protected function getEnumTypeSuggestion(
+        NamedTypeInterface $type,
+        ValueNodeInterface $node
+    ): ?string
+    {
+        if ($type instanceof EnumType) {
+            $suggestions = suggestionList(printNode($node),
+                \array_map(function (EnumValue $value) {
+                    return $value->getName();
+                }, $type->getValues()));
+
+            return !empty($suggestions)
+                ? \sprintf('Did you mean the enum value %s?',
+                    orList($suggestions))
+                : null;
+        }
+
+        return null;
     }
 
     /**
@@ -82,15 +173,18 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     protected function enterObjectField(ObjectFieldNode $node): ?NodeInterface
     {
         $parentType = getNamedType($this->context->getParentInputType());
-        $fieldType  = $this->context->getInputType();
+        $fieldType = $this->context->getInputType();
 
         if (null === $fieldType && $parentType instanceof InputObjectType) {
-            $suggestions = suggestionList($node->getNameValue(), \array_keys($parentType->getFields()));
-            $didYouMean  = !empty($suggestions) ? \sprintf('Did you mean %s?', orList($suggestions)) : null;
+            $suggestions = suggestionList($node->getNameValue(),
+                \array_keys($parentType->getFields()));
+            $didYouMean = !empty($suggestions) ? \sprintf('Did you mean %s?',
+                orList($suggestions)) : null;
 
             $this->context->reportError(
                 new ValidationException(
-                    unknownFieldMessage($parentType->getName(), $node->getNameValue(), $didYouMean),
+                    unknownFieldMessage($parentType->getName(),
+                        $node->getNameValue(), $didYouMean),
                     [$node]
                 )
             );
@@ -108,14 +202,16 @@ class ValuesOfCorrectTypeRule extends AbstractRule
 
         if (!($type instanceof InputObjectType)) {
             $this->isValidScalar($node);
+
             return null; // Don't traverse further.
         }
 
         // Ensure every required field exists.
-        $inputFields  = $type->getFields();
-        $fieldNodeMap = keyMap($node->getFields(), function (ObjectFieldNode $field) {
-            return $field->getNameValue();
-        });
+        $inputFields = $type->getFields();
+        $fieldNodeMap = keyMap($node->getFields(),
+            function (ObjectFieldNode $field) {
+                return $field->getNameValue();
+            });
 
         foreach ($inputFields as $fieldName => $field) {
             $fieldType = $field->getType();
@@ -124,7 +220,8 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             if (null === $fieldNode && $fieldType instanceof NonNullType) {
                 $this->context->reportError(
                     new ValidationException(
-                        requiredFieldMessage($type->getName(), $fieldName, (string)$fieldType),
+                        requiredFieldMessage($type->getName(), $fieldName,
+                            (string)$fieldType),
                         [$node]
                     )
                 );
@@ -148,7 +245,8 @@ class ValuesOfCorrectTypeRule extends AbstractRule
 
             $this->context->reportError(
                 new ValidationException(
-                    badValueMessage($type->getName(), printNode($node), $didYouMean),
+                    badValueMessage($type->getName(), printNode($node),
+                        $didYouMean),
                     [$node]
                 )
             );
@@ -163,6 +261,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     protected function enterIntValue(IntValueNode $node): ?NodeInterface
     {
         $this->isValidScalar($node);
+
         return $node;
     }
 
@@ -172,6 +271,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     protected function enterFloatValue(FloatValueNode $node): ?NodeInterface
     {
         $this->isValidScalar($node);
+
         return $node;
     }
 
@@ -181,6 +281,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     protected function enterStringValue(StringValueNode $node): ?NodeInterface
     {
         $this->isValidScalar($node);
+
         return $node;
     }
 
@@ -190,85 +291,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     protected function enterBooleanValue(BooleanValueNode $node): ?NodeInterface
     {
         $this->isValidScalar($node);
+
         return $node;
-    }
-
-    /**
-     * Any value literal may be a valid representation of a Scalar, depending on
-     * that scalar type.
-     *
-     * @param ValueNodeInterface $node
-     * @throws InvariantException
-     */
-    protected function isValidScalar(ValueNodeInterface $node): void
-    {
-        $locationType = $this->context->getInputType();
-
-        if (null === $locationType) {
-            return;
-        }
-
-        $type = getNamedType($locationType);
-
-        if (!($type instanceof ScalarType)) {
-            $didYouMean = $this->getEnumTypeSuggestion($type, $node) ?? null;
-
-            $this->context->reportError(
-                new ValidationException(
-                    badValueMessage((string)$locationType, printNode($node), $didYouMean),
-                    [$node]
-                )
-            );
-
-            return;
-        }
-
-        // Scalars determine if a literal value is valid via parseLiteral() which
-        // may throw or return an invalid value to indicate failure.
-        try {
-            $result = $type->parseLiteral($node, null/* $variables */);
-
-            if (null === $result) {
-                $this->context->reportError(
-                    new ValidationException(
-                        badValueMessage((string)$locationType, printNode($node)),
-                        [$node]
-                    )
-                );
-            }
-        } catch (\Exception $ex) {
-            // Ensure a reference to the original error is maintained.
-            $this->context->reportError(
-                new ValidationException(
-                    badValueMessage((string)$locationType, printNode($node), $ex->getMessage()),
-                    [$node],
-                    null,
-                    null,
-                    null,
-                    $ex
-                )
-            );
-        }
-    }
-
-    /**
-     * @param NamedTypeInterface $type
-     * @param ValueNodeInterface $node
-     * @return null|string
-     * @throws InvariantException
-     */
-    protected function getEnumTypeSuggestion(NamedTypeInterface $type, ValueNodeInterface $node): ?string
-    {
-        if ($type instanceof EnumType) {
-            $suggestions = suggestionList(printNode($node), \array_map(function (EnumValue $value) {
-                return $value->getName();
-            }, $type->getValues()));
-
-            return !empty($suggestions)
-                ? \sprintf('Did you mean the enum value %s?', orList($suggestions))
-                : null;
-        }
-
-        return null;
     }
 }

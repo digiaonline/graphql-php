@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Config;
 
 trait ConfigAwareTrait
 {
+
     /**
      * @var array
      */
@@ -11,6 +12,7 @@ trait ConfigAwareTrait
 
     /**
      * ConfigAwareTrait constructor.
+     *
      * @param array $config
      */
     public function __construct(array $config = [])
@@ -21,8 +23,30 @@ trait ConfigAwareTrait
     }
 
     /**
-     * @param string     $key
+     * @param array $config
+     *
+     * @return $this
+     */
+    protected function setConfig(array $config)
+    {
+        foreach ($config as $key => $value) {
+            $setter = 'set'.ucfirst($key);
+            if (method_exists($this, $setter)) {
+                $this->$setter($value);
+            } elseif (property_exists($this, $key)) {
+                $this->$key = $value;
+            }
+        }
+
+        $this->config = $config;
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
      * @param mixed|null $default
+     *
      * @return mixed|null
      */
     public function getConfigValue(string $key, $default = null)
@@ -32,12 +56,14 @@ trait ConfigAwareTrait
 
     /**
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
+     *
      * @return $this
      */
     public function setConfigValue(string $key, $value)
     {
         $this->config[$key] = $value;
+
         return $this;
     }
 
@@ -58,25 +84,5 @@ trait ConfigAwareTrait
      */
     protected function afterConfig(): void
     {
-    }
-
-    /**
-     * @param array $config
-     * @return $this
-     */
-    protected function setConfig(array $config)
-    {
-        foreach ($config as $key => $value) {
-            $setter = 'set' . ucfirst($key);
-            if (method_exists($this, $setter)) {
-                $this->$setter($value);
-            } elseif (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
-        }
-
-        $this->config = $config;
-
-        return $this;
     }
 }

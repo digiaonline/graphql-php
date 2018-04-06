@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\NodeTrait;
 
 class Field implements ConfigAwareInterface, NodeAwareInterface, ArgumentsAwareInterface
 {
+
     use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;

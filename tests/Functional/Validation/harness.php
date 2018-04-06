@@ -2,35 +2,36 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation;
 
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Type\Boolean;
-use function Digia\GraphQL\Type\newDirective;
-use function Digia\GraphQL\Type\newEnumType;
 use function Digia\GraphQL\Type\Float;
 use function Digia\GraphQL\Type\ID;
-use function Digia\GraphQL\Type\newInputObjectType;
 use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\newDirective;
+use function Digia\GraphQL\Type\newEnumType;
+use function Digia\GraphQL\Type\newInputObjectType;
 use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
 use function Digia\GraphQL\Type\newUnionType;
+use function Digia\GraphQL\Type\String;
 
 function Being(): InterfaceType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newInterfaceType([
-            'name'   => 'Being',
+            'name' => 'Being',
             'fields' => function () {
                 return [
                     'name' => [
@@ -45,9 +46,10 @@ function Being(): InterfaceType
 function Pet(): InterfaceType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newInterfaceType([
-            'name'   => 'Pet',
+            'name' => 'Pet',
             'fields' => function () {
                 return [
                     'name' => [
@@ -62,9 +64,10 @@ function Pet(): InterfaceType
 function Canine(): InterfaceType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newInterfaceType([
-            'name'   => 'Canine',
+            'name' => 'Canine',
             'fields' => function () {
                 return [
                     'name' => [
@@ -79,11 +82,12 @@ function Canine(): InterfaceType
 function DogCommand(): EnumType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newEnumType([
-            'name'   => 'DogCommand',
+            'name' => 'DogCommand',
             'values' => [
-                'SIT'  => ['value' => 0],
+                'SIT' => ['value' => 0],
                 'HEEL' => ['value' => 1],
                 'DOWN' => ['value' => 2],
             ],
@@ -93,36 +97,40 @@ function DogCommand(): EnumType
 function Dog(): ObjectType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newObjectType([
-            'name'       => 'Dog',
-            'fields'     => function () {
+            'name' => 'Dog',
+            'fields' => function () {
                 return [
-                    'name'            => [
+                    'name' => [
                         'type' => String(),
                         'args' => ['surname' => ['type' => Boolean()]],
                     ],
-                    'nickname'        => ['type' => String()],
-                    'barkVolume'      => ['type' => Int()],
-                    'barks'           => ['type' => Boolean()],
+                    'nickname' => ['type' => String()],
+                    'barkVolume' => ['type' => Int()],
+                    'barks' => ['type' => Boolean()],
                     'doesKnowCommand' => [
                         'type' => Boolean(),
                         'args' => [
                             'dogCommand' => ['type' => DogCommand()],
                         ],
                     ],
-                    'isHouseTrained'  => [
+                    'isHouseTrained' => [
                         'type' => Boolean(),
                         'args' => [
                             'atOtherHomes' => [
-                                'type'         => Boolean(),
+                                'type' => Boolean(),
                                 'defaultValue' => true,
                             ],
                         ],
                     ],
-                    'isAtLocation'    => [
+                    'isAtLocation' => [
                         'type' => Boolean(),
-                        'args' => ['x' => ['type' => Int()], 'y' => ['type' => Int()]],
+                        'args' => [
+                            'x' => ['type' => Int()],
+                            'y' => ['type' => Int()],
+                        ],
                     ],
                 ];
             },
@@ -133,19 +141,20 @@ function Dog(): ObjectType
 function Cat(): ObjectType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newObjectType([
-            'name'       => 'Cat',
-            'fields'     => function () {
+            'name' => 'Cat',
+            'fields' => function () {
                 return [
-                    'name'       => [
+                    'name' => [
                         'type' => String(),
                         'args' => ['surname' => ['type' => Boolean()]],
                     ],
-                    'nickname'   => ['type' => String()],
-                    'meows'      => ['type' => Boolean()],
+                    'nickname' => ['type' => String()],
+                    'meows' => ['type' => Boolean()],
                     'meowVolume' => ['type' => Int()],
-                    'furColor'   => ['type' => FurColor()],
+                    'furColor' => ['type' => FurColor()],
                 ];
             },
             'interfaces' => [Being(), Pet()],
@@ -155,9 +164,10 @@ function Cat(): ObjectType
 function CatOrDog(): UnionType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newUnionType([
-            'name'  => 'CatOrDog',
+            'name' => 'CatOrDog',
             'types' => [Cat(), Dog()],
         ]);
 }
@@ -165,9 +175,10 @@ function CatOrDog(): UnionType
 function Intelligent(): InterfaceType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newInterfaceType([
-            'name'   => 'Intelligent',
+            'name' => 'Intelligent',
             'fields' => [
                 'iq' => ['type' => Int()],
             ],
@@ -177,19 +188,20 @@ function Intelligent(): InterfaceType
 function Human(): ObjectType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newObjectType([
-            'name'       => 'Human',
+            'name' => 'Human',
             'interfaces' => [Being(), Intelligent()],
-            'fields'     => function () {
+            'fields' => function () {
                 return [
-                    'name'      => [
+                    'name' => [
                         'type' => String(),
                         'args' => ['surname' => ['type' => Boolean()]],
                     ],
-                    'pets'      => ['type' => newList(Pet())],
+                    'pets' => ['type' => newList(Pet())],
                     'relatives' => ['type' => newList(Human())],
-                    'iq'        => ['type' => Int()],
+                    'iq' => ['type' => Int()],
                 ];
             },
         ]);
@@ -198,14 +210,15 @@ function Human(): ObjectType
 function Alien(): ObjectType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newObjectType([
-            'name'       => 'Alien',
+            'name' => 'Alien',
             'interfaces' => [Being(), Intelligent()],
-            'fields'     => function () {
+            'fields' => function () {
                 return [
-                    'iq'      => ['type' => Int()],
-                    'name'    => [
+                    'iq' => ['type' => Int()],
+                    'name' => [
                         'type' => String(),
                         'args' => ['surname' => ['type' => Boolean()]],
                     ],
@@ -218,9 +231,10 @@ function Alien(): ObjectType
 function DogOrHuman(): UnionType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newUnionType([
-            'name'  => 'DogOrHuman',
+            'name' => 'DogOrHuman',
             'types' => [Dog(), Human()],
         ]);
 }
@@ -228,9 +242,10 @@ function DogOrHuman(): UnionType
 function HumanOrAlien(): UnionType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newUnionType([
-            'name'  => 'HumanOrAlien',
+            'name' => 'HumanOrAlien',
             'types' => [Human(), Alien()],
         ]);
 }
@@ -238,15 +253,16 @@ function HumanOrAlien(): UnionType
 function FurColor(): EnumType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newEnumType([
-            'name'   => 'FurColor',
+            'name' => 'FurColor',
             'values' => [
-                'BROWN'   => ['value' => 0],
-                'BLACK'   => ['value' => 1],
-                'TAN'     => ['value' => 2],
+                'BROWN' => ['value' => 0],
+                'BLACK' => ['value' => 1],
+                'TAN' => ['value' => 2],
                 'SPOTTED' => ['value' => 3],
-                'NO_FUR'  => ['value' => 4],
+                'NO_FUR' => ['value' => 4],
                 'UNKNOWN' => ['value' => 5],
             ],
         ]);
@@ -255,14 +271,15 @@ function FurColor(): EnumType
 function ComplexInput(): InputObjectType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newInputObjectType([
-            'name'   => 'ComplexInput',
+            'name' => 'ComplexInput',
             'fields' => [
-                'requiredField'   => ['type' => newNonNull(Boolean())],
-                'intField'        => ['type' => Int()],
-                'stringField'     => ['type' => String()],
-                'booleanField'    => ['type' => Boolean()],
+                'requiredField' => ['type' => newNonNull(Boolean())],
+                'intField' => ['type' => Int()],
+                'stringField' => ['type' => String()],
+                'booleanField' => ['type' => Boolean()],
                 'stringListField' => ['type' => newList(String())],
             ],
         ]);
@@ -271,43 +288,44 @@ function ComplexInput(): InputObjectType
 function ComplicatedArgs(): ObjectType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newObjectType([
-            'name'   => 'ComplicatedArgs',
+            'name' => 'ComplicatedArgs',
             // TODO List
             // TODO Coercion
             // TODO NotNulls
             'fields' => function () {
                 return [
-                    'intArgField'               => [
+                    'intArgField' => [
                         'type' => String(),
                         'args' => ['intArg' => ['type' => Int()]],
                     ],
-                    'nonNullIntArgField'        => [
+                    'nonNullIntArgField' => [
                         'type' => String(),
                         'args' => ['nonNullIntArg' => ['type' => newNonNull(Int())]],
                     ],
-                    'stringArgField'            => [
+                    'stringArgField' => [
                         'type' => String(),
                         'args' => ['stringArg' => ['type' => String()]],
                     ],
-                    'booleanArgField'           => [
+                    'booleanArgField' => [
                         'type' => String(),
                         'args' => ['booleanArg' => ['type' => Boolean()]],
                     ],
-                    'enumArgField'              => [
+                    'enumArgField' => [
                         'type' => String(),
                         'args' => ['enumArg' => ['type' => FurColor()]],
                     ],
-                    'floatArgField'             => [
+                    'floatArgField' => [
                         'type' => String(),
                         'args' => ['floatArg' => ['type' => Float()]],
                     ],
-                    'idArgField'                => [
+                    'idArgField' => [
                         'type' => String(),
                         'args' => ['idArg' => ['type' => ID()]],
                     ],
-                    'stringListArgField'        => [
+                    'stringListArgField' => [
                         'type' => String(),
                         'args' => ['stringListArg' => ['type' => newList(String())]],
                     ],
@@ -315,25 +333,25 @@ function ComplicatedArgs(): ObjectType
                         'type' => String(),
                         'args' => ['stringListNonNullArg' => ['type' => newList(newNonNull(String()))]],
                     ],
-                    'complexArgField'           => [
+                    'complexArgField' => [
                         'type' => String(),
                         'args' => ['complexArg' => ['type' => ComplexInput()]],
                     ],
-                    'multipleReqs'              => [
+                    'multipleReqs' => [
                         'type' => String(),
                         'args' => [
                             'req1' => ['type' => newNonNull(Int())],
                             'req2' => ['type' => newNonNull(Int())],
                         ],
                     ],
-                    'multipleOpts'              => [
+                    'multipleOpts' => [
                         'type' => String(),
                         'args' => [
                             'opt1' => ['type' => Int(), 'defaultValue' => 0],
                             'opt2' => ['type' => Int(), 'defaultValue' => 0],
                         ],
                     ],
-                    'multipleOptsAndReq'        => [
+                    'multipleOptsAndReq' => [
                         'type' => String(),
                         'args' => [
                             'req1' => ['type' => newNonNull(Int())],
@@ -350,17 +368,20 @@ function ComplicatedArgs(): ObjectType
 function InvalidScalar(): ScalarType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newScalarType([
-            'name'         => 'Invalid',
-            'serialize'    => function ($value) {
+            'name' => 'Invalid',
+            'serialize' => function ($value) {
                 return $value;
             },
             'parseLiteral' => function ($node) {
-                throw new \Exception(sprintf('Invalid scalar is always invalid: %s', $node->getValue()));
+                throw new \Exception(sprintf('Invalid scalar is always invalid: %s',
+                    $node->getValue()));
             },
-            'parseValue'   => function ($value) {
-                throw new \Exception(sprintf('Invalid scalar is always invalid: %s', $value));
+            'parseValue' => function ($value) {
+                throw new \Exception(sprintf('Invalid scalar is always invalid: %s',
+                    $value));
             },
         ]);
 }
@@ -368,16 +389,17 @@ function InvalidScalar(): ScalarType
 function AnyScalar(): ScalarType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newScalarType([
-            'name'         => 'Any',
-            'serialize'    => function ($value) {
+            'name' => 'Any',
+            'serialize' => function ($value) {
                 return $value;
             },
             'parseLiteral' => function ($node) {
                 return $node;
             },
-            'parseValue'   => function ($value) {
+            'parseValue' => function ($value) {
                 return $value;
             },
         ]);
@@ -386,28 +408,29 @@ function AnyScalar(): ScalarType
 function QueryRoot(): ObjectType
 {
     static $instance = null;
+
     return $instance ??
         $instance = newObjectType([
-            'name'   => 'QueryRoot',
+            'name' => 'QueryRoot',
             'fields' => function () {
                 return [
-                    'human'           => [
+                    'human' => [
                         'args' => ['id' => ['type' => ID()]],
                         'type' => Human(),
                     ],
-                    'alien'           => ['type' => Alien()],
-                    'dog'             => ['type' => Dog()],
-                    'cat'             => ['type' => Cat()],
-                    'pet'             => ['type' => Pet()],
-                    'catOrDog'        => ['type' => CatOrDog()],
-                    'dogOrHuman'      => ['type' => DogOrHuman()],
-                    'humanOrAlien'    => ['type' => HumanOrAlien()],
+                    'alien' => ['type' => Alien()],
+                    'dog' => ['type' => Dog()],
+                    'cat' => ['type' => Cat()],
+                    'pet' => ['type' => Pet()],
+                    'catOrDog' => ['type' => CatOrDog()],
+                    'dogOrHuman' => ['type' => DogOrHuman()],
+                    'humanOrAlien' => ['type' => HumanOrAlien()],
                     'complicatedArgs' => ['type' => ComplicatedArgs()],
-                    'invalidArg'      => [
+                    'invalidArg' => [
                         'args' => ['arg' => ['type' => InvalidScalar()]],
                         'type' => String(),
                     ],
-                    'anyArg'          => [
+                    'anyArg' => [
                         'args' => ['arg' => ['type' => AnyScalar()]],
                         'type' => String(),
                     ],
@@ -422,81 +445,81 @@ function QueryRoot(): ObjectType
 function testSchema(): SchemaInterface
 {
     return newSchema([
-        'query'      => QueryRoot(),
-        'types'      => [Cat(), Dog(), Human(), Alien()],
+        'query' => QueryRoot(),
+        'types' => [Cat(), Dog(), Human(), Alien()],
         'directives' => [
             IncludeDirective(),
             SkipDirective(),
             newDirective([
-                'name'      => 'onQuery',
+                'name' => 'onQuery',
                 'locations' => ['QUERY'],
             ]),
             newDirective([
-                'name'      => 'onMutation',
+                'name' => 'onMutation',
                 'locations' => ['MUTATION'],
             ]),
             newDirective([
-                'name'      => 'onSubscription',
+                'name' => 'onSubscription',
                 'locations' => ['SUBSCRIPTION'],
             ]),
             newDirective([
-                'name'      => 'onField',
+                'name' => 'onField',
                 'locations' => ['FIELD'],
             ]),
             newDirective([
-                'name'      => 'onFragmentDefinition',
+                'name' => 'onFragmentDefinition',
                 'locations' => ['FRAGMENT_DEFINITION'],
             ]),
             newDirective([
-                'name'      => 'onFragmentSpread',
+                'name' => 'onFragmentSpread',
                 'locations' => ['FRAGMENT_SPREAD'],
             ]),
             newDirective([
-                'name'      => 'onInlineFragment',
+                'name' => 'onInlineFragment',
                 'locations' => ['INLINE_FRAGMENT'],
             ]),
             newDirective([
-                'name'      => 'onSchema',
+                'name' => 'onSchema',
                 'locations' => ['SCHEMA'],
             ]),
             newDirective([
-                'name'      => 'onScalar',
+                'name' => 'onScalar',
                 'locations' => ['SCALAR'],
             ]),
             newDirective([
-                'name'      => 'onObject',
+                'name' => 'onObject',
                 'locations' => ['OBJECT'],
             ]),
             newDirective([
-                'name'      => 'onFieldDefinition',
+                'name' => 'onFieldDefinition',
                 'locations' => ['FIELD_DEFINITION'],
             ]),
             newDirective([
-                'name'      => 'onArgumentDefinition',
+                'name' => 'onArgumentDefinition',
                 'locations' => ['ARGUMENT_DEFINITION'],
             ]),
             newDirective([
-                'name'      => 'onInterface',
+                'name' => 'onInterface',
                 'locations' => ['INTERFACE'],
             ]),
             newDirective([
-                'name'      => 'onUnion',
+                'name' => 'onUnion',
                 'locations' => ['UNION'],
             ]),
             newDirective([
-                'name'      => 'onEnum',
+                'name' => 'onEnum',
                 'locations' => ['ENUM'],
             ]),
             newDirective([
-                'name'      => 'onEnumValue',
+                'name' => 'onEnumValue',
                 'locations' => ['ENUM_VALUE'],
             ]),
             newDirective([
-                'name'      => 'onInputObject',
+                'name' => 'onInputObject',
                 'locations' => ['INPUT_OBJECT'],
             ]),
             newDirective([
-                'name'      => 'onInputFieldDefinition',
+                'name' => 'onInputFieldDefinition',
                 'locations' => ['INPUT_FIELD_DEFINITION'],
             ]),
         ],

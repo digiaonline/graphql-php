@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 interface ArgumentsAwareInterface
 {
+
     /**
      * @return bool
      */
@@ -21,6 +22,7 @@ interface ArgumentsAwareInterface
 
     /**
      * @param ArgumentNode[] $arguments
+     *
      * @return $this
      */
     public function setArguments(array $arguments);

@@ -12,6 +12,7 @@ use function Digia\GraphQL\Util\invariant;
 class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface, InputTypeInterface,
     OutputTypeInterface, ConfigAwareInterface, NodeAwareInterface
 {
+
     use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
@@ -33,30 +34,8 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
     protected $parseLiteralFunction;
 
     /**
-     * @inheritdoc
-     */
-    protected function afterConfig(): void
-    {
-        invariant(
-            \is_callable($this->serializeFunction),
-            \sprintf(
-                '%s must provide "serialize" function. If this custom Scalar ' .
-                'is also used as an input type, ensure "parseValue" and "parseLiteral" ' .
-                'functions are also provided.',
-                $this->getName()
-            )
-        );
-
-        if (null !== $this->parseValueFunction || null !== $this->parseLiteralFunction) {
-            invariant(
-                \is_callable($this->parseValueFunction) && \is_callable($this->parseLiteralFunction),
-                \sprintf('%s must provide both "parseValue" and "parseLiteral" functions.', $this->getName())
-            );
-        }
-    }
-
-    /**
      * @param mixed $value
+     *
      * @return mixed
      */
     public function serialize($value)
@@ -66,6 +45,17 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
 
     /**
      * @param mixed $value
+     *
+     * @return bool
+     */
+    public function isValidValue($value): bool
+    {
+        return null !== $this->parseValue($value);
+    }
+
+    /**
+     * @param mixed $value
+     *
      * @return mixed|null
      */
     public function parseValue($value)
@@ -77,7 +67,18 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
 
     /**
      * @param NodeInterface $node
-     * @param array|null    $variables
+     *
+     * @return bool
+     */
+    public function isValidLiteral(NodeInterface $node): bool
+    {
+        return null !== $this->parseLiteral($node);
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @param array|null $variables
+     *
      * @return mixed|null
      */
     public function parseLiteral(NodeInterface $node, ?array $variables = null)
@@ -88,50 +89,62 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
     }
 
     /**
-     * @param mixed $value
-     * @return bool
+     * @inheritdoc
      */
-    public function isValidValue($value): bool
+    protected function afterConfig(): void
     {
-        return null !== $this->parseValue($value);
-    }
+        invariant(
+            \is_callable($this->serializeFunction),
+            \sprintf(
+                '%s must provide "serialize" function. If this custom Scalar '.
+                'is also used as an input type, ensure "parseValue" and "parseLiteral" '.
+                'functions are also provided.',
+                $this->getName()
+            )
+        );
 
-    /**
-     * @param NodeInterface $node
-     * @return bool
-     */
-    public function isValidLiteral(NodeInterface $node): bool
-    {
-        return null !== $this->parseLiteral($node);
+        if (null !== $this->parseValueFunction || null !== $this->parseLiteralFunction) {
+            invariant(
+                \is_callable($this->parseValueFunction) && \is_callable($this->parseLiteralFunction),
+                \sprintf('%s must provide both "parseValue" and "parseLiteral" functions.',
+                    $this->getName())
+            );
+        }
     }
 
     /**
      * @param callable $serializeFunction
+     *
      * @return ScalarType
      */
     protected function setSerialize(callable $serializeFunction): ScalarType
     {
         $this->serializeFunction = $serializeFunction;
+
         return $this;
     }
 
     /**
      * @param callable $parseValueFunction
+     *
      * @return ScalarType
      */
     protected function setParseValue(callable $parseValueFunction): ScalarType
     {
         $this->parseValueFunction = $parseValueFunction;
+
         return $this;
     }
 
     /**
      * @param callable $parseLiteralFunction
+     *
      * @return ScalarType
      */
-    protected function setParseLiteral(callable $parseLiteralFunction): ScalarType
-    {
+    protected function setParseLiteral(callable $parseLiteralFunction
+    ): ScalarType {
         $this->parseLiteralFunction = $parseLiteralFunction;
+
         return $this;
     }
 }

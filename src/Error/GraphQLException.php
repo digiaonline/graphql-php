@@ -16,15 +16,18 @@ use Digia\GraphQL\Util\SerializationInterface;
  */
 class GraphQLException extends AbstractException implements SerializationInterface
 {
+
     use ArrayToJsonTrait;
 
     /**
-     * An array of { line, column } locations within the source GraphQL document
+     * An array of { line, column } locations within the source GraphQL
+     * document
      * which correspond to this error.
      *
-     * Errors during validation often contain multiple locations, for example to
-     * point out two things with the same name. Errors during execution include a
-     * single location, the field which produced the error.
+     * Errors during validation often contain multiple locations, for example
+     * to
+     * point out two things with the same name. Errors during execution include
+     * a single location, the field which produced the error.
      *
      * @var array|null
      */
@@ -73,11 +76,11 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     /**
      * ExecutionException constructor.
      *
-     * @param string          $message
-     * @param array|null      $nodes
-     * @param Source|null     $source
-     * @param array|null      $positions
-     * @param array|null      $path
+     * @param string $message
+     * @param array|null $nodes
+     * @param Source|null $source
+     * @param array|null $positions
+     * @param array|null $path
      * @param \Throwable|null $originalException
      */
     public function __construct(
@@ -95,8 +98,106 @@ class GraphQLException extends AbstractException implements SerializationInterfa
         $this->resolvePositions($positions);
         $this->resolveLocations($positions, $source);
 
-        $this->path              = $path;
+        $this->path = $path;
         $this->originalException = $originalException;
+    }
+
+    /**
+     * @param array|null $nodes
+     *
+     * @return $this
+     */
+    protected function resolveNodes(?array $nodes)
+    {
+        $nodes = \is_array($nodes)
+            ? (!empty($nodes) ? $nodes : [])
+            : (null !== $nodes ? [$nodes] : []);
+
+        $this->nodes = \array_filter($nodes, function ($node) {
+            return null !== $node;
+        });
+
+        return $this;
+    }
+
+    /**
+     * @param Source|null $source
+     *
+     * @return $this
+     */
+    protected function resolveSource(?Source $source)
+    {
+        if (null === $source && !empty($this->nodes)) {
+            $firstNode = $this->nodes[0] ?? null;
+            $location = null !== $firstNode ? $firstNode->getLocation() : null;
+            $source = null !== $location ? $location->getSource() : null;
+        }
+
+        $this->source = $source;
+
+        return $this;
+    }
+
+    /**
+     * @param array|null $positions
+     *
+     * @return $this
+     */
+    protected function resolvePositions(?array $positions)
+    {
+        if (null === $positions && !empty($this->nodes)) {
+            $positions = array_reduce($this->nodes,
+                function (array $list, ?NodeInterface $node) {
+                    if (null !== $node) {
+                        $location = $node->getLocation();
+                        if (null !== $location) {
+                            $list[] = $location->getStart();
+                        }
+                    }
+
+                    return $list;
+                }, []);
+        }
+
+        if (null !== $positions && empty($positions)) {
+            $positions = null;
+        }
+
+        $this->positions = $positions;
+
+        return $this;
+    }
+
+    /**
+     * @param array|null $positions
+     * @param Source|null $source
+     *
+     * @return $this
+     */
+    protected function resolveLocations(?array $positions, ?Source $source)
+    {
+        if (null !== $positions && null !== $source) {
+            $locations = array_map(function ($position) use ($source) {
+                return SourceLocation::fromSource($source, $position);
+            }, $positions);
+        } elseif (!empty($this->nodes)) {
+            $locations = array_reduce($this->nodes,
+                function (array $list, NodeInterface $node) {
+                    $location = $node->getLocation();
+                    if (null !== $location) {
+                        $list[] = SourceLocation::fromSource($location->getSource(),
+                            $location->getStart());
+                    }
+
+                    return $list;
+                }, []);
+        }
+
+        if (isset($locations)) {
+            $this->locations = $locations;
+        }
+
+        return $this;
     }
 
     /**
@@ -150,16 +251,6 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     /**
      * @return array|null
      */
-    public function getLocationsAsArray(): ?array
-    {
-        return !empty($this->locations) ? array_map(function (SourceLocation $location) {
-            return $location->toArray();
-        }, $this->locations) : null;
-    }
-
-    /**
-     * @return array|null
-     */
     public function getPath(): ?array
     {
         return $this->path;
@@ -182,104 +273,27 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     }
 
     /**
-     * @param array|null $nodes
-     * @return $this
-     */
-    protected function resolveNodes(?array $nodes)
-    {
-        $nodes = \is_array($nodes)
-            ? (!empty($nodes) ? $nodes : [])
-            : (null !== $nodes ? [$nodes] : []);
-
-        $this->nodes = \array_filter($nodes, function ($node) {
-            return null !== $node;
-        });
-
-        return $this;
-    }
-
-    /**
-     * @param Source|null $source
-     * @return $this
-     */
-    protected function resolveSource(?Source $source)
-    {
-        if (null === $source && !empty($this->nodes)) {
-            $firstNode = $this->nodes[0] ?? null;
-            $location  = null !== $firstNode ? $firstNode->getLocation() : null;
-            $source    = null !== $location ? $location->getSource() : null;
-        }
-
-        $this->source = $source;
-
-        return $this;
-    }
-
-    /**
-     * @param array|null $positions
-     * @return $this
-     */
-    protected function resolvePositions(?array $positions)
-    {
-        if (null === $positions && !empty($this->nodes)) {
-            $positions = array_reduce($this->nodes, function (array $list, ?NodeInterface $node) {
-                if (null !== $node) {
-                    $location = $node->getLocation();
-                    if (null !== $location) {
-                        $list[] = $location->getStart();
-                    }
-                }
-                return $list;
-            }, []);
-        }
-
-        if (null !== $positions && empty($positions)) {
-            $positions = null;
-        }
-
-        $this->positions = $positions;
-
-        return $this;
-    }
-
-    /**
-     * @param array|null  $positions
-     * @param Source|null $source
-     * @return $this
-     */
-    protected function resolveLocations(?array $positions, ?Source $source)
-    {
-        if (null !== $positions && null !== $source) {
-            $locations = array_map(function ($position) use ($source) {
-                return SourceLocation::fromSource($source, $position);
-            }, $positions);
-        } elseif (!empty($this->nodes)) {
-            $locations = array_reduce($this->nodes, function (array $list, NodeInterface $node) {
-                $location = $node->getLocation();
-                if (null !== $location) {
-                    $list[] = SourceLocation::fromSource($location->getSource(), $location->getStart());
-                }
-                return $list;
-            }, []);
-        }
-
-        if (isset($locations)) {
-            $this->locations = $locations;
-        }
-
-        return $this;
-    }
-
-    /**
      * @inheritdoc
      */
     public function toArray(): array
     {
         return [
-            'message'   => $this->message,
+            'message' => $this->message,
             'locations' => $this->getLocationsAsArray(),
-            'path'      => $this->path,
+            'path' => $this->path,
         ];
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getLocationsAsArray(): ?array
+    {
+        return !empty($this->locations) ? array_map(function (
+            SourceLocation $location
+        ) {
+            return $location->toArray();
+        }, $this->locations) : null;
     }
 
     /**

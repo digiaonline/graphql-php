@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\NodeTrait;
 
 class Directive implements DirectiveInterface, ConfigAwareInterface, NodeAwareInterface, ArgumentsAwareInterface
 {
+
     use ConfigAwareTrait;
     use NodeTrait;
     use NameTrait;
@@ -30,11 +31,13 @@ class Directive implements DirectiveInterface, ConfigAwareInterface, NodeAwareIn
 
     /**
      * @param string[] $locations
+     *
      * @return $this
      */
     protected function setLocations(array $locations)
     {
         $this->locations = $locations;
+
         return $this;
     }
 }

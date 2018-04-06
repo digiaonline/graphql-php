@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 class ArgumentNode extends AbstractNode implements NodeInterface, NameAwareInterface
 {
+
     use NameTrait;
     use ValueLiteralTrait;
 
@@ -18,10 +19,10 @@ class ArgumentNode extends AbstractNode implements NodeInterface, NameAwareInter
     public function toArray(): array
     {
         return [
-            'kind'  => $this->kind,
-            'name'  => $this->getNameAsArray(),
+            'kind' => $this->kind,
+            'name' => $this->getNameAsArray(),
             'value' => $this->getValueAsArray(),
-            'loc'   => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

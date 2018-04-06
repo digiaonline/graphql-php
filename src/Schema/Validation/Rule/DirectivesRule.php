@@ -13,6 +13,7 @@ use function Digia\GraphQL\Util\isValidNameError;
 
 class DirectivesRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
@@ -57,7 +58,8 @@ class DirectivesRule extends AbstractRule
                                 $directive->getName(),
                                 $argumentName
                             ),
-                            $this->getAllDirectiveArgumentNodes($directive, $argumentName)
+                            $this->getAllDirectiveArgumentNodes($directive,
+                                $argumentName)
                         )
                     );
 
@@ -76,7 +78,8 @@ class DirectivesRule extends AbstractRule
                                 $argumentName,
                                 (string)$argument->getType()
                             ),
-                            $this->getAllDirectiveArgumentNodes($directive, $argumentName)
+                            $this->getAllDirectiveArgumentNodes($directive,
+                                $argumentName)
                         )
                     );
                 }
@@ -85,12 +88,30 @@ class DirectivesRule extends AbstractRule
     }
 
     /**
+     * @param mixed $node
+     *
+     * @throws InvariantException
+     */
+    protected function validateName($node): void
+    {
+        // Ensure names are valid, however introspection types opt out.
+        $error = isValidNameError($node->getName(), $node);
+
+        if (null !== $error) {
+            $this->context->reportError($error);
+        }
+    }
+
+    /**
      * @param Directive $directive
-     * @param string    $argumentName
+     * @param string $argumentName
+     *
      * @return array
      */
-    protected function getAllDirectiveArgumentNodes(Directive $directive, string $argumentName)
-    {
+    protected function getAllDirectiveArgumentNodes(
+        Directive $directive,
+        string $argumentName
+    ) {
         $nodes = [];
 
         /** @var DirectiveNode $directiveNode */
@@ -105,19 +126,5 @@ class DirectivesRule extends AbstractRule
         }
 
         return $nodes;
-    }
-
-    /**
-     * @param mixed $node
-     * @throws InvariantException
-     */
-    protected function validateName($node): void
-    {
-        // Ensure names are valid, however introspection types opt out.
-        $error = isValidNameError($node->getName(), $node);
-
-        if (null !== $error) {
-            $this->context->reportError($error);
-        }
     }
 }

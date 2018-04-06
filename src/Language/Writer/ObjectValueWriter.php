@@ -8,8 +8,10 @@ use function Digia\GraphQL\Language\wrap;
 
 class ObjectValueWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|ObjectValueNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string

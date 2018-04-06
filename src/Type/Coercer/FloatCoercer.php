@@ -6,6 +6,7 @@ use Digia\GraphQL\Error\InvalidTypeException;
 
 class FloatCoercer extends AbstractCoercer
 {
+
     /**
      * @inheritdoc
      */
@@ -19,6 +20,7 @@ class FloatCoercer extends AbstractCoercer
             return (float)$value;
         }
 
-        throw new InvalidTypeException(\sprintf('Float cannot represent non numeric value: %s', $value));
+        throw new InvalidTypeException(\sprintf('Float cannot represent non numeric value: %s',
+            $value));
     }
 }

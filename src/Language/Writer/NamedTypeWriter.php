@@ -7,8 +7,10 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class NamedTypeWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|NamedTypeNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string

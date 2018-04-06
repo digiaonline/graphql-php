@@ -21,39 +21,33 @@ use function Digia\GraphQL\Validation\inlineFragmentOnNonCompositeMessage;
  */
 class FragmentsOnCompositeTypesRule extends AbstractRule
 {
-    /**
-     * @inheritdoc
-     */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
-    {
-        $this->validateFragementNode($node, function (FragmentDefinitionNode $node) {
-            return fragmentOnNonCompositeMessage((string)$node, (string)$node->getTypeCondition());
-        });
-
-        return $node;
-    }
 
     /**
      * @inheritdoc
      */
-    protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node
+    ): ?NodeInterface
     {
-        $this->validateFragementNode($node, function (InlineFragmentNode $node) {
-            return inlineFragmentOnNonCompositeMessage((string)$node->getTypeCondition());
-        });
+        $this->validateFragementNode($node,
+            function (FragmentDefinitionNode $node) {
+                return fragmentOnNonCompositeMessage((string)$node,
+                    (string)$node->getTypeCondition());
+            });
 
         return $node;
     }
-
 
     /**
      * @param NodeInterface|InlineFragmentNode|FragmentDefinitionNode $node
-     * @param callable                                                $errorMessageFunction
+     * @param callable $errorMessageFunction
+     *
      * @throws \Exception
      * @throws \TypeError
      */
-    protected function validateFragementNode(NodeInterface $node, callable $errorMessageFunction)
-    {
+    protected function validateFragementNode(
+        NodeInterface $node,
+        callable $errorMessageFunction
+    ) {
         $typeCondition = $node->getTypeCondition();
 
         if (null !== $typeCondition) {
@@ -62,10 +56,24 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
             if (null !== $type && !($type instanceof CompositeTypeInterface)) {
                 $this->context->reportError(
                     new ValidationException($errorMessageFunction($node),
-                    [$typeCondition]
+                        [$typeCondition]
                     )
                 );
             }
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function enterInlineFragment(InlineFragmentNode $node
+    ): ?NodeInterface
+    {
+        $this->validateFragementNode($node,
+            function (InlineFragmentNode $node) {
+                return inlineFragmentOnNonCompositeMessage((string)$node->getTypeCondition());
+            });
+
+        return $node;
     }
 }

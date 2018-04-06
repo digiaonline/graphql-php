@@ -6,6 +6,7 @@ use Digia\GraphQL\Error\InvalidTypeException;
 
 class StringCoercer extends AbstractCoercer
 {
+
     /**
      * @inheritdoc
      */

@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 trait NameTrait
 {
+
     /**
      * @var NameNode|null
      */
@@ -18,11 +19,15 @@ trait NameTrait
     }
 
     /**
-     * @return string|null
+     * @param NameNode|null $name
+     *
+     * @return $this
      */
-    public function getNameValue(): ?string
+    public function setName(?NameNode $name)
     {
-        return null !== $this->name ? $this->name->getValue() : null;
+        $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -34,20 +39,18 @@ trait NameTrait
     }
 
     /**
-     * @param NameNode|null $name
-     * @return $this
-     */
-    public function setName(?NameNode $name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
      * @inheritdoc
      */
     public function __toString(): string
     {
         return $this->getNameValue() ?? '';
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNameValue(): ?string
+    {
+        return null !== $this->name ? $this->name->getValue() : null;
     }
 }

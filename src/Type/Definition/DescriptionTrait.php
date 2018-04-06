@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait DescriptionTrait
 {
+
     /**
      * @var string|null
      */
@@ -19,11 +20,13 @@ trait DescriptionTrait
 
     /**
      * @param null|string $description
+     *
      * @return $this
      */
     protected function setDescription(?string $description)
     {
         $this->description = $description;
+
         return $this;
     }
 }

@@ -9,6 +9,7 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 class ExecutionResult implements SerializationInterface
 {
+
     use ArrayToJsonTrait;
 
     /**
@@ -23,13 +24,14 @@ class ExecutionResult implements SerializationInterface
 
     /**
      * ExecutionResult constructor.
-     * @param mixed[]              $data
+     *
+     * @param mixed[] $data
      * @param ExecutionException[] $errors
      */
     public function __construct(?array $data, array $errors)
     {
         $this->errors = $errors;
-        $this->data   = $data;
+        $this->data = $data;
     }
 
     /**
@@ -50,11 +52,13 @@ class ExecutionResult implements SerializationInterface
 
     /**
      * @param ExecutionException $error
+     *
      * @return ExecutionResult
      */
     public function addError(ExecutionException $error): ExecutionResult
     {
         $this->errors[] = $error;
+
         return $this;
     }
 

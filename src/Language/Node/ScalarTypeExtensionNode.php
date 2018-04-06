@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Language\Node;
 class ScalarTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface, DirectivesAwareInterface,
     NameAwareInterface
 {
+
     use NameTrait;
     use DirectivesTrait;
 
@@ -19,10 +20,10 @@ class ScalarTypeExtensionNode extends AbstractNode implements TypeExtensionNodeI
     public function toArray(): array
     {
         return [
-            'kind'       => $this->kind,
-            'name'       => $this->getNameAsArray(),
+            'kind' => $this->kind,
+            'name' => $this->getNameAsArray(),
             'directives' => $this->getDirectivesAsArray(),
-            'loc'        => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

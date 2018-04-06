@@ -11,6 +11,7 @@ use Digia\GraphQL\Schema\SchemaInterface;
 
 class ExtendInfo
 {
+
     /**
      * @var SchemaInterface
      */
@@ -38,11 +39,12 @@ class ExtendInfo
 
     /**
      * ExtensionInfo constructor.
-     * @param SchemaInterface                                            $schema
-     * @param DocumentNode                                               $document
-     * @param TypeDefinitionNodeInterface[]                              $typeDefinitionMap
+     *
+     * @param SchemaInterface $schema
+     * @param DocumentNode $document
+     * @param TypeDefinitionNodeInterface[] $typeDefinitionMap
      * @param InterfaceTypeExtensionNode[][]|ObjectTypeExtensionNode[][] $typeExtensionsMap
-     * @param DirectiveDefinitionNode[]                                  $directiveDefinitions
+     * @param DirectiveDefinitionNode[] $directiveDefinitions
      */
     public function __construct(
         SchemaInterface $schema,
@@ -51,15 +53,16 @@ class ExtendInfo
         array $typeExtensionsMap,
         array $directiveDefinitions
     ) {
-        $this->schema               = $schema;
-        $this->document             = $document;
-        $this->typeDefinitionMap    = $typeDefinitionMap;
-        $this->typeExtensionsMap    = $typeExtensionsMap;
+        $this->schema = $schema;
+        $this->document = $document;
+        $this->typeDefinitionMap = $typeDefinitionMap;
+        $this->typeExtensionsMap = $typeExtensionsMap;
         $this->directiveDefinitions = $directiveDefinitions;
     }
 
     /**
      * @param string $typeName
+     *
      * @return bool
      */
     public function hasTypeExtensions(string $typeName): bool
@@ -69,6 +72,7 @@ class ExtendInfo
 
     /**
      * @param string $typeName
+     *
      * @return InterfaceTypeExtensionNode[]|ObjectTypeExtensionNode[]|null
      */
     public function getTypeExtensions(string $typeName): ?array

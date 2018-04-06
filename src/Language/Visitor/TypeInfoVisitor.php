@@ -30,6 +30,7 @@ use function Digia\GraphQL\Util\typeFromAST;
 
 class TypeInfoVisitor implements VisitorInterface
 {
+
     /**
      * @var TypeInfo
      */
@@ -42,14 +43,15 @@ class TypeInfoVisitor implements VisitorInterface
 
     /**
      * TypeInfoVisitor constructor.
-     * @param TypeInfo      $typeInfo
+     *
+     * @param TypeInfo $typeInfo
      * @param callable|null $enterFunction
      * @param callable|null $leaveFunction
      */
     public function __construct(TypeInfo $typeInfo, VisitorInterface $visitor)
     {
         $this->typeInfo = $typeInfo;
-        $this->visitor  = $visitor;
+        $this->visitor = $visitor;
     }
 
     /**
@@ -63,11 +65,12 @@ class TypeInfoVisitor implements VisitorInterface
             $namedType = getNamedType($this->typeInfo->getType());
             $this->typeInfo->pushParentType($namedType instanceof CompositeTypeInterface ? $namedType : null);
         } elseif ($node instanceof FieldNode) {
-            $parentType      = $this->typeInfo->getParentType();
+            $parentType = $this->typeInfo->getParentType();
             $fieldDefinition = null;
-            $fieldType       = null;
+            $fieldType = null;
             if (null !== $parentType) {
-                $fieldDefinition = $this->typeInfo->resolveFieldDefinition($schema, $parentType, $node);
+                $fieldDefinition = $this->typeInfo->resolveFieldDefinition($schema,
+                    $parentType, $node);
                 if (null !== $fieldDefinition) {
                     $fieldType = $fieldDefinition->getType();
                 }
@@ -77,7 +80,7 @@ class TypeInfoVisitor implements VisitorInterface
         } elseif ($node instanceof DirectiveNode) {
             $this->typeInfo->setDirective($schema->getDirective($node->getNameValue()));
         } elseif ($node instanceof OperationDefinitionNode) {
-            $type      = null;
+            $type = null;
             $operation = $node->getOperation();
             if ($operation === 'query') {
                 $type = $schema->getQueryType();
@@ -89,7 +92,7 @@ class TypeInfoVisitor implements VisitorInterface
             $this->typeInfo->pushType($type instanceof ObjectType ? $type : null);
         } elseif ($node instanceof InlineFragmentNode || $node instanceof FragmentDefinitionNode) {
             $typeCondition = $node->getTypeCondition();
-            $outputType    = null !== $typeCondition
+            $outputType = null !== $typeCondition
                 ? typeFromAST($schema, $typeCondition)
                 : getNamedType($this->typeInfo->getType());
             $this->typeInfo->pushType(isOutputType($outputType) ? $outputType : null);
@@ -98,9 +101,9 @@ class TypeInfoVisitor implements VisitorInterface
             /** @noinspection PhpParamsInspection */
             $this->typeInfo->pushInputType(isInputType($inputType) ? $inputType : null);
         } elseif ($node instanceof ArgumentNode) {
-            $argumentType       = null;
+            $argumentType = null;
             $argumentDefinition = null;
-            $fieldOrDirective   = $this->typeInfo->getDirective() ?: $this->typeInfo->getFieldDefinition();
+            $fieldOrDirective = $this->typeInfo->getDirective() ?: $this->typeInfo->getFieldDefinition();
             if (null !== $fieldOrDirective) {
                 $argumentDefinition = find(
                     $fieldOrDirective->getArguments(),
@@ -119,10 +122,10 @@ class TypeInfoVisitor implements VisitorInterface
             $itemType = $listType instanceof ListType ? $listType->getOfType() : $listType;
             $this->typeInfo->pushInputType(isInputType($itemType) ? $itemType : null);
         } elseif ($node instanceof ObjectFieldNode) {
-            $objectType     = getNamedType($this->typeInfo->getInputType());
+            $objectType = getNamedType($this->typeInfo->getInputType());
             $inputFieldType = null;
             if ($objectType instanceof InputObjectType) {
-                $fields     = $objectType->getFields();
+                $fields = $objectType->getFields();
                 $inputField = $fields[$node->getNameValue()] ?? null;
                 if (null !== $inputField) {
                     $inputFieldType = $inputField->getType();
@@ -131,7 +134,7 @@ class TypeInfoVisitor implements VisitorInterface
             /** @noinspection PhpParamsInspection */
             $this->typeInfo->pushInputType(isInputType($inputFieldType) ? $inputFieldType : null);
         } elseif ($node instanceof EnumValueNode) {
-            $enumType  = getNamedType($this->typeInfo->getInputType());
+            $enumType = getNamedType($this->typeInfo->getInputType());
             $enumValue = null;
             if ($enumType instanceof EnumType) {
                 $enumValue = $enumType->getValue($node->getValue());

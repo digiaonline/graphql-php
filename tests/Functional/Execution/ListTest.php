@@ -14,34 +14,55 @@ use function Digia\GraphQL\Type\String;
 
 class ListTest extends TestCase
 {
+
     // EXECUTE: ACCEPTS ANY ITERABLE AS LIST VALUE
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testAcceptAnArrayObjectAsListValue()
+    {
+        $this->makeTest(newList(String()),
+            new \ArrayObject(['apple', 'banana', 'coconut']),
+            [
+                'data' => [
+                    'nest' => [
+                        'test' => ['apple', 'banana', 'coconut'],
+                    ],
+                ],
+            ]
+        );
+
+    }
 
     /**
      * @param $testType
      * @param $testData
      * @param $expected
+     *
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function makeTest($testType, $testData, $expected)
     {
         $dataType = newObjectType([
-            'name'   => 'DataType',
+            'name' => 'DataType',
             'fields' => function () use (&$dataType, $testType, $testData) {
                 return [
                     'test' => [
-                        'type' => $testType
+                        'type' => $testType,
                     ],
                     'nest' => [
-                        'type'    => $dataType,
+                        'type' => $dataType,
                         'resolve' => function () use ($testData) {
                             return [
-                                'test' => $testData
+                                'test' => $testData,
                             ];
-                        }
-                    ]
+                        },
+                    ],
                 ];
-            }
+            },
         ]);
 
         $source = '{ nest { test } }';
@@ -59,25 +80,6 @@ class ListTest extends TestCase
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
-    public function testAcceptAnArrayObjectAsListValue()
-    {
-        $this->makeTest(newList(String()),
-            new \ArrayObject(['apple', 'banana', 'coconut']),
-            [
-                'data' => [
-                    'nest' => [
-                        'test' => ['apple', 'banana', 'coconut']
-                    ]
-                ]
-            ]
-        );
-
-    }
-
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAcceptsAGeneratorAsFunctionValue()
     {
         $this->makeTest(newList(String()),
@@ -89,9 +91,9 @@ class ListTest extends TestCase
             [
                 'data' => [
                     'nest' => [
-                        'test' => ['one', '2', 'true']
-                    ]
-                ]
+                        'test' => ['one', '2', 'true'],
+                    ],
+                ],
             ]
         );
     }
@@ -105,24 +107,24 @@ class ListTest extends TestCase
         $this->makeTest(newList(String()),
             'Singluar',
             [
-                'data'   => [
+                'data' => [
                     'nest' => [
-                        'test' => null
-                    ]
+                        'test' => null,
+                    ],
                 ]
                 ,
                 'errors' => [
                     [
-                        'message'   => 'Expected Array or Traversable, but did not find one for field DataType.test.',
+                        'message' => 'Expected Array or Traversable, but did not find one for field DataType.test.',
                         'locations' => [
                             [
-                                'line'   => 1,
-                                'column' => 10
-                            ]
+                                'line' => 1,
+                                'column' => 10,
+                            ],
                         ],
-                        'path'      => ['nest', 'test']
-                    ]
-                ]
+                        'path' => ['nest', 'test'],
+                    ],
+                ],
             ]
         );
     }
@@ -138,9 +140,9 @@ class ListTest extends TestCase
             [
                 'data' => [
                     'nest' => [
-                        'test' => [1, 2]
-                    ]
-                ]
+                        'test' => [1, 2],
+                    ],
+                ],
             ]
         );
     }
@@ -157,9 +159,9 @@ class ListTest extends TestCase
             [
                 'data' => [
                     'nest' => [
-                        'test' => [1, null, 2]
-                    ]
-                ]
+                        'test' => [1, null, 2],
+                    ],
+                ],
             ]
         );
     }
@@ -175,9 +177,9 @@ class ListTest extends TestCase
             [
                 'data' => [
                     'nest' => [
-                        'test' => null
-                    ]
-                ]
+                        'test' => null,
+                    ],
+                ],
             ]
         );
     }
@@ -193,9 +195,9 @@ class ListTest extends TestCase
             [
                 'data' => [
                     'nest' => [
-                        'test' => [1, 2]
-                    ]
-                ]
+                        'test' => [1, 2],
+                    ],
+                ],
             ]
         );
     }
@@ -212,9 +214,9 @@ class ListTest extends TestCase
             [
                 'data' => [
                     'nest' => [
-                        'test' => [1, null, 2]
-                    ]
-                ]
+                        'test' => [1, null, 2],
+                    ],
+                ],
             ]
         );
     }
@@ -230,9 +232,9 @@ class ListTest extends TestCase
             [
                 'data' => [
                     'nest' => [
-                        'test' => null
-                    ]
-                ]
+                        'test' => null,
+                    ],
+                ],
             ]
         );
     }
@@ -246,23 +248,23 @@ class ListTest extends TestCase
         $this->makeTest(newList(Int()),
             \React\Promise\reject(new \Exception('Bad')),
             [
-                'data'   => [
+                'data' => [
                     'nest' => [
-                        'test' => null
-                    ]
+                        'test' => null,
+                    ],
                 ],
                 'errors' => [
                     [
-                        'message'   => 'Bad',
+                        'message' => 'Bad',
                         'locations' => [
                             [
-                                'line'   => 1,
-                                'column' => 10
-                            ]
+                                'line' => 1,
+                                'column' => 10,
+                            ],
                         ],
-                        'path'      => ['nest', 'test']
-                    ]
-                ]
+                        'path' => ['nest', 'test'],
+                    ],
+                ],
             ]
         );
     }
@@ -276,14 +278,14 @@ class ListTest extends TestCase
         $this->makeTest(newList(Int()),
             [
                 \React\Promise\resolve(1),
-                \React\Promise\resolve(2)
+                \React\Promise\resolve(2),
             ],
             [
                 'data' => [
                     'nest' => [
-                        'test' => [1, 2]
-                    ]
-                ]
+                        'test' => [1, 2],
+                    ],
+                ],
             ]
         );
     }
@@ -299,14 +301,14 @@ class ListTest extends TestCase
             [
                 \React\Promise\resolve(1),
                 \React\Promise\resolve(null),
-                \React\Promise\resolve(2)
+                \React\Promise\resolve(2),
             ],
             [
                 'data' => [
                     'nest' => [
-                        'test' => [1, null, 2]
-                    ]
-                ]
+                        'test' => [1, null, 2],
+                    ],
+                ],
             ]
         );
     }
@@ -321,26 +323,26 @@ class ListTest extends TestCase
             [
                 \React\Promise\resolve(1),
                 \React\Promise\reject(new \Exception('Bad')),
-                \React\Promise\resolve(2)
+                \React\Promise\resolve(2),
             ],
             [
-                'data'   => [
+                'data' => [
                     'nest' => [
-                        'test' => [1, null, 2]
-                    ]
+                        'test' => [1, null, 2],
+                    ],
                 ],
                 'errors' => [
                     [
-                        'message'   => 'Bad',
+                        'message' => 'Bad',
                         'locations' => [
                             [
-                                'line'   => 1,
-                                'column' => 10
-                            ]
+                                'line' => 1,
+                                'column' => 10,
+                            ],
                         ],
-                        'path'      => ['nest', 'test', 1]
-                    ]
-                ]
+                        'path' => ['nest', 'test', 1],
+                    ],
+                ],
             ]
         );
     }

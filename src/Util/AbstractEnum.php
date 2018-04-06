@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Util;
 
 abstract class AbstractEnum
 {
+
     /**
      * @return array
      * @throws \ReflectionException

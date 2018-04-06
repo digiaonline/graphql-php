@@ -13,6 +13,7 @@ use function Digia\GraphQL\Util\arraySome;
 
 class BuildingContext implements BuildingContextInterface
 {
+
     /**
      * @var ResolverRegistryInterface
      */
@@ -30,18 +31,19 @@ class BuildingContext implements BuildingContextInterface
 
     /**
      * BuilderContext constructor.
-     * @param ResolverRegistryInterface  $resolverRegistry
+     *
+     * @param ResolverRegistryInterface $resolverRegistry
      * @param DefinitionBuilderInterface $definitionBuilder
-     * @param BuildInfo                  $info
+     * @param BuildInfo $info
      */
     public function __construct(
         ResolverRegistryInterface $resolverRegistry,
         DefinitionBuilderInterface $definitionBuilder,
         BuildInfo $info
     ) {
-        $this->resolverRegistry  = $resolverRegistry;
+        $this->resolverRegistry = $resolverRegistry;
         $this->definitionBuilder = $definitionBuilder;
-        $this->info              = $info;
+        $this->info = $info;
     }
 
     /**
@@ -50,6 +52,7 @@ class BuildingContext implements BuildingContextInterface
     public function buildQueryType(): ?TypeInterface
     {
         $definition = $this->info->getOperationTypeDefinition('query');
+
         return null !== $definition ? $this->definitionBuilder->buildType($definition) : null;
     }
 
@@ -59,6 +62,7 @@ class BuildingContext implements BuildingContextInterface
     public function buildMutationType(): ?TypeInterface
     {
         $definition = $this->info->getOperationTypeDefinition('mutation');
+
         return null !== $definition ? $this->definitionBuilder->buildType($definition) : null;
     }
 
@@ -68,6 +72,7 @@ class BuildingContext implements BuildingContextInterface
     public function buildSubscriptionType(): ?TypeInterface
     {
         $definition = $this->info->getOperationTypeDefinition('subscription');
+
         return null !== $definition ? $this->definitionBuilder->buildType($definition) : null;
     }
 
@@ -86,20 +91,22 @@ class BuildingContext implements BuildingContextInterface
      */
     public function buildDirectives(): array
     {
-        $directives = \array_map(function (DirectiveDefinitionNode $definition) {
+        $directives = \array_map(function (DirectiveDefinitionNode $definition
+        ) {
             return $this->definitionBuilder->buildDirective($definition);
         }, $this->info->getDirectiveDefinitions());
 
         $specifiedDirectivesMap = [
-            'skip'       => SkipDirective(),
-            'include'    => IncludeDirective(),
+            'skip' => SkipDirective(),
+            'include' => IncludeDirective(),
             'deprecated' => DeprecatedDirective(),
         ];
 
         foreach ($specifiedDirectivesMap as $name => $directive) {
-            if (!arraySome($directives, function (Directive $directive) use ($name) {
-                return $directive->getName() === $name;
-            })) {
+            if (!arraySome($directives,
+                function (Directive $directive) use ($name) {
+                    return $directive->getName() === $name;
+                })) {
                 $directives[] = $directive;
             }
         }

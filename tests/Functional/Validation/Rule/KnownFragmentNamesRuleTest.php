@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\unknownFragment;
 
 class KnownFragmentNamesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return KnownFragmentNamesRule::class;
-    }
 
     public function testKnownFragmentNamesAreValid()
     {
@@ -67,5 +63,10 @@ class KnownFragmentNamesRuleTest extends RuleTestCase
                 unknownFragment('UnknownFragment3', [11, 6]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return KnownFragmentNamesRule::class;
     }
 }

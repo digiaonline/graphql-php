@@ -7,5 +7,6 @@ use Digia\GraphQL\Validation\ValidationContextAwareTrait;
 
 abstract class AbstractRule extends SpecificKindVisitor implements RuleInterface
 {
+
     use ValidationContextAwareTrait;
 }

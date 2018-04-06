@@ -19,6 +19,18 @@ trait DescriptionTrait
     }
 
     /**
+     * @param StringValueNode|null $description
+     *
+     * @return $this
+     */
+    public function setDescription(?StringValueNode $description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
      * @return null|string
      */
     public function getDescriptionValue(): ?string
@@ -32,15 +44,5 @@ trait DescriptionTrait
     public function getDescriptionAsArray(): ?array
     {
         return null !== $this->description ? $this->description->toArray() : null;
-    }
-
-    /**
-     * @param StringValueNode|null $description
-     * @return $this
-     */
-    public function setDescription(?StringValueNode $description)
-    {
-        $this->description = $description;
-        return $this;
     }
 }

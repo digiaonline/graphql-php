@@ -4,13 +4,14 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
 
 class ResolveInfo
 {
+
     /**
      * @var string
      */
@@ -63,16 +64,17 @@ class ResolveInfo
 
     /**
      * ResolveInfo constructor.
-     * @param string                  $fieldName
-     * @param FieldNode[]             $fieldNodes
-     * @param TypeInterface           $returnType
-     * @param ObjectType              $parentType
-     * @param array|null              $path
-     * @param SchemaInterface         $schema
-     * @param array                   $fragments
-     * @param mixed                   $rootValue
+     *
+     * @param string $fieldName
+     * @param FieldNode[] $fieldNodes
+     * @param TypeInterface $returnType
+     * @param ObjectType $parentType
+     * @param array|null $path
+     * @param SchemaInterface $schema
+     * @param array $fragments
+     * @param mixed $rootValue
      * @param OperationDefinitionNode $operation
-     * @param array                   $variableValues
+     * @param array $variableValues
      */
     public function __construct(
         string $fieldName,
@@ -86,15 +88,15 @@ class ResolveInfo
         OperationDefinitionNode $operation,
         array $variableValues
     ) {
-        $this->fieldName      = $fieldName;
-        $this->fieldNodes     = $fieldNodes;
-        $this->returnType     = $returnType;
-        $this->parentType     = $parentType;
-        $this->path           = $path;
-        $this->schema         = $schema;
-        $this->fragments      = $fragments;
-        $this->rootValue      = $rootValue;
-        $this->operation      = $operation;
+        $this->fieldName = $fieldName;
+        $this->fieldNodes = $fieldNodes;
+        $this->returnType = $returnType;
+        $this->parentType = $parentType;
+        $this->path = $path;
+        $this->schema = $schema;
+        $this->fragments = $fragments;
+        $this->rootValue = $rootValue;
+        $this->operation = $operation;
         $this->variableValues = $variableValues;
     }
 

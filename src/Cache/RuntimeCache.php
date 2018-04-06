@@ -6,6 +6,7 @@ use Psr\SimpleCache\CacheInterface;
 
 class RuntimeCache implements CacheInterface
 {
+
     /**
      * @var array
      */
@@ -25,24 +26,6 @@ class RuntimeCache implements CacheInterface
     public function has($key): bool
     {
         return isset($this->cache[$key]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function delete($key): bool
-    {
-        unset($this->cache[$key]);
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function set($key, $value, $ttl = null): bool
-    {
-        $this->cache[$key] = $value;
-        return true;
     }
 
     /**
@@ -76,10 +59,30 @@ class RuntimeCache implements CacheInterface
     /**
      * @inheritdoc
      */
+    public function set($key, $value, $ttl = null): bool
+    {
+        $this->cache[$key] = $value;
+
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function deleteMultiple($keys)
     {
         foreach ($keys as $key) {
             $this->delete($key);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function delete($key): bool
+    {
+        unset($this->cache[$key]);
+
+        return true;
     }
 }

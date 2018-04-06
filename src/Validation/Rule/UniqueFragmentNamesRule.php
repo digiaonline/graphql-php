@@ -15,6 +15,7 @@ use function Digia\GraphQL\Validation\duplicateFragmentMessage;
  */
 class UniqueFragmentNamesRule extends AbstractRule
 {
+
     /**
      * @var string[]
      */
@@ -23,7 +24,8 @@ class UniqueFragmentNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node
+    ): ?NodeInterface
     {
         return null; // Fragments cannot be defined inside operation definitions.
     }
@@ -31,7 +33,8 @@ class UniqueFragmentNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node
+    ): ?NodeInterface
     {
         $fragmentName = $node->getNameValue();
 

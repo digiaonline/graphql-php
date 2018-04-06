@@ -41,6 +41,7 @@ use function Digia\GraphQL\Validation\unknownDirectiveMessage;
  */
 class KnownDirectivesRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
@@ -56,7 +57,8 @@ class KnownDirectivesRule extends AbstractRule
 
         if (null == $directiveDefinition) {
             $this->context->reportError(
-                new ValidationException(unknownDirectiveMessage((string)$node), [$node])
+                new ValidationException(unknownDirectiveMessage((string)$node),
+                    [$node])
             );
 
             return $node;
@@ -64,9 +66,11 @@ class KnownDirectivesRule extends AbstractRule
 
         $location = $this->getDirectiveLocationFromASTPath($node);
 
-        if (null !== $location && !\in_array($location, $directiveDefinition->getLocations())) {
+        if (null !== $location && !\in_array($location,
+                $directiveDefinition->getLocations())) {
             $this->context->reportError(
-                new ValidationException(misplacedDirectiveMessage((string)$node, $location), [$node])
+                new ValidationException(misplacedDirectiveMessage((string)$node,
+                    $location), [$node])
             );
         }
 
@@ -75,9 +79,11 @@ class KnownDirectivesRule extends AbstractRule
 
     /**
      * @param NodeInterface|AcceptsVisitorsInterface $node
+     *
      * @return string|null
      */
-    protected function getDirectiveLocationFromASTPath(NodeInterface $node): ?string
+    protected function getDirectiveLocationFromASTPath(NodeInterface $node
+    ): ?string
     {
         /** @var NodeInterface $appliedTo */
         $appliedTo = $node->getAncestor();
@@ -135,6 +141,7 @@ class KnownDirectivesRule extends AbstractRule
         }
         if ($appliedTo instanceof InputValueDefinitionNode) {
             $parentNode = $node->getAncestor(2);
+
             return $parentNode instanceof InputObjectTypeDefinitionNode
                 ? DirectiveLocationEnum::INPUT_FIELD_DEFINITION
                 : DirectiveLocationEnum::ARGUMENT_DEFINITION;

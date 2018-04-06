@@ -7,19 +7,16 @@ use Psr\SimpleCache\InvalidArgumentException;
 
 trait CacheAwareTrait
 {
+
     /**
      * @var CacheInterface
      */
     protected $cache;
 
     /**
-     * @return string
-     */
-    abstract protected function getCachePrefix(): string;
-
-    /**
-     * @param mixed      $key
+     * @param mixed $key
      * @param mixed|null $default
+     *
      * @return mixed
      * @throws InvalidArgumentException
      */
@@ -30,6 +27,7 @@ trait CacheAwareTrait
 
     /**
      * @param mixed $key
+     *
      * @return bool
      * @throws InvalidArgumentException
      */
@@ -40,6 +38,7 @@ trait CacheAwareTrait
 
     /**
      * @param mixed $key
+     *
      * @return bool
      * @throws InvalidArgumentException
      */
@@ -51,7 +50,8 @@ trait CacheAwareTrait
     /**
      * @param mixed $key
      * @param mixed $value
-     * @param null  $ttl
+     * @param null $ttl
+     *
      * @return bool
      * @throws InvalidArgumentException
      */
@@ -69,11 +69,17 @@ trait CacheAwareTrait
     }
 
     /**
+     * @return string
+     */
+    abstract protected function getCachePrefix(): string;
+
+    /**
      * @param mixed $key
+     *
      * @return string
      */
     protected function getCacheKey($key): string
     {
-        return $this->getCachePrefix() . $key;
+        return $this->getCachePrefix().$key;
     }
 }

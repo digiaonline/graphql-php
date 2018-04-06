@@ -15,17 +15,20 @@ use function Digia\GraphQL\Validation\unknownFragmentMessage;
  */
 class KnownFragmentNamesRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
-    public function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
+    public function enterFragmentSpread(FragmentSpreadNode $node
+    ): ?NodeInterface
     {
         $fragmentName = $node->getNameValue();
-        $fragment     = $this->context->getFragment($fragmentName);
+        $fragment = $this->context->getFragment($fragmentName);
 
         if (null === $fragment) {
             $this->context->reportError(
-                new ValidationException(unknownFragmentMessage($fragmentName), [$node->getName()])
+                new ValidationException(unknownFragmentMessage($fragmentName),
+                    [$node->getName()])
             );
         }
 

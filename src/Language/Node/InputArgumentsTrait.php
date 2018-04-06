@@ -29,6 +29,18 @@ trait InputArgumentsTrait
     }
 
     /**
+     * @param array|InputValueDefinitionNode[] $arguments
+     *
+     * @return $this
+     */
+    public function setArguments(array $arguments)
+    {
+        $this->arguments = $arguments;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getArgumentsAsArray(): array
@@ -36,15 +48,5 @@ trait InputArgumentsTrait
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->arguments);
-    }
-
-    /**
-     * @param array|InputValueDefinitionNode[] $arguments
-     * @return $this
-     */
-    public function setArguments(array $arguments)
-    {
-        $this->arguments = $arguments;
-        return $this;
     }
 }

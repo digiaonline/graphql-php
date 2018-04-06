@@ -43,308 +43,354 @@ use function Digia\GraphQL\Validation\variableDefaultValueNotAllowedMessage;
 function nonExecutableDefinition($definitionName, $location)
 {
     return [
-        'message'   => nonExecutableDefinitionMessage($definitionName),
+        'message' => nonExecutableDefinitionMessage($definitionName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
-function undefinedField($field, $type, $suggestedTypes, $suggestsFields, $location)
-{
+function undefinedField(
+    $field,
+    $type,
+    $suggestedTypes,
+    $suggestsFields,
+    $location
+) {
     return [
-        'message'   => undefinedFieldMessage($field, $type, $suggestedTypes, $suggestsFields),
+        'message' => undefinedFieldMessage($field, $type, $suggestedTypes,
+            $suggestsFields),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function fragmentOnNonComposite($fragmentName, $typeName, $location)
 {
     return [
-        'message'   => fragmentOnNonCompositeMessage($fragmentName, $typeName),
+        'message' => fragmentOnNonCompositeMessage($fragmentName, $typeName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
-function unknownArgument($argumentName, $fieldName, $typeName, $suggestedArguments, $location)
-{
+function unknownArgument(
+    $argumentName,
+    $fieldName,
+    $typeName,
+    $suggestedArguments,
+    $location
+) {
     return [
-        'message'   => unknownArgumentMessage($argumentName, $fieldName, $typeName, $suggestedArguments),
+        'message' => unknownArgumentMessage($argumentName, $fieldName,
+            $typeName,
+            $suggestedArguments),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
-function unknownDirectiveArgument($argumentName, $directiveName, $suggestedArguments, $location)
-{
+function unknownDirectiveArgument(
+    $argumentName,
+    $directiveName,
+    $suggestedArguments,
+    $location
+) {
     return [
-        'message'   => unknownDirectiveArgumentMessage($argumentName, $directiveName, $suggestedArguments),
+        'message' => unknownDirectiveArgumentMessage($argumentName,
+            $directiveName, $suggestedArguments),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function unknownDirective($directiveName, $location)
 {
     return [
-        'message'   => unknownDirectiveMessage($directiveName),
+        'message' => unknownDirectiveMessage($directiveName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function misplacedDirective($directiveName, $directiveLocation, $location)
 {
     return [
-        'message'   => misplacedDirectiveMessage($directiveName, $directiveLocation),
+        'message' => misplacedDirectiveMessage($directiveName,
+            $directiveLocation),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function unknownFragment($fragmentName, $location)
 {
     return [
-        'message'   => unknownFragmentMessage($fragmentName),
+        'message' => unknownFragmentMessage($fragmentName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function unknownType($typeName, $suggestedTypes, $location)
 {
     return [
-        'message'   => unknownTypeMessage($typeName, $suggestedTypes),
+        'message' => unknownTypeMessage($typeName, $suggestedTypes),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function anonymousOperationNotAlone($location)
 {
     return [
-        'message'   => anonymousOperationNotAloneMessage(),
+        'message' => anonymousOperationNotAloneMessage(),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function fragmentCycle($fragmentName, $spreadNames, array $locations)
 {
     return [
-        'message'   => fragmentCycleMessage($fragmentName, $spreadNames),
+        'message' => fragmentCycleMessage($fragmentName, $spreadNames),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
-function undefinedVariable($variableName, $variableLocation, $operationName, $operationLocation)
-{
+function undefinedVariable(
+    $variableName,
+    $variableLocation,
+    $operationName,
+    $operationLocation
+) {
     return [
-        'message'   => undefinedVariableMessage($variableName, $operationName),
+        'message' => undefinedVariableMessage($variableName, $operationName),
         'locations' => [
             locationShorthandToArray($variableLocation),
             locationShorthandToArray($operationLocation),
         ],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function unusedFragment($fragmentName, $location)
 {
     return [
-        'message'   => unusedFragmentMessage($fragmentName),
+        'message' => unusedFragmentMessage($fragmentName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function unusedVariable($variableName, $operationName, $location)
 {
     return [
-        'message'   => unusedVariableMessage($variableName, $operationName),
+        'message' => unusedVariableMessage($variableName, $operationName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function fieldConflict($responseName, $reason, $locations)
 {
     return [
-        'message'   => fieldsConflictMessage($responseName, $reason),
+        'message' => fieldsConflictMessage($responseName, $reason),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
-function typeIncompatibleSpread($fragmentName, $parentType, $fragmentType, $location)
-{
+function typeIncompatibleSpread(
+    $fragmentName,
+    $parentType,
+    $fragmentType,
+    $location
+) {
     return [
-        'message'   => typeIncompatibleSpreadMessage($fragmentName, $parentType, $fragmentType),
+        'message' => typeIncompatibleSpreadMessage($fragmentName, $parentType,
+            $fragmentType),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function typeIncompatibleAnonymousSpread($parentType, $fragmentType, $location)
 {
     return [
-        'message'   => typeIncompatibleAnonymousSpreadMessage($parentType, $fragmentType),
+        'message' => typeIncompatibleAnonymousSpreadMessage($parentType,
+            $fragmentType),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function missingFieldArgument($fieldName, $argumentName, $typeName, $location)
 {
     return [
-        'message'   => missingFieldArgumentMessage($fieldName, $argumentName, $typeName),
+        'message' => missingFieldArgumentMessage($fieldName, $argumentName,
+            $typeName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
-function missingDirectiveArgument($directiveName, $argumentName, $typeName, $location)
-{
+function missingDirectiveArgument(
+    $directiveName,
+    $argumentName,
+    $typeName,
+    $location
+) {
     return [
-        'message'   => missingDirectiveArgumentMessage($directiveName, $argumentName, $typeName),
+        'message' => missingDirectiveArgumentMessage($directiveName,
+            $argumentName, $typeName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function noSubselectionAllowed($fieldName, $typeName, $location)
 {
     return [
-        'message'   => noSubselectionAllowedMessage($fieldName, $typeName),
+        'message' => noSubselectionAllowedMessage($fieldName, $typeName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function requiredSubselection($fieldName, $typeName, $location)
 {
     return [
-        'message'   => requiresSubselectionMessage($fieldName, $typeName),
+        'message' => requiresSubselectionMessage($fieldName, $typeName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function singleFieldOnly($name, $locations)
 {
     return [
-        'message'   => singleFieldOnlyMessage($name),
+        'message' => singleFieldOnlyMessage($name),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function duplicateArgument($argumentName, $locations)
 {
     return [
-        'message'   => duplicateArgumentMessage($argumentName),
+        'message' => duplicateArgumentMessage($argumentName),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function duplicateDirective($directiveName, $locations)
 {
     return [
-        'message'   => duplicateDirectiveMessage($directiveName),
+        'message' => duplicateDirectiveMessage($directiveName),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function duplicateFragment($fragmentName, $locations)
 {
     return [
-        'message'   => duplicateFragmentMessage($fragmentName),
+        'message' => duplicateFragmentMessage($fragmentName),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function duplicateInputField($fieldName, $locations)
 {
     return [
-        'message'   => duplicateInputFieldMessage($fieldName),
+        'message' => duplicateInputFieldMessage($fieldName),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function duplicateOperation($operationName, $locations)
 {
     return [
-        'message'   => duplicateOperationMessage($operationName),
+        'message' => duplicateOperationMessage($operationName),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function duplicateVariable($variableName, $locations)
 {
     return [
-        'message'   => duplicateVariableMessage($variableName),
+        'message' => duplicateVariableMessage($variableName),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function nonInputTypeOnVariable($variableName, $typeName, $location)
 {
     return [
-        'message'   => nonInputTypeOnVariableMessage($variableName, $typeName),
+        'message' => nonInputTypeOnVariableMessage($variableName, $typeName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
-function variableDefaultValueNotAllowed($variableName, $typeName, $guessedTypeName, $location)
-{
+function variableDefaultValueNotAllowed(
+    $variableName,
+    $typeName,
+    $guessedTypeName,
+    $location
+) {
     return [
-        'message'   => variableDefaultValueNotAllowedMessage($variableName, $typeName, $guessedTypeName),
+        'message' => variableDefaultValueNotAllowedMessage($variableName,
+            $typeName, $guessedTypeName),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
-function badVariablePosition($variableName, $typeName, $expectedTypeName, $locations)
-{
+function badVariablePosition(
+    $variableName,
+    $typeName,
+    $expectedTypeName,
+    $locations
+) {
     return [
-        'message'   => badVariablePositionMessage($variableName, $typeName, $expectedTypeName),
+        'message' => badVariablePositionMessage($variableName, $typeName,
+            $expectedTypeName),
         'locations' => locationsShorthandToArray($locations),
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function badValue($typeName, $value, $location, $message = null)
 {
     return [
-        'message'   => badValueMessage($typeName, $value, $message),
+        'message' => badValueMessage($typeName, $value, $message),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function requiredField($typeName, $fieldName, $fieldNameType, $location)
 {
     return [
-        'message'   => requiredFieldMessage($typeName, $fieldName, $fieldNameType),
+        'message' => requiredFieldMessage($typeName, $fieldName,
+            $fieldNameType),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }
 
 function unknownField($typeName, $fieldName, $location, $message = null)
 {
     return [
-        'message'   => unknownFieldMessage($typeName, $fieldName, $message),
+        'message' => unknownFieldMessage($typeName, $fieldName, $message),
         'locations' => [locationShorthandToArray($location)],
-        'path'      => null,
+        'path' => null,
     ];
 }

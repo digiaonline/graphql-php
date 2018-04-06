@@ -7,8 +7,10 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class EnumValueWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|EnumValueNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string

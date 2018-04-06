@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\duplicateInputField;
 
 class UniqueInputFieldNamesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return UniqueInputFieldNamesRule::class;
-    }
 
     public function testInputObjectWithFields()
     {
@@ -96,5 +92,10 @@ class UniqueInputFieldNamesRuleTest extends RuleTestCase
                 duplicateInputField('f1', [[2, 16], [2, 42]]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return UniqueInputFieldNamesRule::class;
     }
 }

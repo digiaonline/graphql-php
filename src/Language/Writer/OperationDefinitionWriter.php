@@ -8,17 +8,19 @@ use function Digia\GraphQL\Language\wrap;
 
 class OperationDefinitionWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|OperationDefinitionNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string
     {
-        $operation            = $node->getOperation();
-        $name                 = $this->printNode($node->getName());
+        $operation = $node->getOperation();
+        $name = $this->printNode($node->getName());
         $variablesDefinitions = $this->printNodes($node->getVariableDefinitions());
-        $directives           = $this->printNodes($node->getDirectives());
-        $selectionSet         = $this->printNode($node->getSelectionSet());
+        $directives = $this->printNodes($node->getDirectives());
+        $selectionSet = $this->printNode($node->getSelectionSet());
 
         // Anonymous queries with no directives or variable definitions can use
         // the query short form.
@@ -26,7 +28,7 @@ class OperationDefinitionWriter extends AbstractWriter
             ? $selectionSet
             : implode(' ', [
                 $operation,
-                $name . wrap('(', implode(', ', $variablesDefinitions), ')'),
+                $name.wrap('(', implode(', ', $variablesDefinitions), ')'),
                 implode(' ', $directives),
                 $selectionSet,
             ]);

@@ -8,6 +8,7 @@ use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class LanguageProvider extends AbstractServiceProvider
 {
+
     /**
      * @var array
      */
@@ -24,10 +25,13 @@ class LanguageProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(ASTBuilderInterface::class, ASTBuilder::class, true/* $shared */);
-        $this->container->add(NodeBuilderInterface::class, NodeBuilder::class, true/* $shared */);
+        $this->container->add(ASTBuilderInterface::class, ASTBuilder::class,
+            true/* $shared */);
+        $this->container->add(NodeBuilderInterface::class, NodeBuilder::class,
+            true/* $shared */);
 
-        $this->container->add(ParserInterface::class, Parser::class, true/* $shared */)
+        $this->container->add(ParserInterface::class, Parser::class,
+            true/* $shared */)
             ->withArgument(ASTBuilderInterface::class)
             ->withArgument(NodeBuilderInterface::class);
 
@@ -35,7 +39,8 @@ class LanguageProvider extends AbstractServiceProvider
             return new Lexer(SupportedReaders::get());
         });
 
-        $this->container->add(PrinterInterface::class, Printer::class, true/* $shared */)
+        $this->container->add(PrinterInterface::class, Printer::class,
+            true/* $shared */)
             ->withArgument(SupportedWriters::get());
     }
 }

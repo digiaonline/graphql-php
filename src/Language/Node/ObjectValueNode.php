@@ -6,6 +6,7 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 class ObjectValueNode extends AbstractNode implements ValueNodeInterface
 {
+
     /**
      * @var string
      */
@@ -25,6 +26,18 @@ class ObjectValueNode extends AbstractNode implements ValueNodeInterface
     }
 
     /**
+     * @param array $fields
+     *
+     * @return $this
+     */
+    public function setFields(array $fields)
+    {
+        $this->fields = $fields;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getFieldsAsArray(): array
@@ -32,15 +45,5 @@ class ObjectValueNode extends AbstractNode implements ValueNodeInterface
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->fields);
-    }
-
-    /**
-     * @param array $fields
-     * @return $this
-     */
-    public function setFields(array $fields)
-    {
-        $this->fields = $fields;
-        return $this;
     }
 }

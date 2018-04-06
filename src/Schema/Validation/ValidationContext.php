@@ -8,6 +8,7 @@ use Digia\GraphQL\Schema\SchemaInterface;
 
 class ValidationContext implements ValidationContextInterface
 {
+
     /**
      * @var SchemaInterface
      */
@@ -20,6 +21,7 @@ class ValidationContext implements ValidationContextInterface
 
     /**
      * SchemaValidationContext constructor.
+     *
      * @param SchemaInterface $schema
      */
     public function __construct(SchemaInterface $schema)

@@ -35,6 +35,7 @@ use function Digia\GraphQL\Util\invariant;
 class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
     ConfigAwareInterface, NodeAwareInterface
 {
+
     use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
@@ -52,14 +53,6 @@ class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeT
     protected $typeMap;
 
     /**
-     * @inheritdoc
-     */
-    protected function afterConfig(): void
-    {
-        invariant(null !== $this->getName(), 'Must provide name.');
-    }
-
-    /**
      * @return NamedTypeInterface[]
      * @throws InvariantException
      */
@@ -69,24 +62,13 @@ class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeT
         if (!isset($this->typeMap)) {
             $this->typeMap = $this->buildTypeMap($this->typesOrThunk ?? []);
         }
+
         return $this->typeMap;
     }
 
     /**
-     * Unions are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['types']`.
+     * @param array|callable $typesOrThunk
      *
-     * @param array|callable $typesOrThunk
-     * @return UnionType
-     */
-    protected function setTypes($typesOrThunk): UnionType
-    {
-        $this->typesOrThunk = $typesOrThunk;
-        return $this;
-    }
-
-    /**
-     * @param array|callable $typesOrThunk
      * @return array
      * @throws InvariantException
      */
@@ -103,5 +85,29 @@ class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeT
         );
 
         return $typeMap;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function afterConfig(): void
+    {
+        invariant(null !== $this->getName(), 'Must provide name.');
+    }
+
+    /**
+     * Unions are created using the `ConfigAwareTrait` constructor which will
+     * automatically call this method when setting arguments from
+     * `$config['types']`.
+     *
+     * @param array|callable $typesOrThunk
+     *
+     * @return UnionType
+     */
+    protected function setTypes($typesOrThunk): UnionType
+    {
+        $this->typesOrThunk = $typesOrThunk;
+
+        return $this;
     }
 }

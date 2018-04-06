@@ -6,7 +6,6 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
-use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
@@ -21,19 +20,21 @@ use function Digia\GraphQL\Validation\unknownTypeMessage;
  */
 class KnownTypeNamesRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
     protected function enterNamedType(NamedTypeNode $node): ?NodeInterface
     {
-        $schema   = $this->context->getSchema();
+        $schema = $this->context->getSchema();
         $typeName = $node->getNameValue();
-        $type     = $schema->getType($typeName);
+        $type = $schema->getType($typeName);
 
         if (null === $type) {
             $this->context->reportError(
                 new ValidationException(
-                    unknownTypeMessage($typeName, suggestionList($typeName, \array_keys($schema->getTypeMap()))),
+                    unknownTypeMessage($typeName, suggestionList($typeName,
+                        \array_keys($schema->getTypeMap()))),
                     [$node]
                 )
             );
@@ -47,7 +48,8 @@ class KnownTypeNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterObjectTypeDefinition(ObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function enterObjectTypeDefinition(ObjectTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return null;
     }
@@ -55,7 +57,9 @@ class KnownTypeNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?NodeInterface
+    protected function enterInterfaceTypeDefinition(
+        InterfaceTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return null;
     }
@@ -63,7 +67,8 @@ class KnownTypeNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterUnionTypeDefinition(UnionTypeDefinitionNode $node): ?NodeInterface
+    protected function enterUnionTypeDefinition(UnionTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return null;
     }
@@ -71,7 +76,9 @@ class KnownTypeNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterInputObjectTypeDefinition(InputObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function enterInputObjectTypeDefinition(
+        InputObjectTypeDefinitionNode $node
+    ): ?NodeInterface
     {
         return null;
     }

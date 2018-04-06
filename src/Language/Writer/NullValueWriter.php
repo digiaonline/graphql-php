@@ -7,8 +7,10 @@ use Digia\GraphQL\Language\Node\NullValueNode;
 
 class NullValueWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|NullValueNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string

@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 class InterfaceTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface, DirectivesAwareInterface
 {
+
     use NameTrait;
     use DirectivesTrait;
     use FieldsTrait;
@@ -19,11 +20,11 @@ class InterfaceTypeExtensionNode extends AbstractNode implements TypeExtensionNo
     public function toArray(): array
     {
         return [
-            'kind'       => $this->kind,
-            'name'       => $this->getNameAsArray(),
+            'kind' => $this->kind,
+            'name' => $this->getNameAsArray(),
             'directives' => $this->getDirectivesAsArray(),
-            'fields'     => $this->getFieldsAsArray(),
-            'loc'        => $this->getLocationAsArray(),
+            'fields' => $this->getFieldsAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

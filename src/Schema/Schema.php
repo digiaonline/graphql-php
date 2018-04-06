@@ -8,7 +8,6 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeTrait;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use function Digia\GraphQL\Type\__Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -19,6 +18,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use function Digia\GraphQL\Type\__Schema;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\invariant;
 
@@ -36,7 +36,8 @@ use function Digia\GraphQL\Util\invariant;
  *       'mutation' => $MyAppMutationRootType,
  *     ])
  *
- * Note: If an array of `directives` are provided to GraphQLSchema, that will be
+ * Note: If an array of `directives` are provided to GraphQLSchema, that will
+ * be
  * the exact list of directives represented and allowed. If `directives` is not
  * provided then a default set of the specified directives (e.g. @include and
  * @skip) will be used. If you wish to provide *additional* directives to these
@@ -44,7 +45,8 @@ use function Digia\GraphQL\Util\invariant;
  *
  *     $MyAppSchema = GraphQLSchema([
  *       ...
- *       'directives' => \array_merge(specifiedDirectives(), [$myCustomDirective]),
+ *       'directives' => \array_merge(specifiedDirectives(),
+ *   [$myCustomDirective]),
  *     ])
  */
 
@@ -56,6 +58,7 @@ use function Digia\GraphQL\Util\invariant;
  */
 class Schema implements SchemaInterface, ConfigAwareInterface
 {
+
     use ConfigAwareTrait;
     use NodeTrait;
 
@@ -133,9 +136,10 @@ class Schema implements SchemaInterface, ConfigAwareInterface
      */
     public function getDirective(string $name): ?Directive
     {
-        return find($this->directives, function (Directive $directive) use ($name) {
-            return $directive->getName() === $name;
-        });
+        return find($this->directives,
+            function (Directive $directive) use ($name) {
+                return $directive->getName() === $name;
+            });
     }
 
     /**
@@ -144,6 +148,18 @@ class Schema implements SchemaInterface, ConfigAwareInterface
     public function getDirectives(): array
     {
         return $this->directives;
+    }
+
+    /**
+     * @param DirectiveInterface[] $directives
+     *
+     * @return Schema
+     */
+    protected function setDirectives(array $directives): Schema
+    {
+        $this->directives = $directives;
+
+        return $this;
     }
 
     /**
@@ -163,10 +179,24 @@ class Schema implements SchemaInterface, ConfigAwareInterface
     }
 
     /**
+     * @param bool $assumeValid
+     *
+     * @return Schema
+     */
+    protected function setAssumeValid(bool $assumeValid): Schema
+    {
+        $this->assumeValid = $assumeValid;
+
+        return $this;
+    }
+
+    /**
      * @inheritdoc
      */
-    public function isPossibleType(AbstractTypeInterface $abstractType, TypeInterface $possibleType): bool
-    {
+    public function isPossibleType(
+        AbstractTypeInterface $abstractType,
+        TypeInterface $possibleType
+    ): bool {
         /** @noinspection PhpUndefinedMethodInspection */
         $abstractTypeName = $abstractType->getName();
         /** @noinspection PhpUndefinedMethodInspection */
@@ -178,8 +208,8 @@ class Schema implements SchemaInterface, ConfigAwareInterface
             invariant(
                 \is_array($possibleTypes),
                 \sprintf(
-                    'Could not find possible implementing types for %s ' .
-                    'in schema. Check that schema.types is defined and is an array of ' .
+                    'Could not find possible implementing types for %s '.
+                    'in schema. Check that schema.types is defined and is an array of '.
                     'all possible types in the schema.',
                     $abstractTypeName
                 )
@@ -189,6 +219,7 @@ class Schema implements SchemaInterface, ConfigAwareInterface
                 function (array $map, TypeInterface $type) {
                     /** @var NameAwareInterface $type */
                     $map[$type->getName()] = true;
+
                     return $map;
                 }, []);
         }
@@ -199,7 +230,8 @@ class Schema implements SchemaInterface, ConfigAwareInterface
     /**
      * @inheritdoc
      */
-    public function getPossibleTypes(AbstractTypeInterface $abstractType): ?array
+    public function getPossibleTypes(AbstractTypeInterface $abstractType
+    ): ?array
     {
         if ($abstractType instanceof UnionType) {
             return $abstractType->getTypes();
@@ -253,10 +285,12 @@ class Schema implements SchemaInterface, ConfigAwareInterface
         $typeMap = [];
 
         // First by deeply visiting all initial types.
-        $typeMap = \array_reduce($initialTypes, [$this, 'typeMapReducer'], $typeMap);
+        $typeMap = \array_reduce($initialTypes, [$this, 'typeMapReducer'],
+            $typeMap);
 
         // Then by deeply visiting all directive types.
-        $typeMap = \array_reduce($this->directives, [$this, 'typeMapDirectiveReducer'], $typeMap);
+        $typeMap = \array_reduce($this->directives,
+            [$this, 'typeMapDirectiveReducer'], $typeMap);
 
         // Storing the resulting map for reference by the schema.
         $this->typeMap = $typeMap;
@@ -293,67 +327,78 @@ class Schema implements SchemaInterface, ConfigAwareInterface
 
     /**
      * @param TypeInterface|null $query
+     *
      * @return Schema
      */
     protected function setQuery(?TypeInterface $query): Schema
     {
         $this->query = $query;
+
         return $this;
     }
 
     /**
      * @param TypeInterface|null $mutation
+     *
      * @return Schema
      */
     protected function setMutation(?TypeInterface $mutation): Schema
     {
         $this->mutation = $mutation;
+
         return $this;
     }
 
     /**
      * @param TypeInterface|null $subscription
+     *
      * @return Schema
      */
     protected function setSubscription(?TypeInterface $subscription): Schema
     {
         $this->subscription = $subscription;
+
         return $this;
     }
 
     /**
      * @param array $types
+     *
      * @return Schema
      */
     protected function setTypes(array $types): Schema
     {
         $this->types = $types;
+
         return $this;
     }
 
     /**
-     * @param DirectiveInterface[] $directives
-     * @return Schema
+     * Note: We do not type-hint the `$directive`, because we want the
+     * `SchemaValidator` to catch these errors.
+     *
+     * @param array $map
+     * @param mixed|null $directive
+     *
+     * @return array
      */
-    protected function setDirectives(array $directives): Schema
+    protected function typeMapDirectiveReducer(array $map, $directive): array
     {
-        $this->directives = $directives;
-        return $this;
+        if (!($directive instanceof Directive) ||
+            ($directive instanceof Directive && !$directive->hasArguments())) {
+            return $map;
+        }
+
+        return \array_reduce($directive->getArguments(),
+            function ($map, Argument $argument) {
+                return $this->typeMapReducer($map, $argument->getType());
+            }, $map);
     }
 
     /**
-     * @param bool $assumeValid
-     * @return Schema
-     */
-    protected function setAssumeValid(bool $assumeValid): Schema
-    {
-        $this->assumeValid = $assumeValid;
-        return $this;
-    }
-
-    /**
-     * @param array              $map
+     * @param array $map
      * @param TypeInterface|NameAwareInterface|null $type
+     *
      * @return array
      * @throws InvariantException
      */
@@ -386,11 +431,13 @@ class Schema implements SchemaInterface, ConfigAwareInterface
         $reducedMap = $map;
 
         if ($type instanceof UnionType) {
-            $reducedMap = \array_reduce($type->getTypes(), [$this, 'typeMapReducer'], $reducedMap);
+            $reducedMap = \array_reduce($type->getTypes(),
+                [$this, 'typeMapReducer'], $reducedMap);
         }
 
         if ($type instanceof ObjectType) {
-            $reducedMap = \array_reduce($type->getInterfaces(), [$this, 'typeMapReducer'], $reducedMap);
+            $reducedMap = \array_reduce($type->getInterfaces(),
+                [$this, 'typeMapReducer'], $reducedMap);
         }
 
         if ($type instanceof ObjectType || $type instanceof InterfaceType) {
@@ -400,39 +447,23 @@ class Schema implements SchemaInterface, ConfigAwareInterface
                         return $argument->getType();
                     }, $field->getArguments());
 
-                    $reducedMap = \array_reduce($fieldArgTypes, [$this, 'typeMapReducer'], $reducedMap);
+                    $reducedMap = \array_reduce($fieldArgTypes,
+                        [$this, 'typeMapReducer'], $reducedMap);
                 }
 
-                $reducedMap = $this->typeMapReducer($reducedMap, $field->getType());
+                $reducedMap = $this->typeMapReducer($reducedMap,
+                    $field->getType());
             }
         }
 
         if ($type instanceof InputObjectType) {
             foreach ($type->getFields() as $field) {
-                $reducedMap = $this->typeMapReducer($reducedMap, $field->getType());
+                $reducedMap = $this->typeMapReducer($reducedMap,
+                    $field->getType());
             }
         }
 
         return $reducedMap;
-    }
-
-    /**
-     * Note: We do not type-hint the `$directive`, because we want the `SchemaValidator` to catch these errors.
-     *
-     * @param array      $map
-     * @param mixed|null $directive
-     * @return array
-     */
-    protected function typeMapDirectiveReducer(array $map, $directive): array
-    {
-        if (!($directive instanceof Directive) ||
-            ($directive instanceof Directive && !$directive->hasArguments())) {
-            return $map;
-        }
-
-        return \array_reduce($directive->getArguments(), function ($map, Argument $argument) {
-            return $this->typeMapReducer($map, $argument->getType());
-        }, $map);
     }
 
 }

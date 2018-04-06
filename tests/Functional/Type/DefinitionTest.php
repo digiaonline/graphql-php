@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Type;
 
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
@@ -13,20 +14,19 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\isOutputType;
 use function Digia\GraphQL\Type\newEnumType;
 use function Digia\GraphQL\Type\newInputObjectType;
-use function Digia\GraphQL\Type\Int;
 use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
 use function Digia\GraphQL\Type\newUnionType;
-use function Digia\GraphQL\Type\isOutputType;
+use function Digia\GraphQL\Type\String;
 
 class DefinitionTest extends TestCase
 {
@@ -97,24 +97,24 @@ class DefinitionTest extends TestCase
     public function setUp()
     {
         $this->blogImage = newObjectType([
-            'name'   => 'Image',
+            'name' => 'Image',
             'fields' => [
-                'url'    => ['type' => String()],
-                'width'  => ['type' => Int()],
+                'url' => ['type' => String()],
+                'width' => ['type' => Int()],
                 'height' => ['type' => Int()],
             ],
         ]);
 
         $this->blogAuthor = newObjectType([
-            'name'   => 'Author',
+            'name' => 'Author',
             'fields' => function () {
                 return [
-                    'id'            => ['type' => String()],
-                    'name'          => ['type' => String()],
-                    'pic'           => [
+                    'id' => ['type' => String()],
+                    'name' => ['type' => String()],
+                    'pic' => [
                         'type' => $this->blogImage,
                         'args' => [
-                            'width'  => ['type' => Int()],
+                            'width' => ['type' => Int()],
                             'height' => ['type' => Int()],
                         ],
                     ],
@@ -124,31 +124,31 @@ class DefinitionTest extends TestCase
         ]);
 
         $this->blogArticle = newObjectType([
-            'name'   => 'Article',
+            'name' => 'Article',
             'fields' => [
-                'id'          => ['type' => String()],
+                'id' => ['type' => String()],
                 'isPublished' => ['type' => Boolean()],
-                'author'      => ['type' => $this->blogAuthor],
-                'title'       => ['type' => String()],
-                'body'        => ['type' => String()],
+                'author' => ['type' => $this->blogAuthor],
+                'title' => ['type' => String()],
+                'body' => ['type' => String()],
             ],
         ]);
 
         $this->blogQuery = newObjectType([
-            'name'   => 'Query',
+            'name' => 'Query',
             'fields' => [
                 'article' => [
                     'args' => ['id' => ['type' => String()]],
                     'type' => $this->blogArticle,
                 ],
-                'feed'    => [
+                'feed' => [
                     'type' => newList($this->blogArticle),
                 ],
             ],
         ]);
 
         $this->blogMutation = newObjectType([
-            'name'   => 'Mutation',
+            'name' => 'Mutation',
             'fields' => [
                 'writeArticle' => [
                     'type' => $this->blogArticle,
@@ -157,7 +157,7 @@ class DefinitionTest extends TestCase
         ]);
 
         $this->blogSubscription = newObjectType([
-            'name'   => 'Subscription',
+            'name' => 'Subscription',
             'fields' => [
                 'articleSubscribe' => [
                     'args' => ['id' => ['type' => String()]],
@@ -166,66 +166,27 @@ class DefinitionTest extends TestCase
             ],
         ]);
 
-        $this->objectType      = newObjectType(['name' => 'Object']);
-        $this->interfaceType   = newInterfaceType(['name' => 'Interface']);
-        $this->unionType       = newUnionType(['name' => 'Union', 'types' => [$this->objectType]]);
-        $this->enumType        = newEnumType(['name' => 'Enum', 'values' => ['foo' => []]]);
+        $this->objectType = newObjectType(['name' => 'Object']);
+        $this->interfaceType = newInterfaceType(['name' => 'Interface']);
+        $this->unionType = newUnionType([
+            'name' => 'Union',
+            'types' => [$this->objectType],
+        ]);
+        $this->enumType = newEnumType([
+            'name' => 'Enum',
+            'values' => ['foo' => []],
+        ]);
         $this->inputObjectType = newInputObjectType(['name' => 'InputObject']);
-        $this->scalarType      = newScalarType([
-            'name'         => 'Scalar',
-            'serialize'    => function () {
+        $this->scalarType = newScalarType([
+            'name' => 'Scalar',
+            'serialize' => function () {
             },
-            'parseValue'   => function () {
+            'parseValue' => function () {
             },
             'parseLiteral' => function () {
             },
         ]);
     }
-
-    /**
-     * @param TypeInterface $type
-     * @return Schema
-     */
-    protected function schemaWithField(TypeInterface $type): Schema
-    {
-        return newSchema([
-            'query' => newObjectType([
-                'name'   => 'Query',
-                'fields' => [
-                    'field' => ['type' => $type],
-                ],
-            ]),
-            'types' => [$type],
-        ]);
-    }
-
-    /**
-     * @param $resolveValue
-     * @return Schema
-     */
-    protected function schemaWithObjectWithFieldResolver($resolveValue): Schema
-    {
-        $badResolverType = newObjectType([
-            'name'   => 'BadResolver',
-            'fields' => [
-                'badField' => [
-                    'type'    => String(),
-                    'resolve' => $resolveValue
-                ],
-            ],
-        ]);
-
-        return newSchema([
-            'query' => newObjectType([
-                'name'   => 'Query',
-                'fields' => [
-                    'f' => ['type' => $badResolverType],
-                ],
-            ])
-        ]);
-    }
-
-    // Type System: Example
 
     public function testQuerySchema()
     {
@@ -238,7 +199,8 @@ class DefinitionTest extends TestCase
         $articleField = $this->blogQuery->getFields()['article'];
 
         $this->assertEquals($this->blogArticle, $articleField->getType());
-        $this->assertEquals($this->blogArticle->getName(), $articleField->getType()->getName());
+        $this->assertEquals($this->blogArticle->getName(),
+            $articleField->getType()->getName());
         $this->assertEquals('article', $articleField->getName());
 
         /** @var ObjectType $articleFieldType */
@@ -255,7 +217,8 @@ class DefinitionTest extends TestCase
         $authorFieldType = $authorField->getType();
 
         $recentArticleField = $authorFieldType->getFields()['recentArticle'];
-        $this->assertEquals($this->blogArticle, !$recentArticleField ?: $recentArticleField->getType());
+        $this->assertEquals($this->blogArticle,
+            !$recentArticleField ?: $recentArticleField->getType());
 
         $feedField = $this->blogQuery->getFields()['feed'];
 
@@ -277,9 +240,12 @@ class DefinitionTest extends TestCase
         $writeArticleField = $this->blogMutation->getFields()['writeArticle'];
 
         $this->assertEquals($this->blogArticle, $writeArticleField->getType());
-        $this->assertEquals('Article', $writeArticleField->getType()->getName());
+        $this->assertEquals('Article',
+            $writeArticleField->getType()->getName());
         $this->assertEquals('writeArticle', $writeArticleField->getName());
     }
+
+    // Type System: Example
 
     public function testSubscriptionSchema()
     {
@@ -287,19 +253,23 @@ class DefinitionTest extends TestCase
             'subscription' => $this->blogSubscription,
         ]);
 
-        $this->assertEquals($this->blogSubscription, $schema->getSubscriptionType());
+        $this->assertEquals($this->blogSubscription,
+            $schema->getSubscriptionType());
 
         $articleSubscribeField = $this->blogSubscription->getFields()['articleSubscribe'];
 
-        $this->assertEquals($this->blogArticle, $articleSubscribeField->getType());
-        $this->assertEquals('Article', $articleSubscribeField->getType()->getName());
-        $this->assertEquals('articleSubscribe', $articleSubscribeField->getName());
+        $this->assertEquals($this->blogArticle,
+            $articleSubscribeField->getType());
+        $this->assertEquals('Article',
+            $articleSubscribeField->getType()->getName());
+        $this->assertEquals('articleSubscribe',
+            $articleSubscribeField->getName());
     }
 
     public function testEnumTypeWithDeprecatedValue()
     {
         $enumWithDeprecatedValue = newEnumType([
-            'name'   => 'EnumWithDeprecatedValue',
+            'name' => 'EnumWithDeprecatedValue',
             'values' => ['foo' => ['deprecationReason' => 'Just because']],
         ]);
 
@@ -312,15 +282,13 @@ class DefinitionTest extends TestCase
         $this->assertEquals('foo', $enumValue->getValue());
     }
 
-    // TODO: Assess if we want to test "defines an enum type with a value of `null` and `undefined`".
-
     public function testObjectWithDeprecatedField()
     {
         $typeWithDeprecatedField = newObjectType([
-            'name'   => 'foo',
+            'name' => 'foo',
             'fields' => [
                 'bar' => [
-                    'type'              => String(),
+                    'type' => String(),
                     'deprecationReason' => 'A terrible reason',
                 ],
             ],
@@ -329,7 +297,8 @@ class DefinitionTest extends TestCase
         $field = $typeWithDeprecatedField->getFields()['bar'];
 
         $this->assertEquals(String(), $field->getType());
-        $this->assertEquals('A terrible reason', $field->getDeprecationReason());
+        $this->assertEquals('A terrible reason',
+            $field->getDeprecationReason());
         $this->assertTrue($field->getIsDeprecated());
         $this->assertEquals('bar', $field->getName());
         $this->assertEmpty($field->getArguments());
@@ -338,17 +307,17 @@ class DefinitionTest extends TestCase
     public function testIncludesNestedInputObjectsInSchemaTypeMap()
     {
         $nestedInputObject = newInputObjectType([
-            'name'   => 'NestedInputObject',
+            'name' => 'NestedInputObject',
             'fields' => ['value' => ['type' => String()]],
         ]);
 
         $someInputObject = newInputObjectType([
-            'name'   => 'SomeInputObject',
+            'name' => 'SomeInputObject',
             'fields' => ['nested' => ['type' => $nestedInputObject]],
         ]);
 
         $someMutation = newObjectType([
-            'name'   => 'SomeMutation',
+            'name' => 'SomeMutation',
             'fields' => [
                 'mutateSomething' => [
                     'type' => $this->blogArticle,
@@ -358,7 +327,7 @@ class DefinitionTest extends TestCase
         ]);
 
         $someSubscription = newObjectType([
-            'name'   => 'SomeSubscription',
+            'name' => 'SomeSubscription',
             'fields' => [
                 'subscribeToSomething' => [
                     'type' => $this->blogArticle,
@@ -368,26 +337,29 @@ class DefinitionTest extends TestCase
         ]);
 
         $schema = newSchema([
-            'query'        => $this->blogQuery,
-            'mutation'     => $someMutation,
+            'query' => $this->blogQuery,
+            'mutation' => $someMutation,
             'subscription' => $someSubscription,
         ]);
 
-        $this->assertEquals($nestedInputObject, $schema->getTypeMap()[$nestedInputObject->getName()]);
+        $this->assertEquals($nestedInputObject,
+            $schema->getTypeMap()[$nestedInputObject->getName()]);
     }
+
+    // TODO: Assess if we want to test "defines an enum type with a value of `null` and `undefined`".
 
     public function testIncludesInterfacePossibleTypesInSchemaTypeMap()
     {
         $someInterface = newInterfaceType([
-            'name'   => 'SomeInterface',
+            'name' => 'SomeInterface',
             'fields' => [
                 'f' => ['type' => Int()],
             ],
         ]);
 
         $someSubtype = newObjectType([
-            'name'       => 'SomeSubtype',
-            'fields'     => [
+            'name' => 'SomeSubtype',
+            'fields' => [
                 'f' => ['type' => Int()],
             ],
             'interfaces' => [$someInterface],
@@ -395,7 +367,7 @@ class DefinitionTest extends TestCase
 
         $schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'Query',
+                'name' => 'Query',
                 'fields' => [
                     'iface' => ['type' => $someInterface],
                 ],
@@ -403,14 +375,16 @@ class DefinitionTest extends TestCase
             'types' => [$someSubtype],
         ]);
 
-        $this->assertEquals($someSubtype, $schema->getTypeMap()[$someSubtype->getName()]);
+        $this->assertEquals($someSubtype,
+            $schema->getTypeMap()[$someSubtype->getName()]);
     }
 
     public function testStringifySimpleTypes()
     {
         $this->assertEquals(TypeNameEnum::INT, (string)Int());
         $this->assertEquals('Article', (string)$this->blogArticle);
-        $this->assertEquals('Interface', (string)newInterfaceType(['name' => 'Interface']));
+        $this->assertEquals('Interface',
+            (string)newInterfaceType(['name' => 'Interface']));
         $this->assertEquals('Union', (string)newUnionType(['name' => 'Union']));
         $this->assertEquals('Enum', (string)newEnumType(['name' => 'Enum']));
         $this->assertEquals(TypeNameEnum::INT, (string)Int());
@@ -423,6 +397,7 @@ class DefinitionTest extends TestCase
     /**
      * @param $type
      * @param $answer
+     *
      * @dataProvider identifiesInputTypesDataProvider
      */
     public function testIdentifiesInputTypes($type, $answer)
@@ -458,10 +433,10 @@ class DefinitionTest extends TestCase
     public function testAllowsAThunkForUnionMemberTypes()
     {
         $union = newUnionType([
-            'name'  => 'ThunkUnion',
+            'name' => 'ThunkUnion',
             'types' => function () {
                 return [$this->objectType];
-            }
+            },
         ]);
 
         $types = $union->getTypes();
@@ -483,35 +458,35 @@ class DefinitionTest extends TestCase
         ];
 
         $testObject1 = newObjectType([
-            'name'   => 'Test1',
+            'name' => 'Test1',
             'fields' => $fields,
         ]);
 
         $testObject2 = newObjectType([
-            'name'   => 'Test2',
+            'name' => 'Test2',
             'fields' => $fields,
         ]);
 
-        $this->assertEquals($testObject2->getFields(), $testObject1->getFields());
+        $this->assertEquals($testObject2->getFields(),
+            $testObject1->getFields());
 
         $testInputObject1 = newInputObjectType([
-            'name'   => 'Test1',
+            'name' => 'Test1',
             'fields' => $fields,
         ]);
 
         $testInputObject2 = newInputObjectType([
-            'name'   => 'Test2',
+            'name' => 'Test2',
             'fields' => $fields,
         ]);
 
-        $this->assertEquals($testInputObject2->getFields(), $testInputObject1->getFields());
+        $this->assertEquals($testInputObject2->getFields(),
+            $testInputObject1->getFields());
 
         $this->assertEquals(String(), $fields['field1']['type']);
         $this->assertEquals(String(), $fields['field2']['type']);
         $this->assertEquals(String(), $fields['field2']['args']['id']['type']);
     }
-
-    // TODO: Assess if we want to test "accepts an Object type with a field function".
 
     /**
      * @expectedException \Exception
@@ -519,7 +494,7 @@ class DefinitionTest extends TestCase
     public function testRejectsAnObjectTypeFieldWithNullConfig()
     {
         $objType = newObjectType([
-            'name'   => 'SomeObject',
+            'name' => 'SomeObject',
             'fields' => ['f' => null],
         ]);
 
@@ -534,7 +509,7 @@ class DefinitionTest extends TestCase
     function testRejectsAnObjectTypeWithIncorrectlyTypedFields()
     {
         $objType = newObjectType([
-            'name'   => 'SomeObject',
+            'name' => 'SomeObject',
             'fields' => [['f' => null]],
         ]);
 
@@ -543,13 +518,16 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    // TODO: Assess if we want to test "accepts an Object type with a field function".
+
     /**
      * @expectedException \Exception
      */
-    public function testRejectsAnObjectTypeWithAFieldFunctionThatReturnsIncorrectType()
+    public function testRejectsAnObjectTypeWithAFieldFunctionThatReturnsIncorrectType(
+    )
     {
         $objType = newObjectType([
-            'name'   => 'SomeObject',
+            'name' => 'SomeObject',
             'fields' => function () {
                 return [['f' => null]];
             },
@@ -560,12 +538,10 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    // Field arg config must be object
-
     public function testAcceptsAnObjectTypeWithFieldArgs()
     {
         $objType = newObjectType([
-            'name'   => 'SomeObject',
+            'name' => 'SomeObject',
             'fields' => [
                 'goodField' => [
                     'type' => String(),
@@ -587,7 +563,7 @@ class DefinitionTest extends TestCase
     public function testRejectsAnObjectTypeWithIncorrectlyTypedFieldArgs()
     {
         $objType = newObjectType([
-            'name'   => 'SomeObject',
+            'name' => 'SomeObject',
             'fields' => [
                 'badField' => [
                     'type' => String(),
@@ -601,16 +577,19 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    // Field arg config must be object
+
     /**
      * @expectedException \Exception
      */
-    public function testDoesNotAllowIsDeprecatedWithoutDeprecationReasonOnField()
+    public function testDoesNotAllowIsDeprecatedWithoutDeprecationReasonOnField(
+    )
     {
         $oldObject = newObjectType([
-            'name'   => 'OldObject',
+            'name' => 'OldObject',
             'fields' => [
                 'field' => [
-                    'type'         => String(),
+                    'type' => String(),
                     'isDeprecated' => true,
                 ],
             ],
@@ -621,25 +600,44 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    // Object interfaces must be array
+    /**
+     * @param TypeInterface $type
+     *
+     * @return Schema
+     */
+    protected function schemaWithField(TypeInterface $type): Schema
+    {
+        return newSchema([
+            'query' => newObjectType([
+                'name' => 'Query',
+                'fields' => [
+                    'field' => ['type' => $type],
+                ],
+            ]),
+            'types' => [$type],
+        ]);
+    }
 
     public function testAcceptsAnObjectTypeWithArrayInterfaces()
     {
         $objType = newObjectType([
-            'name'       => 'SomeObject',
+            'name' => 'SomeObject',
             'interfaces' => [$this->interfaceType],
-            'fields'     => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => String()]],
         ]);
 
         $this->assertEquals($this->interfaceType, $objType->getInterfaces()[0]);
     }
 
-    public function testAcceptsAnObjectTypeWithInterfacesAsAFunctionReturningAnArray()
+    // Object interfaces must be array
+
+    public function testAcceptsAnObjectTypeWithInterfacesAsAFunctionReturningAnArray(
+    )
     {
         $objType = newObjectType([
-            'name'       => 'SomeObject',
+            'name' => 'SomeObject',
             'interfaces' => [$this->interfaceType],
-            'fields'     => [
+            'fields' => [
                 'f' => function () {
                     return ['type' => String()];
                 },
@@ -649,12 +647,6 @@ class DefinitionTest extends TestCase
         $this->assertEquals($this->interfaceType, $objType->getInterfaces()[0]);
     }
 
-    // TODO: Assess if we want to test "rejects an Object type with incorrectly typed interfaces".
-
-    // TODO: Assess if we want to test "rejects an Object type with interfaces as a function returning an incorrect type".
-
-    // Type System: Object fields must have valid resolve values
-
     public function testAcceptsALambdaAsAnObjectFieldResolver()
     {
         $this->schemaWithObjectWithFieldResolver(function () {
@@ -662,6 +654,39 @@ class DefinitionTest extends TestCase
         });
 
         $this->addToAssertionCount(1);
+    }
+
+    // TODO: Assess if we want to test "rejects an Object type with incorrectly typed interfaces".
+
+    // TODO: Assess if we want to test "rejects an Object type with interfaces as a function returning an incorrect type".
+
+    // Type System: Object fields must have valid resolve values
+
+    /**
+     * @param $resolveValue
+     *
+     * @return Schema
+     */
+    protected function schemaWithObjectWithFieldResolver($resolveValue): Schema
+    {
+        $badResolverType = newObjectType([
+            'name' => 'BadResolver',
+            'fields' => [
+                'badField' => [
+                    'type' => String(),
+                    'resolve' => $resolveValue,
+                ],
+            ],
+        ]);
+
+        return newSchema([
+            'query' => newObjectType([
+                'name' => 'Query',
+                'fields' => [
+                    'f' => ['type' => $badResolverType],
+                ],
+            ]),
+        ]);
     }
 
     /**
@@ -689,37 +714,38 @@ class DefinitionTest extends TestCase
     public function testAcceptsAnInterfaceTypeDefiningResolveType()
     {
         $anotherInterfaceType = newInterfaceType([
-            'name'        => 'AnotherInterface',
-            'fields'      => ['f' => ['type' => String()]],
+            'name' => 'AnotherInterface',
+            'fields' => ['f' => ['type' => String()]],
             'resolveType' => function () {
                 return '';
-            }
+            },
         ]);
 
         $this->schemaWithField(
             newObjectType([
-                'name'       => 'SomeObject',
+                'name' => 'SomeObject',
                 'interfaces' => [$anotherInterfaceType],
-                'fields'     => ['f' => ['type' => String()]],
+                'fields' => ['f' => ['type' => String()]],
             ])
         );
 
         $this->addToAssertionCount(1);
     }
 
-    public function testAcceptsAnInterfaceTypeWithImplementingTypeDefiningIsTypeOf()
+    public function testAcceptsAnInterfaceTypeWithImplementingTypeDefiningIsTypeOf(
+    )
     {
         $anotherInterfaceType = newInterfaceType([
-            'name'   => 'AnotherInterface',
+            'name' => 'AnotherInterface',
             'fields' => ['f' => ['type' => String()]],
         ]);
 
         $this->schemaWithField(
             newObjectType([
-                'name'       => 'SomeObject',
+                'name' => 'SomeObject',
                 'interfaces' => [$anotherInterfaceType],
-                'fields'     => ['f' => ['type' => String()]],
-                'isTypeOf'   => function () {
+                'fields' => ['f' => ['type' => String()]],
+                'isTypeOf' => function () {
                     return true;
                 },
             ])
@@ -728,22 +754,23 @@ class DefinitionTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testAcceptsAnInterfaceTypeDefiningResolveTypeWithImplementingTypeDefiningIsTypeOf()
+    public function testAcceptsAnInterfaceTypeDefiningResolveTypeWithImplementingTypeDefiningIsTypeOf(
+    )
     {
         $anotherInterfaceType = newInterfaceType([
-            'name'        => 'AnotherInterface',
-            'fields'      => ['f' => ['type' => String()]],
+            'name' => 'AnotherInterface',
+            'fields' => ['f' => ['type' => String()]],
             'resolveType' => function () {
                 return '';
-            }
+            },
         ]);
 
         $this->schemaWithField(
             newObjectType([
-                'name'       => 'SomeObject',
+                'name' => 'SomeObject',
                 'interfaces' => [$anotherInterfaceType],
-                'fields'     => ['f' => ['type' => String()]],
-                'isTypeOf'   => function () {
+                'fields' => ['f' => ['type' => String()]],
+                'isTypeOf' => function () {
                     return true;
                 },
             ])
@@ -758,7 +785,7 @@ class DefinitionTest extends TestCase
     {
         $this->schemaWithField(
             newUnionType([
-                'name'  => 'SomeUnion',
+                'name' => 'SomeUnion',
                 'types' => [$this->objectType],
             ])
         );
@@ -769,13 +796,13 @@ class DefinitionTest extends TestCase
     public function testAcceptsAUnionOfObjectTypesDefiningIsTypeOf()
     {
         $objectWithIsTypeOf = newObjectType([
-            'name'   => 'ObjectWithIsTypeOf',
+            'name' => 'ObjectWithIsTypeOf',
             'fields' => ['f' => ['type' => String()]],
         ]);
 
         $this->schemaWithField(
             newUnionType([
-                'name'  => 'SomeUnion',
+                'name' => 'SomeUnion',
                 'types' => [$objectWithIsTypeOf],
             ])
         );
@@ -789,7 +816,7 @@ class DefinitionTest extends TestCase
     {
         $this->schemaWithField(
             newScalarType([
-                'name'      => 'SomeScalar',
+                'name' => 'SomeScalar',
                 'serialize' => function () {
                     return null;
                 },
@@ -817,11 +844,11 @@ class DefinitionTest extends TestCase
     {
         $this->schemaWithField(
             newScalarType([
-                'name'         => 'SomeScalar',
-                'serialize'    => function () {
+                'name' => 'SomeScalar',
+                'serialize' => function () {
                     return null;
                 },
-                'parseValue'   => function () {
+                'parseValue' => function () {
                     return null;
                 },
                 'parseLiteral' => function () {
@@ -840,8 +867,8 @@ class DefinitionTest extends TestCase
     {
         $this->schemaWithField(
             newScalarType([
-                'name'       => 'SomeScalar',
-                'serialize'  => function () {
+                'name' => 'SomeScalar',
+                'serialize' => function () {
                     return null;
                 },
                 'parseValue' => function () {
@@ -860,8 +887,8 @@ class DefinitionTest extends TestCase
     {
         $this->schemaWithField(
             newScalarType([
-                'name'         => 'SomeScalar',
-                'serialize'    => function () {
+                'name' => 'SomeScalar',
+                'serialize' => function () {
                     return null;
                 },
                 'parseLiteral' => function () {
@@ -879,8 +906,8 @@ class DefinitionTest extends TestCase
     {
         $this->schemaWithField(
             newObjectType([
-                'name'     => 'AnotherObject',
-                'fields'   => ['f' => ['type' => String()]],
+                'name' => 'AnotherObject',
+                'fields' => ['f' => ['type' => String()]],
                 'isTypeOf' => function () {
                     return true;
                 },
@@ -896,7 +923,7 @@ class DefinitionTest extends TestCase
     {
         $this->schemaWithField(
             newUnionType([
-                'name'  => 'AnotherObject',
+                'name' => 'AnotherObject',
                 'types' => [$this->objectType],
             ])
         );
@@ -908,7 +935,7 @@ class DefinitionTest extends TestCase
     {
         $this->schemaWithField(
             newUnionType([
-                'name'  => 'AnotherObject',
+                'name' => 'AnotherObject',
                 'types' => function () {
                     return [$this->objectType];
                 },
@@ -934,7 +961,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsAnInputObjectTypeWithFields()
     {
         $inputObjectType = newInputObjectType([
-            'name'   => 'SomeInputObject',
+            'name' => 'SomeInputObject',
             'fields' => ['f' => ['type' => String()]],
         ]);
 
@@ -945,7 +972,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsAnInputObjectTypeWithAFieldFunction()
     {
         $inputObjectType = newInputObjectType([
-            'name'   => 'SomeInputObject',
+            'name' => 'SomeInputObject',
             'fields' => function () {
                 return ['f' => ['type' => String()]];
             },
@@ -963,13 +990,13 @@ class DefinitionTest extends TestCase
     public function testRejectsAnInputObjectTypeWithResolvers()
     {
         $inputObjectType = newInputObjectType([
-            'name'   => 'SomeInputObject',
+            'name' => 'SomeInputObject',
             'fields' => [
                 'f' => [
-                    'type'    => String(),
+                    'type' => String(),
                     'resolve' => function () {
                         return 0;
-                    }
+                    },
                 ],
             ],
         ]);
@@ -986,7 +1013,7 @@ class DefinitionTest extends TestCase
     public function testAcceptsAWellDefinedEnumTypeWithEmptyValueDefinition()
     {
         $enumType = newEnumType([
-            'name'   => 'SomeEnum',
+            'name' => 'SomeEnum',
             'values' => [
                 'FOO' => ['value' => 10],
                 'BAR' => ['value' => 20],
@@ -1003,7 +1030,7 @@ class DefinitionTest extends TestCase
     public function testRejectsAnEnumWithIncorrectlyTypedValues()
     {
         $enumType = newEnumType([
-            'name'   => 'SomeEnum',
+            'name' => 'SomeEnum',
             'values' => ['FOO' => 10],
         ]);
 
@@ -1018,7 +1045,7 @@ class DefinitionTest extends TestCase
     public function testRejectsAnEnumTypeWithMissingValueDefinition()
     {
         $enumType = newEnumType([
-            'name'   => 'SomeEnum',
+            'name' => 'SomeEnum',
             'values' => ['FOO' => null],
         ]);
 
@@ -1033,7 +1060,7 @@ class DefinitionTest extends TestCase
     public function testRejectsAnEnumTypeWithIncorrectlyTypedValueDefinition()
     {
         $enumType = newEnumType([
-            'name'   => 'SomeEnum',
+            'name' => 'SomeEnum',
             'values' => ['FOO' => 10],
         ]);
 
@@ -1048,7 +1075,7 @@ class DefinitionTest extends TestCase
     public function testDoesNotAllowIsDeprecatedWithoutDeprecationReasonOnEnum()
     {
         $enumType = newEnumType([
-            'name'   => 'SomeEnum',
+            'name' => 'SomeEnum',
             'values' => ['FOO' => ['isDeprecated' => true]],
         ]);
 
@@ -1123,18 +1150,18 @@ class DefinitionTest extends TestCase
     public function testRejectsASchemaWhichDefinesABuiltInType()
     {
         $fakeString = newScalarType([
-            'name'      => 'String',
+            'name' => 'String',
             'serialize' => function () {
                 return null;
             },
         ]);
 
         $queryType = newObjectType([
-            'name'   => 'Query',
+            'name' => 'Query',
             'fields' => [
                 'normal' => ['type' => String()],
-                'fake'   => ['type' => $fakeString],
-            ]
+                'fake' => ['type' => $fakeString],
+            ],
         ]);
 
         newSchema(['query' => $queryType]);
@@ -1148,21 +1175,21 @@ class DefinitionTest extends TestCase
     public function testRejectsASchemaWhichDefinesAnObjectTypeTwice()
     {
         $a = newObjectType([
-            'name'   => 'SameName',
+            'name' => 'SameName',
             'fields' => ['f' => ['type' => String()]],
         ]);
 
         $b = newObjectType([
-            'name'   => 'SameName',
+            'name' => 'SameName',
             'fields' => ['f' => ['type' => String()]],
         ]);
 
         $queryType = newObjectType([
-            'name'   => 'Query',
+            'name' => 'Query',
             'fields' => [
                 'a' => ['type' => $a],
                 'b' => ['type' => $b],
-            ]
+            ],
         ]);
 
         newSchema(['query' => $queryType]);
@@ -1173,30 +1200,31 @@ class DefinitionTest extends TestCase
     /**
      * @expectedException \Exception
      */
-    public function testRejectsASchemaWhichHaveSameNamedObjectsImplementingAnInterface()
+    public function testRejectsASchemaWhichHaveSameNamedObjectsImplementingAnInterface(
+    )
     {
         $anotherInterface = newInterfaceType([
-            'name'   => 'AnotherInterface',
+            'name' => 'AnotherInterface',
             'fields' => ['f' => ['type' => String()]],
         ]);
 
         $firstBadObject = newObjectType([
-            'name'       => 'BadObject',
+            'name' => 'BadObject',
             'interfaces' => [$anotherInterface],
-            'fields'     => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => String()]],
         ]);
 
         $secondBadObject = newObjectType([
-            'name'       => 'BadObject',
+            'name' => 'BadObject',
             'interfaces' => [$anotherInterface],
-            'fields'     => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => String()]],
         ]);
 
         $queryType = newObjectType([
-            'name'   => 'Query',
+            'name' => 'Query',
             'fields' => [
                 'iface' => ['type' => $anotherInterface],
-            ]
+            ],
         ]);
 
         newSchema([

@@ -29,6 +29,18 @@ trait InterfacesTrait
     }
 
     /**
+     * @param array|NamedTypeNode[] $interfaces
+     *
+     * @return $this
+     */
+    public function setInterfaces(array $interfaces)
+    {
+        $this->interfaces = $interfaces;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getInterfacesAsArray(): array
@@ -36,15 +48,5 @@ trait InterfacesTrait
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->interfaces);
-    }
-
-    /**
-     * @param array|NamedTypeNode[] $interfaces
-     * @return $this
-     */
-    public function setInterfaces(array $interfaces)
-    {
-        $this->interfaces = $interfaces;
-        return $this;
     }
 }

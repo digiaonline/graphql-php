@@ -2,11 +2,11 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInterface, NameAwareInterface
 {
+
     use DescriptionTrait;
     use NameTrait;
     use InputArgumentsTrait;
@@ -30,22 +30,14 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
     }
 
     /**
-     * @return array
-     */
-    public function getLocationsAsArray(): array
-    {
-        return array_map(function (SerializationInterface $node) {
-            return $node->toArray();
-        }, $this->locations);
-    }
-
-    /**
      * @param array|NameNode[] $locations
+     *
      * @return $this
      */
     public function setLocations(array $locations)
     {
         $this->locations = $locations;
+
         return $this;
     }
 
@@ -55,12 +47,22 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
     public function toArray(): array
     {
         return [
-            'kind'        => $this->kind,
+            'kind' => $this->kind,
             'description' => $this->getDescriptionAsArray(),
-            'name'        => $this->getNameAsArray(),
-            'arguments'   => $this->getArgumentsAsArray(),
-            'locations'   => $this->getLocationsAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'name' => $this->getNameAsArray(),
+            'arguments' => $this->getArgumentsAsArray(),
+            'locations' => $this->getLocationsAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getLocationsAsArray(): array
+    {
+        return array_map(function (SerializationInterface $node) {
+            return $node->toArray();
+        }, $this->locations);
     }
 }

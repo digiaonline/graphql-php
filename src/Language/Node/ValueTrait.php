@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 trait ValueTrait
 {
+
     /**
      * @var mixed|null
      */
@@ -19,11 +20,13 @@ trait ValueTrait
 
     /**
      * @param mixed|null $value
+     *
      * @return $this
      */
     public function setValue($value)
     {
         $this->value = $value;
+
         return $this;
     }
 }

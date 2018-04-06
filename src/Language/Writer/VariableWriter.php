@@ -7,13 +7,15 @@ use Digia\GraphQL\Language\Node\VariableNode;
 
 class VariableWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|VariableNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string
     {
-        return '$' . $node->getName();
+        return '$'.$node->getName();
     }
 
     /**

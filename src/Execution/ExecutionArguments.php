@@ -8,6 +8,7 @@ use Digia\GraphQL\Schema\Schema;
 
 class ExecutionArguments
 {
+
     /**
      * @var Schema
      */
@@ -45,13 +46,14 @@ class ExecutionArguments
 
     /**
      * ExecutionArguments constructor.
-     * @param Schema                  $schema
-     * @param DocumentNode            $document
-     * @param mixed                   $rootValue
-     * @param mixed                   $contextValue
-     * @param array                   $variableValues
+     *
+     * @param Schema $schema
+     * @param DocumentNode $document
+     * @param mixed $rootValue
+     * @param mixed $contextValue
+     * @param array $variableValues
      * @param OperationDefinitionNode $operation
-     * @param mixed                   $fieldResolver
+     * @param mixed $fieldResolver
      */
     public function __construct(
         Schema $schema,
@@ -62,12 +64,12 @@ class ExecutionArguments
         OperationDefinitionNode $operation,
         $fieldResolver
     ) {
-        $this->schema         = $schema;
-        $this->document       = $document;
-        $this->rootValue      = $rootValue;
-        $this->contextValue   = $contextValue;
+        $this->schema = $schema;
+        $this->document = $document;
+        $this->rootValue = $rootValue;
+        $this->contextValue = $contextValue;
         $this->variableValues = $variableValues;
-        $this->operation      = $operation;
-        $this->fieldResolver  = $fieldResolver;
+        $this->operation = $operation;
+        $this->fieldResolver = $fieldResolver;
     }
 }

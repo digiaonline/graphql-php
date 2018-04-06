@@ -9,6 +9,7 @@ use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class SchemaValidationProvider extends AbstractServiceProvider
 {
+
     /**
      * @var array
      */
@@ -24,7 +25,8 @@ class SchemaValidationProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(SchemaValidatorInterface::class, SchemaValidator::class, true);
+        $this->container->add(SchemaValidatorInterface::class,
+            SchemaValidator::class, true);
 
         // Rules
         $this->container->add(RootTypesRule::class, RootTypesRule::class);

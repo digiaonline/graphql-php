@@ -21,20 +21,22 @@ trait TypeTrait
     }
 
     /**
-     * @return array
-     */
-    public function getTypeAsArray(): array
-    {
-        return $this->type->toArray();
-    }
-
-    /**
      * @param TypeNodeInterface $type
+     *
      * @return $this
      */
     public function setType(TypeNodeInterface $type)
     {
         $this->type = $type;
+
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTypeAsArray(): array
+    {
+        return $this->type->toArray();
     }
 }

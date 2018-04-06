@@ -6,6 +6,7 @@ use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class UtilityProvider extends AbstractServiceProvider
 {
+
     /**
      * @var array
      */
@@ -20,8 +21,11 @@ class UtilityProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(NameHelper::class, NameHelper::class, true/* $shared */);
-        $this->container->add(TypeHelper::class, TypeHelper::class, true/* $shared */);
-        $this->container->add(ValueHelper::class, ValueHelper::class, true/* $shared */);
+        $this->container->add(NameHelper::class, NameHelper::class,
+            true/* $shared */);
+        $this->container->add(TypeHelper::class, TypeHelper::class,
+            true/* $shared */);
+        $this->container->add(ValueHelper::class, ValueHelper::class,
+            true/* $shared */);
     }
 }

@@ -11,9 +11,15 @@ class EqualsReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        return new Token(TokenKindEnum::EQUALS, $pos, $pos + 1, $line, $col, $prev);
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
+        return new Token(TokenKindEnum::EQUALS, $pos, $pos + 1, $line, $col,
+            $prev);
     }
 
     /**

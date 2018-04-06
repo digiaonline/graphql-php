@@ -15,6 +15,7 @@ use function Digia\GraphQL\parse;
 
 class ValidationTest extends TestCase
 {
+
     /**
      * @var ValidatorInterface
      */
@@ -46,6 +47,19 @@ class ValidationTest extends TestCase
         $this->assertEquals([], $errors, 'Should validate');
     }
 
+    /**
+     * @return GraphQLException[]
+     */
+    protected function validateQuery(
+        $schema,
+        $query,
+        $rules = null,
+        $typeInfo = null
+    ) {
+        return $this->validator->validate($schema, parse($query), $rules,
+            $typeInfo);
+    }
+
     public function testDetectsBadScalarParse()
     {
         $errors = $this->validateQuery(
@@ -59,9 +73,9 @@ class ValidationTest extends TestCase
 
         $this->assertEquals([
             'locations' => [['line' => 2, 'column' => 19]],
-            'message'   =>
+            'message' =>
                 'Expected type Invalid, found "bad value"; Invalid scalar is always invalid: bad value',
-            'path'      => null,
+            'path' => null,
         ], formatError($errors[0]));
     }
 
@@ -96,15 +110,7 @@ class ValidationTest extends TestCase
         $this->assertEquals([
             'Cannot query field "catOrDog" on type "QueryRoot". Did you mean "catOrDog"?',
             'Cannot query field "furColor" on type "Cat". Did you mean "furColor"?',
-            'Cannot query field "isHouseTrained" on type "Dog". Did you mean "isHouseTrained"?'
+            'Cannot query field "isHouseTrained" on type "Dog". Did you mean "isHouseTrained"?',
         ], $errorMessages);
-    }
-
-    /**
-     * @return GraphQLException[]
-     */
-    protected function validateQuery($schema, $query, $rules = null, $typeInfo = null)
-    {
-        return $this->validator->validate($schema, parse($query), $rules, $typeInfo);
     }
 }

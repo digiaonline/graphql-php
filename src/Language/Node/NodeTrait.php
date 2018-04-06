@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 trait NodeTrait
 {
+
     /**
      * @var ?NodeInterface
      */
@@ -27,6 +28,7 @@ trait NodeTrait
 
     /**
      * @param NodeInterface|null $astNode
+     *
      * @return $this
      */
     protected function setAstNode(?NodeInterface $astNode)

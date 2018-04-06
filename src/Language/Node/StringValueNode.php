@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 class StringValueNode extends AbstractNode implements ValueNodeInterface
 {
+
     use ValueTrait;
 
     /**
@@ -30,8 +31,8 @@ class StringValueNode extends AbstractNode implements ValueNodeInterface
     public function toArray(): array
     {
         return [
-            'kind'  => $this->kind,
-            'loc'   => $this->getLocationAsArray(),
+            'kind' => $this->kind,
+            'loc' => $this->getLocationAsArray(),
             'block' => $this->block,
             'value' => $this->value,
         ];

@@ -7,6 +7,7 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 class Location implements SerializationInterface
 {
+
     use ArrayToJsonTrait;
 
     /**
@@ -27,14 +28,14 @@ class Location implements SerializationInterface
     /**
      * Location constructor.
      *
-     * @param int         $start
-     * @param int         $end
+     * @param int $start
+     * @param int $end
      * @param Source|null $source
      */
     public function __construct(int $start, int $end, ?Source $source = null)
     {
-        $this->start  = $start;
-        $this->end    = $end;
+        $this->start = $start;
+        $this->end = $end;
         $this->source = $source;
     }
 
@@ -69,7 +70,7 @@ class Location implements SerializationInterface
     {
         return [
             'start' => $this->start,
-            'end'   => $this->end,
+            'end' => $this->end,
         ];
     }
 

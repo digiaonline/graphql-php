@@ -21,20 +21,22 @@ trait ValueLiteralTrait
     }
 
     /**
-     * @return array
-     */
-    public function getValueAsArray(): array
-    {
-        return null !== $this->value ? $this->value->toArray() : null;
-    }
-
-    /**
      * @param ValueNodeInterface|null $value
+     *
      * @return $this
      */
     public function setValue(?ValueNodeInterface $value)
     {
         $this->value = $value;
+
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getValueAsArray(): array
+    {
+        return null !== $this->value ? $this->value->toArray() : null;
     }
 }

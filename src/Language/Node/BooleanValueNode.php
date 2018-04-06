@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
 class BooleanValueNode extends AbstractNode implements ValueNodeInterface
 {
 
@@ -20,9 +18,9 @@ class BooleanValueNode extends AbstractNode implements ValueNodeInterface
     public function toArray(): array
     {
         return [
-            'kind'  => $this->kind,
+            'kind' => $this->kind,
             'value' => $this->value,
-            'loc'   => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

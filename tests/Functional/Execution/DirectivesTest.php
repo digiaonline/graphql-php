@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Test\Functional\Execution;
 
 
-use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Schema\Schema;
+use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\newObjectType;
@@ -13,6 +13,7 @@ use function Digia\GraphQL\Type\String;
 
 class DirectivesTest extends TestCase
 {
+
     /**
      * @var Schema
      */
@@ -23,7 +24,7 @@ class DirectivesTest extends TestCase
      */
     private $data = [
         'a' => 'a',
-        'b' => 'b'
+        'b' => 'b',
     ];
 
     public function setUp()
@@ -32,12 +33,12 @@ class DirectivesTest extends TestCase
 
         $this->schema = newSchema([
             'query' => newObjectType([
-                'name'   => 'TestType',
+                'name' => 'TestType',
                 'fields' => [
                     'a' => ['type' => String()],
-                    'b' => ['type' => String()]
-                ]
-            ])
+                    'b' => ['type' => String()],
+                ],
+            ]),
         ]);
     }
 
@@ -64,7 +65,8 @@ class DirectivesTest extends TestCase
      */
     public function testIfTrueReturnScalar()
     {
-        $result = execute($this->schema, parse('{ a, b @include(if: true) }'), $this->data);
+        $result = execute($this->schema, parse('{ a, b @include(if: true) }'),
+            $this->data);
 
         $this->assertEquals($this->data, $result->getData());
     }
@@ -77,7 +79,8 @@ class DirectivesTest extends TestCase
      */
     public function testIfFalseOmitScalar()
     {
-        $result = execute($this->schema, parse('{ a, b @include(if: false) }'), $this->data);
+        $result = execute($this->schema, parse('{ a, b @include(if: false) }'),
+            $this->data);
 
         $this->assertEquals(['a' => 'a'], $result->getData());
     }
@@ -90,20 +93,22 @@ class DirectivesTest extends TestCase
      */
     public function testUnlessFalseIncludesScalar()
     {
-        $result = execute($this->schema, parse('{ a, b @skip(if: false) }'), $this->data);
+        $result = execute($this->schema, parse('{ a, b @skip(if: false) }'),
+            $this->data);
 
         $this->assertEquals($this->data, $result->getData());
     }
 
     /**
      * unless true omits scalar
-     * 
+     *
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testUnlessTrueOmitScalar()
     {
-        $result = execute($this->schema, parse('{ a, b @skip(if: true) }'), $this->data);
+        $result = execute($this->schema, parse('{ a, b @skip(if: true) }'),
+            $this->data);
 
         $this->assertEquals(['a' => 'a'], $result->getData());
     }

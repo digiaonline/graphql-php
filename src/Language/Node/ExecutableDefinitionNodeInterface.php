@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 interface ExecutableDefinitionNodeInterface extends DefinitionNodeInterface
 {
+
     /**
      * @return null|string
      */

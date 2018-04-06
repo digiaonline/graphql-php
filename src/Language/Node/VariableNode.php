@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 class VariableNode extends AbstractNode implements ValueNodeInterface, NameAwareInterface
 {
+
     use NameTrait;
 
     /**

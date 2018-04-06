@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\unusedFragment;
 
 class NoUnusedFragmentsRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return NoUnusedFragmentsRule::class;
-    }
 
     public function testAllFragmentNamesAreUsed()
     {
@@ -136,5 +132,10 @@ class NoUnusedFragmentsRuleTest extends RuleTestCase
             '),
             [unusedFragment('foo', [6, 1])]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return NoUnusedFragmentsRule::class;
     }
 }

@@ -29,6 +29,18 @@ trait EnumValuesTrait
     }
 
     /**
+     * @param array|EnumValueDefinitionNode[] $values
+     *
+     * @return $this
+     */
+    public function setValues(array $values)
+    {
+        $this->values = $values;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getValuesAsArray(): array
@@ -36,15 +48,5 @@ trait EnumValuesTrait
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->values);
-    }
-
-    /**
-     * @param array|EnumValueDefinitionNode[] $values
-     * @return $this
-     */
-    public function setValues(array $values)
-    {
-        $this->values = $values;
-        return $this;
     }
 }

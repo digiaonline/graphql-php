@@ -34,13 +34,17 @@ class Source
     /**
      * Source constructor.
      *
-     * @param string              $body
-     * @param null|string         $name
+     * @param string $body
+     * @param null|string $name
      * @param SourceLocation|null $locationOffset
+     *
      * @throws InvariantException
      */
-    public function __construct(string $body, ?string $name = 'GraphQL request', ?SourceLocation $locationOffset = null)
-    {
+    public function __construct(
+        string $body,
+        ?string $name = 'GraphQL request',
+        ?SourceLocation $locationOffset = null
+    ) {
         $this->body = $body;
         $this->name = $name;
 
@@ -64,11 +68,35 @@ class Source
     }
 
     /**
+     * @param string $body
+     *
+     * @return Source
+     */
+    protected function setBody(string $body): Source
+    {
+        $this->body = $body;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Source
+     */
+    protected function setName(string $name): Source
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -80,32 +108,13 @@ class Source
     }
 
     /**
-     * @param string $body
-     * @return Source
-     */
-    protected function setBody(string $body): Source
-    {
-        $this->body = $body;
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @return Source
-     */
-    protected function setName(string $name): Source
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
      * @param SourceLocation|null $locationOffset
+     *
      * @return Source
      * @throws InvariantException
      */
-    protected function setLocationOffset(?SourceLocation $locationOffset): Source
-    {
+    protected function setLocationOffset(?SourceLocation $locationOffset
+    ): Source {
         if (null !== $locationOffset) {
             invariant(
                 $locationOffset->getLine() > 0,

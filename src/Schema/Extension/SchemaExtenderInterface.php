@@ -8,11 +8,13 @@ use Digia\GraphQL\Schema\SchemaInterface;
 
 interface SchemaExtenderInterface
 {
+
     /**
-     * @param SchemaInterface                $schema
-     * @param DocumentNode                   $document
+     * @param SchemaInterface $schema
+     * @param DocumentNode $document
      * @param ResolverRegistryInterface|null $resolverRegistry
-     * @param array                          $options
+     * @param array $options
+     *
      * @return SchemaInterface
      */
     public function extend(
@@ -23,9 +25,10 @@ interface SchemaExtenderInterface
     ): SchemaInterface;
 
     /**
-     * @param SchemaInterface                $schema
-     * @param DocumentNode                   $document
+     * @param SchemaInterface $schema
+     * @param DocumentNode $document
      * @param ResolverRegistryInterface|null $resolverRegistry
+     *
      * @return ExtensionContextInterface
      */
     public function createContext(

@@ -4,12 +4,14 @@ namespace Digia\GraphQL\Type\Definition;
 
 class ListType implements TypeInterface, WrappingTypeInterface
 {
+
     use NameTrait;
     use DescriptionTrait;
     use OfTypeTrait;
 
     /**
      * ListType constructor.
+     *
      * @param TypeInterface $ofType
      */
     public function __construct(TypeInterface $ofType)
@@ -22,6 +24,6 @@ class ListType implements TypeInterface, WrappingTypeInterface
      */
     public function __toString(): string
     {
-        return '[' . (string)$this->getOfType() . ']';
+        return '['.(string)$this->getOfType().']';
     }
 }

@@ -35,6 +35,7 @@ use function Digia\GraphQL\Util\toString;
 
 class TypesRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
@@ -46,7 +47,8 @@ class TypesRule extends AbstractRule
             if (!($type instanceof NamedTypeInterface)) {
                 $this->context->reportError(
                     new SchemaValidationException(
-                        \sprintf('Expected GraphQL named type but got: %s.', toString($type)),
+                        \sprintf('Expected GraphQL named type but got: %s.',
+                            toString($type)),
                         $type instanceof NodeAwareInterface ? [$type->getAstNode()] : null
                     )
                 );
@@ -95,7 +97,23 @@ class TypesRule extends AbstractRule
     }
 
     /**
+     * @param mixed $node
+     *
+     * @throws InvariantException
+     */
+    protected function validateName($node): void
+    {
+        // Ensure names are valid, however introspection types opt out.
+        $error = isValidNameError($node->getName(), $node);
+
+        if (null !== $error) {
+            $this->context->reportError($error);
+        }
+    }
+
+    /**
      * @param NamedTypeInterface|ObjectType|InterfaceType $type
+     *
      * @throws InvariantException
      */
     protected function validateFields(NamedTypeInterface $type): void
@@ -106,7 +124,8 @@ class TypesRule extends AbstractRule
         if (empty($fields)) {
             $this->context->reportError(
                 new SchemaValidationException(
-                    \sprintf('Type %s must define one or more fields.', $type->getName()),
+                    \sprintf('Type %s must define one or more fields.',
+                        $type->getName()),
                     $this->getAllObjectOrInterfaceNodes($type)
                 )
             );
@@ -122,7 +141,8 @@ class TypesRule extends AbstractRule
             if (\count($fieldNodes) > 1) {
                 $this->context->reportError(
                     new SchemaValidationException(
-                        \sprintf('Field %s.%s can only be defined once.', $type->getName(), $fieldName),
+                        \sprintf('Field %s.%s can only be defined once.',
+                            $type->getName(), $fieldName),
                         $fieldNodes
                     )
                 );
@@ -167,7 +187,8 @@ class TypesRule extends AbstractRule
                                 $field->getName(),
                                 $argumentName
                             ),
-                            $this->getAllFieldArgumentNodes($type, $fieldName, $argumentName)
+                            $this->getAllFieldArgumentNodes($type, $fieldName,
+                                $argumentName)
                         )
                     );
                 }
@@ -185,7 +206,8 @@ class TypesRule extends AbstractRule
                                 $argumentName,
                                 toString($argument->getType())
                             ),
-                            $this->getAllFieldArgumentNodes($type, $fieldName, $argumentName)
+                            $this->getAllFieldArgumentNodes($type, $fieldName,
+                                $argumentName)
                         )
                     );
                 }
@@ -194,7 +216,108 @@ class TypesRule extends AbstractRule
     }
 
     /**
+     * @param NamedTypeInterface|ObjectType|InterfaceType $type
+     *
+     * @return ObjectTypeDefinitionNode[]|ObjectTypeExtensionNode[]|InterfaceTypeDefinitionNode[]
+     * |InterfaceTypeExtensionNode[]
+     */
+    protected function getAllObjectOrInterfaceNodes(NamedTypeInterface $type
+    ): array {
+        $node = $type->getAstNode();
+        $extensionASTNodes = $type->getExtensionAstNodes();
+
+        if (null !== $node) {
+            return !empty($extensionASTNodes)
+                ? \array_merge([$node], $extensionASTNodes)
+                : [$node];
+        }
+
+        return $extensionASTNodes;
+    }
+
+    /**
+     * @param NamedTypeInterface|ObjectType|InterfaceType $type
+     * @param string $fieldName
+     *
+     * @return FieldDefinitionNode[]
+     */
+    protected function getAllFieldNodes(
+        NamedTypeInterface $type,
+        string $fieldName
+    ): array {
+        $nodes = [];
+
+        foreach ($this->getAllObjectOrInterfaceNodes($type) as $objectOrInterface) {
+            foreach ($objectOrInterface->getFields() as $node) {
+                if ($node->getNameValue() === $fieldName) {
+                    $nodes[] = $node;
+                }
+            }
+        }
+
+        return $nodes;
+    }
+
+    /**
+     * @param NamedTypeInterface|ObjectType|InterfaceType $type
+     * @param string $fieldName
+     *
+     * @return TypeNodeInterface|null
+     */
+    protected function getFieldTypeNode(
+        NamedTypeInterface $type,
+        string $fieldName
+    ): ?TypeNodeInterface
+    {
+        $fieldNode = $this->getFieldNode($type, $fieldName);
+
+        return null !== $fieldNode ? $fieldNode->getType() : null;
+    }
+
+    /**
+     * @param NamedTypeInterface $type
+     * @param string $fieldName
+     *
+     * @return FieldDefinitionNode|null
+     */
+    protected function getFieldNode(
+        NamedTypeInterface $type,
+        string $fieldName
+    ): ?FieldDefinitionNode
+    {
+        return $this->getAllFieldNodes($type, $fieldName)[0] ?? null;
+    }
+
+    /**
+     * @param NamedTypeInterface|ObjectType|InterfaceType $type
+     * @param string $fieldName
+     * @param string $argumentName
+     *
+     * @return InputValueDefinitionNode[]
+     */
+    protected function getAllFieldArgumentNodes(
+        NamedTypeInterface $type,
+        string $fieldName,
+        string $argumentName
+    ): array {
+        $nodes = [];
+
+        $fieldNode = $this->getFieldNode($type, $fieldName);
+
+        if (null !== $fieldNode) {
+            foreach ($fieldNode->getArguments() as $node) {
+                if ($node->getNameValue() === $argumentName) {
+                    $nodes[] = $node;
+                }
+            }
+        }
+
+        return $nodes;
+    }
+
+    /**
      * @param ObjectType $objectType
+     *
      * @throws InvariantException
      */
     protected function validateObjectInterfaces(ObjectType $objectType): void
@@ -211,7 +334,10 @@ class TypesRule extends AbstractRule
                             toString($interface)
                         ),
                         null !== $interface
-                            ? [$this->getImplementsInterfaceNode($objectType, $interface->getName())]
+                            ? [
+                            $this->getImplementsInterfaceNode($objectType,
+                                $interface->getName()),
+                        ]
                             : null
                     )
                 );
@@ -224,8 +350,10 @@ class TypesRule extends AbstractRule
             if (isset($implementedTypeNames[$interfaceName])) {
                 $this->context->reportError(
                     new SchemaValidationException(
-                        \sprintf('Type %s can only implement %s once.', $objectType->getName(), $interfaceName),
-                        $this->getAllImplementsInterfaceNodes($objectType, $interfaceName)
+                        \sprintf('Type %s can only implement %s once.',
+                            $objectType->getName(), $interfaceName),
+                        $this->getAllImplementsInterfaceNodes($objectType,
+                            $interfaceName)
                     )
                 );
 
@@ -239,19 +367,60 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param ObjectType    $objectType
+     * @param ObjectType $type
+     * @param string $interfaceName
+     *
+     * @return NamedTypeNode|null
+     */
+    protected function getImplementsInterfaceNode(
+        ObjectType $type,
+        string $interfaceName
+    ): ?NamedTypeNode
+    {
+        return $this->getAllImplementsInterfaceNodes($type,
+                $interfaceName)[0] ?? null;
+    }
+
+    /**
+     * @param ObjectType $type
+     * @param string $interfaceName
+     *
+     * @return NamedTypeNode[]
+     */
+    protected function getAllImplementsInterfaceNodes(
+        ObjectType $type,
+        string $interfaceName
+    ): array {
+        $nodes = [];
+
+        foreach ($this->getAllObjectOrInterfaceNodes($type) as $object) {
+            foreach ($object->getInterfaces() as $node) {
+                if ($node->getNameValue() === $interfaceName) {
+                    $nodes[] = $node;
+                }
+            }
+        }
+
+        return $nodes;
+    }
+
+    /**
+     * @param ObjectType $objectType
      * @param InterfaceType $interfaceType
+     *
      * @throws InvariantException
      */
-    protected function validateObjectImplementsInterface(ObjectType $objectType, InterfaceType $interfaceType): void
-    {
-        $objectFields    = $objectType->getFields();
+    protected function validateObjectImplementsInterface(
+        ObjectType $objectType,
+        InterfaceType $interfaceType
+    ): void {
+        $objectFields = $objectType->getFields();
         $interfaceFields = $interfaceType->getFields();
 
         // Assert each interface field is implemented.
         foreach (\array_keys($interfaceFields) as $fieldName) {
             $interfaceField = $interfaceFields[$fieldName];
-            $objectField    = $objectFields[$fieldName] ?? null;
+            $objectField = $objectFields[$fieldName] ?? null;
 
             // Assert interface field exists on object.
             if (null === $objectField) {
@@ -263,7 +432,10 @@ class TypesRule extends AbstractRule
                             $fieldName,
                             $objectType->getName()
                         ),
-                        [$this->getFieldNode($interfaceType, $fieldName), $objectType->getAstNode()]
+                        [
+                            $this->getFieldNode($interfaceType, $fieldName),
+                            $objectType->getAstNode(),
+                        ]
                     )
                 );
 
@@ -273,7 +445,8 @@ class TypesRule extends AbstractRule
             // Assert interface field type is satisfied by object field type, by being
             // a valid subtype. (covariant)
             if (!isTypeSubtypeOf(
-                $this->context->getSchema(), $objectField->getType(), $interfaceField->getType())) {
+                $this->context->getSchema(), $objectField->getType(),
+                $interfaceField->getType())) {
                 $this->context->reportError(
                     new SchemaValidationException(
                         \sprintf(
@@ -295,10 +468,11 @@ class TypesRule extends AbstractRule
 
             // Assert each interface field arg is implemented.
             foreach ($interfaceField->getArguments() as $interfaceArgument) {
-                $argumentName   = $interfaceArgument->getName();
-                $objectArgument = find($objectField->getArguments(), function (Argument $argument) use ($argumentName) {
-                    return $argument->getName() === $argumentName;
-                });
+                $argumentName = $interfaceArgument->getName();
+                $objectArgument = find($objectField->getArguments(),
+                    function (Argument $argument) use ($argumentName) {
+                        return $argument->getName() === $argumentName;
+                    });
 
                 // Assert interface field arg exists on object field.
                 if (null === $objectArgument) {
@@ -313,7 +487,8 @@ class TypesRule extends AbstractRule
                                 $fieldName
                             ),
                             [
-                                $this->getFieldArgumentNode($interfaceType, $fieldName, $argumentName),
+                                $this->getFieldArgumentNode($interfaceType,
+                                    $fieldName, $argumentName),
                                 $this->getFieldNode($objectType, $fieldName),
                             ]
                         )
@@ -325,7 +500,8 @@ class TypesRule extends AbstractRule
                 // Assert interface field arg type matches object field arg type.
                 // (invariant)
                 // TODO: change to contravariant?
-                if (!isEqualType($interfaceArgument->getType(), $objectArgument->getType())) {
+                if (!isEqualType($interfaceArgument->getType(),
+                    $objectArgument->getType())) {
                     $this->context->reportError(
                         new SchemaValidationException(
                             \sprintf(
@@ -340,8 +516,10 @@ class TypesRule extends AbstractRule
                                 toString($objectArgument->getType())
                             ),
                             [
-                                $this->getFieldArgumentTypeNode($interfaceType, $fieldName, $argumentName),
-                                $this->getFieldArgumentTypeNode($objectType, $fieldName, $argumentName),
+                                $this->getFieldArgumentTypeNode($interfaceType,
+                                    $fieldName, $argumentName),
+                                $this->getFieldArgumentTypeNode($objectType,
+                                    $fieldName, $argumentName),
                             ]
                         )
                     );
@@ -352,7 +530,7 @@ class TypesRule extends AbstractRule
                 // TODO: validate default values?
 
                 foreach ($objectField->getArguments() as $objectArgument) {
-                    $argumentName      = $objectArgument->getName();
+                    $argumentName = $objectArgument->getName();
                     $interfaceArgument = find(
                         $interfaceField->getArguments(),
                         function (Argument $argument) use ($argumentName) {
@@ -364,7 +542,7 @@ class TypesRule extends AbstractRule
                         $this->context->reportError(
                             new SchemaValidationException(
                                 \sprintf(
-                                    'Object field argument %s.%s(%s:) is of required type %s ' .
+                                    'Object field argument %s.%s(%s:) is of required type %s '.
                                     'but is not also provided by the Interface field %s.%s.',
                                     $objectType->getName(),
                                     $fieldName,
@@ -374,8 +552,10 @@ class TypesRule extends AbstractRule
                                     $fieldName
                                 ),
                                 [
-                                    $this->getFieldArgumentNode($objectType, $fieldName, $argumentName),
-                                    $this->getFieldNode($interfaceType, $fieldName),
+                                    $this->getFieldArgumentNode($objectType,
+                                        $fieldName, $argumentName),
+                                    $this->getFieldNode($interfaceType,
+                                        $fieldName),
                                 ]
                             )
                         );
@@ -388,8 +568,44 @@ class TypesRule extends AbstractRule
     }
 
     /**
+     * @param NamedTypeInterface $type
+     * @param string $fieldName
+     * @param string $argumentName
+     *
+     * @return InputValueDefinitionNode|null
+     */
+    protected function getFieldArgumentNode(
+        NamedTypeInterface $type,
+        string $fieldName,
+        string $argumentName
+    ): ?InputValueDefinitionNode
+    {
+        return $this->getAllFieldArgumentNodes($type, $fieldName,
+                $argumentName)[0] ?? null;
+    }
+
+    /**
+     * @param NamedTypeInterface $type
+     * @param string $fieldName
+     * @param string $argumentName
+     *
+     * @return TypeNodeInterface|null
+     */
+    protected function getFieldArgumentTypeNode(
+        NamedTypeInterface $type,
+        string $fieldName,
+        string $argumentName
+    ): ?TypeNodeInterface
+    {
+        $node = $this->getFieldArgumentNode($type, $fieldName, $argumentName);
+
+        return null !== $node ? $node->getType() : null;
+    }
+
+    /**
      * @param ValidationContext $this ->context
-     * @param UnionType         $unionType
+     * @param UnionType $unionType
+     *
      * @throws InvariantException
      */
     protected function validateUnionMembers(UnionType $unionType): void
@@ -399,7 +615,8 @@ class TypesRule extends AbstractRule
         if (empty($memberTypes)) {
             $this->context->reportError(
                 new SchemaValidationException(
-                    sprintf('Union type %s must define one or more member types.', $unionType->getName()),
+                    sprintf('Union type %s must define one or more member types.',
+                        $unionType->getName()),
                     [$unionType->getAstNode()]
                 )
             );
@@ -417,7 +634,8 @@ class TypesRule extends AbstractRule
                             $unionType->getName(),
                             $memberTypeName
                         ),
-                        $this->getUnionMemberTypeNodes($unionType, $memberTypeName)
+                        $this->getUnionMemberTypeNodes($unionType,
+                            $memberTypeName)
                     )
                 );
 
@@ -435,7 +653,8 @@ class TypesRule extends AbstractRule
                             toString($memberType)
                         ),
                         null !== $memberTypeName
-                            ? $this->getUnionMemberTypeNodes($unionType, $memberTypeName)
+                            ? $this->getUnionMemberTypeNodes($unionType,
+                            $memberTypeName)
                             : null
                     )
                 );
@@ -444,8 +663,33 @@ class TypesRule extends AbstractRule
     }
 
     /**
+     * @param UnionType $unionType
+     * @param string $memberTypeName
+     *
+     * @return array|null
+     */
+    protected function getUnionMemberTypeNodes(
+        UnionType $unionType,
+        string $memberTypeName
+    ): ?array
+    {
+        /** @var UnionTypeDefinitionNode $node */
+        $node = $unionType->getAstNode();
+
+        if (null === $node) {
+            return null;
+        }
+
+        return \array_filter($node->getTypes(),
+            function (NamedTypeNode $type) use ($memberTypeName) {
+                return $type->getNameValue() === $memberTypeName;
+            });
+    }
+
+    /**
      * @param ValidationContext $this ->context
-     * @param EnumType          $enumType
+     * @param EnumType $enumType
+     *
      * @throws InvariantException
      */
     protected function validateEnumValues(EnumType $enumType): void
@@ -455,7 +699,8 @@ class TypesRule extends AbstractRule
         if (empty($enumValues)) {
             $this->context->reportError(
                 new SchemaValidationException(
-                    \sprintf('Enum type %s must define one or more values.', $enumType->getName()),
+                    \sprintf('Enum type %s must define one or more values.',
+                        $enumType->getName()),
                     [$enumType->getAstNode()]
                 )
             );
@@ -470,7 +715,8 @@ class TypesRule extends AbstractRule
             if (null !== $allNodes && \count($allNodes) > 1) {
                 $this->context->reportError(
                     new SchemaValidationException(
-                        sprintf('Enum type %s can include value %s only once.', $enumType->getName(), $valueName),
+                        sprintf('Enum type %s can include value %s only once.',
+                            $enumType->getName(), $valueName),
                         $allNodes
                     )
                 );
@@ -484,7 +730,8 @@ class TypesRule extends AbstractRule
             if ($valueName === 'true' || $valueName === 'false' || $valueName === 'null') {
                 $this->context->reportError(
                     new SchemaValidationException(
-                        sprintf('Enum type %s cannot include value: %s.', $enumType->getName(), $valueName),
+                        sprintf('Enum type %s cannot include value: %s.',
+                            $enumType->getName(), $valueName),
                         [$enumValue->getAstNode()]
                     )
                 );
@@ -495,18 +742,44 @@ class TypesRule extends AbstractRule
     }
 
     /**
+     * @param EnumType $enumType
+     * @param string $valueName
+     *
+     * @return array|null
+     */
+    protected function getEnumValueNodes(
+        EnumType $enumType,
+        string $valueName
+    ): ?array
+    {
+        /** @var EnumTypeDefinitionNode $node */
+        $node = $enumType->getAstNode();
+
+        if (null === $node) {
+            return null;
+        }
+
+        return \array_filter($node->getValues(),
+            function (NameAwareInterface $type) use ($valueName) {
+                return $type->getNameValue() === $valueName;
+            });
+    }
+
+    /**
      * @param ValidationContext $this ->context
-     * @param InputObjectType   $inputObjectType
+     * @param InputObjectType $inputObjectType
+     *
      * @throws InvariantException
      */
-    protected function validateInputFields(InputObjectType $inputObjectType): void
-    {
+    protected function validateInputFields(InputObjectType $inputObjectType
+    ): void {
         $fields = $inputObjectType->getFields();
 
         if (empty($fields)) {
             $this->context->reportError(
                 new SchemaValidationException(
-                    \sprintf('Input Object type %s must define one or more fields.', $inputObjectType->getName()),
+                    \sprintf('Input Object type %s must define one or more fields.',
+                        $inputObjectType->getName()),
                     [$inputObjectType->getAstNode()]
                 )
             );
@@ -533,203 +806,6 @@ class TypesRule extends AbstractRule
                     )
                 );
             }
-        }
-    }
-
-    /**
-     * @param NamedTypeInterface|ObjectType|InterfaceType $type
-     * @return ObjectTypeDefinitionNode[]|ObjectTypeExtensionNode[]|InterfaceTypeDefinitionNode[]
-     * |InterfaceTypeExtensionNode[]
-     */
-    protected function getAllObjectOrInterfaceNodes(NamedTypeInterface $type): array
-    {
-        $node              = $type->getAstNode();
-        $extensionASTNodes = $type->getExtensionAstNodes();
-
-        if (null !== $node) {
-            return !empty($extensionASTNodes)
-                ? \array_merge([$node], $extensionASTNodes)
-                : [$node];
-        }
-
-        return $extensionASTNodes;
-    }
-
-    /**
-     * @param NamedTypeInterface|ObjectType|InterfaceType $type
-     * @param string                                      $fieldName
-     * @return TypeNodeInterface|null
-     */
-    protected function getFieldTypeNode(NamedTypeInterface $type, string $fieldName): ?TypeNodeInterface
-    {
-        $fieldNode = $this->getFieldNode($type, $fieldName);
-        return null !== $fieldNode ? $fieldNode->getType() : null;
-    }
-
-    /**
-     * @param NamedTypeInterface $type
-     * @param string             $fieldName
-     * @return FieldDefinitionNode|null
-     */
-    protected function getFieldNode(NamedTypeInterface $type, string $fieldName): ?FieldDefinitionNode
-    {
-        return $this->getAllFieldNodes($type, $fieldName)[0] ?? null;
-    }
-
-    /**
-     * @param NamedTypeInterface|ObjectType|InterfaceType $type
-     * @param string                                      $fieldName
-     * @return FieldDefinitionNode[]
-     */
-    protected function getAllFieldNodes(NamedTypeInterface $type, string $fieldName): array
-    {
-        $nodes = [];
-
-        foreach ($this->getAllObjectOrInterfaceNodes($type) as $objectOrInterface) {
-            foreach ($objectOrInterface->getFields() as $node) {
-                if ($node->getNameValue() === $fieldName) {
-                    $nodes[] = $node;
-                }
-            }
-        }
-
-        return $nodes;
-    }
-
-    /**
-     * @param NamedTypeInterface $type
-     * @param string             $fieldName
-     * @param string             $argumentName
-     * @return InputValueDefinitionNode|null
-     */
-    protected function getFieldArgumentNode(
-        NamedTypeInterface $type,
-        string $fieldName,
-        string $argumentName
-    ): ?InputValueDefinitionNode {
-        return $this->getAllFieldArgumentNodes($type, $fieldName, $argumentName)[0] ?? null;
-    }
-
-    /**
-     * @param NamedTypeInterface|ObjectType|InterfaceType $type
-     * @param string                                      $fieldName
-     * @param string                                      $argumentName
-     * @return InputValueDefinitionNode[]
-     */
-    protected function getAllFieldArgumentNodes(
-        NamedTypeInterface $type,
-        string $fieldName,
-        string $argumentName
-    ): array {
-        $nodes = [];
-
-        $fieldNode = $this->getFieldNode($type, $fieldName);
-
-        if (null !== $fieldNode) {
-            foreach ($fieldNode->getArguments() as $node) {
-                if ($node->getNameValue() === $argumentName) {
-                    $nodes[] = $node;
-                }
-            }
-        }
-
-        return $nodes;
-    }
-
-    /**
-     * @param ObjectType $type
-     * @param string     $interfaceName
-     * @return NamedTypeNode|null
-     */
-    protected function getImplementsInterfaceNode(ObjectType $type, string $interfaceName): ?NamedTypeNode
-    {
-        return $this->getAllImplementsInterfaceNodes($type, $interfaceName)[0] ?? null;
-    }
-
-    /**
-     * @param ObjectType $type
-     * @param string     $interfaceName
-     * @return NamedTypeNode[]
-     */
-    protected function getAllImplementsInterfaceNodes(ObjectType $type, string $interfaceName): array
-    {
-        $nodes = [];
-
-        foreach ($this->getAllObjectOrInterfaceNodes($type) as $object) {
-            foreach ($object->getInterfaces() as $node) {
-                if ($node->getNameValue() === $interfaceName) {
-                    $nodes[] = $node;
-                }
-            }
-        }
-
-        return $nodes;
-    }
-
-    /**
-     * @param NamedTypeInterface $type
-     * @param string             $fieldName
-     * @param string             $argumentName
-     * @return TypeNodeInterface|null
-     */
-    protected function getFieldArgumentTypeNode(
-        NamedTypeInterface $type,
-        string $fieldName,
-        string $argumentName
-    ): ?TypeNodeInterface {
-        $node = $this->getFieldArgumentNode($type, $fieldName, $argumentName);
-        return null !== $node ? $node->getType() : null;
-    }
-
-    /**
-     * @param UnionType $unionType
-     * @param string    $memberTypeName
-     * @return array|null
-     */
-    protected function getUnionMemberTypeNodes(UnionType $unionType, string $memberTypeName): ?array
-    {
-        /** @var UnionTypeDefinitionNode $node */
-        $node = $unionType->getAstNode();
-
-        if (null === $node) {
-            return null;
-        }
-
-        return \array_filter($node->getTypes(), function (NamedTypeNode $type) use ($memberTypeName) {
-            return $type->getNameValue() === $memberTypeName;
-        });
-    }
-
-    /**
-     * @param EnumType $enumType
-     * @param string   $valueName
-     * @return array|null
-     */
-    protected function getEnumValueNodes(EnumType $enumType, string $valueName): ?array
-    {
-        /** @var EnumTypeDefinitionNode $node */
-        $node = $enumType->getAstNode();
-
-        if (null === $node) {
-            return null;
-        }
-
-        return \array_filter($node->getValues(), function (NameAwareInterface $type) use ($valueName) {
-            return $type->getNameValue() === $valueName;
-        });
-    }
-
-    /**
-     * @param mixed $node
-     * @throws InvariantException
-     */
-    protected function validateName($node): void
-    {
-        // Ensure names are valid, however introspection types opt out.
-        $error = isValidNameError($node->getName(), $node);
-
-        if (null !== $error) {
-            $this->context->reportError($error);
         }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class DocumentNode extends AbstractNode implements NodeInterface
@@ -27,22 +26,14 @@ class DocumentNode extends AbstractNode implements NodeInterface
     }
 
     /**
-     * @return array
-     */
-    public function getDefinitionsAsArray(): array
-    {
-        return array_map(function (SerializationInterface $node) {
-            return $node->toArray();
-        }, $this->definitions);
-    }
-
-    /**
      * @param array|DefinitionNodeInterface[] $definitions
+     *
      * @return DocumentNode
      */
     public function setDefinitions($definitions)
     {
         $this->definitions = $definitions;
+
         return $this;
     }
 
@@ -52,9 +43,19 @@ class DocumentNode extends AbstractNode implements NodeInterface
     public function toArray(): array
     {
         return [
-            'kind'        => $this->kind,
+            'kind' => $this->kind,
             'definitions' => $this->getDefinitionsAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefinitionsAsArray(): array
+    {
+        return array_map(function (SerializationInterface $node) {
+            return $node->toArray();
+        }, $this->definitions);
     }
 }

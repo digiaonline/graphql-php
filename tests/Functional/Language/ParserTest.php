@@ -3,16 +3,16 @@
 namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\NameNode;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Language\Node\NullValueNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
@@ -116,222 +116,238 @@ class ParserTest extends TestCase
         $this->markTestIncomplete('INCOMPLETE: Test case seems incomplete, should it be fixed or removed?');
 
         $expected = new DocumentNode([
-            'location'    => new Location(0, 261, null),
+            'location' => new Location(0, 261, null),
             'definitions' => [
                 new OperationDefinitionNode([
-                    'name'                => null,
-                    'location'            => new Location(11, 40),
-                    'selectionSet'        => new SelectionSetNode([
-                        'location'   => new Location(11, 40, null),
+                    'name' => null,
+                    'location' => new Location(11, 40),
+                    'selectionSet' => new SelectionSetNode([
+                        'location' => new Location(11, 40, null),
                         'selections' => [
                             new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'a',
-                                    'location' => new Location(13, 14, null)
+                                'name' => new NameNode([
+                                    'value' => 'a',
+                                    'location' => new Location(13, 14, null),
                                 ]),
-                                'location'     => new Location(13, 14, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
-                                'selectionSet' => null
+                                'location' => new Location(13, 14, null),
+                                'alias' => null,
+                                'directives' => [],
+                                'arguments' => [],
+                                'selectionSet' => null,
                             ]),
                             new FragmentSpreadNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'FragOne',
-                                    'location' => new Location(19, 26, null)
+                                'name' => new NameNode([
+                                    'value' => 'FragOne',
+                                    'location' => new Location(19, 26, null),
                                 ]),
-                                'location'     => new Location(16, 26, null),
-                                'directives'   => [],
-                                'selectionSet' => null
+                                'location' => new Location(16, 26, null),
+                                'directives' => [],
+                                'selectionSet' => null,
                             ]),
                             new FragmentSpreadNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'FragTwo',
-                                    'location' => new Location(31, 38, null)
+                                'name' => new NameNode([
+                                    'value' => 'FragTwo',
+                                    'location' => new Location(31, 38, null),
                                 ]),
-                                'location'     => new Location(28, 38, null),
-                                'directives'   => [],
-                                'selectionSet' => null
-                            ])
-                        ]
+                                'location' => new Location(28, 38, null),
+                                'directives' => [],
+                                'selectionSet' => null,
+                            ]),
+                        ],
                     ]),
-                    'operation'           => 'query',
-                    'directives'          => [],
-                    'variableDefinitions' => []
+                    'operation' => 'query',
+                    'directives' => [],
+                    'variableDefinitions' => [],
                 ]),
                 new FragmentSpreadNode([
-                    'name'          => new NameNode([
-                        'value'    => 'FragOne',
-                        'location' => new Location(60, 67, null)
+                    'name' => new NameNode([
+                        'value' => 'FragOne',
+                        'location' => new Location(60, 67, null),
                     ]),
-                    'location'      => new Location(51, 146),
+                    'location' => new Location(51, 146),
                     'typeCondition' => new NamedTypeNode([
-                        'name'     => new NameNode([
-                            'value'    => 'Type',
+                        'name' => new NameNode([
+                            'value' => 'Type',
                             'location' => new Location(71, 75),
                         ]),
                         'location' => new Location(71, 75),
                     ]),
-                    'directives'    => [],
-                    'selectionSet'  => new SelectionSetNode([
-                        'location'   => new Location(76, 146, null),
+                    'directives' => [],
+                    'selectionSet' => new SelectionSetNode([
+                        'location' => new Location(76, 146, null),
                         'selections' => [
                             new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'b',
-                                    'location' => new Location(90, 91, null)
+                                'name' => new NameNode([
+                                    'value' => 'b',
+                                    'location' => new Location(90, 91, null),
                                 ]),
-                                'location'     => new Location(90, 91, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
-                                'selectionSet' => null
+                                'location' => new Location(90, 91, null),
+                                'alias' => null,
+                                'directives' => [],
+                                'arguments' => [],
+                                'selectionSet' => null,
                             ]),
                             new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'deep',
-                                    'location' => new Location(104, 108, null)
+                                'name' => new NameNode([
+                                    'value' => 'deep',
+                                    'location' => new Location(104, 108, null),
                                 ]),
-                                'location'     => new Location(104, 134, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
+                                'location' => new Location(104, 134, null),
+                                'alias' => null,
+                                'directives' => [],
+                                'arguments' => [],
                                 'selectionSet' => new SelectionSetNode([
-                                    'location'   => new Location(109, 134, null),
+                                    'location' => new Location(109, 134, null),
                                     'selections' => [
                                         new FieldNode([
-                                            'name'         => new NameNode([
-                                                'value'    => 'b',
-                                                'location' => new Location(111, 112, null)
+                                            'name' => new NameNode([
+                                                'value' => 'b',
+                                                'location' => new Location(111,
+                                                    112, null),
                                             ]),
-                                            'location'     => new Location(111, 112, null),
-                                            'alias'        => null,
-                                            'directives'   => [],
-                                            'arguments'    => [],
-                                            'selectionSet' => null
+                                            'location' => new Location(111, 112,
+                                                null),
+                                            'alias' => null,
+                                            'directives' => [],
+                                            'arguments' => [],
+                                            'selectionSet' => null,
                                         ]),
                                         new FieldNode([
-                                            'name'         => new NameNode([
-                                                'value'    => 'deep',
-                                                'location' => new Location(122, 126, null)
+                                            'name' => new NameNode([
+                                                'value' => 'deep',
+                                                'location' => new Location(122,
+                                                    126, null),
                                             ]),
-                                            'location'     => new Location(114, 132, null),
-                                            'alias'        => new NameNode([
-                                                'value'    => 'deeper',
-                                                'location' => new Location(114, 120, null)
+                                            'location' => new Location(114, 132,
+                                                null),
+                                            'alias' => new NameNode([
+                                                'value' => 'deeper',
+                                                'location' => new Location(114,
+                                                    120, null),
                                             ]),
-                                            'directives'   => [],
-                                            'arguments'    => [],
+                                            'directives' => [],
+                                            'arguments' => [],
                                             'selectionSet' => new SelectionSetNode([
-                                                'location'   => new Location(127, 132, null),
+                                                'location' => new Location(127,
+                                                    132, null),
                                                 'selections' => [
                                                     new FieldNode([
-                                                        'name'         => new NameNode([
-                                                            'value'    => 'b',
-                                                            'location' => new Location(129, 130, null)
+                                                        'name' => new NameNode([
+                                                            'value' => 'b',
+                                                            'location' => new Location(129,
+                                                                130, null),
                                                         ]),
-                                                        'location'     => new Location(129, 130, null),
-                                                        'alias'        => null,
-                                                        'directives'   => [],
-                                                        'arguments'    => [],
-                                                        'selectionSet' => null
+                                                        'location' => new Location(129,
+                                                            130, null),
+                                                        'alias' => null,
+                                                        'directives' => [],
+                                                        'arguments' => [],
+                                                        'selectionSet' => null,
                                                     ]),
-                                                ]
-                                            ])
+                                                ],
+                                            ]),
                                         ]),
-                                    ]
-                                ])
+                                    ],
+                                ]),
                             ]),
-                        ]
+                        ],
                     ]),
                 ]),
                 new FragmentSpreadNode([
-                    'name'          => new NameNode([
-                        'value'    => 'FragTwo',
-                        'location' => new Location(166, 173, null)
+                    'name' => new NameNode([
+                        'value' => 'FragTwo',
+                        'location' => new Location(166, 173, null),
                     ]),
-                    'location'      => new Location(157, 252),
+                    'location' => new Location(157, 252),
                     'typeCondition' => new NamedTypeNode([
-                        'name'     => new NameNode([
-                            'value'    => 'Type',
+                        'name' => new NameNode([
+                            'value' => 'Type',
                             'location' => new Location(177, 181),
                         ]),
                         'location' => new Location(177, 181),
                     ]),
-                    'directives'    => [],
-                    'selectionSet'  => new SelectionSetNode([
-                        'location'   => new Location(182, 252, null),
+                    'directives' => [],
+                    'selectionSet' => new SelectionSetNode([
+                        'location' => new Location(182, 252, null),
                         'selections' => [
                             new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'c',
-                                    'location' => new Location(196, 197, null)
+                                'name' => new NameNode([
+                                    'value' => 'c',
+                                    'location' => new Location(196, 197, null),
                                 ]),
-                                'location'     => new Location(196, 197, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
-                                'selectionSet' => null
+                                'location' => new Location(196, 197, null),
+                                'alias' => null,
+                                'directives' => [],
+                                'arguments' => [],
+                                'selectionSet' => null,
                             ]),
                             new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'deep',
-                                    'location' => new Location(210, 214, null)
+                                'name' => new NameNode([
+                                    'value' => 'deep',
+                                    'location' => new Location(210, 214, null),
                                 ]),
-                                'location'     => new Location(210, 240, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
+                                'location' => new Location(210, 240, null),
+                                'alias' => null,
+                                'directives' => [],
+                                'arguments' => [],
                                 'selectionSet' => new SelectionSetNode([
-                                    'location'   => new Location(215, 240, null),
+                                    'location' => new Location(215, 240, null),
                                     'selections' => [
                                         new FieldNode([
-                                            'name'         => new NameNode([
-                                                'value'    => 'c',
-                                                'location' => new Location(217, 218, null)
+                                            'name' => new NameNode([
+                                                'value' => 'c',
+                                                'location' => new Location(217,
+                                                    218, null),
                                             ]),
-                                            'location'     => new Location(217, 218, null),
-                                            'alias'        => null,
-                                            'directives'   => [],
-                                            'arguments'    => [],
-                                            'selectionSet' => null
+                                            'location' => new Location(217, 218,
+                                                null),
+                                            'alias' => null,
+                                            'directives' => [],
+                                            'arguments' => [],
+                                            'selectionSet' => null,
                                         ]),
                                         new FieldNode([
-                                            'name'         => new NameNode([
-                                                'value'    => 'deep',
-                                                'location' => new Location(228, 232, null)
+                                            'name' => new NameNode([
+                                                'value' => 'deep',
+                                                'location' => new Location(228,
+                                                    232, null),
                                             ]),
-                                            'location'     => new Location(220, 238, null),
-                                            'alias'        => new NameNode([
-                                                'value'    => 'deeper',
-                                                'location' => new Location(220, 226, null)
+                                            'location' => new Location(220, 238,
+                                                null),
+                                            'alias' => new NameNode([
+                                                'value' => 'deeper',
+                                                'location' => new Location(220,
+                                                    226, null),
                                             ]),
-                                            'directives'   => [],
-                                            'arguments'    => [],
+                                            'directives' => [],
+                                            'arguments' => [],
                                             'selectionSet' => new SelectionSetNode([
-                                                'location'   => new Location(233, 238, null),
+                                                'location' => new Location(233,
+                                                    238, null),
                                                 'selections' => [
                                                     new FieldNode([
-                                                        'name'         => new NameNode([
-                                                            'value'    => 'c',
-                                                            'location' => new Location(235, 236, null)
+                                                        'name' => new NameNode([
+                                                            'value' => 'c',
+                                                            'location' => new Location(235,
+                                                                236, null),
                                                         ]),
-                                                        'location'     => new Location(235, 236, null),
-                                                        'alias'        => null,
-                                                        'directives'   => [],
-                                                        'arguments'    => [],
-                                                        'selectionSet' => null
+                                                        'location' => new Location(235,
+                                                            236, null),
+                                                        'alias' => null,
+                                                        'directives' => [],
+                                                        'arguments' => [],
+                                                        'selectionSet' => null,
                                                     ]),
-                                                ]
-                                            ])
+                                                ],
+                                            ]),
                                         ]),
-                                    ]
-                                ])
+                                    ],
+                                ]),
                             ]),
-                        ]
+                        ],
                     ]),
-                ])
-            ]
+                ]),
+            ],
         ]);
 
         $this->assertEquals($expected, $node);
@@ -339,7 +355,8 @@ class ParserTest extends TestCase
 
     public function testParsesKitchenSink()
     {
-        $kitchenSink = mb_convert_encoding(file_get_contents(__DIR__ . '/kitchen-sink.graphql'), 'UTF-8');
+        $kitchenSink = mb_convert_encoding(file_get_contents(__DIR__.'/kitchen-sink.graphql'),
+            'UTF-8');
 
         parse($kitchenSink);
         $this->addToAssertionCount(1);
@@ -431,74 +448,92 @@ fragment $fragmentName on Type {
 '));
 
         $this->assertEquals([
-            'kind'        => NodeKindEnum::DOCUMENT,
-            'loc'         => ['start' => 0, 'end' => 41],
+            'kind' => NodeKindEnum::DOCUMENT,
+            'loc' => ['start' => 0, 'end' => 41],
             'definitions' => [
                 [
-                    'kind'                => NodeKindEnum::OPERATION_DEFINITION,
-                    'loc'                 => ['start' => 0, 'end' => 40],
-                    'operation'           => 'query',
-                    'name'                => null,
+                    'kind' => NodeKindEnum::OPERATION_DEFINITION,
+                    'loc' => ['start' => 0, 'end' => 40],
+                    'operation' => 'query',
+                    'name' => null,
                     'variableDefinitions' => [],
-                    'directives'          => [],
-                    'selectionSet'        => [
-                        'kind'       => NodeKindEnum::SELECTION_SET,
-                        'loc'        => ['start' => 0, 'end' => 40],
+                    'directives' => [],
+                    'selectionSet' => [
+                        'kind' => NodeKindEnum::SELECTION_SET,
+                        'loc' => ['start' => 0, 'end' => 40],
                         'selections' => [
                             [
-                                'kind'         => NodeKindEnum::FIELD,
-                                'loc'          => ['start' => 4, 'end' => 38],
-                                'alias'        => null,
-                                'name'         => [
-                                    'kind'  => NodeKindEnum::NAME,
-                                    'loc'   => ['start' => 4, 'end' => 8],
+                                'kind' => NodeKindEnum::FIELD,
+                                'loc' => ['start' => 4, 'end' => 38],
+                                'alias' => null,
+                                'name' => [
+                                    'kind' => NodeKindEnum::NAME,
+                                    'loc' => ['start' => 4, 'end' => 8],
                                     'value' => 'node',
                                 ],
-                                'arguments'    => [
+                                'arguments' => [
                                     [
-                                        'kind'  => NodeKindEnum::ARGUMENT,
-                                        'name'  => [
-                                            'kind'  => NodeKindEnum::NAME,
-                                            'loc'   => ['start' => 9, 'end' => 11],
+                                        'kind' => NodeKindEnum::ARGUMENT,
+                                        'name' => [
+                                            'kind' => NodeKindEnum::NAME,
+                                            'loc' => [
+                                                'start' => 9,
+                                                'end' => 11,
+                                            ],
                                             'value' => 'id',
                                         ],
                                         'value' => [
-                                            'kind'  => NodeKindEnum::INT,
-                                            'loc'   => ['start' => 13, 'end' => 14],
+                                            'kind' => NodeKindEnum::INT,
+                                            'loc' => [
+                                                'start' => 13,
+                                                'end' => 14,
+                                            ],
                                             'value' => '4',
                                         ],
-                                        'loc'   => ['start' => 9, 'end' => 14],
+                                        'loc' => ['start' => 9, 'end' => 14],
                                     ],
                                 ],
-                                'directives'   => [],
+                                'directives' => [],
                                 'selectionSet' => [
-                                    'kind'       => NodeKindEnum::SELECTION_SET,
-                                    'loc'        => ['start' => 16, 'end' => 38],
+                                    'kind' => NodeKindEnum::SELECTION_SET,
+                                    'loc' => ['start' => 16, 'end' => 38],
                                     'selections' => [
                                         [
-                                            'kind'         => NodeKindEnum::FIELD,
-                                            'loc'          => ['start' => 22, 'end' => 24],
-                                            'alias'        => null,
-                                            'name'         => [
-                                                'kind'  => NodeKindEnum::NAME,
-                                                'loc'   => ['start' => 22, 'end' => 24],
+                                            'kind' => NodeKindEnum::FIELD,
+                                            'loc' => [
+                                                'start' => 22,
+                                                'end' => 24,
+                                            ],
+                                            'alias' => null,
+                                            'name' => [
+                                                'kind' => NodeKindEnum::NAME,
+                                                'loc' => [
+                                                    'start' => 22,
+                                                    'end' => 24,
+                                                ],
                                                 'value' => 'id',
                                             ],
-                                            'arguments'    => [],
-                                            'directives'   => [],
+                                            'arguments' => [],
+                                            'directives' => [],
                                             'selectionSet' => null,
                                         ],
                                         [
-                                            'kind'         => NodeKindEnum::FIELD,
-                                            'loc'          => ['start' => 30, 'end' => 34],
-                                            'alias'        => null,
-                                            'name'         => [
-                                                'kind'  => NodeKindEnum::NAME,
-                                                'loc'   => ['start' => 30, 'end' => 34],
+                                            'kind' => NodeKindEnum::FIELD,
+                                            'loc' => [
+                                                'start' => 30,
+                                                'end' => 34,
+                                            ],
+                                            'alias' => null,
+                                            'name' => [
+                                                'kind' => NodeKindEnum::NAME,
+                                                'loc' => [
+                                                    'start' => 30,
+                                                    'end' => 34,
+                                                ],
                                                 'value' => 'name',
                                             ],
-                                            'arguments'    => [],
-                                            'directives'   => [],
+                                            'arguments' => [],
+                                            'directives' => [],
                                             'selectionSet' => null,
                                         ],
                                     ],
@@ -522,46 +557,52 @@ fragment $fragmentName on Type {
 '));
 
         $this->assertEquals([
-            'kind'        => NodeKindEnum::DOCUMENT,
-            'loc'         => ['start' => 0, 'end' => 30],
+            'kind' => NodeKindEnum::DOCUMENT,
+            'loc' => ['start' => 0, 'end' => 30],
             'definitions' => [
                 [
-                    'kind'                => NodeKindEnum::OPERATION_DEFINITION,
-                    'loc'                 => ['start' => 0, 'end' => 29],
-                    'operation'           => 'query',
-                    'name'                => null,
+                    'kind' => NodeKindEnum::OPERATION_DEFINITION,
+                    'loc' => ['start' => 0, 'end' => 29],
+                    'operation' => 'query',
+                    'name' => null,
                     'variableDefinitions' => [],
-                    'directives'          => [],
-                    'selectionSet'        => [
-                        'kind'       => NodeKindEnum::SELECTION_SET,
-                        'loc'        => ['start' => 6, 'end' => 29],
+                    'directives' => [],
+                    'selectionSet' => [
+                        'kind' => NodeKindEnum::SELECTION_SET,
+                        'loc' => ['start' => 6, 'end' => 29],
                         'selections' => [
                             [
-                                'kind'         => NodeKindEnum::FIELD,
-                                'loc'          => ['start' => 10, 'end' => 27],
-                                'alias'        => null,
-                                'name'         => [
-                                    'kind'  => NodeKindEnum::NAME,
-                                    'loc'   => ['start' => 10, 'end' => 14],
+                                'kind' => NodeKindEnum::FIELD,
+                                'loc' => ['start' => 10, 'end' => 27],
+                                'alias' => null,
+                                'name' => [
+                                    'kind' => NodeKindEnum::NAME,
+                                    'loc' => ['start' => 10, 'end' => 14],
                                     'value' => 'node',
                                 ],
-                                'arguments'    => [],
-                                'directives'   => [],
+                                'arguments' => [],
+                                'directives' => [],
                                 'selectionSet' => [
-                                    'kind'       => NodeKindEnum::SELECTION_SET,
-                                    'loc'        => ['start' => 15, 'end' => 27],
+                                    'kind' => NodeKindEnum::SELECTION_SET,
+                                    'loc' => ['start' => 15, 'end' => 27],
                                     'selections' => [
                                         [
-                                            'kind'         => NodeKindEnum::FIELD,
-                                            'loc'          => ['start' => 21, 'end' => 23],
-                                            'alias'        => null,
-                                            'name'         => [
-                                                'kind'  => NodeKindEnum::NAME,
-                                                'loc'   => ['start' => 21, 'end' => 23],
+                                            'kind' => NodeKindEnum::FIELD,
+                                            'loc' => [
+                                                'start' => 21,
+                                                'end' => 23,
+                                            ],
+                                            'alias' => null,
+                                            'name' => [
+                                                'kind' => NodeKindEnum::NAME,
+                                                'loc' => [
+                                                    'start' => 21,
+                                                    'end' => 23,
+                                                ],
                                                 'value' => 'id',
                                             ],
-                                            'arguments'    => [],
-                                            'directives'   => [],
+                                            'arguments' => [],
+                                            'directives' => [],
                                             'selectionSet' => null,
                                         ],
                                     ],
@@ -591,7 +632,7 @@ fragment $fragmentName on Type {
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::NULL,
-            'loc'  => ['start' => 0, 'end' => 4],
+            'loc' => ['start' => 0, 'end' => 4],
         ]);
     }
 
@@ -601,17 +642,17 @@ fragment $fragmentName on Type {
         $node = parseValue('[123 "abc"]');
 
         $this->assertEquals($node->toArray(), [
-            'kind'   => NodeKindEnum::LIST,
-            'loc'    => ['start' => 0, 'end' => 11],
+            'kind' => NodeKindEnum::LIST,
+            'loc' => ['start' => 0, 'end' => 11],
             'values' => [
                 [
-                    'kind'  => NodeKindEnum::INT,
-                    'loc'   => ['start' => 1, 'end' => 4],
+                    'kind' => NodeKindEnum::INT,
+                    'loc' => ['start' => 1, 'end' => 4],
                     'value' => '123',
                 ],
                 [
-                    'kind'  => NodeKindEnum::STRING,
-                    'loc'   => ['start' => 5, 'end' => 10],
+                    'kind' => NodeKindEnum::STRING,
+                    'loc' => ['start' => 5, 'end' => 10],
                     'block' => false,
                     'value' => 'abc',
                 ],
@@ -625,19 +666,19 @@ fragment $fragmentName on Type {
         $node = parseValue('["""long""" "short"]');
 
         $this->assertEquals($node->toArray(), [
-            'kind'   => NodeKindEnum::LIST,
-            'loc'    => ['start' => 0, 'end' => 20],
+            'kind' => NodeKindEnum::LIST,
+            'loc' => ['start' => 0, 'end' => 20],
             'values' => [
                 [
-                    'kind'  => NodeKindEnum::STRING,
-                    'loc'   => ['start' => 1, 'end' => 11],
+                    'kind' => NodeKindEnum::STRING,
+                    'loc' => ['start' => 1, 'end' => 11],
                     'value' => 'long',
                     'block' => true,
 
                 ],
                 [
-                    'kind'  => NodeKindEnum::STRING,
-                    'loc'   => ['start' => 12, 'end' => 19],
+                    'kind' => NodeKindEnum::STRING,
+                    'loc' => ['start' => 12, 'end' => 19],
                     'value' => 'short',
                     'block' => false,
                 ],
@@ -652,10 +693,10 @@ fragment $fragmentName on Type {
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::NAMED_TYPE,
-            'loc'  => ['start' => 0, 'end' => 6],
+            'loc' => ['start' => 0, 'end' => 6],
             'name' => [
-                'kind'  => NodeKindEnum::NAME,
-                'loc'   => ['start' => 0, 'end' => 6],
+                'kind' => NodeKindEnum::NAME,
+                'loc' => ['start' => 0, 'end' => 6],
                 'value' => 'String',
             ],
         ]);
@@ -668,10 +709,10 @@ fragment $fragmentName on Type {
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::NAMED_TYPE,
-            'loc'  => ['start' => 0, 'end' => 6],
+            'loc' => ['start' => 0, 'end' => 6],
             'name' => [
-                'kind'  => NodeKindEnum::NAME,
-                'loc'   => ['start' => 0, 'end' => 6],
+                'kind' => NodeKindEnum::NAME,
+                'loc' => ['start' => 0, 'end' => 6],
                 'value' => 'MyType',
             ],
         ]);
@@ -684,13 +725,13 @@ fragment $fragmentName on Type {
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::LIST_TYPE,
-            'loc'  => ['start' => 0, 'end' => 8],
+            'loc' => ['start' => 0, 'end' => 8],
             'type' => [
                 'kind' => NodeKindEnum::NAMED_TYPE,
-                'loc'  => ['start' => 1, 'end' => 7],
+                'loc' => ['start' => 1, 'end' => 7],
                 'name' => [
-                    'kind'  => NodeKindEnum::NAME,
-                    'loc'   => ['start' => 1, 'end' => 7],
+                    'kind' => NodeKindEnum::NAME,
+                    'loc' => ['start' => 1, 'end' => 7],
                     'value' => 'MyType',
                 ],
             ],
@@ -704,13 +745,13 @@ fragment $fragmentName on Type {
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::NON_NULL_TYPE,
-            'loc'  => ['start' => 0, 'end' => 7],
+            'loc' => ['start' => 0, 'end' => 7],
             'type' => [
                 'kind' => NodeKindEnum::NAMED_TYPE,
-                'loc'  => ['start' => 0, 'end' => 6],
+                'loc' => ['start' => 0, 'end' => 6],
                 'name' => [
-                    'kind'  => NodeKindEnum::NAME,
-                    'loc'   => ['start' => 0, 'end' => 6],
+                    'kind' => NodeKindEnum::NAME,
+                    'loc' => ['start' => 0, 'end' => 6],
                     'value' => 'MyType',
                 ],
             ],
@@ -724,16 +765,16 @@ fragment $fragmentName on Type {
 
         $this->assertEquals($node->toArray(), [
             'kind' => NodeKindEnum::LIST_TYPE,
-            'loc'  => ['start' => 0, 'end' => 9],
+            'loc' => ['start' => 0, 'end' => 9],
             'type' => [
                 'kind' => NodeKindEnum::NON_NULL_TYPE,
-                'loc'  => ['start' => 1, 'end' => 8],
+                'loc' => ['start' => 1, 'end' => 8],
                 'type' => [
                     'kind' => NodeKindEnum::NAMED_TYPE,
-                    'loc'  => ['start' => 1, 'end' => 7],
+                    'loc' => ['start' => 1, 'end' => 7],
                     'name' => [
-                        'kind'  => NodeKindEnum::NAME,
-                        'loc'   => ['start' => 1, 'end' => 7],
+                        'kind' => NodeKindEnum::NAME,
+                        'loc' => ['start' => 1, 'end' => 7],
                         'value' => 'MyType',
                     ],
                 ],

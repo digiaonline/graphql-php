@@ -11,10 +11,6 @@ use function Digia\GraphQL\Test\Functional\Validation\unknownField;
 
 class ValuesOfCorrectTypeRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return ValuesOfCorrectTypeRule::class;
-    }
 
     public function testGoodIntValue()
     {
@@ -522,7 +518,10 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
               }
             }
             '),
-            [badValue('DogCommand', '"SIT"', [3, 33], 'Did you mean the enum value SIT?')]
+            [
+                badValue('DogCommand', '"SIT"', [3, 33],
+                    'Did you mean the enum value SIT?'),
+            ]
         );
     }
 
@@ -567,7 +566,10 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
               }
             }
             '),
-            [badValue('DogCommand', 'sit', [3, 33], 'Did you mean the enum value SIT?')]
+            [
+                badValue('DogCommand', 'sit', [3, 33],
+                    'Did you mean the enum value SIT?'),
+            ]
         );
     }
 
@@ -952,7 +954,10 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
               }
             }
             '),
-            [requiredField('ComplexInput', 'requiredField', 'Boolean!', [3, 33])]
+            [
+                requiredField('ComplexInput', 'requiredField', 'Boolean!',
+                    [3, 33]),
+            ]
         );
     }
 
@@ -988,7 +993,10 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
               }
             }
             '),
-            [unknownField('ComplexInput', 'unknownField', [5, 7], 'Did you mean intField or booleanField?')]
+            [
+                unknownField('ComplexInput', 'unknownField', [5, 7],
+                    'Did you mean intField or booleanField?'),
+            ]
         );
     }
 
@@ -1002,9 +1010,13 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
               invalidArg(arg: 123)
             }
             '),
-            [badValue('Invalid', '123', [2, 19], 'Invalid scalar is always invalid: 123')]
+            [
+                badValue('Invalid', '123', [2, 19],
+                    'Invalid scalar is always invalid: 123'),
+            ]
         );
-        $this->assertEquals($errors[0]->getOriginalErrorMessage(), 'Invalid scalar is always invalid: 123');
+        $this->assertEquals($errors[0]->getOriginalErrorMessage(),
+            'Invalid scalar is always invalid: 123');
     }
 
     public function testAllowsCustomScalarToAcceptComplexLiterals()
@@ -1158,7 +1170,10 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
               dog { name }
             }
             '),
-            [requiredField('ComplexInput', 'requiredField', 'Boolean!', [1, 47])]
+            [
+                requiredField('ComplexInput', 'requiredField', 'Boolean!',
+                    [1, 47]),
+            ]
         );
     }
 
@@ -1173,5 +1188,10 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
             '),
             [badValue('String', '2', [1, 42])]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return ValuesOfCorrectTypeRule::class;
     }
 }

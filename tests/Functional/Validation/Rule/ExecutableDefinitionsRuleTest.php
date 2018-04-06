@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\nonExecutableDefinition;
 
 class ExecutableDefinitionsRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return ExecutableDefinitionsRule::class;
-    }
 
     public function testWithOnlyOperation()
     {
@@ -90,5 +86,10 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
                 nonExecutableDefinition('Query', [5, 1]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return ExecutableDefinitionsRule::class;
     }
 }

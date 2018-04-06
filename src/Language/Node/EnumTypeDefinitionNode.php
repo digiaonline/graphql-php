@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 class EnumTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface, DirectivesAwareInterface
 {
+
     use DescriptionTrait;
     use NameTrait;
     use DirectivesTrait;
@@ -20,12 +21,12 @@ class EnumTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeI
     public function toArray(): array
     {
         return [
-            'kind'        => $this->kind,
+            'kind' => $this->kind,
             'description' => $this->getDescriptionAsArray(),
-            'name'        => $this->getNameAsArray(),
-            'directives'  => $this->getDirectivesAsArray(),
-            'values'      => $this->getValuesAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'name' => $this->getNameAsArray(),
+            'directives' => $this->getDirectivesAsArray(),
+            'values' => $this->getValuesAsArray(),
+            'loc' => $this->getLocationAsArray(),
         ];
     }
 }

@@ -5,13 +5,10 @@ namespace Digia\GraphQL\Type;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use function Digia\GraphQL\Type\Boolean;
-use function Digia\GraphQL\Type\newDirective;
-use function Digia\GraphQL\Type\newNonNull;
-use function Digia\GraphQL\Type\String;
 
 class DirectivesProvider extends AbstractServiceProvider
 {
+
     /**
      * @var array
      */
@@ -28,18 +25,18 @@ class DirectivesProvider extends AbstractServiceProvider
     {
         $this->container->add(GraphQL::INCLUDE_DIRECTIVE, function () {
             return newDirective([
-                'name'        => 'include',
+                'name' => 'include',
                 'description' =>
-                    'Directs the executor to include this field or fragment only when ' .
+                    'Directs the executor to include this field or fragment only when '.
                     'the `if` argument is true.',
-                'locations'   => [
+                'locations' => [
                     DirectiveLocationEnum::FIELD,
                     DirectiveLocationEnum::FRAGMENT_SPREAD,
                     DirectiveLocationEnum::INLINE_FRAGMENT,
                 ],
-                'args'        => [
+                'args' => [
                     'if' => [
-                        'type'        => newNonNull(Boolean()),
+                        'type' => newNonNull(Boolean()),
                         'description' => 'Included when true.',
                     ],
                 ],
@@ -48,18 +45,18 @@ class DirectivesProvider extends AbstractServiceProvider
 
         $this->container->add(GraphQL::SKIP_DIRECTIVE, function () {
             return newDirective([
-                'name'        => 'skip',
+                'name' => 'skip',
                 'description' =>
-                    'Directs the executor to skip this field or fragment when the `if` ' .
+                    'Directs the executor to skip this field or fragment when the `if` '.
                     'argument is true.',
-                'locations'   => [
+                'locations' => [
                     DirectiveLocationEnum::FIELD,
                     DirectiveLocationEnum::FRAGMENT_SPREAD,
                     DirectiveLocationEnum::INLINE_FRAGMENT,
                 ],
-                'args'        => [
+                'args' => [
                     'if' => [
-                        'type'        => newNonNull(Boolean()),
+                        'type' => newNonNull(Boolean()),
                         'description' => 'Skipped when true.',
                     ],
                 ],
@@ -68,22 +65,22 @@ class DirectivesProvider extends AbstractServiceProvider
 
         $this->container->add(GraphQL::DEPRECATED_DIRECTIVE, function () {
             return newDirective([
-                'name'        => 'deprecated',
+                'name' => 'deprecated',
                 'description' => 'Marks an element of a GraphQL schema as no longer supported.',
-                'locations'   => [
+                'locations' => [
                     DirectiveLocationEnum::FIELD_DEFINITION,
                     DirectiveLocationEnum::ENUM_VALUE,
                 ],
-                'args'        => [
+                'args' => [
                     'reason' => [
-                        'type'         => String(),
-                        'description'  =>
-                            'Explains why this element was deprecated, usually also including a ' .
-                            'suggestion for how to access supported similar data. Formatted ' .
+                        'type' => String(),
+                        'description' =>
+                            'Explains why this element was deprecated, usually also including a '.
+                            'suggestion for how to access supported similar data. Formatted '.
                             'in [Markdown](https://daringfireball.net/projects/markdown/).',
                         'defaultValue' => DEFAULT_DEPRECATION_REASON,
                     ],
-                ]
+                ],
             ]);
         }, true/* $shared */);
     }

@@ -6,6 +6,7 @@ use Digia\GraphQL\GraphQL;
 
 class SupportedRules
 {
+
     /**
      * @var array
      */

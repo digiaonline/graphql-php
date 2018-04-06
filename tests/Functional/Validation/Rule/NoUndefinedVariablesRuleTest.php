@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\undefinedVariable;
 
 class NoUndefinedVariablesRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return NoUndefinedVariablesRule::class;
-    }
 
     public function testAllVariablesDefined()
     {
@@ -86,7 +82,8 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
         );
     }
 
-    public function testVariablesWithinSingleFragmentDefinedInMultipleOperations()
+    public function testVariablesWithinSingleFragmentDefinedInMultipleOperations(
+    )
     {
         $this->expectPassesRule(
             $this->rule,
@@ -353,5 +350,10 @@ class NoUndefinedVariablesRuleTest extends RuleTestCase
                 undefinedVariable('c', [13, 13], 'Bar', [4, 1]),
             ]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return NoUndefinedVariablesRule::class;
     }
 }

@@ -8,10 +8,6 @@ use function Digia\GraphQL\Test\Functional\Validation\anonymousOperationNotAlone
 
 class LoneAnonymousOperationRuleTest extends RuleTestCase
 {
-    protected function getRuleClassName(): string
-    {
-        return LoneAnonymousOperationRule::class;
-    }
 
     public function testNoOperations()
     {
@@ -117,5 +113,10 @@ class LoneAnonymousOperationRuleTest extends RuleTestCase
             '),
             [anonymousOperationNotAlone([1, 1])]
         );
+    }
+
+    protected function getRuleClassName(): string
+    {
+        return LoneAnonymousOperationRule::class;
     }
 }

@@ -17,6 +17,7 @@ use function Digia\GraphQL\Type\newSchema;
 
 class SchemaBuilder implements SchemaBuilderInterface
 {
+
     /**
      * @var CacheInterface
      */
@@ -24,6 +25,7 @@ class SchemaBuilder implements SchemaBuilderInterface
 
     /**
      * BuilderContextCreator constructor.
+     *
      * @param CacheInterface $cache
      */
     public function __construct(CacheInterface $cache)
@@ -42,13 +44,13 @@ class SchemaBuilder implements SchemaBuilderInterface
         $context = $this->createContext($document, $resolverRegistry);
 
         return newSchema([
-            'query'        => $context->buildQueryType(),
-            'mutation'     => $context->buildMutationType(),
+            'query' => $context->buildQueryType(),
+            'mutation' => $context->buildMutationType(),
             'subscription' => $context->buildSubscriptionType(),
-            'types'        => $context->buildTypes(),
-            'directives'   => $context->buildDirectives(),
-            'astNode'      => $context->getSchemaDefinition(),
-            'assumeValid'  => $options['assumeValid'] ?? false,
+            'types' => $context->buildTypes(),
+            'directives' => $context->buildDirectives(),
+            'astNode' => $context->getSchemaDefinition(),
+            'assumeValid' => $options['assumeValid'] ?? false,
         ]);
     }
 
@@ -68,7 +70,8 @@ class SchemaBuilder implements SchemaBuilderInterface
             $this->cache
         );
 
-        return new BuildingContext($resolverRegistry, $definitionBuilder, $info);
+        return new BuildingContext($resolverRegistry, $definitionBuilder,
+            $info);
     }
 
     /**
@@ -77,8 +80,8 @@ class SchemaBuilder implements SchemaBuilderInterface
      */
     protected function createInfo(DocumentNode $document): BuildInfo
     {
-        $schemaDefinition     = null;
-        $typeDefinitionMap    = [];
+        $schemaDefinition = null;
+        $typeDefinitionMap = [];
         $directiveDefinitions = [];
 
         foreach ($document->getDefinitions() as $definition) {
@@ -96,7 +99,8 @@ class SchemaBuilder implements SchemaBuilderInterface
                 $typeName = $definition->getNameValue();
 
                 if (isset($typeDefinitionMap[$typeName])) {
-                    throw new BuildingException(sprintf('Type "%s" was defined more than once.', $typeName));
+                    throw new BuildingException(sprintf('Type "%s" was defined more than once.',
+                        $typeName));
                 }
 
                 $typeDefinitionMap[$typeName] = $definition;
@@ -115,35 +119,41 @@ class SchemaBuilder implements SchemaBuilderInterface
             $document,
             $typeDefinitionMap,
             $directiveDefinitions,
-            null !== $schemaDefinition ? $this->getOperationTypeDefinitions($schemaDefinition, $typeDefinitionMap) : [],
+            null !== $schemaDefinition ? $this->getOperationTypeDefinitions($schemaDefinition,
+                $typeDefinitionMap) : [],
             $schemaDefinition
         );
     }
 
     /**
      * @param SchemaDefinitionNode $node
+     *
      * @return array
      * @throws BuildingException
      */
-    protected function getOperationTypeDefinitions(SchemaDefinitionNode $node, array $typeDefinitionMap): array
-    {
+    protected function getOperationTypeDefinitions(
+        SchemaDefinitionNode $node,
+        array $typeDefinitionMap
+    ): array {
         $definitions = [];
 
         foreach ($node->getOperationTypes() as $operationTypeDefinition) {
             /** @var TypeNodeInterface|NamedTypeNode $operationType */
             $operationType = $operationTypeDefinition->getType();
-            $typeName      = $operationType->getNameValue();
-            $operation     = $operationTypeDefinition->getOperation();
+            $typeName = $operationType->getNameValue();
+            $operation = $operationTypeDefinition->getOperation();
 
             if (isset($definitions[$typeName])) {
                 throw new BuildingException(
-                    \sprintf('Must provide only one %s type in schema.', $operation)
+                    \sprintf('Must provide only one %s type in schema.',
+                        $operation)
                 );
             }
 
             if (!isset($typeDefinitionMap[$typeName])) {
                 throw new BuildingException(
-                    \sprintf('Specified %s type %s not found in document.', $operation, $typeName)
+                    \sprintf('Specified %s type %s not found in document.',
+                        $operation, $typeName)
                 );
             }
 

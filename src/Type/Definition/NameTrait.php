@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait NameTrait
 {
+
     /**
      * @var string|null
      */
@@ -21,11 +22,13 @@ trait NameTrait
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     protected function setName(string $name)
     {
         $this->name = $name;
+
         return $this;
     }
 

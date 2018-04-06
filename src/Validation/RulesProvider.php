@@ -33,6 +33,7 @@ use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class RulesProvider extends AbstractServiceProvider
 {
+
     /**
      * @var array
      */
@@ -69,32 +70,58 @@ class RulesProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(ExecutableDefinitionsRule::class, ExecutableDefinitionsRule::class);
-        $this->container->add(FieldOnCorrectTypeRule::class, FieldOnCorrectTypeRule::class);
-        $this->container->add(FragmentsOnCompositeTypesRule::class, FragmentsOnCompositeTypesRule::class);
-        $this->container->add(KnownArgumentNamesRule::class, KnownArgumentNamesRule::class);
-        $this->container->add(KnownDirectivesRule::class, KnownDirectivesRule::class);
-        $this->container->add(KnownFragmentNamesRule::class, KnownFragmentNamesRule::class);
-        $this->container->add(KnownTypeNamesRule::class, KnownTypeNamesRule::class);
-        $this->container->add(LoneAnonymousOperationRule::class, LoneAnonymousOperationRule::class);
-        $this->container->add(NoFragmentCyclesRule::class, NoFragmentCyclesRule::class);
-        $this->container->add(NoUndefinedVariablesRule::class, NoUndefinedVariablesRule::class);
-        $this->container->add(NoUnusedFragmentsRule::class, NoUnusedFragmentsRule::class);
-        $this->container->add(NoUnusedVariablesRule::class, NoUnusedVariablesRule::class);
-        $this->container->add(OverlappingFieldsCanBeMergedRule::class, OverlappingFieldsCanBeMergedRule::class);
-        $this->container->add(PossibleFragmentSpreadsRule::class, PossibleFragmentSpreadsRule::class);
-        $this->container->add(ProvidedNonNullArgumentsRule::class, ProvidedNonNullArgumentsRule::class);
+        $this->container->add(ExecutableDefinitionsRule::class,
+            ExecutableDefinitionsRule::class);
+        $this->container->add(FieldOnCorrectTypeRule::class,
+            FieldOnCorrectTypeRule::class);
+        $this->container->add(FragmentsOnCompositeTypesRule::class,
+            FragmentsOnCompositeTypesRule::class);
+        $this->container->add(KnownArgumentNamesRule::class,
+            KnownArgumentNamesRule::class);
+        $this->container->add(KnownDirectivesRule::class,
+            KnownDirectivesRule::class);
+        $this->container->add(KnownFragmentNamesRule::class,
+            KnownFragmentNamesRule::class);
+        $this->container->add(KnownTypeNamesRule::class,
+            KnownTypeNamesRule::class);
+        $this->container->add(LoneAnonymousOperationRule::class,
+            LoneAnonymousOperationRule::class);
+        $this->container->add(NoFragmentCyclesRule::class,
+            NoFragmentCyclesRule::class);
+        $this->container->add(NoUndefinedVariablesRule::class,
+            NoUndefinedVariablesRule::class);
+        $this->container->add(NoUnusedFragmentsRule::class,
+            NoUnusedFragmentsRule::class);
+        $this->container->add(NoUnusedVariablesRule::class,
+            NoUnusedVariablesRule::class);
+        $this->container->add(OverlappingFieldsCanBeMergedRule::class,
+            OverlappingFieldsCanBeMergedRule::class);
+        $this->container->add(PossibleFragmentSpreadsRule::class,
+            PossibleFragmentSpreadsRule::class);
+        $this->container->add(ProvidedNonNullArgumentsRule::class,
+            ProvidedNonNullArgumentsRule::class);
         $this->container->add(ScalarLeafsRule::class, ScalarLeafsRule::class);
-        $this->container->add(SingleFieldSubscriptionsRule::class, SingleFieldSubscriptionsRule::class);
-        $this->container->add(UniqueArgumentNamesRule::class, UniqueArgumentNamesRule::class);
-        $this->container->add(UniqueDirectivesPerLocationRule::class, UniqueDirectivesPerLocationRule::class);
-        $this->container->add(UniqueFragmentNamesRule::class, UniqueFragmentNamesRule::class);
-        $this->container->add(UniqueInputFieldNamesRule::class, UniqueInputFieldNamesRule::class);
-        $this->container->add(UniqueOperationNamesRule::class, UniqueOperationNamesRule::class);
-        $this->container->add(UniqueVariableNamesRule::class, UniqueVariableNamesRule::class);
-        $this->container->add(ValuesOfCorrectTypeRule::class, ValuesOfCorrectTypeRule::class);
-        $this->container->add(VariablesAreInputTypesRule::class, VariablesAreInputTypesRule::class);
-        $this->container->add(VariablesDefaultValueAllowedRule::class, VariablesDefaultValueAllowedRule::class);
-        $this->container->add(VariablesInAllowedPositionRule::class, VariablesInAllowedPositionRule::class);
+        $this->container->add(SingleFieldSubscriptionsRule::class,
+            SingleFieldSubscriptionsRule::class);
+        $this->container->add(UniqueArgumentNamesRule::class,
+            UniqueArgumentNamesRule::class);
+        $this->container->add(UniqueDirectivesPerLocationRule::class,
+            UniqueDirectivesPerLocationRule::class);
+        $this->container->add(UniqueFragmentNamesRule::class,
+            UniqueFragmentNamesRule::class);
+        $this->container->add(UniqueInputFieldNamesRule::class,
+            UniqueInputFieldNamesRule::class);
+        $this->container->add(UniqueOperationNamesRule::class,
+            UniqueOperationNamesRule::class);
+        $this->container->add(UniqueVariableNamesRule::class,
+            UniqueVariableNamesRule::class);
+        $this->container->add(ValuesOfCorrectTypeRule::class,
+            ValuesOfCorrectTypeRule::class);
+        $this->container->add(VariablesAreInputTypesRule::class,
+            VariablesAreInputTypesRule::class);
+        $this->container->add(VariablesDefaultValueAllowedRule::class,
+            VariablesDefaultValueAllowedRule::class);
+        $this->container->add(VariablesInAllowedPositionRule::class,
+            VariablesInAllowedPositionRule::class);
     }
 }

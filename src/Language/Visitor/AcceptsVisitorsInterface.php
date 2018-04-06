@@ -8,11 +8,12 @@ interface AcceptsVisitorsInterface
 {
 
     /**
-     * @param VisitorInterface      $visitor
-     * @param string|int|null       $key
-     * @param NodeInterface|null    $parent
-     * @param array|string[]        $path
+     * @param VisitorInterface $visitor
+     * @param string|int|null $key
+     * @param NodeInterface|null $parent
+     * @param array|string[] $path
      * @param array|NodeInterface[] $ancestors
+     *
      * @return NodeInterface|null
      */
     public function acceptVisitor(
@@ -40,6 +41,7 @@ interface AcceptsVisitorsInterface
 
     /**
      * @param int $depth
+     *
      * @return NodeInterface|null
      */
     public function getAncestor(int $depth = 1): ?NodeInterface;

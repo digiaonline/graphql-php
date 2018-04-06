@@ -8,16 +8,18 @@ use function Digia\GraphQL\Language\wrap;
 
 class FragmentSpreadWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|FragmentSpreadNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string
     {
-        $name       = $this->printNode($node->getName());
+        $name = $this->printNode($node->getName());
         $directives = $this->printNodes($node->getDirectives());
 
-        return '...' . $name . wrap(' ', implode(' ', $directives));
+        return '...'.$name.wrap(' ', implode(' ', $directives));
     }
 
     /**

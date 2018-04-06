@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInterface, NameAwareInterface
 {
+
     use NameTrait;
     use DefaultValueTrait;
 
@@ -31,30 +32,14 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
     }
 
     /**
-     * @return TypeNodeInterface
-     */
-    public function getType(): TypeNodeInterface
-    {
-        return $this->type;
-    }
-
-    /**
      * @param VariableNode $variable
+     *
      * @return VariableDefinitionNode
      */
     public function setVariable(VariableNode $variable): VariableDefinitionNode
     {
         $this->variable = $variable;
-        return $this;
-    }
 
-    /**
-     * @param TypeNodeInterface $type
-     * @return VariableDefinitionNode
-     */
-    public function setType(TypeNodeInterface $type): VariableDefinitionNode
-    {
-        $this->type = $type;
         return $this;
     }
 
@@ -64,5 +49,25 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
     public function __toString(): string
     {
         return (string)$this->getType();
+    }
+
+    /**
+     * @return TypeNodeInterface
+     */
+    public function getType(): TypeNodeInterface
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param TypeNodeInterface $type
+     *
+     * @return VariableDefinitionNode
+     */
+    public function setType(TypeNodeInterface $type): VariableDefinitionNode
+    {
+        $this->type = $type;
+
+        return $this;
     }
 }

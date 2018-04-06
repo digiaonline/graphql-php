@@ -20,6 +20,7 @@ use function Digia\GraphQL\Validation\unknownDirectiveArgumentMessage;
  */
 class KnownArgumentNamesRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
@@ -44,12 +45,13 @@ class KnownArgumentNamesRule extends AbstractRule
 
     /**
      * @param NodeInterface $node
+     *
      * @return NodeInterface|null
      */
     protected function validateField(NodeInterface $node): ?NodeInterface
     {
         $fieldDefinition = $this->context->getFieldDefinition();
-        $parentType      = $this->context->getParentType();
+        $parentType = $this->context->getParentType();
 
         if (null !== $fieldDefinition && null !== $parentType) {
             $options = array_map(function (Argument $argument) {
@@ -61,7 +63,9 @@ class KnownArgumentNamesRule extends AbstractRule
 
             $this->context->reportError(
                 new ValidationException(
-                    unknownArgumentMessage((string)$node, (string)$fieldDefinition, (string)$parentType, $suggestions),
+                    unknownArgumentMessage((string)$node,
+                        (string)$fieldDefinition,
+                        (string)$parentType, $suggestions),
                     [$node]
                 )
             );
@@ -72,6 +76,7 @@ class KnownArgumentNamesRule extends AbstractRule
 
     /**
      * @param NodeInterface $node
+     *
      * @return NodeInterface|null
      */
     protected function validateDirective(NodeInterface $node): ?NodeInterface
@@ -87,7 +92,8 @@ class KnownArgumentNamesRule extends AbstractRule
 
             $this->context->reportError(
                 new ValidationException(
-                    unknownDirectiveArgumentMessage((string)$node, (string)$directive, $suggestions),
+                    unknownDirectiveArgumentMessage((string)$node,
+                        (string)$directive, $suggestions),
                     [$node]
                 )
             );

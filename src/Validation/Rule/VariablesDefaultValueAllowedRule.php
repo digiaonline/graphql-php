@@ -18,6 +18,7 @@ use function Digia\GraphQL\Validation\variableDefaultValueNotAllowedMessage;
  */
 class VariablesDefaultValueAllowedRule extends AbstractRule
 {
+
     /**
      * @inheritdoc
      */
@@ -29,7 +30,8 @@ class VariablesDefaultValueAllowedRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node
+    ): ?NodeInterface
     {
         return null;
     }
@@ -37,17 +39,19 @@ class VariablesDefaultValueAllowedRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node
+    ): ?NodeInterface
     {
-        $variable     = $node->getVariable();
+        $variable = $node->getVariable();
         $variableName = $variable->getNameValue();
         $defaultValue = $node->getDefaultValue();
-        $type         = $this->context->getInputType();
+        $type = $this->context->getInputType();
 
         if (null !== $defaultValue && $type instanceof NonNullType) {
             $this->context->reportError(
                 new ValidationException(
-                    variableDefaultValueNotAllowedMessage($variableName, $type, $type->getOfType()),
+                    variableDefaultValueNotAllowedMessage($variableName, $type,
+                        $type->getOfType()),
                     [$defaultValue]
                 )
             );

@@ -29,6 +29,18 @@ trait FieldsTrait
     }
 
     /**
+     * @param array|FieldDefinitionNode[] $fields
+     *
+     * @return $this
+     */
+    public function setFields(array $fields)
+    {
+        $this->fields = $fields;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getFieldsAsArray(): array
@@ -36,15 +48,5 @@ trait FieldsTrait
         return array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->fields);
-    }
-
-    /**
-     * @param array|FieldDefinitionNode[] $fields
-     * @return $this
-     */
-    public function setFields(array $fields)
-    {
-        $this->fields = $fields;
-        return $this;
     }
 }

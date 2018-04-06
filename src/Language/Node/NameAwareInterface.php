@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 interface NameAwareInterface
 {
+
     /**
      * @return NameNode|null
      */
@@ -21,6 +22,7 @@ interface NameAwareInterface
 
     /**
      * @param NameNode|null $name
+     *
      * @return $this
      */
     public function setName(?NameNode $name);

@@ -38,27 +38,43 @@ use League\Container\ContainerInterface;
 
 class GraphQL
 {
+
     public const BOOLEAN = 'GraphQLBoolean';
-    public const FLOAT   = 'GraphQLFloat';
-    public const INT     = 'GraphQLInt';
-    public const ID      = 'GraphQLID';
-    public const STRING  = 'GraphQLString';
+
+    public const FLOAT = 'GraphQLFloat';
+
+    public const INT = 'GraphQLInt';
+
+    public const ID = 'GraphQLID';
+
+    public const STRING = 'GraphQLString';
 
     public const DEPRECATED_DIRECTIVE = 'GraphQLDeprecatedDirective';
-    public const INCLUDE_DIRECTIVE    = 'GraphQLIncludeDirective';
-    public const SKIP_DIRECTIVE       = 'GraphQLSkipDirective';
 
-    public const SCHEMA_INTROSPECTION             = '__Schema';
-    public const DIRECTIVE_INTROSPECTION          = '__Directive';
+    public const INCLUDE_DIRECTIVE = 'GraphQLIncludeDirective';
+
+    public const SKIP_DIRECTIVE = 'GraphQLSkipDirective';
+
+    public const SCHEMA_INTROSPECTION = '__Schema';
+
+    public const DIRECTIVE_INTROSPECTION = '__Directive';
+
     public const DIRECTIVE_LOCATION_INTROSPECTION = '__DirectiveLocation';
-    public const TYPE_INTROSPECTION               = '__Type';
-    public const FIELD_INTROSPECTION              = '__Field';
-    public const INPUT_VALUE_INTROSPECTION        = '__InputValue';
-    public const ENUM_VALUE_INTROSPECTION         = '__EnumValue';
-    public const TYPE_KIND_INTROSPECTION          = '__TypeKind';
 
-    public const SCHEMA_META_FIELD_DEFINITION    = 'SchemaMetaFieldDefinition';
-    public const TYPE_META_FIELD_DEFINITION      = 'TypeMetaFieldDefinition';
+    public const TYPE_INTROSPECTION = '__Type';
+
+    public const FIELD_INTROSPECTION = '__Field';
+
+    public const INPUT_VALUE_INTROSPECTION = '__InputValue';
+
+    public const ENUM_VALUE_INTROSPECTION = '__EnumValue';
+
+    public const TYPE_KIND_INTROSPECTION = '__TypeKind';
+
+    public const SCHEMA_META_FIELD_DEFINITION = 'SchemaMetaFieldDefinition';
+
+    public const TYPE_META_FIELD_DEFINITION = 'TypeMetaFieldDefinition';
+
     public const TYPE_NAME_META_FIELD_DEFINITION = 'TypeNameMetaFieldDefinition';
 
     /**
@@ -103,6 +119,60 @@ class GraphQL
     }
 
     /**
+     * Registers the service provides with the container.
+     */
+    protected function registerProviders(ContainerInterface $container): void
+    {
+        foreach (static::$providers as $className) {
+            $container->addServiceProvider($className);
+        }
+    }
+
+    /**
+     * @param string|Source $source
+     * @param array|ResolverRegistryInterface $resolverRegistry
+     * @param array $options
+     *
+     * @return SchemaInterface
+     * @throws InvariantException
+     */
+    public static function buildSchema(
+        $source,
+        $resolverRegistry,
+        array $options = []
+    ): SchemaInterface {
+        return static::make(SchemaBuilderInterface::class)
+            ->build(
+                static::parse($source, $options),
+                $resolverRegistry instanceof ResolverRegistryInterface
+                    ? $resolverRegistry
+                    : new ResolverRegistry($resolverRegistry),
+                $options
+            );
+    }
+
+    /**
+     * @param string $id
+     * @param array $args
+     *
+     * @return mixed
+     */
+    public static function make(string $id, array $args = [])
+    {
+        return static::getInstance()
+            ->getContainer()
+            ->get($id, $args);
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer(): Container
+    {
+        return $this->container;
+    }
+
+    /**
      * @return GraphQL
      */
     public static function getInstance(): self
@@ -115,41 +185,39 @@ class GraphQL
     }
 
     /**
-     * @param string $id
-     * @param array  $args
-     * @return mixed
-     */
-    public static function make(string $id, array $args = [])
-    {
-        return static::getInstance()
-            ->getContainer()
-            ->get($id, $args);
-    }
-
-    /**
-     * @param string|Source                   $source
-     * @param array|ResolverRegistryInterface $resolverRegistry
-     * @param array                           $options
-     * @return SchemaInterface
+     * @param string|Source $source
+     * @param array $options
+     *
+     * @return DocumentNode
      * @throws InvariantException
      */
-    public static function buildSchema($source, $resolverRegistry, array $options = []): SchemaInterface
+    public static function parse($source, array $options = []): DocumentNode
     {
-        return static::make(SchemaBuilderInterface::class)
-            ->build(
-                static::parse($source, $options),
-                $resolverRegistry instanceof ResolverRegistryInterface
-                    ? $resolverRegistry
-                    : new ResolverRegistry($resolverRegistry),
-                $options
-            );
+        return static::make(ParserInterface::class)
+            ->parse(static::lex($source, $options));
     }
 
     /**
-     * @param SchemaInterface                 $schema
-     * @param string|Source                   $source
+     * @param string|Source $source
+     * @param array $options
+     *
+     * @return LexerInterface
+     * @throws InvariantException
+     */
+    public static function lex($source, array $options = []): LexerInterface
+    {
+        // TODO: Introduce a LexerCreator to allow setting source and options via the constructor.
+        return static::make(LexerInterface::class)
+            ->setSource($source instanceof Source ? $source : new Source($source))
+            ->setOptions($options);
+    }
+
+    /**
+     * @param SchemaInterface $schema
+     * @param string|Source $source
      * @param array|ResolverRegistryInterface $resolverRegistry
-     * @param array                           $options
+     * @param array $options
+     *
      * @return SchemaInterface
      * @throws InvariantException
      */
@@ -172,6 +240,7 @@ class GraphQL
 
     /**
      * @param SchemaInterface $schema
+     *
      * @return array
      */
     public static function validateSchema(SchemaInterface $schema): array
@@ -182,59 +251,57 @@ class GraphQL
 
     /**
      * @param string|Source $source
-     * @param array         $options
-     * @return DocumentNode
-     * @throws InvariantException
-     */
-    public static function parse($source, array $options = []): DocumentNode
-    {
-        return static::make(ParserInterface::class)
-            ->parse(static::lex($source, $options));
-    }
-
-    /**
-     * @param string|Source $source
-     * @param array         $options
+     * @param array $options
+     *
      * @return ValueNodeInterface
      * @throws InvariantException
      */
-    public static function parseValue($source, array $options = []): ValueNodeInterface
-    {
+    public static function parseValue(
+        $source,
+        array $options = []
+    ): ValueNodeInterface {
         return static::make(ParserInterface::class)
             ->parseValue(static::lex($source, $options));
     }
 
     /**
      * @param string|Source $source
-     * @param array         $options
+     * @param array $options
+     *
      * @return TypeNodeInterface
      * @throws InvariantException
      */
-    public static function parseType($source, array $options = []): TypeNodeInterface
-    {
+    public static function parseType(
+        $source,
+        array $options = []
+    ): TypeNodeInterface {
         return static::make(ParserInterface::class)
             ->parseType(static::lex($source, $options));
     }
 
     /**
      * @param SchemaInterface $schema
-     * @param DocumentNode    $document
+     * @param DocumentNode $document
+     *
      * @return array
      */
-    public static function validate(SchemaInterface $schema, DocumentNode $document): array
-    {
+    public static function validate(
+        SchemaInterface $schema,
+        DocumentNode $document
+    ): array {
         return static::make(ValidatorInterface::class)
             ->validate($schema, $document);
     }
 
     /**
      * @param SchemaInterface $schema
-     * @param DocumentNode    $document
-     * @param null            $rootValue
-     * @param null            $contextValue
-     * @param array           $variableValues
-     * @param null            $operationName
-     * @param callable|null   $fieldResolver
+     * @param DocumentNode $document
+     * @param null $rootValue
+     * @param null $contextValue
+     * @param array $variableValues
+     * @param null $operationName
+     * @param callable|null $fieldResolver
+     *
      * @return ExecutionResult
      */
     public static function execute(
@@ -260,42 +327,11 @@ class GraphQL
 
     /**
      * @param NodeInterface $node
+     *
      * @return string
      */
     public static function print(NodeInterface $node): string
     {
         return static::make(PrinterInterface::class)->print($node);
-    }
-
-    /**
-     * @param string|Source $source
-     * @param array         $options
-     * @return LexerInterface
-     * @throws InvariantException
-     */
-    public static function lex($source, array $options = []): LexerInterface
-    {
-        // TODO: Introduce a LexerCreator to allow setting source and options via the constructor.
-        return static::make(LexerInterface::class)
-            ->setSource($source instanceof Source ? $source : new Source($source))
-            ->setOptions($options);
-    }
-
-    /**
-     * @return Container
-     */
-    public function getContainer(): Container
-    {
-        return $this->container;
-    }
-
-    /**
-     * Registers the service provides with the container.
-     */
-    protected function registerProviders(ContainerInterface $container): void
-    {
-        foreach (static::$providers as $className) {
-            $container->addServiceProvider($className);
-        }
     }
 }

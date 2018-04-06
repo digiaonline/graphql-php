@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\NodeTrait;
 
 class InputField implements ConfigAwareInterface, NodeAwareInterface
 {
+
     use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;

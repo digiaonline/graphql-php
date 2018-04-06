@@ -15,32 +15,42 @@ use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Util\SerializationInterface;
 
 /**
- * @param string|Source                   $source
+ * @param string|Source $source
  * @param array|ResolverRegistryInterface $resolverRegistry
- * @param array                           $options
+ * @param array $options
+ *
  * @return SchemaInterface
  * @throws InvariantException
  */
-function buildSchema($source, $resolverRegistry = [], array $options = []): SchemaInterface
-{
+function buildSchema(
+    $source,
+    $resolverRegistry = [],
+    array $options = []
+): SchemaInterface {
     return GraphQL::buildSchema($source, $resolverRegistry, $options);
 }
 
 /**
- * @param SchemaInterface                 $schema
- * @param string|Source                   $source
+ * @param SchemaInterface $schema
+ * @param string|Source $source
  * @param array|ResolverRegistryInterface $resolverRegistry
- * @param array                           $options
+ * @param array $options
+ *
  * @return SchemaInterface
  * @throws InvariantException
  */
-function extendSchema(SchemaInterface $schema, $source, $resolverRegistry = [], array $options = []): SchemaInterface
-{
+function extendSchema(
+    SchemaInterface $schema,
+    $source,
+    $resolverRegistry = [],
+    array $options = []
+): SchemaInterface {
     return GraphQL::extendSchema($schema, $source, $resolverRegistry, $options);
 }
 
 /**
  * @param SchemaInterface $schema
+ *
  * @return SchemaValidationException[]
  */
 function validateSchema(SchemaInterface $schema): array
@@ -50,7 +60,8 @@ function validateSchema(SchemaInterface $schema): array
 
 /**
  * @param string|Source $source
- * @param array         $options
+ * @param array $options
+ *
  * @return NodeInterface|DocumentNode|SerializationInterface
  * @throws InvariantException
  * @throws SyntaxErrorException
@@ -62,7 +73,8 @@ function parse($source, array $options = []): NodeInterface
 
 /**
  * @param string|Source $source
- * @param array         $options
+ * @param array $options
+ *
  * @return NodeInterface|SerializationInterface
  * @throws InvariantException
  * @throws SyntaxErrorException
@@ -74,7 +86,8 @@ function parseValue($source, array $options = []): NodeInterface
 
 /**
  * @param string|Source $source
- * @param array         $options
+ * @param array $options
+ *
  * @return NodeInterface|SerializationInterface
  * @throws InvariantException
  * @throws SyntaxErrorException
@@ -86,7 +99,8 @@ function parseType($source, array $options = []): NodeInterface
 
 /**
  * @param SchemaInterface $schema
- * @param DocumentNode    $document
+ * @param DocumentNode $document
+ *
  * @return array|ValidationException[]
  */
 function validate(SchemaInterface $schema, DocumentNode $document): array
@@ -96,12 +110,13 @@ function validate(SchemaInterface $schema, DocumentNode $document): array
 
 /**
  * @param SchemaInterface $schema
- * @param DocumentNode    $document
- * @param mixed|null      $rootValue
- * @param mixed|null      $contextValue
- * @param array           $variableValues
- * @param mixed|null      $operationName
- * @param callable|null   $fieldResolver
+ * @param DocumentNode $document
+ * @param mixed|null $rootValue
+ * @param mixed|null $contextValue
+ * @param array $variableValues
+ * @param mixed|null $operationName
+ * @param callable|null $fieldResolver
+ *
  * @return ExecutionResult
  */
 function execute(
@@ -126,6 +141,7 @@ function execute(
 
 /**
  * @param NodeInterface $node
+ *
  * @return string
  */
 function printNode(NodeInterface $node): string
@@ -135,12 +151,13 @@ function printNode(NodeInterface $node): string
 
 /**
  * @param SchemaInterface $schema
- * @param string          $source
- * @param mixed|null      $rootValue
- * @param mixed|null      $contextValue
- * @param array           $variableValues
- * @param mixed|null      $operationName
- * @param callable|null   $fieldResolver
+ * @param string $source
+ * @param mixed|null $rootValue
+ * @param mixed|null $contextValue
+ * @param array $variableValues
+ * @param mixed|null $operationName
+ * @param callable|null $fieldResolver
+ *
  * @return ExecutionResult
  * @throws InvariantException
  */

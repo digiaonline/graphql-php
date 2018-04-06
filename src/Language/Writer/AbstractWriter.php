@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\PrinterInterface;
 
 abstract class AbstractWriter implements WriterInterface
 {
+
     /**
      * @var PrinterInterface
      */
@@ -18,11 +19,13 @@ abstract class AbstractWriter implements WriterInterface
     public function setPrinter(PrinterInterface $printer)
     {
         $this->printer = $printer;
+
         return $this;
     }
 
     /**
      * @param NodeInterface|null $node
+     *
      * @return string
      */
     protected function printNode(?NodeInterface $node): string
@@ -32,6 +35,7 @@ abstract class AbstractWriter implements WriterInterface
 
     /**
      * @param array $nodes
+     *
      * @return array
      */
     protected function printNodes(array $nodes): array

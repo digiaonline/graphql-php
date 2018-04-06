@@ -7,8 +7,10 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class BooleanValueWriter extends AbstractWriter
 {
+
     /**
      * @param NodeInterface|BooleanValueNode $node
+     *
      * @inheritdoc
      */
     public function write(NodeInterface $node): string

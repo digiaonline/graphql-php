@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 interface DirectivesAwareInterface
 {
+
     /**
      * @return bool
      */
@@ -21,6 +22,7 @@ interface DirectivesAwareInterface
 
     /**
      * @param DirectiveNode[] $directives
+     *
      * @return $this
      */
     public function setDirectives(array $directives);

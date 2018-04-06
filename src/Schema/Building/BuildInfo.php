@@ -12,6 +12,7 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 
 class BuildInfo
 {
+
     /**
      * @var DocumentNode
      */
@@ -39,11 +40,12 @@ class BuildInfo
 
     /**
      * BuildingInfo constructor.
-     * @param DocumentNode                  $document
-     * @param TypeInterface[]               $typeDefinitionMap
-     * @param DirectiveDefinitionNode[]     $directiveDefinitions
+     *
+     * @param DocumentNode $document
+     * @param TypeInterface[] $typeDefinitionMap
+     * @param DirectiveDefinitionNode[] $directiveDefinitions
      * @param OperationTypeDefinitionNode[] $operationTypeDefinitions
-     * @param SchemaDefinitionNode|null     $schemaDefinition
+     * @param SchemaDefinitionNode|null $schemaDefinition
      */
     public function __construct(
         DocumentNode $document,
@@ -52,15 +54,16 @@ class BuildInfo
         array $operationTypeDefinitions,
         ?SchemaDefinitionNode $schemaDefinition = null
     ) {
-        $this->document                 = $document;
-        $this->typeDefinitionMap        = $typeDefinitionMap;
-        $this->directiveDefinitions     = $directiveDefinitions;
+        $this->document = $document;
+        $this->typeDefinitionMap = $typeDefinitionMap;
+        $this->directiveDefinitions = $directiveDefinitions;
         $this->operationTypeDefinitions = $operationTypeDefinitions;
-        $this->schemaDefinition         = $schemaDefinition;
+        $this->schemaDefinition = $schemaDefinition;
     }
 
     /**
      * @param string $typeName
+     *
      * @return TypeInterface|null
      */
     public function getTypeDefinition(string $typeName): ?TypeInterface
@@ -70,9 +73,11 @@ class BuildInfo
 
     /**
      * @param string $operation
+     *
      * @return TypeNodeInterface|null
      */
-    public function getOperationTypeDefinition(string $operation): ?NodeInterface
+    public function getOperationTypeDefinition(string $operation
+    ): ?NodeInterface
     {
         return $this->operationTypeDefinitions[$operation] ?? $this->typeDefinitionMap[\ucfirst($operation)] ?? null;
     }

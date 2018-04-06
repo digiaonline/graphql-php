@@ -11,27 +11,33 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 
 interface DefinitionBuilderInterface
 {
+
     /**
      * @param NodeInterface[] $nodes
+     *
      * @return TypeInterface[]
      */
     public function buildTypes(array $nodes): array;
 
     /**
      * @param NodeInterface $node
+     *
      * @return TypeInterface
      */
     public function buildType(NodeInterface $node): TypeInterface;
 
     /**
      * @param DirectiveDefinitionNode $node
+     *
      * @return DirectiveInterface
      */
-    public function buildDirective(DirectiveDefinitionNode $node): DirectiveInterface;
+    public function buildDirective(DirectiveDefinitionNode $node
+    ): DirectiveInterface;
 
     /**
      * @param FieldDefinitionNode|InputValueDefinitionNode $node
-     * @param callable|null                                $resolve
+     * @param callable|null $resolve
+     *
      * @return array
      */
     public function buildField($node, ?callable $resolve = null): array;

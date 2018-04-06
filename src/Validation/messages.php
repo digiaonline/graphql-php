@@ -6,6 +6,7 @@ use function Digia\GraphQL\Util\quotedOrList;
 
 /**
  * @param string $definitionName
+ *
  * @return string
  */
 function nonExecutableDefinitionMessage(string $definitionName): string
@@ -16,8 +17,9 @@ function nonExecutableDefinitionMessage(string $definitionName): string
 /**
  * @param string $fieldName
  * @param string $type
- * @param array  $suggestedTypeNames
- * @param array  $suggestedFieldNames
+ * @param array $suggestedTypeNames
+ * @param array $suggestedFieldNames
+ *
  * @return string
  */
 function undefinedFieldMessage(
@@ -26,43 +28,53 @@ function undefinedFieldMessage(
     array $suggestedTypeNames,
     array $suggestedFieldNames
 ): string {
-    $message = sprintf('Cannot query field "%s" on type "%s".', $fieldName, $type);
+    $message = sprintf('Cannot query field "%s" on type "%s".', $fieldName,
+        $type);
     if (!empty($suggestedTypeNames)) {
-        return $message . ' ' . sprintf(
+        return $message.' '.sprintf(
                 'Did you mean to use an inline fragment on %s?',
                 quotedOrList($suggestedTypeNames)
             );
     }
     if (!empty($suggestedFieldNames)) {
-        return $message . ' ' . sprintf('Did you mean %s?', quotedOrList($suggestedFieldNames));
+        return $message.' '.sprintf('Did you mean %s?',
+                quotedOrList($suggestedFieldNames));
     }
+
     return $message;
 }
 
 /**
  * @param string $type
+ *
  * @return string
  */
 function inlineFragmentOnNonCompositeMessage(string $typeName): string
 {
-    return sprintf('Fragment cannot condition on non composite type "%s".', $typeName);
+    return sprintf('Fragment cannot condition on non composite type "%s".',
+        $typeName);
 }
 
 /**
  * @param string $fragmentName
  * @param string $typeName
+ *
  * @return string
  */
-function fragmentOnNonCompositeMessage(string $fragmentName, string $typeName): string
-{
-    return sprintf('Fragment "%s" cannot condition on non composite type "%s".', $fragmentName, $typeName);
+function fragmentOnNonCompositeMessage(
+    string $fragmentName,
+    string $typeName
+): string {
+    return sprintf('Fragment "%s" cannot condition on non composite type "%s".',
+        $fragmentName, $typeName);
 }
 
 /**
  * @param string $argumentName
  * @param string $fieldName
  * @param string $typeName
- * @param array  $suggestedArguments
+ * @param array $suggestedArguments
+ *
  * @return string
  */
 function unknownArgumentMessage(
@@ -71,30 +83,41 @@ function unknownArgumentMessage(
     string $typeName,
     array $suggestedArguments
 ): string {
-    $message = sprintf('Unknown argument "%s" on field "%s" of type "%s".', $argumentName, $fieldName, $typeName);
+    $message = sprintf('Unknown argument "%s" on field "%s" of type "%s".',
+        $argumentName, $fieldName, $typeName);
     if (!empty($suggestedArguments)) {
-        return $message . ' ' . sprintf('Did you mean %s', quotedOrList($suggestedArguments));
+        return $message.' '.sprintf('Did you mean %s',
+                quotedOrList($suggestedArguments));
     }
+
     return $message;
 }
 
 /**
  * @param string $argumentName
  * @param string $directiveName
- * @param array  $suggestedArguments
+ * @param array $suggestedArguments
+ *
  * @return string
  */
-function unknownDirectiveArgumentMessage(string $argumentName, string $directiveName, array $suggestedArguments): string
-{
-    $message = sprintf('Unknown argument "%s" on directive "@%s".', $argumentName, $directiveName);
+function unknownDirectiveArgumentMessage(
+    string $argumentName,
+    string $directiveName,
+    array $suggestedArguments
+): string {
+    $message = sprintf('Unknown argument "%s" on directive "@%s".',
+        $argumentName, $directiveName);
     if (!empty($suggestedArguments)) {
-        return $message . ' ' . sprintf('Did you mean %s', quotedOrList($suggestedArguments));
+        return $message.' '.sprintf('Did you mean %s',
+                quotedOrList($suggestedArguments));
     }
+
     return $message;
 }
 
 /**
  * @param string $directiveName
+ *
  * @return string
  */
 function unknownDirectiveMessage(string $directiveName): string
@@ -105,15 +128,20 @@ function unknownDirectiveMessage(string $directiveName): string
 /**
  * @param string $directiveName
  * @param string $location
+ *
  * @return string
  */
-function misplacedDirectiveMessage(string $directiveName, string $location): string
-{
-    return sprintf('Directive "%s" may not be used on %s.', $directiveName, $location);
+function misplacedDirectiveMessage(
+    string $directiveName,
+    string $location
+): string {
+    return sprintf('Directive "%s" may not be used on %s.', $directiveName,
+        $location);
 }
 
 /**
  * @param string $fragmentName
+ *
  * @return string
  */
 function unknownFragmentMessage(string $fragmentName): string
@@ -123,15 +151,18 @@ function unknownFragmentMessage(string $fragmentName): string
 
 /**
  * @param string $typeName
- * @param array  $suggestedTypes
+ * @param array $suggestedTypes
+ *
  * @return string
  */
 function unknownTypeMessage(string $typeName, array $suggestedTypes): string
 {
     $message = sprintf('Unknown type "%s".', $typeName);
     if (!empty($suggestedTypes)) {
-        return $message . ' ' . sprintf('Did you mean %s?', quotedOrList($suggestedTypes));
+        return $message.' '.sprintf('Did you mean %s?',
+                quotedOrList($suggestedTypes));
     }
+
     return $message;
 }
 
@@ -145,30 +176,38 @@ function anonymousOperationNotAloneMessage(): string
 
 /**
  * @param string $fragmentName
- * @param array  $spreadNames
+ * @param array $spreadNames
+ *
  * @return string
  */
 function fragmentCycleMessage(string $fragmentName, array $spreadNames): string
 {
-    $via = !empty($spreadNames) ? ' via ' . implode(', ', $spreadNames) : '';
-    return sprintf('Cannot spread fragment "%s" within itself%s.', $fragmentName, $via);
+    $via = !empty($spreadNames) ? ' via '.implode(', ', $spreadNames) : '';
+
+    return sprintf('Cannot spread fragment "%s" within itself%s.',
+        $fragmentName, $via);
 }
 
 /**
- * @param string      $variableName
+ * @param string $variableName
  * @param null|string $operationName
+ *
  * @return string
  */
-function undefinedVariableMessage(string $variableName, ?string $operationName = null): string
-{
+function undefinedVariableMessage(
+    string $variableName,
+    ?string $operationName = null
+): string {
     /** @noinspection IsEmptyFunctionUsageInspection */
     return !empty($operationName)
-        ? sprintf('Variable "$%s" is not defined by operation "%s".', $variableName, $operationName)
+        ? sprintf('Variable "$%s" is not defined by operation "%s".',
+            $variableName, $operationName)
         : sprintf('Variable "$%s" is not defined.', $variableName);
 }
 
 /**
  * @param string $fragmentName
+ *
  * @return string
  */
 function unusedFragmentMessage(string $fragmentName): string
@@ -177,21 +216,26 @@ function unusedFragmentMessage(string $fragmentName): string
 }
 
 /**
- * @param string      $variableName
+ * @param string $variableName
  * @param null|string $operationName
+ *
  * @return string
  */
-function unusedVariableMessage(string $variableName, ?string $operationName = null): string
-{
+function unusedVariableMessage(
+    string $variableName,
+    ?string $operationName = null
+): string {
     /** @noinspection IsEmptyFunctionUsageInspection */
     return !empty($operationName)
-        ? sprintf('Variable "$%s" is never used in operation "%s".', $variableName, $operationName)
+        ? sprintf('Variable "$%s" is never used in operation "%s".',
+            $variableName, $operationName)
         : sprintf('Variable "$%s" is never used.', $variableName);
 }
 
 /**
  * @param string $reasonName
- * @param mixed  $reason
+ * @param mixed $reason
+ *
  * @return string
  */
 function fieldsConflictMessage(string $responseName, $reason): string
@@ -205,6 +249,7 @@ function fieldsConflictMessage(string $responseName, $reason): string
 
 /**
  * @param array|string $reason
+ *
  * @return string
  */
 function conflictReasonMessage($reason): string
@@ -219,7 +264,9 @@ function conflictReasonMessage($reason): string
 
     return implode(' and ', array_map(function ($reason) {
         [$responseName, $subreason] = $reason;
-        return sprintf('subfields "%s" conflict because %s', $responseName, conflictReasonMessage($subreason));
+
+        return sprintf('subfields "%s" conflict because %s', $responseName,
+            conflictReasonMessage($subreason));
     }, $reason));
 }
 
@@ -227,6 +274,7 @@ function conflictReasonMessage($reason): string
  * @param string $fragmentName
  * @param string $parentType
  * @param string $fragmentType
+ *
  * @return string
  */
 function typeIncompatibleSpreadMessage(
@@ -245,10 +293,13 @@ function typeIncompatibleSpreadMessage(
 /**
  * @param string $parentType
  * @param string $fragmentType
+ *
  * @return string
  */
-function typeIncompatibleAnonymousSpreadMessage(string $parentType, string $fragmentType): string
-{
+function typeIncompatibleAnonymousSpreadMessage(
+    string $parentType,
+    string $fragmentType
+): string {
     return sprintf(
         'Fragment cannot be spread here as objects of type "%s" can never be of type "%s".',
         $parentType,
@@ -260,10 +311,14 @@ function typeIncompatibleAnonymousSpreadMessage(string $parentType, string $frag
  * @param string $fieldName
  * @param string $argumentName
  * @param string $typeName
+ *
  * @return string
  */
-function missingFieldArgumentMessage(string $fieldName, string $argumentName, string $typeName): string
-{
+function missingFieldArgumentMessage(
+    string $fieldName,
+    string $argumentName,
+    string $typeName
+): string {
     return sprintf(
         'Field "%s" argument "%s" of type "%s" is required but not provided.',
         $fieldName,
@@ -276,10 +331,14 @@ function missingFieldArgumentMessage(string $fieldName, string $argumentName, st
  * @param string $directiveName
  * @param string $argumentName
  * @param string $typeName
+ *
  * @return string
  */
-function missingDirectiveArgumentMessage(string $directiveName, string $argumentName, string $typeName): string
-{
+function missingDirectiveArgumentMessage(
+    string $directiveName,
+    string $argumentName,
+    string $typeName
+): string {
     return sprintf(
         'Directive "%s" argument "%s" of type "%s" is required but not provided.',
         $directiveName,
@@ -291,20 +350,27 @@ function missingDirectiveArgumentMessage(string $directiveName, string $argument
 /**
  * @param string $fieldName
  * @param string $typeName
+ *
  * @return string
  */
-function noSubselectionAllowedMessage(string $fieldName, string $typeName): string
-{
-    return sprintf('Field "%s" must not have a selection since type "%s" has no subfields.', $fieldName, $typeName);
+function noSubselectionAllowedMessage(
+    string $fieldName,
+    string $typeName
+): string {
+    return sprintf('Field "%s" must not have a selection since type "%s" has no subfields.',
+        $fieldName, $typeName);
 }
 
 /**
  * @param string $fieldName
  * @param string $typeName
+ *
  * @return string
  */
-function requiresSubselectionMessage(string $fieldName, string $typeName): string
-{
+function requiresSubselectionMessage(
+    string $fieldName,
+    string $typeName
+): string {
     return sprintf(
         'Field "%s" of type "%s" must have a selection of subfields. Did you mean "%s { ... }"?',
         $fieldName,
@@ -315,16 +381,19 @@ function requiresSubselectionMessage(string $fieldName, string $typeName): strin
 
 /**
  * @param null|string $name
+ *
  * @return string
  */
 function singleFieldOnlyMessage(?string $name): string
 {
     $prefix = $name ? "Subscription {$name}" : 'Anonymous subscription';
+
     return sprintf('%s must select only one top level field.', $prefix);
 }
 
 /**
  * @param string $argumentName
+ *
  * @return string
  */
 function duplicateArgumentMessage(string $argumentName): string
@@ -334,15 +403,18 @@ function duplicateArgumentMessage(string $argumentName): string
 
 /**
  * @param string $directiveName
+ *
  * @return string
  */
 function duplicateDirectiveMessage(string $directiveName): string
 {
-    return sprintf('The directive "%s" can only be used once at this location.', $directiveName);
+    return sprintf('The directive "%s" can only be used once at this location.',
+        $directiveName);
 }
 
 /**
  * @param string $fragmentName
+ *
  * @return string
  */
 function duplicateFragmentMessage(string $fragmentName): string
@@ -352,6 +424,7 @@ function duplicateFragmentMessage(string $fragmentName): string
 
 /**
  * @param string $fieldName
+ *
  * @return string
  */
 function duplicateInputFieldMessage(string $fieldName): string
@@ -361,15 +434,18 @@ function duplicateInputFieldMessage(string $fieldName): string
 
 /**
  * @param string $operationName
+ *
  * @return string
  */
 function duplicateOperationMessage(string $operationName): string
 {
-    return sprintf('There can be only one operation named "%s".', $operationName);
+    return sprintf('There can be only one operation named "%s".',
+        $operationName);
 }
 
 /**
  * @param string $variableName
+ *
  * @return string
  */
 function duplicateVariableMessage(string $variableName): string
@@ -380,21 +456,29 @@ function duplicateVariableMessage(string $variableName): string
 /**
  * @param string $variableName
  * @param string $typeName
+ *
  * @return string
  */
-function nonInputTypeOnVariableMessage(string $variableName, string $typeName): string
-{
-    return sprintf('Variable "$%s" cannot be non-input type "%s".', $variableName, $typeName);
+function nonInputTypeOnVariableMessage(
+    string $variableName,
+    string $typeName
+): string {
+    return sprintf('Variable "$%s" cannot be non-input type "%s".',
+        $variableName, $typeName);
 }
 
 /**
  * @param string $variableName
  * @param string $typeName
  * @param string $guessedTypeName
+ *
  * @return string
  */
-function variableDefaultValueNotAllowedMessage(string $variableName, string $typeName, string $guessedTypeName): string
-{
+function variableDefaultValueNotAllowedMessage(
+    string $variableName,
+    string $typeName,
+    string $guessedTypeName
+): string {
     return sprintf(
         'Variable "$%s" of type "%s" is required and will not use the default value. Perhaps you meant to use type "%s".',
         $variableName,
@@ -407,10 +491,14 @@ function variableDefaultValueNotAllowedMessage(string $variableName, string $typ
  * @param string $variableName
  * @param string $typeName
  * @param string $expectedTypeName
+ *
  * @return string
  */
-function badVariablePositionMessage(string $variableName, string $typeName, string $expectedTypeName): string
-{
+function badVariablePositionMessage(
+    string $variableName,
+    string $typeName,
+    string $expectedTypeName
+): string {
     return sprintf(
         'Variable "$%s" of type "%s" used in position expecting type "%s".',
         $variableName,
@@ -420,35 +508,49 @@ function badVariablePositionMessage(string $variableName, string $typeName, stri
 }
 
 /**
- * @param string      $typeName
- * @param string      $valueName
+ * @param string $typeName
+ * @param string $valueName
  * @param null|string $message
+ *
  * @return string
  */
-function badValueMessage(string $typeName, string $valueName, ?string $message = null): string
-{
-    return sprintf('Expected type %s, found %s%s', $typeName, $valueName, null !== $message ? "; $message" : '.');
+function badValueMessage(
+    string $typeName,
+    string $valueName,
+    ?string $message = null
+): string {
+    return sprintf('Expected type %s, found %s%s', $typeName, $valueName,
+        null !== $message ? "; $message" : '.');
 }
 
 /**
  * @param string $typeName
  * @param string $fieldName
  * @param string $fieldTypeName
+ *
  * @return string
  */
-function requiredFieldMessage(string $typeName, string $fieldName, string $fieldTypeName): string
-{
-    return sprintf('Field %s.%s of required type %s was not provided.', $typeName, $fieldName, $fieldTypeName);
+function requiredFieldMessage(
+    string $typeName,
+    string $fieldName,
+    string $fieldTypeName
+): string {
+    return sprintf('Field %s.%s of required type %s was not provided.',
+        $typeName, $fieldName, $fieldTypeName);
 }
 
 /**
- * @param string      $typeName
- * @param string      $fieldName
+ * @param string $typeName
+ * @param string $fieldName
  * @param null|string $message
+ *
  * @return string
  */
-function unknownFieldMessage(string $typeName, string $fieldName, ?string $message = null): string
-{
+function unknownFieldMessage(
+    string $typeName,
+    string $fieldName,
+    ?string $message = null
+): string {
     return sprintf(
         'Field %s is not defined by type %s%s',
         $fieldName,

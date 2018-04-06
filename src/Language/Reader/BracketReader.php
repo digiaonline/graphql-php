@@ -11,11 +11,18 @@ class BracketReader extends AbstractReader
     /**
      * @inheritdoc
      */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
+    public function read(
+        int $code,
+        int $pos,
+        int $line,
+        int $col,
+        Token $prev
+    ): Token {
         return $code === 91
-            ? new Token(TokenKindEnum::BRACKET_L, $pos, $pos + 1, $line, $col, $prev)
-            : new Token(TokenKindEnum::BRACKET_R, $pos, $pos + 1, $line, $col, $prev);
+            ? new Token(TokenKindEnum::BRACKET_L, $pos, $pos + 1, $line, $col,
+                $prev)
+            : new Token(TokenKindEnum::BRACKET_R, $pos, $pos + 1, $line, $col,
+                $prev);
     }
 
     /**

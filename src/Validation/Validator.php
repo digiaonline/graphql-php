@@ -14,6 +14,7 @@ use function Digia\GraphQL\Util\invariant;
 
 class Validator implements ValidatorInterface
 {
+
     /**
      * @var SchemaValidatorInterface
      */
@@ -21,6 +22,7 @@ class Validator implements ValidatorInterface
 
     /**
      * Validator constructor.
+     *
      * @param SchemaValidatorInterface $schemaValidator
      */
     public function __construct(SchemaValidatorInterface $schemaValidator)
@@ -42,7 +44,7 @@ class Validator implements ValidatorInterface
         $this->schemaValidator->assertValid($schema);
 
         $typeInfo = $typeInfo ?? new TypeInfo($schema);
-        $rules    = $rules ?? SupportedRules::build();
+        $rules = $rules ?? SupportedRules::build();
 
         $context = $this->createContext($schema, $document, $typeInfo);
 
@@ -50,7 +52,8 @@ class Validator implements ValidatorInterface
             return $rule->setContext($context);
         }, $rules);
 
-        $visitor = new TypeInfoVisitor($typeInfo, new ParallelVisitor($visitors));
+        $visitor = new TypeInfoVisitor($typeInfo,
+            new ParallelVisitor($visitors));
 
         // Visit the whole document with each instance of all provided rules.
         $document->acceptVisitor($visitor);
@@ -60,8 +63,9 @@ class Validator implements ValidatorInterface
 
     /**
      * @param SchemaInterface $schema
-     * @param DocumentNode    $document
-     * @param TypeInfo        $typeInfo
+     * @param DocumentNode $document
+     * @param TypeInfo $typeInfo
+     *
      * @return ValidationContextInterface
      */
     public function createContext(
