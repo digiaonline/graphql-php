@@ -57,4 +57,12 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
         $this->type = $type;
         return $this;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString(): string
+    {
+        return (string)$this->getType();
+    }
 }

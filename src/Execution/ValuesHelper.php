@@ -4,18 +4,30 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\CoercingException;
 use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\ArgumentsAwareInterface;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
+use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Directive;
+use Digia\GraphQL\Type\Definition\EnumType;
+use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
+use Digia\GraphQL\Type\Definition\InputObjectType;
+use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
+use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\keyMap;
+use function Digia\GraphQL\Util\suggestionList;
+use function Digia\GraphQL\Util\typeFromAST;
 use function Digia\GraphQL\Util\valueFromAST;
 
 class ValuesHelper
@@ -23,10 +35,6 @@ class ValuesHelper
     /**
      * Prepares an object map of argument values given a list of argument
      * definitions and list of argument AST nodes.
-     *
-     * Note: The returned value is a plain Object with a prototype, since it is
-     * exposed to user code. Care should be taken to not pull values from the
-     * Object prototype.
      *
      * @see http://facebook.github.io/graphql/October2016/#CoerceArgumentValues()
      *
@@ -44,7 +52,7 @@ class ValuesHelper
         $argumentDefinitions = $definition->getArguments();
         $argumentNodes       = $node->getArguments();
 
-        if (empty($argumentDefinitions) || empty($argumentNodes)) {
+        if (empty($argumentDefinitions) || $argumentNodes === null) {
             return $coercedValues;
         }
 
@@ -56,21 +64,22 @@ class ValuesHelper
             $argumentName = $argumentDefinition->getName();
             $argumentType = $argumentDefinition->getType();
             /** @var ArgumentNode $argumentNode */
-            $argumentNode = $argumentNodeMap[$argumentName];
+            $argumentNode = $argumentNodeMap[$argumentName] ?? null;
             $defaultValue = $argumentDefinition->getDefaultValue();
 
             if (null === $argumentNode) {
-                if (null === $defaultValue) {
+                if (null !== $defaultValue) {
                     $coercedValues[$argumentName] = $defaultValue;
-                } elseif (!$argumentType instanceof NonNullType) {
+                } elseif ($argumentType instanceof NonNullType) {
                     throw new ExecutionException(
-                        sprintf('Argument "%s" of required type "%s" was not provided.', $argumentName, $argumentType),
+                        sprintf('Argument "%s" of required type "%s" was not provided.', $argumentName,
+                            $argumentType),
                         [$node]
                     );
                 }
-            } elseif ($argumentNode instanceof VariableNode) {
+            } elseif ($argumentNode->getValue() instanceof VariableNode) {
                 $coercedValues[$argumentName] = $this->coerceValueForVariableNode(
-                    $argumentNode,
+                    $argumentNode->getValue(),
                     $argumentType,
                     $argumentName,
                     $variableValues,
@@ -81,18 +90,16 @@ class ValuesHelper
 
                 try {
                     $coercedValue = valueFromAST($argumentNode->getValue(), $argumentType, $variableValues);
-                } catch (CoercingException $ex) {
+                } catch (\Exception $ex) {
                     // Value nodes that cannot be resolved should be treated as invalid values
-                    // therefore we catch the exception and leave the `$coercedValue` as `null`.
-                }
+                    // because there is no undefined value in PHP so that we throw an exception
 
-                if (null === $coercedValue) {
-                    // Note: ValuesOfCorrectType validation should catch this before
-                    // execution. This is a runtime check to ensure execution does not
-                    // continue with an invalid argument value.
                     throw new ExecutionException(
-                        sprintf('Argument "%s" has invalid value %s.', $argumentName, $argumentNode),
-                        [$argumentNode->getValue()]
+                        sprintf('Argument "%s" has invalid value %s.',
+                            $argumentName,
+                            (string)$argumentNode->getValue()),
+                        [$argumentNode->getValue()],
+                        null, null, null, $ex
                     );
                 }
 
@@ -108,11 +115,7 @@ class ValuesHelper
      * and a AST node which may contain directives. Optionally also accepts a map
      * of variable values.
      *
-     * If the directive does not exist on the node, returns undefined.
-     *
-     * Note: The returned value is a plain Object with a prototype, since it is
-     * exposed to user code. Care should be taken to not pull values from the
-     * Object prototype.
+     * If the directive does not exist on the node, returns null.
      *
      * @param Directive $directive
      * @param mixed     $node
@@ -137,6 +140,398 @@ class ValuesHelper
         }
 
         return null;
+    }
+
+    /**
+     * Prepares an object map of variableValues of the correct type based on the
+     * provided variable definitions and arbitrary input. If the input cannot be
+     * parsed to match the variable definitions, a GraphQLError will be thrown.
+     *
+     * @param Schema                         $schema
+     * @param array|VariableDefinitionNode[] $variableDefinitionNodes
+     * @param                                $input
+     * @return CoercedValue
+     * @throws \Exception
+     */
+    public function coerceVariableValues(Schema $schema, array $variableDefinitionNodes, array $inputs): CoercedValue
+    {
+        $coercedValues = [];
+        $errors        = [];
+
+        foreach ($variableDefinitionNodes as $variableDefinitionNode) {
+            $variableName = $variableDefinitionNode->getVariable()->getNameValue();
+            $variableType = typeFromAST($schema, $variableDefinitionNode->getType());
+
+            if (!$this->isInputType($variableType)) {
+                $variableTypeName = (string)$variableType;
+
+                if ($variableTypeName === '') {
+                    $variableTypeName = (string)$variableDefinitionNode;
+                }
+
+                $errors[] = $this->buildCoerceException(
+                    sprintf(
+                        'Variable "$%s" expected value of type "%s" which cannot be used as an input type',
+                        $variableName,
+                        $variableTypeName
+                    ),
+                    $variableDefinitionNode,
+                    null
+                );
+            } else {
+                if (!array_key_exists($variableName, $inputs)) {
+                    if ($variableType instanceof NonNullType) {
+                        $errors[] = $this->buildCoerceException(
+                            sprintf(
+                                'Variable "$%s" of required type "%s" was not provided',
+                                $variableName,
+                                (string)$variableType
+                            ),
+                            $variableDefinitionNode,
+                            null
+                        );
+                    } elseif ($variableDefinitionNode->getDefaultValue() !== null) {
+                        $coercedValues[$variableName] = valueFromAST(
+                            $variableDefinitionNode->getDefaultValue(),
+                            $variableType
+                        );
+                    }
+                } else {
+                    $value        = $inputs[$variableName];
+                    $coercedValue = $this->coerceValue($value, $variableType, $variableDefinitionNode);
+                    if ($coercedValue->hasErrors()) {
+                        $messagePrelude = sprintf(
+                            'Variable "$%s" got invalid value %s',
+                            $variableName, json_encode($value)
+                        );
+                        foreach ($coercedValue->getErrors() as $error) {
+                            $errors[] = $this->buildCoerceException(
+                                $messagePrelude,
+                                $variableDefinitionNode,
+                                null,
+                                $error->getMessage(),
+                                $error
+                            );
+                        }
+                    } else {
+                        $coercedValues[$variableName] = $coercedValue->getValue();
+                    }
+                }
+            }
+        }
+
+        return new CoercedValue($coercedValues, $errors);
+    }
+
+
+    /**
+     * @param TypeInterface|null $type
+     * @return bool
+     */
+    protected function isInputType(?TypeInterface $type)
+    {
+        return ($type instanceof ScalarType) ||
+            ($type instanceof EnumType) ||
+            ($type instanceof InputObjectType) ||
+            (($type instanceof WrappingTypeInterface) && $this->isInputType($type->getOfType()));
+    }
+
+    /**
+     * Returns either a value which is valid for the provided type or a list of
+     * encountered coercion errors.
+     *
+     * @param  mixed|array $value
+     * @param              $type
+     * @param              $blameNode
+     * @param array        $path
+     * @return CoercedValue
+     * @throws InvariantException
+     * @throws GraphQLException
+     */
+    private function coerceValue($value, $type, $blameNode, ?Path $path = null): CoercedValue
+    {
+        if ($type instanceof NonNullType) {
+            return $this->coerceValueForNonNullType($value, $type, $blameNode, $path);
+        }
+
+        if (empty($value)) {
+            return new CoercedValue(null, null);
+        }
+
+        if ($type instanceof ScalarType) {
+            return $this->coerceValueForScalarType($value, $type, $blameNode, $path);
+        }
+
+        if ($type instanceof EnumType) {
+            return $this->coerceValueForEnumType($value, $type, $blameNode, $path);
+        }
+
+        if ($type instanceof ListType) {
+            return $this->coerceValueForListType($value, $type, $blameNode, $path);
+        }
+
+        if ($type instanceof InputObjectType) {
+            return $this->coerceValueForInputObjectType($value, $type, $blameNode, $path);
+        }
+
+        throw new GraphQLException('Unexpected type.');
+    }
+
+    /**
+     * @param               $value
+     * @param NonNullType   $type
+     * @param NodeInterface $blameNode
+     * @param array|null    $path
+     * @return CoercedValue
+     * @throws GraphQLException
+     * @throws InvariantException
+     */
+    protected function coerceValueForNonNullType(
+        $value,
+        NonNullType $type,
+        NodeInterface $blameNode,
+        ?Path $path
+    ): CoercedValue {
+        if (empty($value)) {
+            return new CoercedValue(null, [
+                $this->buildCoerceException(
+                    sprintf('Expected non-nullable type %s not to be null', (string)$type),
+                    $blameNode,
+                    $path
+                )
+            ]);
+        }
+        return $this->coerceValue($value, $type->getOfType(), $blameNode, $path);
+    }
+
+    /**
+     * Scalars determine if a value is valid via parseValue(), which can
+     * throw to indicate failure. If it throws, maintain a reference to
+     * the original error.
+     *
+     * @param               $value
+     * @param ScalarType    $type
+     * @param NodeInterface $blameNode
+     * @param array|null    $path
+     * @return CoercedValue
+     */
+    protected function coerceValueForScalarType(
+        $value,
+        ScalarType $type,
+        NodeInterface $blameNode,
+        ?Path $path
+    ): CoercedValue {
+        try {
+            $parseResult = $type->parseValue($value);
+            if (empty($parseResult)) {
+                return new CoercedValue(null, [
+                    new GraphQLException(sprintf('Expected type %s', (string)$type))
+                ]);
+            }
+            return new CoercedValue($parseResult, null);
+        } catch (InvalidTypeException|CoercingException $ex) {
+            return new CoercedValue(null, [
+                $this->buildCoerceException(
+                    sprintf('Expected type %s', (string)$type),
+                    $blameNode,
+                    $path,
+                    $ex->getMessage(),
+                    $ex
+                )
+            ]);
+        }
+    }
+
+    /**
+     * @param               $value
+     * @param EnumType      $type
+     * @param NodeInterface $blameNode
+     * @param array|null    $path
+     * @return CoercedValue
+     * @throws InvariantException
+     */
+    protected function coerceValueForEnumType(
+        $value,
+        EnumType $type,
+        NodeInterface $blameNode,
+        ?Path $path
+    ): CoercedValue {
+        if (is_string($value)) {
+            $enumValue = $type->getValue($value);
+            if ($enumValue !== null) {
+                return new CoercedValue($enumValue, null);
+            }
+        }
+
+        $suggestions = suggestionList((string)$value, array_map(function (EnumValue $enumValue) {
+            return $enumValue->getName();
+        }, $type->getValues()));
+
+        $didYouMean = (!empty($suggestions))
+            ? 'did you mean' . implode(',', $suggestions)
+            : null;
+
+        return new CoercedValue(null, [
+            $this->buildCoerceException(sprintf('Expected type %s', $type->getName()), $blameNode, $path, $didYouMean)
+        ]);
+    }
+
+    /**
+     * @param               $value
+     * @param ListType      $type
+     * @param NodeInterface $blameNode
+     * @param array|null    $path
+     * @return CoercedValue
+     * @throws GraphQLException
+     * @throws InvariantException
+     */
+    protected function coerceValueForInputObjectType(
+        $value,
+        InputObjectType $type,
+        NodeInterface $blameNode,
+        ?Path $path
+    ): CoercedValue {
+        $errors        = [];
+        $coercedValues = [];
+        $fields        = $type->getFields();
+
+        // Ensure every defined field is valid.
+        foreach ($fields as $field) {
+            if (empty($value[$field->getName()])) {
+                if (!empty($field->getDefaultValue())) {
+                    $coercedValue[$field->getName()] = $field->getDefaultValue();
+                } elseif ($field->getType() instanceof NonNullType) {
+                    $errors[] = new GraphQLException(
+                        sprintf(
+                            "Field %s of required type %s! was not provided.",
+                            $this->printPath(new Path($path, $field->getName())),
+                            $field->getType()->getOfType()
+                        )
+                    );
+                }
+            } else {
+                $fieldValue   = $value[$field->getName()];
+                $coercedValue = $this->coerceValue(
+                    $fieldValue,
+                    $field->getType(),
+                    $blameNode,
+                    new Path($path, $field->getName())
+                );
+
+                if ($coercedValue->hasErrors()) {
+                    $errors = array_merge($errors, $coercedValue->getErrors());
+                } elseif (empty($errors)) {
+                    $coercedValues[$field->getName()] = $coercedValue->getValue();
+                }
+            }
+        }
+
+        // Ensure every provided field is defined.
+        foreach ($value as $fieldName => $fieldValue) {
+            if (!isset($fields[$fieldName])) {
+                $suggestions = suggestionList($fieldName, array_keys($fields));
+                $didYouMean  = (!empty($suggestions))
+                    ? 'did you mean' . implode(',', $suggestions)
+                    : null;
+
+                $errors[] = $this->buildCoerceException(
+                    sprintf('Field "%s" is not defined by type %s', $fieldName, $type->getName()),
+                    $blameNode,
+                    $path,
+                    $didYouMean
+                );
+            }
+        }
+
+        return new CoercedValue($coercedValues, $errors);
+    }
+
+    /**
+     * @param $value
+     * @param $type
+     * @return CoercedValue
+     * @throws GraphQLException
+     * @throws InvariantException
+     */
+    protected function coerceValueForListType(
+        $value,
+        ListType $type,
+        NodeInterface $blameNode,
+        ?Path $path
+    ): CoercedValue {
+        $itemType = $type->getOfType();
+
+        if (is_array($value) || $value instanceof \Traversable) {
+            $errors        = [];
+            $coercedValues = [];
+            foreach ($value as $index => $itemValue) {
+                $coercedValue = $this->coerceValue($itemValue, $itemType, $blameNode, new Path($path, $index));
+
+                if ($coercedValue->hasErrors()) {
+                    $errors = array_merge($errors, $coercedValue->getErrors());
+                } else {
+                    $coercedValues[] = $coercedValue->getValue();
+                }
+            }
+
+            return new CoercedValue($coercedValues, $errors);
+        }
+
+        // Lists accept a non-list value as a list of one.
+        $coercedValue = $this->coerceValue($value, $itemType, $blameNode);
+
+        return new CoercedValue([$coercedValue->getValue()], $coercedValue->getErrors());
+    }
+
+    /**
+     * @param string                $message
+     * @param NodeInterface         $blameNode
+     * @param array|null            $path
+     * @param null|string           $subMessage
+     * @param GraphQLException|null $origin $originalException
+     * @return GraphQLException
+     */
+    protected function buildCoerceException(
+        string $message,
+        NodeInterface $blameNode,
+        ?Path $path,
+        ?string $subMessage = null,
+        ?GraphQLException $originalException = null
+    ) {
+        $stringPath = $this->printPath($path);
+
+        return new CoercingException(
+            $message .
+            (($stringPath !== '') ? ' at ' . $stringPath : $stringPath) .
+            (($subMessage !== null) ? '; ' . $subMessage : '.'),
+            [$blameNode],
+            null,
+            null,
+            [],
+            $originalException
+        );
+    }
+
+    /**
+     * @param array|null $path
+     * @return string
+     */
+    protected function printPath(?Path $path)
+    {
+        $stringPath  = '';
+        $currentPath = $path;
+
+        while ($currentPath) {
+            if (is_string($currentPath->getKey())) {
+                $stringPath = '.' . $currentPath->getKey() . $stringPath;
+            } else {
+                $stringPath = '[' . (string)$currentPath->getKey() . ']' . $stringPath;
+            }
+
+            $currentPath = $currentPath->getPrevious();
+        }
+
+        return !empty($stringPath) ? 'value' . $stringPath : '';
     }
 
     /**
@@ -171,12 +566,12 @@ class ValuesHelper
         if ($argumentType instanceof NonNullType) {
             throw new ExecutionException(
                 \sprintf(
-                    'Argument "%s" of required type "%s" was provided the variable "%s" which was not provided a runtime value.',
+                    'Argument "%s" of required type "%s" was provided the variable "$%s" which was not provided a runtime value.',
                     $argumentName,
                     $argumentType,
                     $variableName
                 ),
-                [$variableNode->getValue()]
+                [$variableNode]
             );
         }
     }

@@ -14,7 +14,6 @@ use Digia\GraphQL\Language\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\Node\ObjectValueNode;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\Node\VariableNode;
-use function Digia\GraphQL\printNode;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InputTypeInterface;
@@ -22,6 +21,7 @@ use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
+use function Digia\GraphQL\printNode;
 
 class ValueHelper
 {
@@ -97,6 +97,7 @@ class ValueHelper
         }
 
         if ($node instanceof NullValueNode) {
+            // This is explicitly returning the value null.
             return null;
         }
 
@@ -288,6 +289,6 @@ class ValueHelper
      */
     protected function isMissingVariable(ValueNodeInterface $node, array $variables): bool
     {
-        return $node instanceof VariableNode && isset($variables[$node->getNameValue()]);
+        return $node instanceof VariableNode && !isset($variables[$node->getNameValue()]);
     }
 }

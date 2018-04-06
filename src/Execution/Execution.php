@@ -35,6 +35,7 @@ class Execution implements ExecutionInterface
      * @param null          $operationName
      * @param callable|null $fieldResolver
      * @return ExecutionResult
+     * @throws \Exception
      */
     public function execute(
         Schema $schema,
@@ -44,7 +45,7 @@ class Execution implements ExecutionInterface
         $variableValues = [],
         $operationName = null,
         callable $fieldResolver = null
-    ) : ExecutionResult {
+    ): ExecutionResult {
         try {
             $context = $this->contextBuilder->buildContext(
                 $schema,
@@ -55,6 +56,11 @@ class Execution implements ExecutionInterface
                 $operationName,
                 $fieldResolver
             );
+
+            // Return early errors if execution context failed.
+            if (!empty($context->getErrors())) {
+                return new ExecutionResult(null, $context->getErrors());
+            }
         } catch (ExecutionException $error) {
             return new ExecutionResult(null, [$error]);
         }
