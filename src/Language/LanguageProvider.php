@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Language\Reader\SupportedReaders;
 use Digia\GraphQL\Language\Writer\SupportedWriters;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -31,9 +30,9 @@ class LanguageProvider extends AbstractServiceProvider
             ->withArgument(ASTBuilderInterface::class)
             ->withArgument(NodeBuilderInterface::class);
 
-        $this->container->add(LexerInterface::class, function () {
-            return new Lexer(SupportedReaders::get());
-        });
+        $this->container->add(TokenReaderInterface::class, TokenReader::class, true/* $shared */);
+        $this->container->add(LexerInterface::class, Lexer::class)
+            ->withArgument(TokenReaderInterface::class);
 
         $this->container->add(PrinterInterface::class, Printer::class, true/* $shared */)
             ->withArgument(SupportedWriters::get());
