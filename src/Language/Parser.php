@@ -3,34 +3,31 @@
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\Language\ASTBuilder\ASTDirectorInterface;
-use Digia\GraphQL\Language\ASTBuilder\ASTKindEnum;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\NodeBuilder\NodeDirectorInterface;
 
 class Parser implements ParserInterface
 {
     use LexerUtilsTrait;
 
     /**
-     * @var ASTDirectorInterface
+     * @var ASTBuilderInterface
      */
-    protected $astDirector;
+    protected $astBuilder;
 
     /**
-     * @var NodeDirectorInterface
+     * @var NodeBuilderInterface
      */
-    protected $nodeDirector;
+    protected $nodeBuilder;
 
     /**
      * Parser constructor.
-     * @param ASTDirectorInterface  $astDirector
-     * @param NodeDirectorInterface $nodeDirector
+     * @param ASTBuilderInterface  $astBuilder
+     * @param NodeBuilderInterface $nodeBuilder
      */
-    public function __construct(ASTDirectorInterface $astDirector, NodeDirectorInterface $nodeDirector)
+    public function __construct(ASTBuilderInterface $astBuilder, NodeBuilderInterface $nodeBuilder)
     {
-        $this->astDirector  = $astDirector;
-        $this->nodeDirector = $nodeDirector;
+        $this->astBuilder  = $astBuilder;
+        $this->nodeBuilder = $nodeBuilder;
     }
 
     /**
@@ -39,7 +36,7 @@ class Parser implements ParserInterface
      */
     public function parse(LexerInterface $lexer): NodeInterface
     {
-        return $this->nodeDirector->build($this->parseAST($lexer));
+        return $this->nodeBuilder->build($this->parseAST($lexer));
     }
 
     /**
@@ -48,7 +45,7 @@ class Parser implements ParserInterface
      */
     public function parseValue(LexerInterface $lexer): NodeInterface
     {
-        return $this->nodeDirector->build($this->parseValueAST($lexer));
+        return $this->nodeBuilder->build($this->parseValueAST($lexer));
     }
 
     /**
@@ -57,7 +54,7 @@ class Parser implements ParserInterface
      */
     public function parseType(LexerInterface $lexer): NodeInterface
     {
-        return $this->nodeDirector->build($this->parseTypeAST($lexer));
+        return $this->nodeBuilder->build($this->parseTypeAST($lexer));
     }
 
     /**
@@ -68,7 +65,7 @@ class Parser implements ParserInterface
      */
     protected function parseAST(LexerInterface $lexer): array
     {
-        return $this->astDirector->build(ASTKindEnum::DOCUMENT, $lexer);
+        return $this->astBuilder->buildDocument($lexer);
     }
 
     /**
@@ -79,7 +76,7 @@ class Parser implements ParserInterface
     protected function parseValueAST(LexerInterface $lexer): array
     {
         $this->expect($lexer, TokenKindEnum::SOF);
-        $value = $this->astDirector->build(ASTKindEnum::VALUE_LITERAL, $lexer, ['isConst' => false]);
+        $value = $this->astBuilder->buildValueLiteral($lexer, false);
         $this->expect($lexer, TokenKindEnum::EOF);
 
         return $value;
@@ -93,7 +90,7 @@ class Parser implements ParserInterface
     protected function parseTypeAST(LexerInterface $lexer): array
     {
         $this->expect($lexer, TokenKindEnum::SOF);
-        $type = $this->astDirector->build(ASTKindEnum::TYPE_REFERENCE, $lexer);
+        $type = $this->astBuilder->buildTypeReference($lexer);
         $this->expect($lexer, TokenKindEnum::EOF);
 
         return $type;
