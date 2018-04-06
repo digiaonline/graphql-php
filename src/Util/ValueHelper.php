@@ -14,7 +14,6 @@ use Digia\GraphQL\Language\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\Node\ObjectValueNode;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\Node\VariableNode;
-use function Digia\GraphQL\printNode;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InputTypeInterface;
@@ -22,6 +21,7 @@ use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
+use function Digia\GraphQL\printNode;
 
 class ValueHelper
 {
@@ -105,7 +105,9 @@ class ValueHelper
             $variableName = $node->getNameValue();
 
             if (!isset($variables[$variableName])) {
-                throw new ResolutionException('Cannot resolve value for missing non-null list item.');
+                throw new ResolutionException(
+                    \sprintf('Cannot resolve value for missing variable "%s".', $variableName)
+                );
             }
 
             // Note: we're not doing any checking that this variable is correct. We're
@@ -169,7 +171,9 @@ class ValueHelper
             foreach ($node->getValues() as $value) {
                 if ($this->isMissingVariable($value, $variables)) {
                     if ($itemType instanceof NonNullType) {
-                        return; // Invalid: intentionally return no value.
+                        // If an array contains a missing variable, it is either resolved to
+                        // null or if the item type is non-null, it considered invalid.
+                        throw new ResolutionException('Cannot resolve value for missing non-null list item.');
                     }
 
                     $resolvedValues[] = null;
