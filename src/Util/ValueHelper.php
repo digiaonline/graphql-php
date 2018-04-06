@@ -105,8 +105,7 @@ class ValueHelper
             $variableName = $node->getNameValue();
 
             if (!isset($variables[$variableName])) {
-                // No valid return value.
-                return null;
+                throw new ResolutionException('Cannot resolve value for missing non-null list item.');
             }
 
             // Note: we're not doing any checking that this variable is correct. We're
