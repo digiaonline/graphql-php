@@ -67,45 +67,46 @@ class TokenReader implements TokenReaderInterface
 
         // Int:   -?(0|[1-9][0-9]*)
         // Float: -?(0|[1-9][0-9]*)(\.[0-9]+)?((E|e)(+|-)?[0-9]+)?
-        if (isNumber($code)) {
+        if ($code === 45 || isNumber($code)) {
             return $this->readNumber($code, $pos, $line, $col, $prev);
         }
 
-        if (isLetter($code) || isUnderscore($code)) {
-            return $this->readName($pos, $line, $col, $prev);
+        // Name: [_A-Za-z][_0-9A-Za-z]*
+        if (isAlphaNumeric($code)) {
+            return $this->readName($body, $bodyLength, $pos, $line, $col, $prev);
         }
 
         // Spread: ...
-        if ($bodyLength > 3 && isSpread($body, $code, $pos)) {
+        if ($bodyLength >= 3 && isSpread($body, $code, $pos)) {
             return $this->readSpread($pos, $line, $col, $prev);
         }
 
         // String: "([^"\\\u000A\u000D]|(\\(u[0-9a-fA-F]{4}|["\\/bfnrt])))*"
-        if ($bodyLength > 2 && isString($body, $code, $pos)) {
-            return $this->readString($pos, $line, $col, $prev);
+        if (isString($body, $code, $pos)) {
+            return $this->readString($body, $bodyLength, $pos, $line, $col, $prev);
         }
 
         // Block String: """("?"?(\\"""|\\(?!=""")|[^"\\]))*"""
-        if ($bodyLength > 6 && isTripleQuote($body, $code, $pos)) {
-            return $this->readBlockString($pos, $line, $col, $prev);
+        if ($bodyLength >= 3 && isTripleQuote($body, $code, $pos)) {
+            return $this->readBlockString($body, $bodyLength, $pos, $line, $col, $prev);
         }
 
         return null;
     }
 
     /**
-     * @param int   $pos
-     * @param int   $line
-     * @param int   $col
-     * @param Token $prev
+     * @param string $body
+     * @param int    $bodyLength
+     * @param int    $pos
+     * @param int    $line
+     * @param int    $col
+     * @param Token  $prev
      * @return Token
      */
-    protected function readName(int $pos, int $line, int $col, Token $prev): Token
+    protected function readName(string $body, int $bodyLength, int $pos, int $line, int $col, Token $prev): Token
     {
-        $body       = $this->lexer->getBody();
-        $bodyLength = \mb_strlen($body);
-        $start      = $pos;
-        $pos        = $start + 1;
+        $start = $pos;
+        $pos   = $start + 1;
 
         while ($pos !== $bodyLength && ($code = charCodeAt($body, $pos)) !== null && isAlphaNumeric($code)) {
             ++$pos;
@@ -115,17 +116,17 @@ class TokenReader implements TokenReaderInterface
     }
 
     /**
-     * @param int   $pos
-     * @param int   $line
-     * @param int   $col
-     * @param Token $prev
+     * @param string $body
+     * @param int    $bodyLength
+     * @param int    $pos
+     * @param int    $line
+     * @param int    $col
+     * @param Token  $prev
      * @return Token
      * @throws SyntaxErrorException
      */
-    protected function readBlockString(int $pos, int $line, int $col, Token $prev): Token
+    protected function readBlockString(string $body, int $bodyLength, int $pos, int $line, int $col, Token $prev): Token
     {
-        $body       = $this->lexer->getBody();
-        $bodyLength = \mb_strlen($body);
         $start      = $pos;
         $pos        = $start + 3;
         $chunkStart = $pos;
@@ -150,7 +151,7 @@ class TokenReader implements TokenReaderInterface
                 throw new SyntaxErrorException(
                     $this->lexer->getSource(),
                     $pos,
-                    \sprintf('Invalid character within String: %s', printCharCode($code))
+                    \sprintf('Invalid character within String: %s.', printCharCode($code))
                 );
             }
 
@@ -234,21 +235,22 @@ class TokenReader implements TokenReaderInterface
     }
 
     /**
-     * @param int   $pos
-     * @param int   $line
-     * @param int   $col
-     * @param Token $prev
+     * @param string $body
+     * @param int    $bodyLength
+     * @param int    $pos
+     * @param int    $line
+     * @param int    $col
+     * @param Token  $prev
      * @return Token
      * @throws SyntaxErrorException
      */
-    protected function readString(int $pos, int $line, int $col, Token $prev): Token
+    protected function readString(string $body, int $bodyLength, int $pos, int $line, int $col, Token $prev): Token
     {
-        $body       = $this->lexer->getBody();
-        $bodyLength = \mb_strlen($body);
         $start      = $pos;
         $pos        = $start + 1;
         $chunkStart = $pos;
         $value      = '';
+
         while ($pos < $bodyLength && ($code = charCodeAt($body, $pos)) !== null && !isLineTerminator($code)) {
             // Closing Quote (")
             if ($code === 34) {
@@ -309,10 +311,7 @@ class TokenReader implements TokenReaderInterface
                             throw new SyntaxErrorException(
                                 $this->lexer->getSource(),
                                 $pos,
-                                \sprintf(
-                                    'Invalid character escape sequence: %s',
-                                    $unicodeString
-                                )
+                                \sprintf('Invalid character escape sequence: %s.', $unicodeString)
                             );
                         }
                         $value .= $unicodeString;
@@ -322,7 +321,7 @@ class TokenReader implements TokenReaderInterface
                         throw new SyntaxErrorException(
                             $this->lexer->getSource(),
                             $pos,
-                            \sprintf('Invalid character escape sequence: \\%s', \chr($code))
+                            \sprintf('Invalid character escape sequence: \\%s.', \chr($code))
                         );
                 }
 
@@ -524,7 +523,7 @@ class TokenReader implements TokenReaderInterface
         throw new SyntaxErrorException(
             $this->lexer->getSource(),
             $pos,
-            sprintf('Invalid number, expected digit but got: %s', printCharCode($code))
+            sprintf('Invalid number, expected digit but got: %s.', printCharCode($code))
         );
     }
 }

@@ -152,7 +152,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
      */
     public function getLocationsAsArray(): ?array
     {
-        return !empty($this->locations) ? array_map(function (SourceLocation $location) {
+        return !empty($this->locations) ? \array_map(function (SourceLocation $location) {
             return $location->toArray();
         }, $this->locations) : null;
     }
@@ -222,7 +222,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     protected function resolvePositions(?array $positions)
     {
         if (null === $positions && !empty($this->nodes)) {
-            $positions = array_reduce($this->nodes, function (array $list, ?NodeInterface $node) {
+            $positions = \array_reduce($this->nodes, function (array $list, ?NodeInterface $node) {
                 if (null !== $node) {
                     $location = $node->getLocation();
                     if (null !== $location) {
@@ -250,11 +250,11 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     protected function resolveLocations(?array $positions, ?Source $source)
     {
         if (null !== $positions && null !== $source) {
-            $locations = array_map(function ($position) use ($source) {
+            $locations = \array_map(function ($position) use ($source) {
                 return SourceLocation::fromSource($source, $position);
             }, $positions);
         } elseif (!empty($this->nodes)) {
-            $locations = array_reduce($this->nodes, function (array $list, NodeInterface $node) {
+            $locations = \array_reduce($this->nodes, function (array $list, NodeInterface $node) {
                 $location = $node->getLocation();
                 if (null !== $location) {
                     $list[] = SourceLocation::fromSource($location->getSource(), $location->getStart());

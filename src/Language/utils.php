@@ -40,7 +40,7 @@ function charCodeAt(string $string, int $position, bool $convertEncoding = false
  */
 function printCharCode(int $code): string
 {
-    if ($code === null) {
+    if ($code === 0x0000) {
         return '<EOF>';
     }
     return $code < 0x007F
@@ -77,7 +77,7 @@ function isLetter(int $code): bool
  */
 function isNumber(int $code): bool
 {
-    return $code === 45 || ($code >= 48 && $code <= 57); // - or 0-9
+    return $code >= 48 && $code <= 57; // 0-9
 }
 
 /**
@@ -113,7 +113,7 @@ function isLineTerminator(int $code): bool
  */
 function isSourceCharacter(int $code): bool
 {
-    return $code < 0x0020 && $code !== 0x0009;
+    return $code < 0x0020 && $code !== 0x0009; // any source character EXCEPT HT (Horizontal Tab)
 }
 
 /**
