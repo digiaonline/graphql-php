@@ -193,67 +193,65 @@ EOD;
             [1, 1]
         );
 
-        // TODO: Fix the following unicode-related tests
+        $this->assertSyntaxError(
+            "\"contains unescaped \u{0007} control char\"",
+            'Invalid character within String: "\\u0007".',
+            [1, 21]
+        );
+
+        // TODO: Fix the following EOF-related test
 
 //        $this->assertSyntaxError(
-//            '"contains unescaped \u0007 control char"',
-//            'Invalid character within String: "\\u0007".',
-//            [1, 21]
-//        );
-//
-//        $this->assertSyntaxError(
-//            '"null-byte is not \u0000 end of file"',
+//            "\"null-byte is not \u{0000} end of file\"",
 //            'Invalid character within String: "\\u0000".',
 //            [1, 19]
 //        );
-//
-//        $this->assertSyntaxError('"multi\nline"', 'Unterminated string', [1, 7]);
-//
-//        $this->assertSyntaxError('"multi\rline"', 'Unterminated string', [1, 7]);
+
+        $this->assertSyntaxError("\"multi\nline\"", 'Unterminated string.', [1, 7]);
+
+        $this->assertSyntaxError("\"multi\rline\"", 'Unterminated string.', [1, 7]);
 
         $this->assertSyntaxError(
-            '"bad \\z esc"',
+            "\"bad \\z esc\"",
             'Invalid character escape sequence: \\z.',
             [1, 7]
         );
 
         $this->assertSyntaxError(
-            '"bad \\x esc"',
+            "\"bad \\x esc\"",
             'Invalid character escape sequence: \\x.',
             [1, 7]
         );
 
-        // TODO: Fix the following unicode-related tests
+        $this->assertSyntaxError(
+            "\"bad \\u1 esc\"",
+            'Invalid character escape sequence: \\u1 es.',
+            [1, 7]
+        );
 
-//        $this->assertSyntaxError(
-//            '"bad \\u1 esc"',
-//            'Invalid character escape sequence: \\u1 es.',
-//            [1, 7]
-//        );
-//
-//        $this->assertSyntaxError(
-//            '"bad \\u0XX1 esc"',
-//            'Invalid character escape sequence: \\u0XX1.',
-//            [1, 7]
-//        );
-//
-//        $this->assertSyntaxError(
-//            '"bad \\uXXXX esc"',
-//            'Invalid character escape sequence: \\uXXXX.',
-//            [1, 7]
-//        );
-//
-//        $this->assertSyntaxError(
-//            '"bad \\uFXXX esc"',
-//            'Invalid character escape sequence: \\uFXXX.',
-//            [1, 7]
-//        );
-//
-//        $this->assertSyntaxError(
-//            '"bad \\uXXXF esc"',
-//            'Invalid character escape sequence: \\uXXXF.',
-//            [1, 7]
-//        );
+        $this->assertSyntaxError(
+            "\"bad \\u0XX1 esc\"",
+            'Invalid character escape sequence: \\u0XX1.',
+            [1, 7]
+        );
+
+        $this->assertSyntaxError(
+            "\"bad \\uXXXX esc\"",
+            'Invalid character escape sequence: \\uXXXX.',
+            [1, 7]
+        );
+
+        $this->assertSyntaxError(
+            "\"bad \\uFXXX esc\"",
+            'Invalid character escape sequence: \\uFXXX.',
+            [1, 7]
+        );
+
+        $this->assertSyntaxError(
+            "\"bad \\uXXXF esc\"",
+            'Invalid character escape sequence: \\uXXXF.',
+            [1, 7]
+        );
     }
 
     // lexes block strings
@@ -339,16 +337,16 @@ EOD;
 
         $this->assertSyntaxError('"""no end quote', 'Unterminated string.', [1, 16]);
 
-        // TODO: Fix the following unicode-related tests
+        $this->assertSyntaxError(
+            "\"\"\"contains unescaped \u{0007} control char\"\"\"",
+            'Invalid character within String: "\\u0007".',
+            [1, 23]
+        );
+
+        // TODO: Fix the following EOF-related test
 
 //        $this->assertSyntaxError(
-//            '"""contains unescaped \u0007 control char"""',
-//            'Invalid character within String: "\\u0007".',
-//            [1, 23]
-//        );
-//
-//        $this->assertSyntaxError(
-//            '"""null-byte is not \u0000 end of file"""',
+//            "\"\"\"null-byte is not \u{0000} end of file\"\"\"",
 //            'Invalid character within String: "\\u0000".',
 //            [1, 21]
 //        );
@@ -441,11 +439,9 @@ EOD;
 
         $this->assertSyntaxError('?', 'Cannot parse the unexpected character "?".', [1, 1]);
 
-        // TODO: Fix the following unicode-related tests
+        $this->assertSyntaxError("\u{203B}", 'Cannot parse the unexpected character "\\u203b".', [1, 1]);
 
-//        $this->assertSyntaxError('\u203B', 'Cannot parse the unexpected character "\\u203B".', [1, 1]);
-//
-//        $this->assertSyntaxError('\u200b', 'Cannot parse the unexpected character "\\u200B".', [1, 1]);
+        $this->assertSyntaxError("\u{200b}", 'Cannot parse the unexpected character "\\u200b".', [1, 1]);
     }
 
     // lex reports useful information for dashes in names

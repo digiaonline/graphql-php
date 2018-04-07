@@ -262,7 +262,7 @@ class TokenReader implements TokenReaderInterface
                 throw new SyntaxErrorException(
                     $this->lexer->getSource(),
                     $pos,
-                    \sprintf('Invalid character within String: %s', printCharCode($code))
+                    \sprintf('Invalid character within String: %s.', printCharCode($code))
                 );
             }
 
@@ -300,21 +300,17 @@ class TokenReader implements TokenReaderInterface
                         break;
                     case 117:
                         // u
-                        $unicodeString = sliceString($body, $pos - 1, $pos + 5);
-                        $charCode      = uniCharCode(
-                            charCodeAt($body, $pos + 1),
-                            charCodeAt($body, $pos + 2),
-                            charCodeAt($body, $pos + 3),
-                            charCodeAt($body, $pos + 4)
-                        );
-                        if ($charCode < 0) {
+                        $unicodeString = sliceString($body, $pos + 1, $pos + 5);
+
+                        if (!\preg_match('/[0-9A-Fa-f]{4}/', $unicodeString)) {
                             throw new SyntaxErrorException(
                                 $this->lexer->getSource(),
                                 $pos,
-                                \sprintf('Invalid character escape sequence: %s.', $unicodeString)
+                                \sprintf('Invalid character escape sequence: \\u%s.', $unicodeString)
                             );
                         }
-                        $value .= $unicodeString;
+
+                        $value .= '\\u' . $unicodeString;
                         $pos   += 4;
                         break;
                     default:

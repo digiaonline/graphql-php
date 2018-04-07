@@ -237,7 +237,7 @@ class Lexer implements LexerInterface
         $pos        = $startPosition;
 
         while ($pos < $bodyLength) {
-            $code = charCodeAt($body, $pos, true/* $convertEncoding */);
+            $code = charCodeAt($body, $pos);
 
             if ($code === 9 || $code === 32 || $code === 44 || $code === 0xfeff) {
                 // tab | space | comma | BOM

@@ -3,35 +3,44 @@
 namespace Digia\GraphQL\Language;
 
 /**
- * @param int $cp
+ * @param int $code
  * @return string
  */
-function chrUTF8(int $cp)
+function chrUTF8(int $code)
 {
-    return \mb_convert_encoding(\pack('N', $cp), 'UTF-8', 'UCS-4BE');
+    if ($code <= 255) {
+        return \chr($code);
+    }
+
+    return \mb_convert_encoding(\pack('N', $code), 'UTF-8', 'UCS-4BE');
 }
 
 /**
  * @param string $string
+ * @param string $encoding
  * @return int
  */
 function ordUTF8(string $string)
 {
-    [, $ord] = \unpack('N', \mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
+    if (!$string && '0' !== $string) {
+        return 0;
+    }
 
-    return $ord;
+    if (!isset($string[1])) {
+        return \ord($string);
+    }
+
+    return \unpack('N', \mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'))[1];
 }
 
 /**
  * @param string $string
  * @param int    $position
- * @param bool   $convertEncoding
  * @return int
  */
-function charCodeAt(string $string, int $position, bool $convertEncoding = false): int
+function charCodeAt(string $string, int $position): int
 {
-    $char = \mb_substr($string, $position, 1);
-    return $convertEncoding ? ordUTF8($char) : \ord($char);
+    return ordUTF8(\mb_substr($string, $position, 1, 'UTF-8'));
 }
 
 /**
@@ -43,9 +52,10 @@ function printCharCode(int $code): string
     if ($code === 0x0000) {
         return '<EOF>';
     }
+
     return $code < 0x007F
         // Trust JSON for ASCII.
-        ? \json_encode(chrUTF8($code))
+        ? \json_encode($code < 255 ? \chr($code) : chrUTF8($code))
         // Otherwise print the escaped form.
         : '"\\u' . \dechex($code) . '"';
 }
