@@ -8,7 +8,7 @@ namespace Digia\GraphQL\Language;
  */
 function chrUTF8(int $cp)
 {
-    return mb_convert_encoding(pack('N', $cp), 'UTF-8', 'UCS-4BE');
+    return \mb_convert_encoding(\pack('N', $cp), 'UTF-8', 'UCS-4BE');
 }
 
 /**
@@ -17,7 +17,7 @@ function chrUTF8(int $cp)
  */
 function ordUTF8(string $string)
 {
-    [, $ord] = unpack('N', mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
+    [, $ord] = \unpack('N', \mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
 
     return $ord;
 }
@@ -25,11 +25,13 @@ function ordUTF8(string $string)
 /**
  * @param string $string
  * @param int    $position
+ * @param bool   $convertEncoding
  * @return int
  */
-function charCodeAt(string $string, int $position): int
+function charCodeAt(string $string, int $position, bool $convertEncoding = false): int
 {
-    return ordUTF8(mb_substr($string, $position, 1));
+    $char = \mb_substr($string, $position, 1);
+    return $convertEncoding ? ordUTF8($char) : \ord($char);
 }
 
 /**
@@ -43,9 +45,9 @@ function printCharCode(int $code): string
     }
     return $code < 0x007F
         // Trust JSON for ASCII.
-        ? json_encode(chrUTF8($code))
+        ? \json_encode(chrUTF8($code))
         // Otherwise print the escaped form.
-        : '"\\u' . dechex($code) . '"';
+        : '"\\u' . \dechex($code) . '"';
 }
 
 /**
@@ -56,8 +58,8 @@ function printCharCode(int $code): string
  */
 function sliceString(string $string, int $start, int $end = null): string
 {
-    $length = $end !== null ? $end - $start : mb_strlen($string) - $start;
-    return mb_substr($string, $start, $length);
+    $length = $end !== null ? $end - $start : \mb_strlen($string) - $start;
+    return \mb_substr($string, $start, $length);
 }
 
 /**
@@ -75,8 +77,7 @@ function isLetter(int $code): bool
  */
 function isNumber(int $code): bool
 {
-    // - or 0-9
-    return $code === 45 || ($code >= 48 && $code <= 57);
+    return $code === 45 || ($code >= 48 && $code <= 57); // - or 0-9
 }
 
 /**
@@ -101,9 +102,72 @@ function isAlphaNumeric(int $code): bool
  * @param int $code
  * @return bool
  */
+function isLineTerminator(int $code): bool
+{
+    return $code === 0x000a || $code === 0x000d;
+}
+
+/**
+ * @param int $code
+ * @return bool
+ */
 function isSourceCharacter(int $code): bool
 {
-    return $code < 0x0020 && $code !== 0x0009 && $code !== 0x000a && $code !== 0x000d;
+    return $code < 0x0020 && $code !== 0x0009;
+}
+
+/**
+ * @param string $body
+ * @param int    $code
+ * @param int    $pos
+ * @return bool
+ */
+function isSpread(string $body, int $code, int $pos): bool
+{
+    return $code === 46 &&
+        charCodeAt($body, $pos + 1) === 46 &&
+        charCodeAt($body, $pos + 2) === 46; // ...
+}
+
+/**
+ * @param string $body
+ * @param int    $code
+ * @param int    $pos
+ * @return bool
+ */
+function isString(string $body, int $code, int $pos): bool
+{
+    return $code === 34 && charCodeAt($body, $pos + 1) !== 34;
+}
+
+/**
+ * @param string $body
+ * @param int    $code
+ * @param int    $pos
+ * @return bool
+ */
+function isTripleQuote(string $body, int $code, int $pos): bool
+{
+    return $code === 34 &&
+        charCodeAt($body, $pos + 1) === 34 &&
+        charCodeAt($body, $pos + 2) === 34; // """
+}
+
+/**
+ * @param string $body
+ * @param int    $code
+ * @param int    $pos
+ * @return bool
+ */
+function isEscapedTripleQuote(
+    string $body,
+    int $code,
+    int $pos
+): bool {
+    return $code === 92 &&
+        charCodeAt($body, $pos + 1) === 34 &&
+        charCodeAt($body, $pos + 2) === 34 &&
+        charCodeAt($body, $pos + 3) === 34;
 }
 
 /**
@@ -119,7 +183,10 @@ function isSourceCharacter(int $code): bool
  */
 function uniCharCode(string $a, string $b, string $c, string $d): string
 {
-    return (dechex(ordUTF8($a)) << 12) | (dechex(ordUTF8($b)) << 8) | (dechex(ordUTF8($c)) << 4) | dechex(ordUTF8($d));
+    return (\dechex(ordUTF8($a)) << 12) |
+        (\dechex(ordUTF8($b)) << 8) |
+        (\dechex(ordUTF8($c)) << 4) |
+        \dechex(ordUTF8($d));
 }
 
 /**

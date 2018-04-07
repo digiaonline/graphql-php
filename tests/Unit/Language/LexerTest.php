@@ -17,7 +17,7 @@ class LexerTest extends TestCase
 {
     public function testDisallowsUncommonControlCharacters(): void
     {
-        $this->assertSyntaxError("\u{0007}", 'Cannot contain the invalid character "\u0007"', 1, 1);
+        $this->assertSyntaxError("\u{0007}", 'Cannot contain the invalid character "\u0007".', 1, 1);
     }
 
     public function testBomCharacter(): void
@@ -97,7 +97,7 @@ EOD;
         $this->assertLexerTokenPropertiesEqual('"unicode \\u1234\\u5678\\u90AB\\uCDEF"', TokenKindEnum::STRING, 0, 34,
             'unicode \u1234\u5678\u90AB\uCDEF');
 
-        $this->assertSyntaxError('"', 'Unterminated string.', 1, 1);
+        $this->assertSyntaxError('"', 'Cannot parse the unexpected character "\"".', 1, 1);
     }
 
     public function testBlockStrings(): void
@@ -182,6 +182,7 @@ EOD;
     private function getLexer(string $source): LexerInterface
     {
         $lexer = GraphQL::make(LexerInterface::class);
+        /** @noinspection PhpUnhandledExceptionInspection */
         $lexer->setSource(new Source($source));
 
         return $lexer;
