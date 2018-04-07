@@ -15,15 +15,21 @@ use Digia\GraphQL\Test\TestCase;
  */
 class LexerTest extends TestCase
 {
+    // disallows uncommon control characters
+
     public function testDisallowsUncommonControlCharacters(): void
     {
         $this->assertSyntaxError("\u{0007}", 'Cannot contain the invalid character "\u0007".', 1, 1);
     }
 
-    public function testBomCharacter(): void
+    // accepts BOM header
+
+    public function testAcceptsBomCharacter(): void
     {
-        $this->assertLexerTokenPropertiesEqual("\u{FEFF} foo", TokenKindEnum::NAME, 2, 5, 'foo');
+        $this->assertLexerTokenPropertiesEqual("\u{FEFF} foo", TokenKindEnum::NAME, [2, 5], 'foo');
     }
+
+    // records line and column
 
     public function testRecordsLineAndNumber(): void
     {
@@ -37,6 +43,8 @@ class LexerTest extends TestCase
         $this->assertEquals('foo', $token->getValue());
     }
 
+    // can be JSON.stringified or util.inspected
+
     public function testCanBeJsonSerialized(): void
     {
         $token = $this->getLexer('foo')->advance();
@@ -48,6 +56,8 @@ class LexerTest extends TestCase
             'column' => 1,
         ]), $token->toJSON());
     }
+
+    // skips whitespace and comments
 
     public function testSkipsWhitespaceAndComments(): void
     {
@@ -64,10 +74,12 @@ EOD;
 foo#comment
 EOD;
 
-        $this->assertLexerTokenPropertiesEqual($whitespaceString, TokenKindEnum::NAME, 5, 8, 'foo');
-        $this->assertLexerTokenPropertiesEqual($commentedString, TokenKindEnum::NAME, 9, 12, 'foo');
-        $this->assertLexerTokenPropertiesEqual(',,,foo,,,', TokenKindEnum::NAME, 3, 6, 'foo');
+        $this->assertLexerTokenPropertiesEqual($whitespaceString, TokenKindEnum::NAME, [5, 8], 'foo');
+        $this->assertLexerTokenPropertiesEqual($commentedString, TokenKindEnum::NAME, [9, 12], 'foo');
+        $this->assertLexerTokenPropertiesEqual(',,,foo,,,', TokenKindEnum::NAME, [3, 6], 'foo');
     }
+
+    // errors respect whitespace
 
     public function testErrorsRespectWhitespace(): void
     {
@@ -85,44 +97,108 @@ EOD;
         }
     }
 
-    public function testStrings(): void
+    // TODO: updates line numbers in error for file context
+
+    // TODO: updates column numbers in error for file context
+
+    // lexes strings
+
+    public function testLexesStrings(): void
     {
-        $this->assertLexerTokenPropertiesEqual('"simple"', TokenKindEnum::STRING, 0, 8, 'simple');
-        $this->assertLexerTokenPropertiesEqual('" white space "', TokenKindEnum::STRING, 0, 15, ' white space ');
-        $this->assertLexerTokenPropertiesEqual('"quote \\""', TokenKindEnum::STRING, 0, 10, 'quote "');
-        $this->assertLexerTokenPropertiesEqual('"escaped \\n\\r\\b\\t\\f"', TokenKindEnum::STRING, 0, 20,
-            'escaped \n\r\b\t\f');
-        $this->assertLexerTokenPropertiesEqual('"slashes \\\\ \\/"', TokenKindEnum::STRING, 0, 15,
-            'slashes \\ /');
-        $this->assertLexerTokenPropertiesEqual('"unicode \\u1234\\u5678\\u90AB\\uCDEF"', TokenKindEnum::STRING, 0, 34,
-            'unicode \u1234\u5678\u90AB\uCDEF');
+        $this->assertLexerTokenPropertiesEqual(
+            '"simple"',
+            TokenKindEnum::STRING,
+            [0, 8],
+            'simple'
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '" white space "',
+            TokenKindEnum::STRING,
+            [0, 15],
+            ' white space '
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"quote \\""',
+            TokenKindEnum::STRING,
+            [0, 10],
+            'quote "'
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"escaped \\n\\r\\b\\t\\f"',
+            TokenKindEnum::STRING,
+            [0, 20],
+            'escaped \n\r\b\t\f'
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"slashes \\\\ \\/"',
+            TokenKindEnum::STRING,
+            [0, 15],
+            'slashes \\ /'
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"unicode \\u1234\\u5678\\u90AB\\uCDEF"',
+            TokenKindEnum::STRING,
+            [0, 34],
+            'unicode \u1234\u5678\u90AB\uCDEF'
+        );
 
         $this->assertSyntaxError('"', 'Cannot parse the unexpected character "\"".', 1, 1);
     }
 
-    public function testBlockStrings(): void
+    // TODO: lex reports useful string errors
+
+    // lexes block strings
+
+    public function testLexesBlockStrings(): void
     {
-        $this->assertLexerTokenPropertiesEqual('"""simple"""', TokenKindEnum::BLOCK_STRING, 0, 12, 'simple');
-        $this->assertLexerTokenPropertiesEqual('""" white space """', TokenKindEnum::BLOCK_STRING, 0, 19,
-            ' white space ');
-        $this->assertLexerTokenPropertiesEqual('"""contains " quote"""', TokenKindEnum::BLOCK_STRING, 0, 22,
-            'contains " quote');
-        $this->assertLexerTokenPropertiesEqual('"""contains \\""" triplequote"""', TokenKindEnum::BLOCK_STRING, 0, 31,
-            'contains """ triplequote');
-        $this->assertLexerTokenPropertiesEqual('"""' . "multi\nline" . '""""', TokenKindEnum::BLOCK_STRING, 0, 16,
-            "multi\nline");
-        $this->assertLexerTokenPropertiesEqual('"""' . "multi\rline\r\nnormalized" . '""""',
+        $this->assertLexerTokenPropertiesEqual(
+            '"""simple"""',
             TokenKindEnum::BLOCK_STRING,
-            0, 28,
-            "multi\nline\nnormalized");
-        $this->assertLexerTokenPropertiesEqual('"""' . "unescaped \\n\\r\\b\\t\\f\\u1234" . '""""',
+            [0, 12],
+            'simple'
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '""" white space """',
             TokenKindEnum::BLOCK_STRING,
-            0, 32,
-            'unescaped \\n\\r\\b\\t\\f\\u1234');
-        $this->assertLexerTokenPropertiesEqual('"""' . "slashes \\\\ \\/" . '""""',
+            [0, 19],
+            ' white space '
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"""contains " quote"""',
             TokenKindEnum::BLOCK_STRING,
-            0, 19,
-            "slashes \\\\ \\/");
+            [0, 22],
+            'contains " quote'
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"""contains \\""" triplequote"""',
+            TokenKindEnum::BLOCK_STRING,
+            [0, 31],
+            'contains """ triplequote'
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"""' . "multi\nline" . '""""',
+            TokenKindEnum::BLOCK_STRING,
+            [0, 16],
+            "multi\nline"
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"""' . "multi\rline\r\nnormalized" . '""""',
+            TokenKindEnum::BLOCK_STRING,
+            [0, 28],
+            "multi\nline\nnormalized"
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"""' . "unescaped \\n\\r\\b\\t\\f\\u1234" . '""""',
+            TokenKindEnum::BLOCK_STRING,
+            [0, 32],
+            'unescaped \\n\\r\\b\\t\\f\\u1234'
+        );
+        $this->assertLexerTokenPropertiesEqual(
+            '"""' . "slashes \\\\ \\/" . '""""',
+            TokenKindEnum::BLOCK_STRING,
+            [0, 19],
+            "slashes \\\\ \\/"
+        );
 
         $multiline = <<<EOD
 """
@@ -134,9 +210,10 @@ lines
 """
 EOD;
 
-        $this->assertLexerTokenPropertiesEqual($multiline,
+        $this->assertLexerTokenPropertiesEqual(
+            $multiline,
             TokenKindEnum::BLOCK_STRING,
-            0, 34,
+            [0, 34],
             "spans\nmultiple\nlines");
     }
 
@@ -165,13 +242,13 @@ EOD;
      * @param int    $end
      * @param mixed  $value
      */
-    private function assertLexerTokenPropertiesEqual(string $source, string $kind, int $start, int $end, $value): void
+    private function assertLexerTokenPropertiesEqual(string $source, string $kind, array $location, $value): void
     {
         $token = $this->getLexer($source)->advance();
 
         $this->assertEquals($kind, $token->getKind());
-        $this->assertEquals($start, $token->getStart());
-        $this->assertEquals($end, $token->getEnd());
+        $this->assertEquals($location[0], $token->getStart());
+        $this->assertEquals($location[1], $token->getEnd());
         $this->assertEquals($value, $token->getValue());
     }
 
@@ -182,6 +259,7 @@ EOD;
     private function getLexer(string $source): LexerInterface
     {
         $lexer = GraphQL::make(LexerInterface::class);
+
         /** @noinspection PhpUnhandledExceptionInspection */
         $lexer->setSource(new Source($source));
 
