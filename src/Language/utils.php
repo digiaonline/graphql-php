@@ -6,13 +6,19 @@ namespace Digia\GraphQL\Language;
  * @param int $code
  * @return string
  */
-function chrUTF8(int $code)
+function unicodeChr(int $code)
 {
-    if ($code <= 255) {
+    if (0x80 > $code %= 0x200000) {
         return \chr($code);
     }
+    if (0x800 > $code) {
+        return \chr(0xC0 | $code >> 6) . \chr(0x80 | $code & 0x3F);
+    }
+    if (0x10000 > $code) {
+        return \chr(0xE0 | $code >> 12) . \chr(0x80 | $code >> 6 & 0x3F) . \chr(0x80 | $code & 0x3F);
+    }
 
-    return \mb_convert_encoding(\pack('N', $code), 'UTF-8', 'UCS-4BE');
+    return \chr(0xF0 | $code >> 18) . \chr(0x80 | $code >> 12 & 0x3F) . \chr(0x80 | $code >> 6 & 0x3F) . \chr(0x80 | $code & 0x3F);
 }
 
 /**
@@ -20,17 +26,22 @@ function chrUTF8(int $code)
  * @param string $encoding
  * @return int
  */
-function ordUTF8(string $string)
+function unicodeOrd(string $s)
 {
-    if (!$string && '0' !== $string) {
-        return 0;
+    /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+    $code = ($s = \unpack('C*', \substr($s, 0, 4))) ? $s[1] : 0;
+
+    if (0xF0 <= $code) {
+        return (($code - 0xF0) << 18) + (($s[2] - 0x80) << 12) + (($s[3] - 0x80) << 6) + $s[4] - 0x80;
+    }
+    if (0xE0 <= $code) {
+        return (($code - 0xE0) << 12) + (($s[2] - 0x80) << 6) + $s[3] - 0x80;
+    }
+    if (0xC0 <= $code) {
+        return (($code - 0xC0) << 6) + $s[2] - 0x80;
     }
 
-    if (!isset($string[1])) {
-        return \ord($string);
-    }
-
-    return \unpack('N', \mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'))[1];
+    return $code;
 }
 
 /**
@@ -40,7 +51,7 @@ function ordUTF8(string $string)
  */
 function charCodeAt(string $string, int $position): int
 {
-    return ordUTF8(\mb_substr($string, $position, 1, 'UTF-8'));
+    return unicodeOrd(\mb_substr($string, $position, 1, 'UTF-8'));
 }
 
 /**
@@ -55,7 +66,7 @@ function printCharCode(int $code): string
 
     return $code < 0x007F
         // Trust JSON for ASCII.
-        ? \json_encode($code < 255 ? \chr($code) : chrUTF8($code))
+        ? \json_encode(unicodeChr($code))
         // Otherwise print the escaped form.
         : '"\\u' . \dechex($code) . '"';
 }
@@ -193,10 +204,10 @@ function isEscapedTripleQuote(
  */
 function uniCharCode(string $a, string $b, string $c, string $d): string
 {
-    return (\dechex(ordUTF8($a)) << 12) |
-        (\dechex(ordUTF8($b)) << 8) |
-        (\dechex(ordUTF8($c)) << 4) |
-        \dechex(ordUTF8($d));
+    return (\dechex(unicodeOrd($a)) << 12) |
+        (\dechex(unicodeOrd($b)) << 8) |
+        (\dechex(unicodeOrd($c)) << 4) |
+        \dechex(unicodeOrd($d));
 }
 
 /**
