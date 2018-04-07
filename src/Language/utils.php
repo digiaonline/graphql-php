@@ -196,26 +196,7 @@ function isEscapedTripleQuote(
     return $code === 92 &&
         charCodeAt($body, $pos + 1) === 34 &&
         charCodeAt($body, $pos + 2) === 34 &&
-        charCodeAt($body, $pos + 3) === 34;
-}
-
-/**
- * Converts four hexidecimal chars to the integer that the
- * string represents. For example, uniCharCode('0','0','0','f')
- * will return 15, and uniCharCode('0','0','f','f') returns 255.
- *
- * @param string $a
- * @param string $b
- * @param string $c
- * @param string $d
- * @return string
- */
-function uniCharCode(string $a, string $b, string $c, string $d): string
-{
-    return (\dechex(mbOrd($a)) << 12) |
-        (\dechex(mbOrd($b)) << 8) |
-        (\dechex(mbOrd($c)) << 4) |
-        \dechex(mbOrd($d));
+        charCodeAt($body, $pos + 3) === 34; // \"""
 }
 
 /**
@@ -224,8 +205,7 @@ function uniCharCode(string $a, string $b, string $c, string $d): string
  */
 function isOperation(string $value): bool
 {
-    // TODO: Benchmark
-    return \in_array($value, ['query', 'mutation', 'subscription'], true);
+    return $value === 'query' || $value === 'mutation' || $value === 'subscription';
 }
 
 /**

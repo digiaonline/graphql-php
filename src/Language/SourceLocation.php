@@ -58,11 +58,11 @@ class SourceLocation implements SerializationInterface
         $column  = $position + 1;
         $matches = [];
 
-        \preg_match_all("/\r\n|[\n\r]/", \mb_substr($source->getBody(), 0, $position), $matches, PREG_OFFSET_CAPTURE);
+        \preg_match_all("/\r\n|[\n\r]/", \substr($source->getBody(), 0, $position), $matches, PREG_OFFSET_CAPTURE);
 
         foreach ($matches[0] as $index => $match) {
             $line   += 1;
-            $column = $position + 1 - ($match[1] + \mb_strlen($match[0]));
+            $column = $position + 1 - ($match[1] + \strlen($match[0]));
         }
 
         return new static($line, $column);
