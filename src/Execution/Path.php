@@ -20,10 +20,10 @@ class Path
 
     /**
      * Path constructor.
-     * @param $previous
-     * @param $key
+     * @param Path|null $previous
+     * @param           $key
      */
-    public function __construct($previous, $key)
+    public function __construct(?Path $previous, $key)
     {
         $this->previous = $previous;
         $this->key      = $key;
