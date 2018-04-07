@@ -3,10 +3,14 @@
 namespace Digia\GraphQL\Language;
 
 /**
+ * Multi-byte compatible `chr`.
+ *
+ * Based on the Symfony's Mbstring polyfills.
+ *
  * @param int $code
  * @return string
  */
-function unicodeChr(int $code)
+function mbChr(int $code)
 {
     if (0x80 > $code %= 0x200000) {
         return \chr($code);
@@ -22,11 +26,15 @@ function unicodeChr(int $code)
 }
 
 /**
+ * Multi-byte compatible `ord`.
+ *
+ * Based on the Symfony's Mbstring polyfills.
+ *
  * @param string $string
  * @param string $encoding
  * @return int
  */
-function unicodeOrd(string $s)
+function mbOrd(string $s)
 {
     /** @noinspection CallableParameterUseCaseInTypeContextInspection */
     $code = ($s = \unpack('C*', \substr($s, 0, 4))) ? $s[1] : 0;
@@ -51,7 +59,7 @@ function unicodeOrd(string $s)
  */
 function charCodeAt(string $string, int $position): int
 {
-    return unicodeOrd(\mb_substr($string, $position, 1, 'UTF-8'));
+    return mbOrd(\mb_substr($string, $position, 1, 'UTF-8'));
 }
 
 /**
@@ -66,7 +74,7 @@ function printCharCode(int $code): string
 
     return $code < 0x007F
         // Trust JSON for ASCII.
-        ? \json_encode(unicodeChr($code))
+        ? \json_encode(mbChr($code))
         // Otherwise print the escaped form.
         : '"\\u' . \dechex($code) . '"';
 }
@@ -204,10 +212,10 @@ function isEscapedTripleQuote(
  */
 function uniCharCode(string $a, string $b, string $c, string $d): string
 {
-    return (\dechex(unicodeOrd($a)) << 12) |
-        (\dechex(unicodeOrd($b)) << 8) |
-        (\dechex(unicodeOrd($c)) << 4) |
-        \dechex(unicodeOrd($d));
+    return (\dechex(mbOrd($a)) << 12) |
+        (\dechex(mbOrd($b)) << 8) |
+        (\dechex(mbOrd($c)) << 4) |
+        \dechex(mbOrd($d));
 }
 
 /**
