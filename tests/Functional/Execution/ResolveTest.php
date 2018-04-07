@@ -105,4 +105,50 @@ class ResolveTest extends TestCase
             ]
         ], $result);
     }
+
+    /**
+     * Uses provided resolve function
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
+    public function testUsesProviedResolveFunction()
+    {
+        $schema = $this->createTestSchema([
+            'type'    => String(),
+            'args'    => [
+                'aStr' => ['type' => String()],
+                'aInt' => ['type' => Int()],
+            ],
+            'resolve' => function ($source, $args) {
+                return json_encode([$source, $args]);
+            }
+        ]);
+
+        $this->assertEquals([
+            'data' => [
+                'test' => '[null,[]]'
+            ]
+        ], graphql($schema, '{ test }'));
+
+
+        $this->assertEquals([
+            'data' => [
+                'test' => '["Source!",[]]'
+            ]
+        ], graphql($schema, '{ test }', 'Source!'));
+
+
+        $this->assertEquals([
+            'data' => [
+                'test' => '["Source!",{"aStr":"String!"}]'
+            ]
+        ], graphql($schema, '{ test(aStr:"String!") }', 'Source!'));
+
+
+        $this->assertEquals([
+            'data' => [
+                'test' => '["Source!",{"aStr":"String!","aInt":-123}]'
+            ]
+        ], graphql($schema, '{ test(aInt: -123, aStr: "String!") }', 'Source!'));
+    }
 }
