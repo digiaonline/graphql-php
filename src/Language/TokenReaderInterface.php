@@ -6,20 +6,14 @@ interface TokenReaderInterface
 {
 
     /**
-     * @param int $code
-     * @param int $pos
-     * @param int $line
-     * @param int $col
-     * @param Token $prev
-     * @return Token
+     * @param string $body
+     * @param int    $pos
+     * @param int    $line
+     * @param int    $col
+     * @param Token  $prev
+     * @return Token|null
      */
-    public function read(
-      int $code,
-      int $pos,
-      int $line,
-      int $col,
-      Token $prev
-    ): Token;
+    public function read(string $body, int $pos, int $line, int $col, Token $prev): ?Token;
 
     /**
      * @param LexerInterface $lexer

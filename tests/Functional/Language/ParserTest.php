@@ -71,8 +71,6 @@ class ParserTest extends TestCase
           { field(arg: "Has a \u0A0A multi-byte character.") }
         '));
 
-        $this->markTestIncomplete('BUG: Multi-byte characters in strings are not handled correctly.');
-
         $this->assertArraySubset([
             'definitions' => [
                 [
@@ -83,7 +81,6 @@ class ParserTest extends TestCase
                                     [
                                         'value' => [
                                             'kind' => NodeKindEnum::STRING,
-                                            // TODO: Fix this test case.
                                             'value' => 'Has a \u0A0A multi-byte character.',
                                         ],
                                     ],

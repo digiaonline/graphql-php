@@ -7,7 +7,6 @@ use Digia\GraphQL\Error\SyntaxErrorException;
 
 class Lexer implements LexerInterface
 {
-
     /**
      * @var Source|null
      */
@@ -31,6 +30,16 @@ class Lexer implements LexerInterface
      * @var Token
      */
     protected $token;
+
+    /**
+     * @var int
+     */
+    protected $cursor;
+
+    /**
+     * @var int
+     */
+    protected $end;
 
     /**
      * The (1-indexed) line containing the current token.
@@ -63,6 +72,7 @@ class Lexer implements LexerInterface
         $startOfFileToken = new Token(TokenKindEnum::SOF);
 
         $reader->setLexer($this);
+
         $this->reader    = $reader;
         $this->lastToken = $startOfFileToken;
         $this->token     = $startOfFileToken;
@@ -177,32 +187,16 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @param int   $code
-     * @param int   $pos
-     * @param int   $line
-     * @param int   $col
-     * @param Token $prev
-     * @return Token
-     * @throws SyntaxErrorException
-     */
-    public function read(int $code, int $pos, int $line, int $col, Token $prev): Token
-    {
-        if ($token = $this->reader->read($code, $pos, $line, $col, $prev)) {
-            return $token;
-        }
-
-        throw new SyntaxErrorException($this->source, $pos, $this->unexpectedCharacterMessage($code));
-    }
-
-    /**
      * @param Token $prev
      * @return Token
      * @throws SyntaxErrorException
      */
     protected function readToken(Token $prev): Token
     {
+        // TODO: Consider replacing "\r\n" and "\r" with "\n"
+        // TODO: Consider injecting these as arguments
         $body       = $this->source->getBody();
-        $bodyLength = mb_strlen($body);
+        $bodyLength = \mb_strlen($body);
 
         $pos  = $this->positionAfterWhitespace($body, $prev->getEnd());
         $line = $this->line;
@@ -212,31 +206,33 @@ class Lexer implements LexerInterface
             return new Token(TokenKindEnum::EOF, $bodyLength, $bodyLength, $line, $col, $prev);
         }
 
-        $code = charCodeAt($body, $pos);
+        $token = $this->reader->read($body, $pos, $line, $col, $prev);
 
-        if (isSourceCharacter($code)) {
-            throw new SyntaxErrorException(
-                $this->source,
-                $pos,
-                sprintf('Cannot contain the invalid character %s', printCharCode($code))
-            );
+        if (null !== $token) {
+            return $token;
         }
 
-        return $this->read($code, $pos, $line, $col, $prev);
+        throw new SyntaxErrorException($this->source, $pos, $this->unexpectedCharacterMessage($code));
     }
 
     /**
+     * Report a message that an unexpected character was encountered.
+     *
      * @param int $code
      * @return string
      */
     protected function unexpectedCharacterMessage(int $code): string
     {
+        if (isSourceCharacter($code) && !isLineTerminator($code)) {
+            return \sprintf('Cannot contain the invalid character %s.', printCharCode($code));
+        }
+
         if ($code === 39) {
             // '
             return 'Unexpected single quote character (\'), did you mean to use a double quote (")?';
         }
 
-        return sprintf('Cannot parse the unexpected character %s', printCharCode($code));
+        return \sprintf('Cannot parse the unexpected character %s.', printCharCode($code));
     }
 
     /**
@@ -246,7 +242,7 @@ class Lexer implements LexerInterface
      */
     protected function positionAfterWhitespace(string $body, int $startPosition): int
     {
-        $bodyLength = mb_strlen($body);
+        $bodyLength = \mb_strlen($body);
         $pos        = $startPosition;
 
         while ($pos < $bodyLength) {
@@ -256,11 +252,11 @@ class Lexer implements LexerInterface
                 // tab | space | comma | BOM
                 ++$pos;
             } elseif ($code === 10) {
-                // new line
+                // new line (\n)
                 ++$pos;
                 $this->advanceLine($pos);
             } elseif ($code === 13) {
-                // carriage return
+                // carriage return (\r)
                 if (charCodeAt($body, $pos + 1) === 10) {
                     $pos += 2;
                 } else {
@@ -278,7 +274,7 @@ class Lexer implements LexerInterface
     /**
      * @param int $pos
      */
-    protected function advanceLine(int $pos)
+    protected function advanceLine(int $pos): void
     {
         ++$this->line;
         $this->lineStart = $pos;
