@@ -7,7 +7,6 @@ use Digia\GraphQL\Error\SyntaxErrorException;
 
 class Lexer implements LexerInterface
 {
-
     /**
      * @var Source|null
      */
@@ -31,6 +30,16 @@ class Lexer implements LexerInterface
      * @var Token
      */
     protected $token;
+
+    /**
+     * @var int
+     */
+    protected $cursor;
+
+    /**
+     * @var int
+     */
+    protected $end;
 
     /**
      * The (1-indexed) line containing the current token.
@@ -184,6 +193,8 @@ class Lexer implements LexerInterface
      */
     protected function readToken(Token $prev): Token
     {
+        // TODO: Consider replacing "\r\n" and "\r" with "\n"
+        // TODO: Consider injecting these as arguments
         $body       = $this->source->getBody();
         $bodyLength = \mb_strlen($body);
 
@@ -195,9 +206,7 @@ class Lexer implements LexerInterface
             return new Token(TokenKindEnum::EOF, $bodyLength, $bodyLength, $line, $col, $prev);
         }
 
-        $code = charCodeAt($body, $pos);
-
-        $token = $this->reader->read($body, $bodyLength, $code, $pos, $line, $col, $prev);
+        $token = $this->reader->read($body, $pos, $line, $col, $prev);
 
         if (null !== $token) {
             return $token;
