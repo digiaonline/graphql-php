@@ -9,16 +9,22 @@ class Lexer implements LexerInterface
 {
 
     /**
+     * TODO: Document this
+     * 
      * @var Source|null
      */
     protected $source;
 
     /**
+     * TODO: Document this
+     * 
      * @var string|null
      */
     protected $body;
 
     /**
+     * TODO: Document this
+     * 
      * @var int
      */
     protected $bodyLength;
@@ -41,6 +47,13 @@ class Lexer implements LexerInterface
      * @var Token
      */
     protected $token;
+
+    /**
+     * TODO: Document this
+     * 
+     * @var int
+     */
+    protected $pos;
 
     /**
      * The (1-indexed) line containing the current token.
@@ -200,23 +213,26 @@ class Lexer implements LexerInterface
      */
     protected function readToken(Token $prev): Token
     {
-        $pos  = $this->positionAfterWhitespace($prev->getEnd());
-        $line = $this->line;
-        $col  = 1 + $pos - $this->lineStart;
+        $this->pos = $prev->getEnd();
 
-        if ($pos >= $this->bodyLength) {
+        $this->skipWhitespace();
+
+        $line = $this->line;
+        $col  = 1 + $this->pos - $this->lineStart;
+
+        if ($this->pos >= $this->bodyLength) {
             return new Token(TokenKindEnum::EOF, $this->bodyLength, $this->bodyLength, $line, $col, $prev);
         }
 
-        $code = charCodeAt($this->body, $pos);
+        $code = charCodeAt($this->body, $this->pos);
 
-        $token = $this->reader->read($this->body, $this->bodyLength, $code, $pos, $line, $col, $prev);
+        $token = $this->reader->read($this->body, $this->bodyLength, $code, $this->pos, $line, $col, $prev);
 
         if (null !== $token) {
             return $token;
         }
 
-        throw new SyntaxErrorException($this->source, $pos, $this->unexpectedCharacterMessage($code));
+        throw new SyntaxErrorException($this->source, $this->pos, $this->unexpectedCharacterMessage($code));
     }
 
     /**
@@ -240,39 +256,34 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @param int $startPosition
-     * @return int
+     *
      */
-    protected function positionAfterWhitespace(int $startPosition): int
+    protected function skipWhitespace(): void
     {
-        $pos = $startPosition;
-
-        while ($pos < $this->bodyLength) {
-            $code = charCodeAt($this->body, $pos);
+        while ($this->pos < $this->bodyLength) {
+            $code = charCodeAt($this->body, $this->pos);
 
             if ($code === 9 || $code === 32 || $code === 44 || $code === 0xfeff) {
                 // tab | space | comma | BOM
-                ++$pos;
+                ++$this->pos;
             } elseif ($code === 10) {
                 // new line (\n)
-                ++$pos;
+                ++$this->pos;
                 ++$this->line;
-                $this->lineStart = $pos;
+                $this->lineStart = $this->pos;
             } elseif ($code === 13) {
                 // carriage return (\r)
-                if (charCodeAt($this->body, $pos + 1) === 10) {
+                if (charCodeAt($this->body, $this->pos + 1) === 10) {
                     // carriage return and new line (\r\n)
-                    $pos += 2;
+                    $this->pos += 2;
                 } else {
-                    ++$pos;
+                    ++$this->pos;
                 }
                 ++$this->line;
-                $this->lineStart = $pos;
+                $this->lineStart = $this->pos;
             } else {
                 break;
             }
         }
-
-        return $pos;
     }
 }
