@@ -946,6 +946,8 @@ abstract class ExecutionStrategy
             $getter = 'get' . ucfirst($fieldName);
             if (method_exists($rootValue, $getter)) {
                 $property = $rootValue->{$getter}();
+            } elseif (method_exists($rootValue, $fieldName)) {
+                $property = $rootValue->{$fieldName}($rootValue, $args, $context, $info);
             } elseif (property_exists($rootValue, $fieldName)) {
                 $property = $rootValue->{$fieldName};
             }
