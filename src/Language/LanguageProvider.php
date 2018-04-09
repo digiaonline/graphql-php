@@ -30,9 +30,8 @@ class LanguageProvider extends AbstractServiceProvider
             ->withArgument(ASTBuilderInterface::class)
             ->withArgument(NodeBuilderInterface::class);
 
-        $this->container->add(TokenReaderInterface::class, TokenReader::class, true/* $shared */);
-        $this->container->add(LexerInterface::class, Lexer::class)
-            ->withArgument(TokenReaderInterface::class);
+//        $this->container->add(TokenReaderInterface::class, TokenReader::class, true/* $shared */);
+        $this->container->add(LexerInterface::class, Lexer::class);
 
         $this->container->add(PrinterInterface::class, Printer::class, true/* $shared */)
             ->withArgument(SupportedWriters::get());

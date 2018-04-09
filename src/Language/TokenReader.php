@@ -37,6 +37,7 @@ class TokenReader implements TokenReaderInterface
      */
     public function read(string $body, int $bodyLength, int $code, int $pos, int $line, int $col, Token $prev): ?Token
     {
+        // Punctuation
         switch ($code) {
             case 33: // !
                 return $this->readBang($pos, $line, $col, $prev);
