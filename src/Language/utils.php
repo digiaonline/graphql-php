@@ -3,56 +3,6 @@
 namespace Digia\GraphQL\Language;
 
 /**
- * Multi-byte compatible `chr`.
- *
- * Based on the Symfony's Mbstring polyfills.
- *
- * @param int $code
- * @return string
- */
-function mbChr(int $code)
-{
-    if (0x80 > $code %= 0x200000) {
-        return \chr($code);
-    }
-    if (0x800 > $code) {
-        return \chr(0xC0 | $code >> 6) . \chr(0x80 | $code & 0x3F);
-    }
-    if (0x10000 > $code) {
-        return \chr(0xE0 | $code >> 12) . \chr(0x80 | $code >> 6 & 0x3F) . \chr(0x80 | $code & 0x3F);
-    }
-
-    return \chr(0xF0 | $code >> 18) . \chr(0x80 | $code >> 12 & 0x3F) . \chr(0x80 | $code >> 6 & 0x3F) . \chr(0x80 | $code & 0x3F);
-}
-
-/**
- * Multi-byte compatible `ord`.
- *
- * Based on the Symfony's Mbstring polyfills.
- *
- * @param string $string
- * @param string $encoding
- * @return int
- */
-function mbOrd(string $s)
-{
-    /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-    $code = ($s = \unpack('C*', \substr($s, 0, 4))) ? $s[1] : 0;
-
-    if (0xF0 <= $code) {
-        return (($code - 0xF0) << 18) + (($s[2] - 0x80) << 12) + (($s[3] - 0x80) << 6) + $s[4] - 0x80;
-    }
-    if (0xE0 <= $code) {
-        return (($code - 0xE0) << 12) + (($s[2] - 0x80) << 6) + $s[3] - 0x80;
-    }
-    if (0xC0 <= $code) {
-        return (($code - 0xC0) << 6) + $s[2] - 0x80;
-    }
-
-    return $code;
-}
-
-/**
  * @param string $string
  * @param int    $position
  * @return int
@@ -61,13 +11,13 @@ function charCodeAt(string $string, int $position): int
 {
     static $cache = [];
 
-    $k = \mb_substr($string, $position, 1, 'UTF-8');
+    $char = \mb_substr($string, $position, 1, 'UTF-8');
 
-    if (!isset($cache[$k])) {
-        $cache[$k] = mbOrd($k);
+    if (!isset($cache[$char])) {
+        $cache[$char] = \mb_ord($char);
     }
 
-    return $cache[$k];
+    return $cache[$char];
 }
 
 /**
@@ -82,7 +32,7 @@ function printCharCode(int $code): string
 
     return $code < 0x007F
         // Trust JSON for ASCII.
-        ? \json_encode(mbChr($code))
+        ? \json_encode(\mb_chr($code))
         // Otherwise print the escaped form.
         : '"\\u' . \dechex($code) . '"';
 }
