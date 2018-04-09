@@ -185,7 +185,7 @@ class Lexer implements LexerInterface
     protected function readToken(Token $prev): Token
     {
         $body       = $this->source->getBody();
-        $bodyLength = \mb_strlen($body);
+        $bodyLength = \strlen($body);
 
         $pos  = $this->positionAfterWhitespace($body, $prev->getEnd());
         $line = $this->line;
@@ -249,6 +249,7 @@ class Lexer implements LexerInterface
             } elseif ($code === 13) {
                 // carriage return (\r)
                 if (charCodeAt($body, $pos + 1) === 10) {
+                    // carriage return and new line (\r\n)
                     $pos += 2;
                 } else {
                     ++$pos;
