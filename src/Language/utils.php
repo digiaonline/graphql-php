@@ -3,23 +3,53 @@
 namespace Digia\GraphQL\Language;
 
 /**
- * @param int $cp
+ * Multi-byte compatible `chr`.
+ *
+ * Based on the Symfony's Mbstring polyfills.
+ *
+ * @param int $code
  * @return string
  */
-function chrUTF8(int $cp)
+function mbChr(int $code)
 {
-    return mb_convert_encoding(pack('N', $cp), 'UTF-8', 'UCS-4BE');
+    if (0x80 > $code %= 0x200000) {
+        return \chr($code);
+    }
+    if (0x800 > $code) {
+        return \chr(0xC0 | $code >> 6) . \chr(0x80 | $code & 0x3F);
+    }
+    if (0x10000 > $code) {
+        return \chr(0xE0 | $code >> 12) . \chr(0x80 | $code >> 6 & 0x3F) . \chr(0x80 | $code & 0x3F);
+    }
+
+    return \chr(0xF0 | $code >> 18) . \chr(0x80 | $code >> 12 & 0x3F) . \chr(0x80 | $code >> 6 & 0x3F) . \chr(0x80 | $code & 0x3F);
 }
 
 /**
+ * Multi-byte compatible `ord`.
+ *
+ * Based on the Symfony's Mbstring polyfills.
+ *
  * @param string $string
+ * @param string $encoding
  * @return int
  */
-function ordUTF8(string $string)
+function mbOrd(string $s)
 {
-    [, $ord] = unpack('N', mb_convert_encoding($string, 'UCS-4BE', 'UTF-8'));
+    /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+    $code = ($s = \unpack('C*', \substr($s, 0, 4))) ? $s[1] : 0;
 
-    return $ord;
+    if (0xF0 <= $code) {
+        return (($code - 0xF0) << 18) + (($s[2] - 0x80) << 12) + (($s[3] - 0x80) << 6) + $s[4] - 0x80;
+    }
+    if (0xE0 <= $code) {
+        return (($code - 0xE0) << 12) + (($s[2] - 0x80) << 6) + $s[3] - 0x80;
+    }
+    if (0xC0 <= $code) {
+        return (($code - 0xC0) << 6) + $s[2] - 0x80;
+    }
+
+    return $code;
 }
 
 /**
@@ -29,7 +59,7 @@ function ordUTF8(string $string)
  */
 function charCodeAt(string $string, int $position): int
 {
-    return ordUTF8($string[$position]);
+    return mbOrd(\mb_substr($string, $position, 1, 'UTF-8'));
 }
 
 /**
@@ -38,14 +68,15 @@ function charCodeAt(string $string, int $position): int
  */
 function printCharCode(int $code): string
 {
-    if ($code === null) {
+    if ($code === 0x0000) {
         return '<EOF>';
     }
+
     return $code < 0x007F
         // Trust JSON for ASCII.
-        ? json_encode(chrUTF8($code))
+        ? \json_encode(mbChr($code))
         // Otherwise print the escaped form.
-        : '"\\u' . dechex($code) . '"';
+        : '"\\u' . \dechex($code) . '"';
 }
 
 /**
@@ -56,8 +87,8 @@ function printCharCode(int $code): string
  */
 function sliceString(string $string, int $start, int $end = null): string
 {
-    $length = $end !== null ? $end - $start : mb_strlen($string) - $start;
-    return mb_substr($string, $start, $length);
+    $length = $end !== null ? $end - $start : \mb_strlen($string) - $start;
+    return \mb_substr($string, $start, $length);
 }
 
 /**
@@ -75,8 +106,7 @@ function isLetter(int $code): bool
  */
 function isNumber(int $code): bool
 {
-    // - or 0-9
-    return $code === 45 || ($code >= 48 && $code <= 57);
+    return $code >= 48 && $code <= 57; // 0-9
 }
 
 /**
@@ -101,25 +131,72 @@ function isAlphaNumeric(int $code): bool
  * @param int $code
  * @return bool
  */
-function isSourceCharacter(int $code): bool
+function isLineTerminator(int $code): bool
 {
-    return $code < 0x0020 && $code !== 0x0009 && $code !== 0x000a && $code !== 0x000d;
+    return $code === 0x000a || $code === 0x000d;
 }
 
 /**
- * Converts four hexidecimal chars to the integer that the
- * string represents. For example, uniCharCode('0','0','0','f')
- * will return 15, and uniCharCode('0','0','f','f') returns 255.
- *
- * @param string $a
- * @param string $b
- * @param string $c
- * @param string $d
- * @return string
+ * @param int $code
+ * @return bool
  */
-function uniCharCode(string $a, string $b, string $c, string $d): string
+function isSourceCharacter(int $code): bool
 {
-    return (dechex(ordUTF8($a)) << 12) | (dechex(ordUTF8($b)) << 8) | (dechex(ordUTF8($c)) << 4) | dechex(ordUTF8($d));
+    return $code < 0x0020 && $code !== 0x0009; // any source character EXCEPT HT (Horizontal Tab)
+}
+
+/**
+ * @param string $body
+ * @param int    $code
+ * @param int    $pos
+ * @return bool
+ */
+function isSpread(string $body, int $code, int $pos): bool
+{
+    return $code === 46 &&
+        charCodeAt($body, $pos + 1) === 46 &&
+        charCodeAt($body, $pos + 2) === 46; // ...
+}
+
+/**
+ * @param string $body
+ * @param int    $code
+ * @param int    $pos
+ * @return bool
+ */
+function isString(string $body, int $code, int $pos): bool
+{
+    return $code === 34 && charCodeAt($body, $pos + 1) !== 34;
+}
+
+/**
+ * @param string $body
+ * @param int    $code
+ * @param int    $pos
+ * @return bool
+ */
+function isTripleQuote(string $body, int $code, int $pos): bool
+{
+    return $code === 34 &&
+        charCodeAt($body, $pos + 1) === 34 &&
+        charCodeAt($body, $pos + 2) === 34; // """
+}
+
+/**
+ * @param string $body
+ * @param int    $code
+ * @param int    $pos
+ * @return bool
+ */
+function isEscapedTripleQuote(
+    string $body,
+    int $code,
+    int $pos
+): bool {
+    return $code === 92 &&
+        charCodeAt($body, $pos + 1) === 34 &&
+        charCodeAt($body, $pos + 2) === 34 &&
+        charCodeAt($body, $pos + 3) === 34; // \"""
 }
 
 /**
@@ -128,8 +205,7 @@ function uniCharCode(string $a, string $b, string $c, string $d): string
  */
 function isOperation(string $value): bool
 {
-    // TODO: Benchmark
-    return \in_array($value, ['query', 'mutation', 'subscription'], true);
+    return $value === 'query' || $value === 'mutation' || $value === 'subscription';
 }
 
 /**

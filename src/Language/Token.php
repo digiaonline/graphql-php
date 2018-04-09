@@ -159,9 +159,9 @@ class Token implements SerializationInterface
     {
         return [
             'kind'   => $this->kind,
-            'value'  => $this->value,
             'line'   => $this->line,
             'column' => $this->column,
+            'value'  => $this->value,
         ];
     }
 

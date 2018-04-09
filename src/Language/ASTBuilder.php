@@ -987,20 +987,11 @@ class ASTBuilder implements ASTBuilderInterface
         $token = $this->expect($lexer, TokenKindEnum::NAME);
         $value = $token->getValue();
 
-        if ($this->isOperation($value)) {
+        if (isOperation($value)) {
             return $value;
         }
 
         throw $this->unexpected($lexer, $token);
-    }
-
-    /**
-     * @param string $value
-     * @return bool
-     */
-    protected function isOperation(string $value): bool
-    {
-        return \in_array($value, ['query', 'mutation', 'subscription'], true);
     }
 
     /**
