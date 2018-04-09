@@ -5,3 +5,4 @@
 /vendor/
 clover.xml
 composer.lock
+cachegrind.out.*
