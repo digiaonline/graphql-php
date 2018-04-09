@@ -14,6 +14,16 @@ class Lexer implements LexerInterface
     protected $source;
 
     /**
+     * @var string|null
+     */
+    protected $body;
+
+    /**
+     * @var int
+     */
+    protected $bodyLength;
+
+    /**
      * @var array
      */
     protected $options = [];
@@ -73,6 +83,7 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
+     * @throws SyntaxErrorException
      */
     public function advance(): Token
     {
@@ -83,6 +94,7 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
+     * @throws SyntaxErrorException
      */
     public function lookahead(): Token
     {
@@ -109,6 +121,7 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
+     * @throws LanguageException
      */
     public function getBody(): string
     {
@@ -141,6 +154,7 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
+     * @throws LanguageException
      */
     public function getSource(): Source
     {
@@ -164,7 +178,9 @@ class Lexer implements LexerInterface
      */
     public function setSource(Source $source)
     {
-        $this->source = $source;
+        $this->body       = $source->getBody();
+        $this->bodyLength = \strlen($this->body);
+        $this->source     = $source;
         return $this;
     }
 
@@ -184,20 +200,17 @@ class Lexer implements LexerInterface
      */
     protected function readToken(Token $prev): Token
     {
-        $body       = $this->source->getBody();
-        $bodyLength = \strlen($body);
-
-        $pos  = $this->positionAfterWhitespace($body, $prev->getEnd());
+        $pos  = $this->positionAfterWhitespace($prev->getEnd());
         $line = $this->line;
         $col  = 1 + $pos - $this->lineStart;
 
-        if ($pos >= $bodyLength) {
-            return new Token(TokenKindEnum::EOF, $bodyLength, $bodyLength, $line, $col, $prev);
+        if ($pos >= $this->bodyLength) {
+            return new Token(TokenKindEnum::EOF, $this->bodyLength, $this->bodyLength, $line, $col, $prev);
         }
 
-        $code = charCodeAt($body, $pos);
+        $code = charCodeAt($this->body, $pos);
 
-        $token = $this->reader->read($body, $bodyLength, $code, $pos, $line, $col, $prev);
+        $token = $this->reader->read($this->body, $this->bodyLength, $code, $pos, $line, $col, $prev);
 
         if (null !== $token) {
             return $token;
@@ -227,17 +240,15 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @param string $body
-     * @param int    $startPosition
+     * @param int $startPosition
      * @return int
      */
-    protected function positionAfterWhitespace(string $body, int $startPosition): int
+    protected function positionAfterWhitespace(int $startPosition): int
     {
-        $bodyLength = \mb_strlen($body);
-        $pos        = $startPosition;
+        $pos = $startPosition;
 
-        while ($pos < $bodyLength) {
-            $code = charCodeAt($body, $pos);
+        while ($pos < $this->bodyLength) {
+            $code = charCodeAt($this->body, $pos);
 
             if ($code === 9 || $code === 32 || $code === 44 || $code === 0xfeff) {
                 // tab | space | comma | BOM
@@ -245,30 +256,23 @@ class Lexer implements LexerInterface
             } elseif ($code === 10) {
                 // new line (\n)
                 ++$pos;
-                $this->advanceLine($pos);
+                ++$this->line;
+                $this->lineStart = $pos;
             } elseif ($code === 13) {
                 // carriage return (\r)
-                if (charCodeAt($body, $pos + 1) === 10) {
+                if (charCodeAt($this->body, $pos + 1) === 10) {
                     // carriage return and new line (\r\n)
                     $pos += 2;
                 } else {
                     ++$pos;
                 }
-                $this->advanceLine($pos);
+                ++$this->line;
+                $this->lineStart = $pos;
             } else {
                 break;
             }
         }
 
         return $pos;
-    }
-
-    /**
-     * @param int $pos
-     */
-    protected function advanceLine(int $pos): void
-    {
-        ++$this->line;
-        $this->lineStart = $pos;
     }
 }
