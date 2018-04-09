@@ -59,7 +59,15 @@ function mbOrd(string $s)
  */
 function charCodeAt(string $string, int $position): int
 {
-    return mbOrd(\mb_substr($string, $position, 1, 'UTF-8'));
+    static $cache = [];
+
+    $k = \mb_substr($string, $position, 1, 'UTF-8');
+
+    if (!isset($cache[$k])) {
+        $cache[$k] = mbOrd($k);
+    }
+
+    return $cache[$k];
 }
 
 /**
