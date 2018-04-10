@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Execution\ExecutionResult;
-use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Schema\Schema;
+use Digia\GraphQL\Test\TestCase;
 use React\Promise\Promise;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
@@ -172,6 +172,82 @@ class MutationTest extends TestCase
 
         $this->assertEquals($expected, $result->toArray());
     }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvalidTypeException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
+    public function testNestedMutationQuery()
+    {
+        $profileType = newObjectType([
+            'name'    => 'ProfileType',
+            'fields'  => [
+                'nickname' => ['type' => String()],
+            ],
+            'resolve' => function ($obj, $args) {
+                return "Korl Marcus";
+            }
+        ]);
+
+        $userType = newObjectType([
+            'name'    => 'UserType',
+            'fields'  => [
+                'username' => ['type' => String()],
+                'profile'  => [
+                    'args' => ['nickname' => ['type' => String()]],
+                    'type' => $profileType
+                ],
+            ],
+            'resolve' => function ($obj, $args) {
+                return "Luke Skywalker";
+            }
+        ]);
+
+        $schema = newSchema([
+            'query'    => newObjectType([
+                'name'   => 'Query',
+                'fields' => [
+                    'test' => ['type' => String()],
+                ]
+            ]),
+            'mutation' => newObjectType([
+                'name'    => 'Mutation',
+                'fields'  => [
+                    'createUser' => [
+                        'args' => ['username' => ['type' => String()]],
+                        'type' => $userType,
+                    ]
+                ],
+                'resolve' => function ($obj, $args) {
+                    return $args;
+                }
+            ])
+        ]);
+
+        //@TODO Couldn't get argument nickname in execution
+        $source = 'mutation M {
+            createUser(username:"Luke Skywalker") {
+                username
+                profile(nickname:"Korl Marcus") {
+                    nickname
+                }
+            }
+        }';
+
+        $result = execute($schema, parse($source), []);
+
+        $this->assertEquals([
+            'data' => [
+                'createUser' => [
+                    'username' => 'Luke Skywalker',
+                    'profile'  => [
+                        'nickname' => 'Korl Marcus'
+                    ]
+                ]
+            ]
+        ], $result->toArray());
+    }
 }
 
 
@@ -235,6 +311,10 @@ class Root
     }
 }
 
+/**
+ * @return Schema
+ * @throws \Digia\GraphQL\Error\InvariantException
+ */
 function rootSchema(): Schema
 {
     $numberHolderType = newObjectType([
