@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInterface, NameAwareInterface
@@ -12,14 +12,33 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
     use InputArgumentsTrait;
 
     /**
-     * @var string
-     */
-    protected $kind = NodeKindEnum::DIRECTIVE_DEFINITION;
-
-    /**
      * @var NameNode[]
      */
     protected $locations;
+
+    /**
+     * DirectiveDefinitionNode constructor.
+     *
+     * @param StringValueNode|null $description
+     * @param NameNode             $name
+     * @param ArgumentNode[]       $arguments
+     * @param NameNode[]           $locations
+     * @param Location|null        $location
+     */
+    public function __construct(
+        ?StringValueNode $description,
+        NameNode $name,
+        array $arguments,
+        array $locations,
+        ?Location $location
+    ) {
+        parent::__construct(NodeKindEnum::DIRECTIVE_DEFINITION, $location);
+
+        $this->description = $description;
+        $this->name        = $name;
+        $this->arguments   = $arguments;
+        $this->locations   = $locations;
+    }
 
     /**
      * @return NameNode[]
@@ -34,13 +53,13 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
      */
     public function getLocationsAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->locations);
     }
 
     /**
-     * @param array|NameNode[] $locations
+     * @param NameNode[] $locations
      * @return $this
      */
     public function setLocations(array $locations)

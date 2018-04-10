@@ -2,17 +2,14 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Visitor\AcceptsVisitorsInterface;
 use Digia\GraphQL\Language\Visitor\AcceptsVisitorsTrait;
 use Digia\GraphQL\Util\ArrayToJsonTrait;
 use Digia\GraphQL\Util\SerializationInterface;
 
-abstract class AbstractNode implements SerializationInterface, AcceptsVisitorsInterface, ConfigAwareInterface
+abstract class AbstractNode implements SerializationInterface, AcceptsVisitorsInterface
 {
-    use ConfigAwareTrait;
     use AcceptsVisitorsTrait;
     use ArrayToJsonTrait;
 
@@ -25,6 +22,18 @@ abstract class AbstractNode implements SerializationInterface, AcceptsVisitorsIn
      * @var Location|null
      */
     protected $location;
+
+    /**
+     * AbstractNode constructor.
+     *
+     * @param string        $kind
+     * @param Location|null $location
+     */
+    public function __construct(string $kind, ?Location $location)
+    {
+        $this->kind     = $kind;
+        $this->location = $location;
+    }
 
     /**
      * @return string

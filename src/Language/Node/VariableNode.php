@@ -2,12 +2,22 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class VariableNode extends AbstractNode implements ValueNodeInterface, NameAwareInterface
 {
     use NameTrait;
 
     /**
-     * @var string
+     * VariableNode constructor.
+     *
+     * @param NameNode      $name
+     * @param Location|null $location
      */
-    protected $kind = NodeKindEnum::VARIABLE;
+    public function __construct(NameNode $name, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::VARIABLE, $location);
+
+        $this->name = $name;
+    }
 }

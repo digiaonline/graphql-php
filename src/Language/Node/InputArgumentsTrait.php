@@ -33,7 +33,7 @@ trait InputArgumentsTrait
      */
     public function getArgumentsAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->arguments);
     }

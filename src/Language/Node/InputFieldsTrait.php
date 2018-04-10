@@ -33,7 +33,7 @@ trait InputFieldsTrait
      */
     public function getFieldsAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->fields);
     }

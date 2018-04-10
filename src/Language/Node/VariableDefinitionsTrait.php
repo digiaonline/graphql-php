@@ -24,8 +24,18 @@ trait VariableDefinitionsTrait
      */
     public function getVariableDefinitionsAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->variableDefinitions);
+    }
+
+    /**
+     * @param VariableDefinitionNode[] $variableDefinitions
+     * @return $this
+     */
+    protected function setVariableDefinitions(array $variableDefinitions)
+    {
+        $this->variableDefinitions = $variableDefinitions;
+        return $this;
     }
 }

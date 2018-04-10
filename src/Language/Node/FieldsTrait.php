@@ -6,7 +6,6 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 trait FieldsTrait
 {
-
     /**
      * @var FieldDefinitionNode[]
      */
@@ -33,7 +32,7 @@ trait FieldsTrait
      */
     public function getFieldsAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->fields);
     }

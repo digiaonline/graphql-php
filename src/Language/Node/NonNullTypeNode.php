@@ -2,17 +2,24 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 
 class NonNullTypeNode extends AbstractNode implements TypeNodeInterface
 {
-
     use TypeTrait;
 
     /**
-     * @var string
+     * NonNullTypeNode constructor.
+     *
+     * @param TypeNodeInterface $type
+     * @param Location|null     $location
      */
-    protected $kind = NodeKindEnum::NON_NULL_TYPE;
+    public function __construct(TypeNodeInterface $type, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::NON_NULL_TYPE, $location);
+
+        $this->type = $type;
+    }
 
     /**
      * @inheritdoc
@@ -31,6 +38,6 @@ class NonNullTypeNode extends AbstractNode implements TypeNodeInterface
      */
     public function __toString(): string
     {
-        return (string)$this->getType() . '!';
+        return (string)$this->type . '!';
     }
 }

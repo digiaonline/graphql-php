@@ -2,7 +2,9 @@
 
 namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\TypeNodeInterface;
 
 interface ParserInterface
 {
@@ -12,9 +14,9 @@ interface ParserInterface
      *
      * @param Source|string $source
      * @param array         $options
-     * @return NodeInterface
+     * @return DocumentNode
      */
-    public function parse($source, array $options = []): NodeInterface;
+    public function parse($source, array $options = []): DocumentNode;
 
     /**
      * Given a string containing a GraphQL value (ex. `[42]`), parse the AST for
@@ -38,7 +40,7 @@ interface ParserInterface
      *
      * @param Source|string $source
      * @param array         $options
-     * @return NodeInterface
+     * @return TypeNodeInterface
      */
-    public function parseType($source, array $options = []): NodeInterface;
+    public function parseType($source, array $options = []): TypeNodeInterface;
 }

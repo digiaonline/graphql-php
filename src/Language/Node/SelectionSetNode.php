@@ -2,21 +2,28 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class SelectionSetNode extends AbstractNode implements NodeInterface
 {
-
-    /**
-     * @var string
-     */
-    protected $kind = NodeKindEnum::SELECTION_SET;
-
     /**
      * @var SelectionNodeInterface[]
      */
     protected $selections = [];
+
+    /**
+     * SelectionSetNode constructor.
+     *
+     * @param SelectionNodeInterface[] $selections
+     * @param Location|null            $location
+     */
+    public function __construct(array $selections, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::SELECTION_SET, $location);
+
+        $this->selections = $selections;
+    }
 
     /**
      * @return SelectionNodeInterface[]
@@ -31,7 +38,7 @@ class SelectionSetNode extends AbstractNode implements NodeInterface
      */
     public function getSelectionsAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->selections);
     }

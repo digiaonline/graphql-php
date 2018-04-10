@@ -2,17 +2,24 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 
 class BooleanValueNode extends AbstractNode implements ValueNodeInterface
 {
-
     use ValueTrait;
 
     /**
-     * @var string
+     * BooleanValueNode constructor.
+     *
+     * @param mixed         $value
+     * @param Location|null $location
      */
-    protected $kind = NodeKindEnum::BOOLEAN;
+    public function __construct($value, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::BOOLEAN, $location);
+
+        $this->value = $value;
+    }
 
     /**
      * @inheritdoc

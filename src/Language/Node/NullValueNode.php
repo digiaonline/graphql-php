@@ -2,13 +2,17 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 
 class NullValueNode extends AbstractNode implements ValueNodeInterface
 {
-
     /**
-     * @var string
+     * NullValueNode constructor.
+     *
+     * @param Location|null $location
      */
-    protected $kind = NodeKindEnum::NULL;
+    public function __construct(?Location $location)
+    {
+        parent::__construct(NodeKindEnum::NULL, $location);
+    }
 }

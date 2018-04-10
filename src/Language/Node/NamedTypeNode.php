@@ -2,15 +2,24 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class NamedTypeNode extends AbstractNode implements TypeNodeInterface
 {
-
     use NameTrait;
 
     /**
-     * @var string
+     * NamedTypeNode constructor.
+     *
+     * @param NameNode      $name
+     * @param Location|null $location
      */
-    protected $kind = NodeKindEnum::NAMED_TYPE;
+    public function __construct(NameNode $name, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::NAMED_TYPE, $location);
+
+        $this->name = $name;
+    }
 
     /**
      * @inheritdoc

@@ -2,15 +2,27 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class ArgumentNode extends AbstractNode implements NodeInterface, NameAwareInterface
 {
     use NameTrait;
     use ValueLiteralTrait;
 
     /**
-     * @var string
+     * ArgumentNode constructor.
+     *
+     * @param NameNode           $name
+     * @param ValueNodeInterface $value
+     * @param Location|null      $location
      */
-    protected $kind = NodeKindEnum::ARGUMENT;
+    public function __construct(NameNode $name, ValueNodeInterface $value, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::ARGUMENT, $location);
+
+        $this->name  = $name;
+        $this->value = $value;
+    }
 
     /**
      * @return array

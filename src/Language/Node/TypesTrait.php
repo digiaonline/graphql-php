@@ -6,7 +6,6 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 trait TypesTrait
 {
-
     /**
      * @var NamedTypeNode[]
      */
@@ -33,7 +32,7 @@ trait TypesTrait
      */
     public function getTypesAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->types);
     }

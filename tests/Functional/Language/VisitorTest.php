@@ -59,57 +59,61 @@ class VisitorTest extends TestCase
 
     public function testAllowsEditingANodeBothOnEnterAndOnLeave()
     {
-        $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
+        $this->markTestIncomplete('NOT SUPPORTED: We do not support node configuration anymore.');
 
-        $visitor = new Visitor(
-            function (NodeInterface $node): ?NodeInterface {
-                if ($node instanceof OperationDefinitionNode) {
-                    return $node->setConfigValue('didEnter', true);
-                }
-                return $node;
-            },
-            function (NodeInterface $node): ?NodeInterface {
-                if ($node instanceof OperationDefinitionNode) {
-                    return $node->setConfigValue('didLeave', true);
-                }
-                return $node;
-            }
-        );
-
-        /** @var DocumentNode $editedAst */
-        $editedAst = $ast->acceptVisitor($visitor);
-
-        /** @var ConfigAwareInterface $editedNode */
-        $editedNode = $editedAst->getDefinitions()[0];
-
-        $this->assertTrue($editedNode->getConfigValue('didEnter'));
-        $this->assertTrue($editedNode->getConfigValue('didLeave'));
+//        $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
+//
+//        $visitor = new Visitor(
+//            function (NodeInterface $node): ?NodeInterface {
+//                if ($node instanceof OperationDefinitionNode) {
+//                    return $node->setConfigValue('didEnter', true);
+//                }
+//                return $node;
+//            },
+//            function (NodeInterface $node): ?NodeInterface {
+//                if ($node instanceof OperationDefinitionNode) {
+//                    return $node->setConfigValue('didLeave', true);
+//                }
+//                return $node;
+//            }
+//        );
+//
+//        /** @var DocumentNode $editedAst */
+//        $editedAst = $ast->acceptVisitor($visitor);
+//
+//        /** @var ConfigAwareInterface $editedNode */
+//        $editedNode = $editedAst->getDefinitions()[0];
+//
+//        $this->assertTrue($editedNode->getConfigValue('didEnter'));
+//        $this->assertTrue($editedNode->getConfigValue('didLeave'));
     }
 
     public function testAllowsEditingTheRootNodeOnEnterAndOnLeave()
     {
-        $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
+        $this->markTestIncomplete('NOT SUPPORTED: We do not support node configuration anymore.');
 
-        $visitor = new Visitor(
-            function (NodeInterface $node): ?NodeInterface {
-                if ($node instanceof DocumentNode) {
-                    return $node->setConfigValue('didEnter', true);
-                }
-                return $node;
-            },
-            function (NodeInterface $node): ?NodeInterface {
-                if ($node instanceof DocumentNode) {
-                    return $node->setConfigValue('didLeave', true);
-                }
-                return $node;
-            }
-        );
-
-        /** @var ConfigAwareTrait $editedAst */
-        $editedAst = $ast->acceptVisitor($visitor);
-
-        $this->assertTrue($editedAst->getConfigValue('didEnter'));
-        $this->assertTrue($editedAst->getConfigValue('didLeave'));
+//        $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
+//
+//        $visitor = new Visitor(
+//            function (NodeInterface $node): ?NodeInterface {
+//                if ($node instanceof DocumentNode) {
+//                    return $node->setConfigValue('didEnter', true);
+//                }
+//                return $node;
+//            },
+//            function (NodeInterface $node): ?NodeInterface {
+//                if ($node instanceof DocumentNode) {
+//                    return $node->setConfigValue('didLeave', true);
+//                }
+//                return $node;
+//            }
+//        );
+//
+//        /** @var ConfigAwareTrait $editedAst */
+//        $editedAst = $ast->acceptVisitor($visitor);
+//
+//        $this->assertTrue($editedAst->getConfigValue('didEnter'));
+//        $this->assertTrue($editedAst->getConfigValue('didLeave'));
     }
 
     public function testAllowsForEditingOnEnter()
@@ -167,11 +171,14 @@ class VisitorTest extends TestCase
 
     public function testVisitsEditedNode()
     {
-        $addedField = (new FieldNode([
-            'name' => new NameNode([
-                'value' => '__typename',
-            ]),
-        ]))->setConfigValue('isAddedField', true);
+        $addedField = new FieldNode(
+            new NameNode('isAddedField', null),
+            new NameNode('__typename', null),
+            [],
+            [],
+            null,
+            null
+        );
 
         $didVisitEditedNode = false;
 
@@ -183,7 +190,9 @@ class VisitorTest extends TestCase
                     return $addedField;
                 }
 
-                if ($node->getConfigValue('isAddedField')) {
+                if ($node instanceof FieldNode &&
+                    $node->getNameValue() === '__typename' &&
+                    $node->getAliasValue() === 'isAddedField') {
                     $didVisitEditedNode = true;
                 }
 
@@ -1214,21 +1223,17 @@ class VisitorTest extends TestCase
                         && null === $node->getSelectionSet()
                         && getNamedType($type) instanceof CompositeTypeInterface
                     ) {
-                        return new FieldNode([
-                            'alias'        => $node->getAlias(),
-                            'name'         => $node->getName(),
-                            'arguments'    => $node->getArguments(),
-                            'directives'   => $node->getDirectives(),
-                            'selectionSet' => new SelectionSetNode([
-                                'selections' => [
-                                    new FieldNode([
-                                        'name' => new NameNode([
-                                            'value' => '__typename',
-                                        ]),
-                                    ]),
-                                ],
-                            ]),
-                        ]);
+                        return new FieldNode(
+                            $node->getAlias(),
+                            $node->getName(),
+                            $node->getArguments(),
+                            $node->getDirectives(),
+                            new SelectionSetNode(
+                                [new FieldNode(null, new NameNode('__typename', null), [], [], null, null)],
+                                null
+                            ),
+                            null
+                        );
                     }
 
                     return $node;

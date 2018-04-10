@@ -2,24 +2,31 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class DocumentNode extends AbstractNode implements NodeInterface
 {
-
     /**
-     * @var string
-     */
-    protected $kind = NodeKindEnum::DOCUMENT;
-
-    /**
-     * @var array|DefinitionNodeInterface[]
+     * @var DefinitionNodeInterface[]
      */
     protected $definitions;
 
     /**
-     * @return array|DefinitionNodeInterface[]
+     * DocumentNode constructor.
+     *
+     * @param DefinitionNodeInterface[] $definitions
+     * @param Location|null             $location
+     */
+    public function __construct(array $definitions, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::DOCUMENT, $location);
+
+        $this->definitions = $definitions;
+    }
+
+    /**
+     * @return DefinitionNodeInterface[]
      */
     public function getDefinitions(): array
     {
@@ -31,19 +38,9 @@ class DocumentNode extends AbstractNode implements NodeInterface
      */
     public function getDefinitionsAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->definitions);
-    }
-
-    /**
-     * @param array|DefinitionNodeInterface[] $definitions
-     * @return DocumentNode
-     */
-    public function setDefinitions($definitions)
-    {
-        $this->definitions = $definitions;
-        return $this;
     }
 
     /**
@@ -56,5 +53,15 @@ class DocumentNode extends AbstractNode implements NodeInterface
             'definitions' => $this->getDefinitionsAsArray(),
             'loc'         => $this->getLocationAsArray(),
         ];
+    }
+
+    /**
+     * @param DefinitionNodeInterface[] $definitions
+     * @return DocumentNode
+     */
+    protected function setDefinitions(array $definitions): DocumentNode
+    {
+        $this->definitions = $definitions;
+        return $this;
     }
 }

@@ -6,7 +6,6 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 trait EnumValuesTrait
 {
-
     /**
      * @var EnumValueDefinitionNode[]
      */
@@ -33,7 +32,7 @@ trait EnumValuesTrait
      */
     public function getValuesAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->values);
     }

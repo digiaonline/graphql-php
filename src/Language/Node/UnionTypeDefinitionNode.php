@@ -2,20 +2,38 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 
 class UnionTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface
 {
-
     use DescriptionTrait;
     use NameTrait;
     use DirectivesTrait;
     use TypesTrait;
 
     /**
-     * @var string
+     * UnionTypeDefinitionNode constructor.
+     *
+     * @param StringValueNode|null $description
+     * @param NameNode             $name
+     * @param DirectiveNode[]      $directives
+     * @param NamedTypeNode[]      $types
+     * @param Location|null        $location
      */
-    protected $kind = NodeKindEnum::UNION_TYPE_DEFINITION;
+    public function __construct(
+        ?StringValueNode $description,
+        NameNode $name,
+        array $directives,
+        array $types,
+        ?Location $location
+    ) {
+        parent::__construct(NodeKindEnum::UNION_TYPE_DEFINITION, $location);
+
+        $this->description = $description;
+        $this->name        = $name;
+        $this->directives  = $directives;
+        $this->types       = $types;
+    }
 
     /**
      * @inheritdoc

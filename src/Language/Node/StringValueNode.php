@@ -2,19 +2,31 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class StringValueNode extends AbstractNode implements ValueNodeInterface
 {
     use ValueTrait;
 
     /**
-     * @var string
-     */
-    protected $kind = NodeKindEnum::STRING;
-
-    /**
      * @var bool
      */
     protected $block;
+
+    /**
+     * StringValueNode constructor.
+     *
+     * @param mixed         $value
+     * @param bool          $block
+     * @param Location|null $location
+     */
+    public function __construct($value, bool $block, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::STRING, $location);
+
+        $this->value = $value;
+        $this->block = $block;
+    }
 
     /**
      * @return bool
