@@ -6,11 +6,10 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 trait VariableDefinitionsTrait
 {
-
     /**
      * @var VariableDefinitionNode[]
      */
-    protected $variableDefinitions;
+    protected $variableDefinitions = [];
 
     /**
      * @return VariableDefinitionNode[]

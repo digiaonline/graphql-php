@@ -3,24 +3,6 @@
 namespace Digia\GraphQL\Language;
 
 /**
- * @param string $string
- * @param int    $position
- * @return int
- */
-function charCodeAt(string $string, int $position): int
-{
-    static $cache = [];
-
-    $char = \mb_substr($string, $position, 1, 'UTF-8');
-
-    if (!isset($cache[$char])) {
-        $cache[$char] = \mb_ord($char);
-    }
-
-    return $cache[$char];
-}
-
-/**
  * @param int $code
  * @return string
  */
@@ -101,60 +83,6 @@ function isLineTerminator(int $code): bool
 function isSourceCharacter(int $code): bool
 {
     return $code < 0x0020 && $code !== 0x0009; // any source character EXCEPT HT (Horizontal Tab)
-}
-
-/**
- * @param string $body
- * @param int    $code
- * @param int    $pos
- * @return bool
- */
-function isSpread(string $body, int $code, int $pos): bool
-{
-    return $code === 46 &&
-        charCodeAt($body, $pos + 1) === 46 &&
-        charCodeAt($body, $pos + 2) === 46; // ...
-}
-
-/**
- * @param string $body
- * @param int    $code
- * @param int    $pos
- * @return bool
- */
-function isString(string $body, int $code, int $pos): bool
-{
-    return $code === 34 && charCodeAt($body, $pos + 1) !== 34;
-}
-
-/**
- * @param string $body
- * @param int    $code
- * @param int    $pos
- * @return bool
- */
-function isTripleQuote(string $body, int $code, int $pos): bool
-{
-    return $code === 34 &&
-        charCodeAt($body, $pos + 1) === 34 &&
-        charCodeAt($body, $pos + 2) === 34; // """
-}
-
-/**
- * @param string $body
- * @param int    $code
- * @param int    $pos
- * @return bool
- */
-function isEscapedTripleQuote(
-    string $body,
-    int $code,
-    int $pos
-): bool {
-    return $code === 92 &&
-        charCodeAt($body, $pos + 1) === 34 &&
-        charCodeAt($body, $pos + 2) === 34 &&
-        charCodeAt($body, $pos + 3) === 34; // \"""
 }
 
 /**

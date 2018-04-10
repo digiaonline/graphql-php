@@ -16,7 +16,7 @@ class SelectionSetNode extends AbstractNode implements NodeInterface
     /**
      * @var SelectionNodeInterface[]
      */
-    protected $selections;
+    protected $selections = [];
 
     /**
      * @return SelectionNodeInterface[]

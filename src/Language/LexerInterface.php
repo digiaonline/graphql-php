@@ -21,11 +21,6 @@ interface LexerInterface
     public function lookahead(): Token;
 
     /**
-     * @return string
-     */
-    public function getBody(): string;
-
-    /**
      * @param string     $name
      * @param mixed|null $default
      * @return mixed
@@ -56,16 +51,4 @@ interface LexerInterface
      * @return Token
      */
     public function getLastToken(): Token;
-
-    /**
-     * @param Source $source
-     * @return $this
-     */
-    public function setSource(Source $source);
-
-    /**
-     * @param array $options
-     * @return $this
-     */
-    public function setOptions(array $options);
 }

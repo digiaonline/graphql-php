@@ -2,9 +2,7 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
-
-class InlineFragmentNode extends AbstractNode implements NodeInterface
+class InlineFragmentNode extends AbstractNode implements FragmentNodeInterface
 {
 
     use DirectivesTrait;

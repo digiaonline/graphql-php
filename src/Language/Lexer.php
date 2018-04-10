@@ -2,13 +2,12 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Error\SyntaxErrorException;
 
 class Lexer implements LexerInterface
 {
     /**
-     * A map between character code and the corresponding token kind.
+     * A map between punctuation character code and the corresponding token kind.
      *
      * @var array
      */
@@ -16,29 +15,29 @@ class Lexer implements LexerInterface
         33  => TokenKindEnum::BANG,
         36  => TokenKindEnum::DOLLAR,
         38  => TokenKindEnum::AMP,
+        40  => TokenKindEnum::PAREN_L,
+        41  => TokenKindEnum::PAREN_R,
         58  => TokenKindEnum::COLON,
         61  => TokenKindEnum::EQUALS,
         64  => TokenKindEnum::AT,
-        124 => TokenKindEnum::PIPE,
-        40  => TokenKindEnum::PAREN_L,
-        41  => TokenKindEnum::PAREN_R,
         91  => TokenKindEnum::BRACKET_L,
         93  => TokenKindEnum::BRACKET_R,
         123 => TokenKindEnum::BRACE_L,
+        124 => TokenKindEnum::PIPE,
         125 => TokenKindEnum::BRACE_R,
     ];
 
     /**
      * The source file for this lexer.
      *
-     * @var Source|null
+     * @var Source
      */
     protected $source;
 
     /**
      * The contents of the source file.
      *
-     * @var string|null
+     * @var string
      */
     protected $body;
 
@@ -92,16 +91,27 @@ class Lexer implements LexerInterface
     protected $lineStart;
 
     /**
-     * Lexer constructor.
+     * @var array
      */
-    public function __construct()
-    {
-        $startOfFileToken = new Token(TokenKindEnum::SOF);
+    protected static $charCodeCache = [];
 
-        $this->lastToken = $startOfFileToken;
-        $this->token     = $startOfFileToken;
-        $this->line      = 1;
-        $this->lineStart = 0;
+    /**
+     * Lexer constructor.
+     * @param Source|null $source
+     * @param array       $options
+     */
+    public function __construct(Source $source, array $options)
+    {
+        $startOfFileToken = $this->createStartOfFileToken();
+
+        $this->lastToken  = $startOfFileToken;
+        $this->token      = $startOfFileToken;
+        $this->line       = 1;
+        $this->lineStart  = 0;
+        $this->body       = $source->getBody();
+        $this->bodyLength = \strlen($this->body);
+        $this->source     = $source;
+        $this->options    = $options;
     }
 
     /**
@@ -143,15 +153,6 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
-     * @throws LanguageException
-     */
-    public function getBody(): string
-    {
-        return $this->getSource()->getBody();
-    }
-
-    /**
-     * @inheritdoc
      */
     public function getTokenKind(): string
     {
@@ -176,15 +177,10 @@ class Lexer implements LexerInterface
 
     /**
      * @inheritdoc
-     * @throws LanguageException
      */
     public function getSource(): Source
     {
-        if ($this->source instanceof Source) {
-            return $this->source;
-        }
-
-        throw new LanguageException('No source has been set.');
+        return $this->source;
     }
 
     /**
@@ -193,26 +189,6 @@ class Lexer implements LexerInterface
     public function getLastToken(): Token
     {
         return $this->lastToken;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setSource(Source $source)
-    {
-        $this->body       = $source->getBody();
-        $this->bodyLength = \strlen($this->body);
-        $this->source     = $source;
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setOptions(array $options)
-    {
-        $this->options = $options;
-        return $this;
     }
 
     /**
@@ -229,13 +205,13 @@ class Lexer implements LexerInterface
         $this->skipWhitespace();
 
         $line = $this->line;
-        $col  = 1 + $this->pos - $this->lineStart;
+        $col  = (1 + $this->pos) - $this->lineStart;
 
         if ($this->pos >= $this->bodyLength) {
             return $this->createEndOfFileToken($line, $col, $prev);
         }
 
-        $code = charCodeAt($this->body, $this->pos);
+        $code = $this->readCharCode($this->pos);
 
         // Punctuation: [!$&:=@|()\[\]{}]{1}
         if (33 === $code || 36 === $code || 38 === $code || 58 === $code || 61 === $code || 64 === $code || 124 === $code ||
@@ -260,21 +236,29 @@ class Lexer implements LexerInterface
         }
 
         // Spread: ...
-        if ($this->bodyLength >= 3 && isSpread($this->body, $code, $this->pos)) {
+        if ($this->bodyLength >= 3 && $this->isSpread($code)) {
             return $this->lexSpread($line, $col, $prev);
         }
 
         // String: "([^"\\\u000A\u000D]|(\\(u[0-9a-fA-F]{4}|["\\/bfnrt])))*"
-        if (isString($this->body, $code, $this->pos)) {
+        if ($this->isString($code)) {
             return $this->lexString($line, $col, $prev);
         }
 
         // Block String: """("?"?(\\"""|\\(?!=""")|[^"\\]))*"""
-        if ($this->bodyLength >= 3 && isTripleQuote($this->body, $code, $this->pos)) {
+        if ($this->bodyLength >= 3 && $this->isTripleQuote($code)) {
             return $this->lexBlockString($line, $col, $prev);
         }
 
         throw $this->createSyntaxErrorException();
+    }
+
+    /**
+     * @return Token
+     */
+    protected function createStartOfFileToken(): Token
+    {
+        return new Token(TokenKindEnum::SOF);
     }
 
     /**
@@ -319,11 +303,12 @@ class Lexer implements LexerInterface
      */
     protected function lexName(int $line, int $col, Token $prev): Token
     {
-        $start     = $this->pos;
-        $this->pos = $start + 1;
+        $start = $this->pos;
+
+        ++$this->pos;
 
         while ($this->pos !== $this->bodyLength &&
-            ($code = charCodeAt($this->body, $this->pos)) !== null &&
+            ($code = $this->readCharCode($this->pos)) !== null &&
             isAlphaNumeric($code)) {
             ++$this->pos;
         }
@@ -350,12 +335,12 @@ class Lexer implements LexerInterface
 
         if (45 === $code) {
             // -
-            $code = charCodeAt($this->body, ++$this->pos);
+            $code = $this->readCharCode(++$this->pos);
         }
 
         if (48 === $code) {
             // 0
-            $code = charCodeAt($this->body, ++$this->pos);
+            $code = $this->readCharCode(++$this->pos);
 
             if (isNumber($code)) {
                 throw $this->createSyntaxErrorException(
@@ -364,27 +349,26 @@ class Lexer implements LexerInterface
             }
         } else {
             $this->skipDigits($code);
-            $code = charCodeAt($this->body, $this->pos);
+            $code = $this->readCharCode($this->pos);
         }
 
         if (46 === $code) {
             // .
             $isFloat = true;
-            $code    = charCodeAt($this->body, ++$this->pos);
 
+            $code = $this->readCharCode(++$this->pos);
             $this->skipDigits($code);
-
-            $code = charCodeAt($this->body, $this->pos);
+            $code = $this->readCharCode($this->pos);
         }
 
         if (69 === $code || 101 === $code) {
             // e or E
             $isFloat = true;
-            $code    = charCodeAt($this->body, ++$this->pos);
+            $code    = $this->readCharCode(++$this->pos);
 
             if (43 === $code || 45 === $code) {
                 // + or -
-                $code = charCodeAt($this->body, ++$this->pos);
+                $code = $this->readCharCode(++$this->pos);
             }
 
             $this->skipDigits($code);
@@ -411,7 +395,7 @@ class Lexer implements LexerInterface
     {
         if (isNumber($code)) {
             do {
-                $code = charCodeAt($this->body, ++$this->pos);
+                $code = $this->readCharCode(++$this->pos);
             } while (isNumber($code));
 
             return;
@@ -435,7 +419,7 @@ class Lexer implements LexerInterface
         $start = $this->pos;
 
         do {
-            $code = charCodeAt($this->body, ++$this->pos);
+            $code = $this->readCharCode(++$this->pos);
         } while ($code !== null && ($code > 0x001f || 0x0009 === $code)); // SourceCharacter but not LineTerminator
 
         return new Token(
@@ -474,11 +458,11 @@ class Lexer implements LexerInterface
     protected function lexString(int $line, int $col, Token $prev): Token
     {
         $start      = $this->pos;
-        $chunkStart = ++$this->pos;
+        $chunkStart = ++$this->pos; // skip the quote
         $value      = '';
 
         while ($this->pos < $this->bodyLength &&
-            ($code = charCodeAt($this->body, $this->pos)) !== null && !isLineTerminator($code)) {
+            ($code = $this->readCharCode($this->pos)) !== null && !isLineTerminator($code)) {
             // Closing Quote (")
             if (34 === $code) {
                 $value .= sliceString($this->body, $chunkStart, $this->pos);
@@ -497,7 +481,7 @@ class Lexer implements LexerInterface
                 // \
                 $value .= sliceString($this->body, $chunkStart, $this->pos - 1);
 
-                $code = charCodeAt($this->body, $this->pos);
+                $code = $this->readCharCode($this->pos);
 
                 switch ($code) {
                     case 34: // "
@@ -564,13 +548,13 @@ class Lexer implements LexerInterface
     protected function lexBlockString(int $line, int $col, Token $prev): Token
     {
         $start      = $this->pos;
-        $this->pos  = $start + 3;
+        $this->pos  = $start + 3; // skip the triple-quote
         $chunkStart = $this->pos;
         $rawValue   = '';
 
-        while ($this->pos < $this->bodyLength && ($code = charCodeAt($this->body, $this->pos)) !== null) {
+        while ($this->pos < $this->bodyLength && ($code = $this->readCharCode($this->pos)) !== null) {
             // Closing Triple-Quote (""")
-            if (isTripleQuote($this->body, $code, $this->pos)) {
+            if ($this->isTripleQuote($code)) {
                 $rawValue .= sliceString($this->body, $chunkStart, $this->pos);
                 return new Token(
                     TokenKindEnum::BLOCK_STRING,
@@ -589,7 +573,7 @@ class Lexer implements LexerInterface
                 );
             }
 
-            if (isEscapedTripleQuote($this->body, $code, $this->pos)) {
+            if ($this->isEscapedTripleQuote($code)) {
                 $rawValue   .= sliceString($this->body, $chunkStart, $this->pos) . '"""';
                 $this->pos  += 4;
                 $chunkStart = $this->pos;
@@ -607,7 +591,7 @@ class Lexer implements LexerInterface
     protected function skipWhitespace(): void
     {
         while ($this->pos < $this->bodyLength) {
-            $code = charCodeAt($this->body, $this->pos);
+            $code = $this->readCharCode($this->pos);
 
             if (9 === $code || 32 === $code || 44 === $code || 0xfeff === $code) {
                 // tab | space | comma | BOM
@@ -619,7 +603,7 @@ class Lexer implements LexerInterface
                 $this->lineStart = $this->pos;
             } elseif (13 === $code) {
                 // carriage return (\r)
-                if (10 === charCodeAt($this->body, $this->pos + 1)) {
+                if (10 === $this->readCharCode($this->pos + 1)) {
                     // carriage return and new line (\r\n)
                     $this->pos += 2;
                 } else {
@@ -634,6 +618,21 @@ class Lexer implements LexerInterface
     }
 
     /**
+     * @param int $pos
+     * @return int
+     */
+    protected function readCharCode(int $pos): int
+    {
+        $char = \mb_substr($this->body, $pos, 1, 'UTF-8');
+
+        if (!isset(self::$charCodeCache[$char])) {
+            self::$charCodeCache[$char] = \mb_ord($char);
+        }
+
+        return self::$charCodeCache[$char];
+    }
+
+    /**
      * Creates a `SyntaxErrorException` for the current position in the source.
      *
      * @param null|string $description
@@ -641,11 +640,10 @@ class Lexer implements LexerInterface
      */
     protected function createSyntaxErrorException(?string $description = null): SyntaxErrorException
     {
-        $code = charCodeAt($this->body, $this->pos);
         return new SyntaxErrorException(
             $this->source,
             $this->pos,
-            $description ?? $this->unexpectedCharacterMessage($code)
+            $description ?? $this->unexpectedCharacterMessage($this->readCharCode($this->pos))
         );
     }
 
@@ -667,5 +665,48 @@ class Lexer implements LexerInterface
         }
 
         return \sprintf('Cannot parse the unexpected character %s.', printCharCode($code));
+    }
+
+    /**
+     * @param int $code
+     * @return bool
+     */
+    protected function isSpread(int $code): bool
+    {
+        return 46 === $code &&
+            $this->readCharCode($this->pos + 1) === 46 &&
+            $this->readCharCode($this->pos + 2) === 46; // ...
+    }
+
+    /**
+     * @param int $code
+     * @return bool
+     */
+    protected function isString(int $code): bool
+    {
+        return 34 === $code && $this->readCharCode($this->pos + 1) !== 34;
+    }
+
+    /**
+     * @param int $code
+     * @return bool
+     */
+    protected function isTripleQuote(int $code): bool
+    {
+        return 34 === $code &&
+            34 === $this->readCharCode($this->pos + 1) &&
+            34 === $this->readCharCode($this->pos + 2); // """
+    }
+
+    /**
+     * @param int $code
+     * @return bool
+     */
+    protected function isEscapedTripleQuote(int $code): bool
+    {
+        return $code === 92 &&
+            34 === $this->readCharCode($this->pos + 1) &&
+            34 === $this->readCharCode($this->pos + 2) &&
+            34 === $this->readCharCode($this->pos + 3); // \"""
     }
 }
