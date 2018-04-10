@@ -6,6 +6,8 @@ use Digia\GraphQL\Error\SyntaxErrorException;
 
 class Lexer implements LexerInterface
 {
+    protected const ENCODING = 'UTF-8';
+
     /**
      * A map between punctuation character code and the corresponding token kind.
      *
@@ -364,7 +366,8 @@ class Lexer implements LexerInterface
         if (69 === $code || 101 === $code) {
             // e or E
             $isFloat = true;
-            $code    = $this->readCharCode(++$this->pos);
+
+            $code = $this->readCharCode(++$this->pos);
 
             if (43 === $code || 45 === $code) {
                 // + or -
@@ -623,10 +626,14 @@ class Lexer implements LexerInterface
      */
     protected function readCharCode(int $pos): int
     {
-        $char = \mb_substr($this->body, $pos, 1, 'UTF-8');
+        $char = \mb_substr($this->body, $pos, 1, self::ENCODING);
+
+        if ('' === $char) {
+            return 0;
+        }
 
         if (!isset(self::$charCodeCache[$char])) {
-            self::$charCodeCache[$char] = \mb_ord($char);
+            self::$charCodeCache[$char] = \mb_ord($char, self::ENCODING);
         }
 
         return self::$charCodeCache[$char];
