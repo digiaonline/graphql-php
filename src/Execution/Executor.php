@@ -162,7 +162,7 @@ class Executor
      * @param ObjectType $objectType
      * @param            $rootValue
      * @param            $path
-     * @param            $fields
+     * @param  array     $fields
      * @return array
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
@@ -173,7 +173,7 @@ class Executor
         ObjectType $objectType,
         $rootValue,
         $path,
-        $fields
+        array $fields
     ): array {
         $finalResults      = [];
         $isContainsPromise = false;
@@ -212,7 +212,7 @@ class Executor
      * @param ObjectType $objectType
      * @param            $rootValue
      * @param            $path
-     * @param            $fields
+     * @param  array     $fields
      * @return array
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
@@ -223,7 +223,7 @@ class Executor
         ObjectType $objectType,
         $rootValue,
         $path,
-        $fields
+        array $fields
     ) {
 
         $finalResults = [];
@@ -310,7 +310,7 @@ class Executor
     /**
      * @param ObjectType $parentType
      * @param            $rootValue
-     * @param            $fieldNodes
+     * @param array      $fieldNodes
      * @param            $path
      * @return array|null|\Throwable
      * @throws InvalidTypeException
@@ -321,7 +321,7 @@ class Executor
     protected function resolveField(
         ObjectType $parentType,
         $rootValue,
-        $fieldNodes,
+        array $fieldNodes,
         $path
     ) {
         /** @var FieldNode $fieldNode */
@@ -413,7 +413,7 @@ class Executor
 
     /**
      * @param TypeInterface $fieldType
-     * @param               $fieldNodes
+     * @param array         $fieldNodes
      * @param ResolveInfo   $info
      * @param               $path
      * @param               $result
@@ -422,7 +422,7 @@ class Executor
      */
     public function completeValueCatchingError(
         TypeInterface $fieldType,
-        $fieldNodes,
+        array $fieldNodes,
         ResolveInfo $info,
         $path,
         &$result
@@ -478,7 +478,7 @@ class Executor
 
     /**
      * @param TypeInterface $fieldType
-     * @param               $fieldNodes
+     * @param array         $fieldNodes
      * @param ResolveInfo   $info
      * @param               $path
      * @param               $result
@@ -486,7 +486,7 @@ class Executor
      */
     public function completeValueWithLocatedError(
         TypeInterface $fieldType,
-        $fieldNodes,
+        array $fieldNodes,
         ResolveInfo $info,
         $path,
         $result
@@ -508,7 +508,7 @@ class Executor
 
     /**
      * @param TypeInterface $returnType
-     * @param               $fieldNodes
+     * @param array         $fieldNodes
      * @param ResolveInfo   $info
      * @param               $path
      * @param               $result
@@ -518,7 +518,7 @@ class Executor
      */
     private function completeValue(
         TypeInterface $returnType,
-        $fieldNodes,
+        array $fieldNodes,
         ResolveInfo $info,
         $path,
         &$result
@@ -587,7 +587,7 @@ class Executor
 
     /**
      * @param AbstractTypeInterface $returnType
-     * @param                       $fieldNodes
+     * @param array                 $fieldNodes
      * @param ResolveInfo           $info
      * @param                       $path
      * @param                       $result
@@ -599,7 +599,7 @@ class Executor
      */
     private function completeAbstractValue(
         AbstractTypeInterface $returnType,
-        $fieldNodes,
+        array $fieldNodes,
         ResolveInfo $info,
         $path,
         &$result
@@ -654,7 +654,7 @@ class Executor
     /**
      * @param                       $runtimeTypeOrName
      * @param AbstractTypeInterface $returnType
-     * @param                       $fieldNodes
+     * @param array                 $fieldNodes
      * @param ResolveInfo           $info
      * @param                       $result
      * @return TypeInterface|ObjectType|null
@@ -663,7 +663,7 @@ class Executor
     private function ensureValidRuntimeType(
         $runtimeTypeOrName,
         AbstractTypeInterface $returnType,
-        $fieldNodes,
+        array $fieldNodes,
         ResolveInfo $info,
         &$result
     ) {
@@ -753,7 +753,7 @@ class Executor
 
     /**
      * @param ListType    $returnType
-     * @param             $fieldNodes
+     * @param array       $fieldNodes
      * @param ResolveInfo $info
      * @param             $path
      * @param             $result
@@ -762,7 +762,7 @@ class Executor
      */
     private function completeListValue(
         ListType $returnType,
-        $fieldNodes,
+        array $fieldNodes,
         ResolveInfo $info,
         $path,
         &$result
@@ -815,7 +815,7 @@ class Executor
 
     /**
      * @param ObjectType  $returnType
-     * @param             $fieldNodes
+     * @param array       $fieldNodes
      * @param ResolveInfo $info
      * @param             $path
      * @param             $result
@@ -827,7 +827,7 @@ class Executor
      */
     private function completeObjectValue(
         ObjectType $returnType,
-        $fieldNodes,
+        array $fieldNodes,
         ResolveInfo $info,
         $path,
         &$result
