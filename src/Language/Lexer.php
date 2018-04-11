@@ -136,7 +136,7 @@ class Lexer implements LexerInterface
 
         if (TokenKindEnum::EOF !== $token->kind) {
             do {
-                $next = $token->next = $this->readToken($token);
+                $next  = $token->next = $this->readToken($token);
                 $token = $next;
             } while (TokenKindEnum::COMMENT === $token->kind);
         }
@@ -628,7 +628,13 @@ class Lexer implements LexerInterface
         }
 
         if (!isset(self::$charCodeCache[$char])) {
-            self::$charCodeCache[$char] = \mb_ord($char, self::ENCODING);
+            $code = \ord($char);
+
+            if ($code >= 128) {
+                $code = \mb_ord($char, self::ENCODING);
+            }
+
+            self::$charCodeCache[$char] = $code;
         }
 
         return self::$charCodeCache[$char];
