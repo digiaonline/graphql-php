@@ -32,6 +32,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a }');
 
         $visitor = new Visitor(
@@ -122,6 +123,7 @@ class VisitorTest extends TestCase
 
     public function testAllowsForEditingOnEnter()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
@@ -135,11 +137,13 @@ class VisitorTest extends TestCase
 
         $editedAst = $ast->acceptVisitor($visitor);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
             parse('{ a, b, c { a, b, c } }', ['noLocation' => true])->toArray(),
             $ast->toArray()
         );
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
             parse('{ a,    c { a,    c } }', ['noLocation' => true])->toArray(),
             $editedAst->toArray()
@@ -148,6 +152,7 @@ class VisitorTest extends TestCase
 
     public function testAllowsForEditingOnLeave()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
@@ -162,11 +167,13 @@ class VisitorTest extends TestCase
 
         $editedAst = $ast->acceptVisitor($visitor);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
             parse('{ a, b, c { a, b, c } }', ['noLocation' => true])->toArray(),
             $ast->toArray()
         );
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
             parse('{ a,    c { a,    c } }', ['noLocation' => true])->toArray(),
             $editedAst->toArray()
@@ -186,6 +193,7 @@ class VisitorTest extends TestCase
 
         $didVisitEditedNode = false;
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a { x } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
@@ -211,6 +219,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
@@ -255,6 +264,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
@@ -301,6 +311,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
@@ -349,6 +360,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
@@ -386,6 +398,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('fragment a($v: Boolean = false) on t { f }', ['noLocation' => true]);
 
         $visitor = new Visitor(
@@ -441,6 +454,7 @@ class VisitorTest extends TestCase
 
         $kitchenSink = readFileContents(__DIR__ . '/kitchen-sink.graphql');
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse($kitchenSink);
 
         $visitor = new Visitor(
@@ -776,6 +790,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a, b { x }, c }');
 
         $visitor = new ParallelVisitor([
@@ -822,6 +837,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a { x }, b { y } }', ['noLocation' => true]);
 
         $visitor = new ParallelVisitor([
@@ -923,6 +939,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new ParallelVisitor([
@@ -971,6 +988,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new ParallelVisitor([
@@ -1020,6 +1038,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ a { y }, b { x } }', ['noLocation' => true]);
 
         $visitor = new ParallelVisitor([
@@ -1111,6 +1130,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ human(id: 4) { name, pets { ... { name } }, unknown } }');
 
         $typeInfo = new TypeInfo(testSchema());
@@ -1200,6 +1220,7 @@ class VisitorTest extends TestCase
     {
         $visited = [];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $ast = parse('{ human(id: 4) { name, pets }, alien }');
 
         $nodeBuilder = GraphQL::make(NodeBuilderInterface::class);
