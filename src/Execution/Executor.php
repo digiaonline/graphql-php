@@ -35,7 +35,7 @@ use function Digia\GraphQL\Util\typeFromAST;
  * Class AbstractStrategy
  * @package Digia\GraphQL\Execution\Strategies
  */
-abstract class ExecutionStrategy
+class Executor
 {
     /**
      * @var ExecutionContext
@@ -78,10 +78,47 @@ abstract class ExecutionStrategy
         $this->rootValue = $rootValue;
     }
 
+
     /**
-     * @return array|null
+     * @return ?array
+     * @throws \Throwable
      */
-    abstract function execute(): ?array;
+    function execute(): ?array
+    {
+        $operation = $this->context->getOperation()->getOperation();
+        $schema    = $this->context->getSchema();
+
+        $path = [];
+
+        $objectType = ($operation === 'mutation')
+            ? $schema->getMutationType()
+            : $schema->getQueryType();
+
+        $fields = [];
+        $visitedFragmentNames = [];
+        try {
+            $fields = $this->collectFields(
+                $objectType,
+                $this->operation->getSelectionSet(),
+                $fields,
+                $visitedFragmentNames
+            );
+
+            $result = ($operation === 'mutation')
+                ? $this->executeFieldsSerially($objectType, $this->rootValue, $path, $fields)
+                : $this->executeFields($objectType, $this->rootValue, $path, $fields);
+
+        } catch (\Exception $ex) {
+            $this->context->addError(
+                new ExecutionException($ex->getMessage())
+            );
+
+            //@TODO return [null]
+            return [$ex->getMessage()];
+        }
+
+        return $result;
+    }
 
     /**
      * @param ObjectType       $runtimeType

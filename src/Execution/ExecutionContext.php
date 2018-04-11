@@ -180,12 +180,12 @@ class ExecutionContext
     /**
      * Create proper ExecutionStrategy when needed
      *
-     * @return ExecutionStrategy
+     * @return Executor
      */
-    public function getExecutionStrategy(): ExecutionStrategy
+    public function getExecutor(): Executor
     {
         //We can probably return different strategy in the future e.g:AsyncExecutionStrategy
-        return new ExecutorExecutionStrategy($this, $this->operation, $this->rootValue);
+        return new Executor($this, $this->operation, $this->rootValue);
     }
 
     /**

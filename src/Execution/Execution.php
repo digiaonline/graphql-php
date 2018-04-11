@@ -35,7 +35,7 @@ class Execution implements ExecutionInterface
      * @param null          $operationName
      * @param callable|null $fieldResolver
      * @return ExecutionResult
-     * @throws \Exception
+     * @throws \Throwable
      */
     public function execute(
         Schema $schema,
@@ -65,7 +65,7 @@ class Execution implements ExecutionInterface
             return new ExecutionResult(null, [$error]);
         }
 
-        $data = $context->getExecutionStrategy()->execute();
+        $data = $context->getExecutor()->execute();
 
         return new ExecutionResult($data, $context->getErrors());
     }
