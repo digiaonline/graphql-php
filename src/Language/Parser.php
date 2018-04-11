@@ -1662,11 +1662,7 @@ class Parser implements ParserInterface
             return $token;
         }
 
-        throw new SyntaxErrorException(
-            $this->lexer->getSource(),
-            $token->start,
-            sprintf('Expected %s, found %s', $value, $token)
-        );
+        throw $this->lexer->createSyntaxErrorException(\sprintf('Expected %s, found %s', $value, $token));
     }
 
     /**
@@ -1678,7 +1674,7 @@ class Parser implements ParserInterface
      */
     protected function unexpected(?Token $atToken = null): SyntaxErrorException
     {
-        $token = $atToken ?: $this->lexer->getToken();
+        $token = $atToken ?? $this->lexer->getToken();
 
         return $this->lexer->createSyntaxErrorException(\sprintf('Unexpected %s', $token));
     }
