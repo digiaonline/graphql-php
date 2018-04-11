@@ -80,7 +80,8 @@ class Executor
 
 
     /**
-     * @return ?array
+     * @return array|null
+     * @throws ExecutionException
      * @throws \Throwable
      */
     function execute(): ?array

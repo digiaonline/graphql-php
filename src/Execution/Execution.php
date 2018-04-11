@@ -65,7 +65,7 @@ class Execution implements ExecutionInterface
             return new ExecutionResult(null, [$error]);
         }
 
-        $data = $context->getExecutor()->execute();
+        $data = $context->createExecutor()->execute();
 
         return new ExecutionResult($data, $context->getErrors());
     }

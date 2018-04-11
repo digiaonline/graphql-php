@@ -178,13 +178,10 @@ class ExecutionContext
     }
 
     /**
-     * Create proper ExecutionStrategy when needed
-     *
      * @return Executor
      */
-    public function getExecutor(): Executor
+    public function createExecutor(): Executor
     {
-        //We can probably return different strategy in the future e.g:AsyncExecutionStrategy
         return new Executor($this, $this->operation, $this->rootValue);
     }
 
