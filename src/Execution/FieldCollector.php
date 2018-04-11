@@ -36,9 +36,9 @@ class FieldCollector
     /**
      * @param ObjectType       $runtimeType
      * @param SelectionSetNode $selectionSet
-     * @param                  $fields
-     * @param                  $visitedFragmentNames
-     * @return mixed
+     * @param array            $fields
+     * @param array            $visitedFragmentNames
+     * @return array
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvariantException
@@ -46,9 +46,9 @@ class FieldCollector
     public function collectFields(
         ObjectType $runtimeType,
         SelectionSetNode $selectionSet,
-        &$fields,
-        &$visitedFragmentNames
-    ) {
+        array &$fields,
+        array &$visitedFragmentNames
+    ): array {
         foreach ($selectionSet->getSelections() as $selection) {
             // Check if this Node should be included first
             if (!$this->shouldIncludeNode($selection)) {
