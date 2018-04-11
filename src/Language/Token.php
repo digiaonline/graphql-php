@@ -12,42 +12,42 @@ class Token implements SerializationInterface
     /**
      * @var string
      */
-    public $kind;
+    protected $kind;
 
     /**
      * @var int
      */
-    public $start;
+    protected $start;
 
     /**
      * @var int
      */
-    public $end;
+    protected $end;
 
     /**
      * @var int
      */
-    public $line;
+    protected $line;
 
     /**
      * @var int
      */
-    public $column;
+    protected $column;
 
     /**
-     * @var ?Token
+     * @var Token|null
      */
-    public $prev;
+    protected $prev;
 
     /**
-     * @var ?Token
+     * @var Token|null
      */
-    public $next;
+    protected $next;
 
     /**
-     * @var ?string
+     * @var string|null
      */
-    public $value;
+    protected $value;
 
     /**
      * Token constructor.
@@ -76,6 +76,80 @@ class Token implements SerializationInterface
         $this->column = $column;
         $this->prev   = $prev;
         $this->value  = $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKind(): string
+    {
+        return $this->kind;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStart(): int
+    {
+        return $this->start;
+    }
+
+    /**
+     * @return int
+     */
+    public function getEnd(): int
+    {
+        return $this->end;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLine(): int
+    {
+        return $this->line;
+    }
+
+    /**
+     * @return int
+     */
+    public function getColumn(): int
+    {
+        return $this->column;
+    }
+
+    /**
+     * @return Token|null
+     */
+    public function getPrev(): ?Token
+    {
+        return $this->prev;
+    }
+
+    /**
+     * @return Token|null
+     */
+    public function getNext(): ?Token
+    {
+        return $this->next;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param Token|null $next
+     * @return $this
+     */
+    public function setNext(?Token $next)
+    {
+        $this->next = $next;
+        return $this;
     }
 
     /**

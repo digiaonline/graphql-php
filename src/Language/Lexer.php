@@ -134,11 +134,12 @@ class Lexer implements LexerInterface
     {
         $token = $this->token;
 
-        if (TokenKindEnum::EOF !== $token->kind) {
+        if (TokenKindEnum::EOF !== $token->getKind()) {
             do {
-                $next  = $token->next = $this->readToken($token);
+                $next = $this->readToken($token);
+                $token->setNext($next);
                 $token = $next;
-            } while (TokenKindEnum::COMMENT === $token->kind);
+            } while (TokenKindEnum::COMMENT === $token->getKind());
         }
 
         return $token;
@@ -197,7 +198,7 @@ class Lexer implements LexerInterface
      */
     protected function readToken(Token $prev): Token
     {
-        $this->pos = $prev->end;
+        $this->pos = $prev->getEnd();
 
         $this->skipWhitespace();
 
