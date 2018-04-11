@@ -56,7 +56,7 @@ class FieldCollector
             }
             // Collect fields
             if ($selection instanceof FieldNode) {
-                $fieldName = $this->getFieldNameKey($selection);
+                $fieldName = $selection->getAliasOrNameValue();
 
                 if (!isset($fields[$fieldName])) {
                     $fields[$fieldName] = [];
@@ -87,23 +87,13 @@ class FieldCollector
     }
 
     /**
-     * @TODO: consider to move this to FieldNode
-     * @param FieldNode $node
-     * @return string
-     */
-    private function getFieldNameKey(FieldNode $node): string
-    {
-        return $node->getAlias() ? $node->getAlias()->getValue() : $node->getNameValue();
-    }
-
-    /**
      * @param $node
      * @return bool
      * @throws InvalidTypeException
      * @throws \Digia\GraphQL\Error\ExecutionException
      * @throws \Digia\GraphQL\Error\InvariantException
      */
-    private function shouldIncludeNode(NodeInterface $node): bool
+    protected function shouldIncludeNode(NodeInterface $node): bool
     {
 
         $contextVariables = $this->context->getVariableValues();
@@ -129,7 +119,7 @@ class FieldCollector
      * @return bool
      * @throws InvalidTypeException
      */
-    private function doesFragmentConditionMatch(
+    protected function doesFragmentConditionMatch(
         NodeInterface $fragment,
         ObjectType $type
     ): bool {
