@@ -182,7 +182,7 @@ class ExecutionContext
      */
     public function createExecutor(): Executor
     {
-        return new Executor($this, $this->operation, $this->rootValue);
+        return new Executor($this, $this->operation, new FieldCollector($this), $this->rootValue);
     }
 
     /**

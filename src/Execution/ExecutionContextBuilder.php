@@ -35,8 +35,6 @@ class ExecutionContextBuilder
         $operationName = null,
         callable $fieldResolver = null
     ): ExecutionContext {
-        //@TODO validate $rawVariableValues?
-
         $errors    = [];
         $fragments = [];
         $operation = null;
