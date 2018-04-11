@@ -85,16 +85,14 @@ class Executor
      */
     function execute(): ?array
     {
-        $operation = $this->context->getOperation()->getOperation();
+        $operation = $this->context->getOperation();
         $schema    = $this->context->getSchema();
 
         $path = [];
 
-        $objectType = ($operation === 'mutation')
-            ? $schema->getMutationType()
-            : $schema->getQueryType();
+        $objectType = $this->getOperationType($schema, $operation);
 
-        $fields = [];
+        $fields               = [];
         $visitedFragmentNames = [];
         try {
             $fields = $this->collectFields(
@@ -104,7 +102,7 @@ class Executor
                 $visitedFragmentNames
             );
 
-            $result = ($operation === 'mutation')
+            $result = ($operation->getOperation() === 'mutation')
                 ? $this->executeFieldsSerially($objectType, $this->rootValue, $path, $fields)
                 : $this->executeFields($objectType, $this->rootValue, $path, $fields);
 
@@ -118,6 +116,42 @@ class Executor
         }
 
         return $result;
+    }
+
+    /**
+     * @param Schema                  $schema
+     * @param OperationDefinitionNode $operation
+     * @throws ExecutionException
+     */
+    public function getOperationType(Schema $schema, OperationDefinitionNode $operation)
+    {
+        switch ($operation->getOperation()) {
+            case 'query':
+                return $schema->getQueryType();
+            case 'mutation':
+                $mutationType = $schema->getMutationType();
+                if (!$mutationType) {
+                    throw new ExecutionException(
+                        'Schema is not configured for mutations',
+                        [$operation]
+                    );
+                }
+                return $mutationType;
+            case 'subscription':
+                $subscriptionType = $schema->getSubscriptionType();
+                if (!$subscriptionType) {
+                    throw new ExecutionException(
+                        'Schema is not configured for subscriptions',
+                        [$operation]
+                    );
+                }
+                return $subscriptionType;
+            default:
+                throw new ExecutionException(
+                    'Can only execute queries, mutations and subscriptions',
+                    [$operation]
+                );
+        }
     }
 
     /**
