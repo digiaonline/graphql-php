@@ -194,6 +194,18 @@ class Lexer implements LexerInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function createSyntaxErrorException(?string $description = null): SyntaxErrorException
+    {
+        return new SyntaxErrorException(
+            $this->source,
+            $this->pos,
+            $description ?? $this->unexpectedCharacterMessage($this->readCharCode($this->pos))
+        );
+    }
+
+    /**
      * Reads the token after the given token.
      *
      * @param Token $prev
@@ -637,21 +649,6 @@ class Lexer implements LexerInterface
         }
 
         return self::$charCodeCache[$char];
-    }
-
-    /**
-     * Creates a `SyntaxErrorException` for the current position in the source.
-     *
-     * @param null|string $description
-     * @return SyntaxErrorException
-     */
-    protected function createSyntaxErrorException(?string $description = null): SyntaxErrorException
-    {
-        return new SyntaxErrorException(
-            $this->source,
-            $this->pos,
-            $description ?? $this->unexpectedCharacterMessage($this->readCharCode($this->pos))
-        );
     }
 
     /**

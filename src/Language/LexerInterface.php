@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Error\SyntaxErrorException;
+
 interface LexerInterface
 {
 
@@ -51,4 +53,12 @@ interface LexerInterface
      * @return Token
      */
     public function getLastToken(): Token;
+
+    /**
+     * Creates a `SyntaxErrorException` for the current position in the source.
+     *
+     * @param null|string $description
+     * @return SyntaxErrorException
+     */
+    public function createSyntaxErrorException(?string $description = null): SyntaxErrorException;
 }
