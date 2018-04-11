@@ -133,7 +133,7 @@ class Parser implements ParserInterface
     {
         $token = $this->expect(TokenKindEnum::NAME);
 
-        return new NameNode($token->getValue(), $this->createLocation($token));
+        return new NameNode($token->value, $this->createLocation($token));
     }
 
     // Implements the parsing rules in the Document section.
@@ -172,7 +172,9 @@ class Parser implements ParserInterface
     protected function parseDefinition(): NodeInterface
     {
         if ($this->peek(TokenKindEnum::NAME)) {
-            switch ($this->lexer->getTokenValue()) {
+            $token = $this->lexer->getToken();
+
+            switch ($token->value) {
                 case KeywordEnum::QUERY:
                 case KeywordEnum::MUTATION:
                 case KeywordEnum::SUBSCRIPTION:
@@ -212,7 +214,9 @@ class Parser implements ParserInterface
     {
         if ($this->peek(TokenKindEnum::NAME)) {
             // Valid names are: query, mutation, subscription and fragment
-            switch ($this->lexer->getTokenValue()) {
+            $token = $this->lexer->getToken();
+
+            switch ($token->value) {
                 case KeywordEnum::QUERY:
                 case KeywordEnum::MUTATION:
                 case KeywordEnum::SUBSCRIPTION:
@@ -245,7 +249,7 @@ class Parser implements ParserInterface
         if ($this->peek(TokenKindEnum::BRACE_L)) {
             // Anonymous query
             return new OperationDefinitionNode(
-                'query',
+                KeywordEnum::QUERY,
                 null,
                 [],
                 [],
@@ -279,10 +283,9 @@ class Parser implements ParserInterface
     protected function parseOperationType(): string
     {
         $token = $this->expect(TokenKindEnum::NAME);
-        $value = $token->getValue();
 
-        if (isOperation($value)) {
-            return $value;
+        if (isOperation($token->value)) {
+            return $token->value;
         }
 
         throw $this->unexpected($token);
@@ -486,18 +489,18 @@ class Parser implements ParserInterface
 
         $this->expect(TokenKindEnum::SPREAD);
 
-        $tokenValue = $this->lexer->getTokenValue();
+        $token = $this->lexer->getToken();
 
-        if ($tokenValue !== 'on' && $this->peek(TokenKindEnum::NAME)) {
+        if (KeywordEnum::ON !== $token->value && $this->peek(TokenKindEnum::NAME)) {
             return new FragmentSpreadNode(
-                $this->parseFragmentName(),
+                $this->parseFragmentName($token),
                 $this->parseDirectives(),
                 null,
                 $this->createLocation($start)
             );
         }
 
-        if ($tokenValue === 'on') {
+        if (KeywordEnum::ON === $token->value) {
             $this->lexer->advance();
             $typeCondition = $this->parseNamedType();
         }
@@ -526,7 +529,7 @@ class Parser implements ParserInterface
         $this->expectKeyword(KeywordEnum::FRAGMENT);
 
         $parseTypeCondition = function () {
-            $this->expectKeyword('on');
+            $this->expectKeyword(KeywordEnum::ON);
             return $this->parseNamedType();
         };
 
@@ -543,12 +546,17 @@ class Parser implements ParserInterface
     /**
      * FragmentName : Name but not `on`
      *
+     * @param Token|null $token
      * @return NameNode
      * @throws SyntaxErrorException
      */
-    protected function parseFragmentName(): NameNode
+    protected function parseFragmentName(?Token $token = null): NameNode
     {
-        if ($this->lexer->getTokenValue() === 'on') {
+        if (null === $token) {
+            $token = $this->lexer->getToken();
+        }
+
+        if (KeywordEnum::ON === $token->value) {
             throw $this->unexpected();
         }
 
@@ -583,35 +591,33 @@ class Parser implements ParserInterface
     {
         $token = $this->lexer->getToken();
 
-        switch ($token->getKind()) {
+        switch ($token->kind) {
             case TokenKindEnum::BRACKET_L:
                 return $this->parseList($isConst);
             case TokenKindEnum::BRACE_L:
                 return $this->parseObject($isConst);
             case TokenKindEnum::INT:
                 $this->lexer->advance();
-                return new IntValueNode($token->getValue(), $this->createLocation($token));
+                return new IntValueNode($token->value, $this->createLocation($token));
             case TokenKindEnum::FLOAT:
                 $this->lexer->advance();
-                return new FloatValueNode($token->getValue(), $this->createLocation($token));
+                return new FloatValueNode($token->value, $this->createLocation($token));
             case TokenKindEnum::STRING:
             case TokenKindEnum::BLOCK_STRING:
                 return $this->parseStringLiteral();
             case TokenKindEnum::NAME:
-                $value = $token->getValue();
-
-                if ($value === 'true' || $value === 'false') {
+                if ($token->value === 'true' || $token->value === 'false') {
                     $this->lexer->advance();
-                    return new BooleanValueNode($value === 'true', $this->createLocation($token));
+                    return new BooleanValueNode($token->value === 'true', $this->createLocation($token));
                 }
 
-                if ($value === 'null') {
+                if ($token->value === 'null') {
                     $this->lexer->advance();
                     return new NullValueNode($this->createLocation($token));
                 }
 
                 $this->lexer->advance();
-                return new EnumValueNode($token->getValue(), $this->createLocation($token));
+                return new EnumValueNode($token->value, $this->createLocation($token));
             case TokenKindEnum::DOLLAR:
                 if (!$isConst) {
                     return $this->parseVariable();
@@ -632,8 +638,8 @@ class Parser implements ParserInterface
         $this->lexer->advance();
 
         return new StringValueNode(
-            $token->getValue(),
-            $token->getKind() === TokenKindEnum::BLOCK_STRING,
+            $token->value,
+            $token->kind === TokenKindEnum::BLOCK_STRING,
             $this->createLocation($token)
         );
     }
@@ -825,10 +831,12 @@ class Parser implements ParserInterface
     protected function parseTypeSystemDefinition(): NodeInterface
     {
         // Many definitions begin with a description and require a lookahead.
-        $keywordToken = $this->peekDescription() ? $this->lexer->lookahead() : $this->lexer->getToken();
+        $token = $this->peekDescription()
+            ? $this->lexer->lookahead()
+            : $this->lexer->getToken();
 
-        if ($keywordToken->getKind() === TokenKindEnum::NAME) {
-            switch ($keywordToken->getValue()) {
+        if ($token->kind === TokenKindEnum::NAME) {
+            switch ($token->value) {
                 case KeywordEnum::SCHEMA:
                     return $this->parseSchemaDefinition();
                 case KeywordEnum::SCALAR:
@@ -850,7 +858,7 @@ class Parser implements ParserInterface
             }
         }
 
-        throw $this->unexpected($keywordToken);
+        throw $this->unexpected($token);
     }
 
     /**
@@ -868,7 +876,9 @@ class Parser implements ParserInterface
      */
     public function parseDescription(): ?StringValueNode
     {
-        return $this->peekDescription() ? $this->parseStringLiteral() : null;
+        return $this->peekDescription()
+            ? $this->parseStringLiteral()
+            : null;
     }
 
     /**
@@ -975,7 +985,9 @@ class Parser implements ParserInterface
     {
         $types = [];
 
-        if ($this->lexer->getTokenValue() === 'implements') {
+        $token = $this->lexer->getToken();
+
+        if ('implements' === $token->value) {
             $this->lexer->advance();
 
             // Optional leading ampersand
@@ -1074,7 +1086,9 @@ class Parser implements ParserInterface
             $description,
             $name,
             $this->parseTypeReference(),
-            $this->skip(TokenKindEnum::EQUALS) ? $this->parseValueLiteral(true) : null,
+            $this->skip(TokenKindEnum::EQUALS)
+                ? $this->parseValueLiteral(true)
+                : null,
             $this->parseDirectives(true),
             $this->createLocation($start)
         );
@@ -1272,10 +1286,10 @@ class Parser implements ParserInterface
      */
     protected function parseTypeSystemExtension(): TypeExtensionNodeInterface
     {
-        $keywordToken = $this->lexer->lookahead();
+        $token = $this->lexer->lookahead();
 
-        if ($keywordToken->getKind() === TokenKindEnum::NAME) {
-            switch ($keywordToken->getValue()) {
+        if ($token->kind === TokenKindEnum::NAME) {
+            switch ($token->value) {
                 case KeywordEnum::SCALAR:
                     return $this->parseScalarTypeExtension(false);
                 case KeywordEnum::TYPE:
@@ -1291,7 +1305,7 @@ class Parser implements ParserInterface
             }
         }
 
-        throw $this->unexpected($keywordToken);
+        throw $this->unexpected($token);
     }
 
     /**
@@ -1562,15 +1576,15 @@ class Parser implements ParserInterface
      * Returns a location object, used to identify the place in
      * the source that created a given parsed object.
      *
-     * @param Token $startToken
+     * @param Token $start
      * @return Location|null
      */
-    protected function createLocation(Token $startToken): ?Location
+    protected function createLocation(Token $start): ?Location
     {
         return !$this->lexer->getOption('noLocation', false)
             ? new Location(
-                $startToken->getStart(),
-                $this->lexer->getLastToken()->getEnd(),
+                $start->start,
+                $this->lexer->getLastToken()->end,
                 $this->lexer->getSource()
             )
             : null;
@@ -1595,7 +1609,7 @@ class Parser implements ParserInterface
      */
     protected function peek(string $kind): bool
     {
-        return $this->lexer->getTokenKind() === $kind;
+        return $this->lexer->getToken()->kind === $kind;
     }
 
     /**
@@ -1626,7 +1640,7 @@ class Parser implements ParserInterface
     {
         $token = $this->lexer->getToken();
 
-        if ($token->getKind() === $kind) {
+        if ($token->kind === $kind) {
             $this->lexer->advance();
             return $token;
         }
@@ -1643,14 +1657,14 @@ class Parser implements ParserInterface
     {
         $token = $this->lexer->getToken();
 
-        if ($token->getKind() === TokenKindEnum::NAME && $token->getValue() === $value) {
+        if ($token->kind === TokenKindEnum::NAME && $token->value === $value) {
             $this->lexer->advance();
             return $token;
         }
 
         throw new SyntaxErrorException(
             $this->lexer->getSource(),
-            $token->getStart(),
+            $token->start,
             sprintf('Expected %s, found %s', $value, $token)
         );
     }
@@ -1666,11 +1680,7 @@ class Parser implements ParserInterface
     {
         $token = $atToken ?: $this->lexer->getToken();
 
-        return new SyntaxErrorException(
-            $this->lexer->getSource(),
-            $token->getStart(),
-            sprintf('Unexpected %s', $token)
-        );
+        return $this->lexer->createSyntaxErrorException(\sprintf('Unexpected %s', $token));
     }
 
     /**

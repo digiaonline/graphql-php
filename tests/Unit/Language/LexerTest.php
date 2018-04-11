@@ -2,9 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Language;
 
-use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Lexer;
 use Digia\GraphQL\Language\LexerInterface;
 use Digia\GraphQL\Language\Source;
@@ -40,12 +38,12 @@ class LexerTest extends TestCase
     {
         $token = $this->getLexer("\n \r\n \r  foo\n")->advance();
 
-        $this->assertEquals(TokenKindEnum::NAME, $token->getKind());
-        $this->assertEquals(8, $token->getStart());
-        $this->assertEquals(11, $token->getEnd());
-        $this->assertEquals(4, $token->getLine());
-        $this->assertEquals(3, $token->getColumn());
-        $this->assertEquals('foo', $token->getValue());
+        $this->assertEquals(TokenKindEnum::NAME, $token->kind);
+        $this->assertEquals(8, $token->start);
+        $this->assertEquals(11, $token->end);
+        $this->assertEquals(4, $token->line);
+        $this->assertEquals(3, $token->column);
+        $this->assertEquals('foo', $token->value);
     }
 
     // can be JSON.stringified or util.inspected
@@ -485,18 +483,18 @@ EOD;
             $endToken = $lexer->advance();
             // Lexer advances over ignored comment tokens to make writing parsers
             // easier, but will include them in the linked list result.
-            $this->assertNotEquals(TokenKindEnum::COMMENT, $endToken->getKind());
-        } while ($endToken->getKind() !== TokenKindEnum::EOF);
+            $this->assertNotEquals(TokenKindEnum::COMMENT, $endToken->kind);
+        } while ($endToken->kind !== TokenKindEnum::EOF);
 
-        $this->assertNull($startToken->getPrev());
-        $this->assertNull($endToken->getNext());
+        $this->assertNull($startToken->prev);
+        $this->assertNull($endToken->next);
 
         $tokens = [];
 
-        for ($token = $startToken; null !== $token; $token = $token->getNext()) {
+        for ($token = $startToken; null !== $token; $token = $token->next) {
             if (!empty($tokens)) {
                 // Tokens are double-linked, prev should point to last seen token.
-                $this->assertEquals($tokens[\count($tokens) - 1], $token->getPrev());
+                $this->assertEquals($tokens[\count($tokens) - 1], $token->prev);
             }
 
             $tokens[] = $token;
@@ -510,7 +508,7 @@ EOD;
             '}',
             '<EOF>',
         ], \array_map(function (Token $token) {
-            return $token->getKind();
+            return $token->kind;
         }, $tokens));
     }
 
@@ -553,10 +551,10 @@ EOD;
      */
     private function assertTokenPropertiesEqual(Token $token, string $kind, array $location, $value): void
     {
-        $this->assertEquals($kind, $token->getKind());
-        $this->assertEquals($location[0], $token->getStart());
-        $this->assertEquals($location[1], $token->getEnd());
-        $this->assertEquals($value, $token->getValue());
+        $this->assertEquals($kind, $token->kind);
+        $this->assertEquals($location[0], $token->start);
+        $this->assertEquals($location[1], $token->end);
+        $this->assertEquals($value, $token->value);
     }
 
     /**

@@ -12,42 +12,42 @@ class Token implements SerializationInterface
     /**
      * @var string
      */
-    private $kind;
+    public $kind;
 
     /**
      * @var int
      */
-    private $start;
+    public $start;
 
     /**
      * @var int
      */
-    private $end;
+    public $end;
 
     /**
      * @var int
      */
-    private $line;
+    public $line;
 
     /**
      * @var int
      */
-    private $column;
+    public $column;
 
     /**
      * @var ?Token
      */
-    private $prev;
+    public $prev;
 
     /**
      * @var ?Token
      */
-    private $next;
+    public $next;
 
     /**
      * @var ?string
      */
-    private $value;
+    public $value;
 
     /**
      * Token constructor.
@@ -76,80 +76,6 @@ class Token implements SerializationInterface
         $this->column = $column;
         $this->prev   = $prev;
         $this->value  = $value;
-    }
-
-    /**
-     * @return string
-     */
-    public function getKind(): string
-    {
-        return $this->kind;
-    }
-
-    /**
-     * @return int
-     */
-    public function getStart(): int
-    {
-        return $this->start;
-    }
-
-    /**
-     * @return int
-     */
-    public function getEnd(): int
-    {
-        return $this->end;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLine(): int
-    {
-        return $this->line;
-    }
-
-    /**
-     * @return int
-     */
-    public function getColumn(): int
-    {
-        return $this->column;
-    }
-
-    /**
-     * @return Token|null
-     */
-    public function getPrev(): ?Token
-    {
-        return $this->prev;
-    }
-
-    /**
-     * @return Token|null
-     */
-    public function getNext(): ?Token
-    {
-        return $this->next;
-    }
-
-    /**
-     * @param Token $next
-     * @return $this
-     */
-    public function setNext(Token $next)
-    {
-        $this->next = $next;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getValue()
-    {
-        return $this->value;
     }
 
     /**

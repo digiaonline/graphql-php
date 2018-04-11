@@ -6,7 +6,6 @@ use Digia\GraphQL\Error\SyntaxErrorException;
 
 interface LexerInterface
 {
-
     /**
      * Advances the token stream to the next non-ignored token.
      *
@@ -30,24 +29,14 @@ interface LexerInterface
     public function getOption(string $name, $default = null);
 
     /**
-     * @return string
+     * @return Source
      */
-    public function getTokenKind(): string;
-
-    /**
-     * @return string|null
-     */
-    public function getTokenValue(): ?string;
+    public function getSource(): Source;
 
     /**
      * @return Token
      */
     public function getToken(): Token;
-
-    /**
-     * @return Source
-     */
-    public function getSource(): Source;
 
     /**
      * @return Token

@@ -11,9 +11,7 @@ class LanguageProvider extends AbstractServiceProvider
      * @var array
      */
     protected $provides = [
-        ASTBuilderInterface::class,
         NodeBuilderInterface::class,
-//        LexerInterface::class,
         ParserInterface::class,
         PrinterInterface::class,
     ];
@@ -26,8 +24,6 @@ class LanguageProvider extends AbstractServiceProvider
         $this->container->add(NodeBuilderInterface::class, NodeBuilder::class, true/* $shared */);
 
         $this->container->add(ParserInterface::class, Parser::class);
-
-//        $this->container->add(LexerInterface::class, Lexer::class);
 
         $this->container->add(PrinterInterface::class, Printer::class, true/* $shared */)
             ->withArgument(SupportedWriters::get());
