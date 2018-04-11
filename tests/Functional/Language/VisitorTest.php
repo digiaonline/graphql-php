@@ -4,12 +4,16 @@ namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Config\ConfigAwareInterface;
 use Digia\GraphQL\Config\ConfigAwareTrait;
+use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
+use Digia\GraphQL\Language\NodeBuilder;
+use Digia\GraphQL\Language\NodeBuilderInterface;
 use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\Visitor;
@@ -171,8 +175,8 @@ class VisitorTest extends TestCase
 
     public function testVisitsEditedNode()
     {
-        $addedField = new FieldNode(
-            new NameNode('isAddedField', null),
+        $addedField = new AddedFieldNode(
+            null,
             new NameNode('__typename', null),
             [],
             [],
@@ -190,9 +194,7 @@ class VisitorTest extends TestCase
                     return $addedField;
                 }
 
-                if ($node instanceof FieldNode &&
-                    $node->getNameValue() === '__typename' &&
-                    $node->getAliasValue() === 'isAddedField') {
+                if ($node instanceof AddedFieldNode) {
                     $didVisitEditedNode = true;
                 }
 
@@ -272,7 +274,6 @@ class VisitorTest extends TestCase
             }
         );
 
-        // TODO: Find an alternative solution so that we don't need to use an Exception here.
         try {
             $ast->acceptVisitor($visitor);
         } catch (VisitorBreak $break) {
@@ -1201,11 +1202,13 @@ class VisitorTest extends TestCase
 
         $ast = parse('{ human(id: 4) { name, pets }, alien }');
 
+        $nodeBuilder = GraphQL::make(NodeBuilderInterface::class);
+
         $typeInfo = new TypeInfo(testSchema());
         $visitor  = new TypeInfoVisitor(
             $typeInfo,
             new Visitor(
-                function (NodeInterface $node) use (&$visited, $typeInfo): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited, $typeInfo, $nodeBuilder): ?NodeInterface {
                     $parentType = $typeInfo->getParentType();
                     $type       = $typeInfo->getType();
                     $inputType  = $typeInfo->getInputType();
@@ -1223,17 +1226,22 @@ class VisitorTest extends TestCase
                         && null === $node->getSelectionSet()
                         && getNamedType($type) instanceof CompositeTypeInterface
                     ) {
-                        return new FieldNode(
-                            $node->getAlias(),
-                            $node->getName(),
-                            $node->getArguments(),
-                            $node->getDirectives(),
-                            new SelectionSetNode(
-                                [new FieldNode(null, new NameNode('__typename', null), [], [], null, null)],
-                                null
-                            ),
-                            null
-                        );
+                        return $nodeBuilder->build([
+                            'kind' => NodeKindEnum::FIELD,
+                            'alias' => $node->getAliasAsArray(),
+                            'name' => $node->getNameAsArray(),
+                            'arguments' => $node->getArgumentsAsArray(),
+                            'directives' => $node->getDirectivesAsArray(),
+                            'selectionSet' => [
+                                'kind' => NodeKindEnum::SELECTION_SET,
+                                'fields' => [
+                                    [
+                                        'kind' => NodeKindEnum::FIELD,
+                                        'name' => ['value' => '__typename'],
+                                    ]
+                                ]
+                            ],
+                        ]);
                     }
 
                     return $node;
@@ -1308,4 +1316,8 @@ class VisitorTest extends TestCase
             ['leave', 'Document', null, null, null, null],
         ], $visited);
     }
+}
+
+class AddedFieldNode extends FieldNode
+{
 }

@@ -23,4 +23,17 @@ class DirectiveNode extends AbstractNode implements NodeInterface, ArgumentsAwar
         $this->name      = $name;
         $this->arguments = $arguments;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind' => $this->kind,
+            'name' => $this->getNameAsArray(),
+            'arguments' => $this->getArgumentsAsArray(),
+            'location' => $this->getLocationAsArray(),
+        ];
+    }
 }

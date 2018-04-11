@@ -24,7 +24,7 @@ class LanguageProvider extends AbstractServiceProvider
     public function register()
     {
 //        $this->container->add(ASTBuilderInterface::class, ASTBuilder::class, true/* $shared */);
-//        $this->container->add(NodeBuilderInterface::class, NodeBuilder::class, true/* $shared */);
+        $this->container->add(NodeBuilderInterface::class, NodeBuilder::class, true/* $shared */);
 
         $this->container->add(ParserInterface::class, Parser::class, true/* $shared */);
 
