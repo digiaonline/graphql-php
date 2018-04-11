@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class ObjectTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface, DirectivesAwareInterface
 {
     use NameTrait;
@@ -10,9 +12,28 @@ class ObjectTypeExtensionNode extends AbstractNode implements TypeExtensionNodeI
     use FieldsTrait;
 
     /**
-     * @var string
+     * ObjectTypeExtensionNode constructor.
+     *
+     * @param NameNode              $name
+     * @param NamedTypeNode[]       $interfaces
+     * @param DirectiveNode[]       $directives
+     * @param FieldDefinitionNode[] $fields
+     * @param Location|null         $location
      */
-    protected $kind = NodeKindEnum::OBJECT_TYPE_EXTENSION;
+    public function __construct(
+        NameNode $name,
+        array $interfaces,
+        array $directives,
+        array $fields,
+        ?Location $location
+    ) {
+        parent::__construct(NodeKindEnum::OBJECT_TYPE_EXTENSION, $location);
+
+        $this->name        = $name;
+        $this->interfaces  = $interfaces;
+        $this->directives  = $directives;
+        $this->fields      = $fields;
+    }
 
     /**
      * @inheritdoc

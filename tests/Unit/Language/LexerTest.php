@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Unit\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\GraphQL;
+use Digia\GraphQL\Language\Lexer;
 use Digia\GraphQL\Language\LexerInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
@@ -561,13 +561,9 @@ EOD;
      * @param Source|string $source
      * @return LexerInterface
      */
-    private function getLexer($source): LexerInterface
+    private function getLexer($source, array $options = []): LexerInterface
     {
-        $lexer = GraphQL::make(LexerInterface::class);
-
         /** @noinspection PhpUnhandledExceptionInspection */
-        $lexer->setSource($source instanceof Source ? $source : new Source($source));
-
-        return $lexer;
+        return new Lexer($source instanceof Source ? $source : new Source($source), $options);
     }
 }

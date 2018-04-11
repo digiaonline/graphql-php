@@ -2,14 +2,24 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class IntValueNode extends AbstractNode implements ValueNodeInterface
 {
     use ValueTrait;
 
     /**
-     * @var string
+     * FloatValueNode constructor.
+     *
+     * @param mixed         $value
+     * @param Location|null $location
      */
-    protected $kind = NodeKindEnum::INT;
+    public function __construct($value, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::INT, $location);
+
+        $this->value = $value;
+    }
 
     /**
      * @inheritdoc

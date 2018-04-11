@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class ObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface, DirectivesAwareInterface
 {
     use DescriptionTrait;
@@ -11,9 +13,31 @@ class ObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNod
     use FieldsTrait;
 
     /**
-     * @var string
+     * ObjectTypeDefinitionNode constructor.
+     *
+     * @param StringValueNode|null  $description
+     * @param NameNode              $name
+     * @param NamedTypeNode[]       $interfaces
+     * @param DirectiveNode[]       $directives
+     * @param FieldDefinitionNode[] $fields
+     * @param Location|null         $location
      */
-    protected $kind = NodeKindEnum::OBJECT_TYPE_DEFINITION;
+    public function __construct(
+        ?StringValueNode $description,
+        NameNode $name,
+        array $interfaces,
+        array $directives,
+        array $fields,
+        ?Location $location
+    ) {
+        parent::__construct(NodeKindEnum::OBJECT_TYPE_DEFINITION, $location);
+
+        $this->description = $description;
+        $this->name        = $name;
+        $this->interfaces  = $interfaces;
+        $this->directives  = $directives;
+        $this->fields      = $fields;
+    }
 
     /**
      * @inheritdoc

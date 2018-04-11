@@ -2,22 +2,31 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 
 class OperationTypeDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {
-
     use TypeTrait;
 
     /**
      * @var string
      */
-    protected $kind = NodeKindEnum::OPERATION_TYPE_DEFINITION;
+    protected $operation;
 
     /**
-     * @var string
+     * OperationTypeDefinitionNode constructor.
+     *
+     * @param string            $operation
+     * @param TypeNodeInterface $type
+     * @param Location|null     $location
      */
-    protected $operation;
+    public function __construct(string $operation, TypeNodeInterface $type, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::OPERATION_TYPE_DEFINITION, $location);
+
+        $this->operation = $operation;
+        $this->type      = $type;
+    }
 
     /**
      * @return string

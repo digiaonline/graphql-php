@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class EnumTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface, DirectivesAwareInterface,
     NameAwareInterface
 {
@@ -10,9 +12,21 @@ class EnumTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInt
     use EnumValuesTrait;
 
     /**
-     * @var string
+     * EnumTypeExtensionNode constructor.
+     *
+     * @param NameNode                  $name
+     * @param DirectiveNode[]           $directives
+     * @param EnumValueDefinitionNode[] $values
+     * @param Location|null             $location
      */
-    protected $kind = NodeKindEnum::ENUM_TYPE_EXTENSION;
+    public function __construct(NameNode $name, array $directives, array $values, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::ENUM_TYPE_EXTENSION, $location);
+
+        $this->name       = $name;
+        $this->directives = $directives;
+        $this->values     = $values;
+    }
 
     /**
      * @inheritdoc

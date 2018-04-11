@@ -3,17 +3,15 @@
 namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
+use Digia\GraphQL\GraphQL;
+use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Language\Node\FieldNode;
-use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
-use Digia\GraphQL\Language\Node\NameNode;
-use Digia\GraphQL\Language\Node\NullValueNode;
-use Digia\GraphQL\Language\Node\OperationDefinitionNode;
-use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
-use Digia\GraphQL\Language\Location;
+use Digia\GraphQL\Language\Node\NullValueNode;
+use Digia\GraphQL\Language\NodeBuilderInterface;
 use Digia\GraphQL\Language\Source;
+use function Digia\GraphQL\Test\readFileContents;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\parseType;
@@ -26,15 +24,18 @@ class ParserTest extends TestCase
     {
         $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found <EOF>');
+        /** @noinspection PhpUnhandledExceptionInspection */
         parse('{');
 
         $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected {, found <EOF>');
+        /** @noinspection PhpUnhandledExceptionInspection */
         parse('query', 'MyQuery.graphql');
     }
 
     public function testParsesVariableInlineValues()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         parse('{ field(complex: { a: { b: [ $var ] } }) }');
         $this->addToAssertionCount(1);
     }
@@ -43,6 +44,7 @@ class ParserTest extends TestCase
     {
         $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected $');
+        /** @noinspection PhpUnhandledExceptionInspection */
         parse('query Foo($x: Complex = { a: { b: [ $var ] } }) { field }');
         $this->addToAssertionCount(1);
     }
@@ -51,6 +53,7 @@ class ParserTest extends TestCase
     {
         $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Unexpected Name "on"');
+        /** @noinspection PhpUnhandledExceptionInspection */
         parse('fragment on on on { on }');
         $this->addToAssertionCount(1);
     }
@@ -59,14 +62,15 @@ class ParserTest extends TestCase
     {
         $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Expected Name, found }');
+        /** @noinspection PhpUnhandledExceptionInspection */
         parse('{ ...on }');
         $this->addToAssertionCount(1);
     }
 
     public function testParsesMultiByteCharacters()
     {
-        /** @var DocumentNode $node */
-        $node = parse(new Source('
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse(dedent('
           # This comment has a \u0A0A multi-byte character.
           { field(arg: "Has a \u0A0A multi-byte character.") }
         '));
@@ -80,7 +84,7 @@ class ParserTest extends TestCase
                                 'arguments' => [
                                     [
                                         'value' => [
-                                            'kind' => NodeKindEnum::STRING,
+                                            'kind'  => NodeKindEnum::STRING,
                                             'value' => 'Has a \u0A0A multi-byte character.',
                                         ],
                                     ],
@@ -93,251 +97,11 @@ class ParserTest extends TestCase
         ], $node->toArray());
     }
 
-    /**
-     * @skipTest
-     */
-    public function testMultipleFragments()
-    {
-        $node = parse('
-          { a, ...FragOne, ...FragTwo }
-          fragment FragOne on Type {
-            b
-            deep { b, deeper: deep { b } }
-          }
-          fragment FragTwo on Type {
-            c
-            deep { c, deeper: deep { c } }
-          }
-        ');
-
-        $this->markTestIncomplete('INCOMPLETE: Test case seems incomplete, should it be fixed or removed?');
-
-        $expected = new DocumentNode([
-            'location'    => new Location(0, 261, null),
-            'definitions' => [
-                new OperationDefinitionNode([
-                    'name'                => null,
-                    'location'            => new Location(11, 40),
-                    'selectionSet'        => new SelectionSetNode([
-                        'location'   => new Location(11, 40, null),
-                        'selections' => [
-                            new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'a',
-                                    'location' => new Location(13, 14, null)
-                                ]),
-                                'location'     => new Location(13, 14, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
-                                'selectionSet' => null
-                            ]),
-                            new FragmentSpreadNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'FragOne',
-                                    'location' => new Location(19, 26, null)
-                                ]),
-                                'location'     => new Location(16, 26, null),
-                                'directives'   => [],
-                                'selectionSet' => null
-                            ]),
-                            new FragmentSpreadNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'FragTwo',
-                                    'location' => new Location(31, 38, null)
-                                ]),
-                                'location'     => new Location(28, 38, null),
-                                'directives'   => [],
-                                'selectionSet' => null
-                            ])
-                        ]
-                    ]),
-                    'operation'           => 'query',
-                    'directives'          => [],
-                    'variableDefinitions' => []
-                ]),
-                new FragmentSpreadNode([
-                    'name'          => new NameNode([
-                        'value'    => 'FragOne',
-                        'location' => new Location(60, 67, null)
-                    ]),
-                    'location'      => new Location(51, 146),
-                    'typeCondition' => new NamedTypeNode([
-                        'name'     => new NameNode([
-                            'value'    => 'Type',
-                            'location' => new Location(71, 75),
-                        ]),
-                        'location' => new Location(71, 75),
-                    ]),
-                    'directives'    => [],
-                    'selectionSet'  => new SelectionSetNode([
-                        'location'   => new Location(76, 146, null),
-                        'selections' => [
-                            new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'b',
-                                    'location' => new Location(90, 91, null)
-                                ]),
-                                'location'     => new Location(90, 91, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
-                                'selectionSet' => null
-                            ]),
-                            new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'deep',
-                                    'location' => new Location(104, 108, null)
-                                ]),
-                                'location'     => new Location(104, 134, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
-                                'selectionSet' => new SelectionSetNode([
-                                    'location'   => new Location(109, 134, null),
-                                    'selections' => [
-                                        new FieldNode([
-                                            'name'         => new NameNode([
-                                                'value'    => 'b',
-                                                'location' => new Location(111, 112, null)
-                                            ]),
-                                            'location'     => new Location(111, 112, null),
-                                            'alias'        => null,
-                                            'directives'   => [],
-                                            'arguments'    => [],
-                                            'selectionSet' => null
-                                        ]),
-                                        new FieldNode([
-                                            'name'         => new NameNode([
-                                                'value'    => 'deep',
-                                                'location' => new Location(122, 126, null)
-                                            ]),
-                                            'location'     => new Location(114, 132, null),
-                                            'alias'        => new NameNode([
-                                                'value'    => 'deeper',
-                                                'location' => new Location(114, 120, null)
-                                            ]),
-                                            'directives'   => [],
-                                            'arguments'    => [],
-                                            'selectionSet' => new SelectionSetNode([
-                                                'location'   => new Location(127, 132, null),
-                                                'selections' => [
-                                                    new FieldNode([
-                                                        'name'         => new NameNode([
-                                                            'value'    => 'b',
-                                                            'location' => new Location(129, 130, null)
-                                                        ]),
-                                                        'location'     => new Location(129, 130, null),
-                                                        'alias'        => null,
-                                                        'directives'   => [],
-                                                        'arguments'    => [],
-                                                        'selectionSet' => null
-                                                    ]),
-                                                ]
-                                            ])
-                                        ]),
-                                    ]
-                                ])
-                            ]),
-                        ]
-                    ]),
-                ]),
-                new FragmentSpreadNode([
-                    'name'          => new NameNode([
-                        'value'    => 'FragTwo',
-                        'location' => new Location(166, 173, null)
-                    ]),
-                    'location'      => new Location(157, 252),
-                    'typeCondition' => new NamedTypeNode([
-                        'name'     => new NameNode([
-                            'value'    => 'Type',
-                            'location' => new Location(177, 181),
-                        ]),
-                        'location' => new Location(177, 181),
-                    ]),
-                    'directives'    => [],
-                    'selectionSet'  => new SelectionSetNode([
-                        'location'   => new Location(182, 252, null),
-                        'selections' => [
-                            new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'c',
-                                    'location' => new Location(196, 197, null)
-                                ]),
-                                'location'     => new Location(196, 197, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
-                                'selectionSet' => null
-                            ]),
-                            new FieldNode([
-                                'name'         => new NameNode([
-                                    'value'    => 'deep',
-                                    'location' => new Location(210, 214, null)
-                                ]),
-                                'location'     => new Location(210, 240, null),
-                                'alias'        => null,
-                                'directives'   => [],
-                                'arguments'    => [],
-                                'selectionSet' => new SelectionSetNode([
-                                    'location'   => new Location(215, 240, null),
-                                    'selections' => [
-                                        new FieldNode([
-                                            'name'         => new NameNode([
-                                                'value'    => 'c',
-                                                'location' => new Location(217, 218, null)
-                                            ]),
-                                            'location'     => new Location(217, 218, null),
-                                            'alias'        => null,
-                                            'directives'   => [],
-                                            'arguments'    => [],
-                                            'selectionSet' => null
-                                        ]),
-                                        new FieldNode([
-                                            'name'         => new NameNode([
-                                                'value'    => 'deep',
-                                                'location' => new Location(228, 232, null)
-                                            ]),
-                                            'location'     => new Location(220, 238, null),
-                                            'alias'        => new NameNode([
-                                                'value'    => 'deeper',
-                                                'location' => new Location(220, 226, null)
-                                            ]),
-                                            'directives'   => [],
-                                            'arguments'    => [],
-                                            'selectionSet' => new SelectionSetNode([
-                                                'location'   => new Location(233, 238, null),
-                                                'selections' => [
-                                                    new FieldNode([
-                                                        'name'         => new NameNode([
-                                                            'value'    => 'c',
-                                                            'location' => new Location(235, 236, null)
-                                                        ]),
-                                                        'location'     => new Location(235, 236, null),
-                                                        'alias'        => null,
-                                                        'directives'   => [],
-                                                        'arguments'    => [],
-                                                        'selectionSet' => null
-                                                    ]),
-                                                ]
-                                            ])
-                                        ]),
-                                    ]
-                                ])
-                            ]),
-                        ]
-                    ]),
-                ])
-            ]
-        ]);
-
-        $this->assertEquals($expected, $node);
-    }
-
     public function testParsesKitchenSink()
     {
-        $kitchenSink = mb_convert_encoding(file_get_contents(__DIR__ . '/kitchen-sink.graphql'), 'UTF-8');
+        $kitchenSink = readFileContents(__DIR__ . '/kitchen-sink.graphql');
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         parse($kitchenSink);
         $this->addToAssertionCount(1);
     }
@@ -362,15 +126,17 @@ class ParserTest extends TestCase
                 $fragmentName = 'a';
             }
 
-            parse(new Source("
-query $keyword {
-  ... $fragmentName
-  ... on $keyword { field }
-}
-fragment $fragmentName on Type {
-  $keyword($keyword: $$keyword)
-    @$keyword($keyword: $keyword)
-}"));
+            /** @noinspection PhpUnhandledExceptionInspection */
+            parse(dedent("
+            query $keyword {
+              ... $fragmentName
+              ... on $keyword { field }
+            }
+            fragment $fragmentName on Type {
+              $keyword($keyword: $$keyword)
+                @$keyword($keyword: $keyword)
+            }
+            "));
 
             $this->addToAssertionCount(1);
         }
@@ -378,7 +144,8 @@ fragment $fragmentName on Type {
 
     public function testParsesAnonMutationOperations()
     {
-        parse(new Source('
+        /** @noinspection PhpUnhandledExceptionInspection */
+        parse(dedent('
         mutation {
             mutationField
         }
@@ -388,7 +155,8 @@ fragment $fragmentName on Type {
 
     public function testParsesAnonSubscriptionOperations()
     {
-        parse(new Source('
+        /** @noinspection PhpUnhandledExceptionInspection */
+        parse(dedent('
         subscription {
             subscriptionField
         }
@@ -398,7 +166,8 @@ fragment $fragmentName on Type {
 
     public function testParsesNamedMutationOperations()
     {
-        parse(new Source('
+        /** @noinspection PhpUnhandledExceptionInspection */
+        parse(dedent('
         mutation Foo {
             mutationField
         }
@@ -408,7 +177,8 @@ fragment $fragmentName on Type {
 
     public function testParsesNamedSubscriptionOperations()
     {
-        parse(new Source('
+        /** @noinspection PhpUnhandledExceptionInspection */
+        parse(dedent('
         subscription Foo {
             subscriptionField
         }
@@ -418,14 +188,15 @@ fragment $fragmentName on Type {
 
     public function testCreatesAST()
     {
-        /** @var DocumentNode $actual */
-        $actual = parse(new Source('{
-  node(id: 4) {
-    id,
-    name
-  }
-}
-'));
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $actual = parse(dedent('
+        {
+          node(id: 4) {
+            id,
+            name
+          }
+        }
+        '));
 
         $this->assertEquals([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -510,13 +281,14 @@ fragment $fragmentName on Type {
 
     public function testCreatesAstFromNamelessQueryWithoutVariables()
     {
-        /** @var DocumentNode $actual */
-        $actual = parse(new Source('query {
-  node {
-    id
-  }
-}
-'));
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $actual = parse(dedent('
+        query {
+          node {
+            id
+          }
+        }
+        '));
 
         $this->assertEquals([
             'kind'        => NodeKindEnum::DOCUMENT,
@@ -583,7 +355,7 @@ fragment $fragmentName on Type {
 
     public function testParsesNullValue()
     {
-        /** @var NullValueNode $node */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseValue('null');
 
         $this->assertEquals($node->toArray(), [
@@ -594,7 +366,7 @@ fragment $fragmentName on Type {
 
     public function testParsesListValue()
     {
-        /** @var NullValueNode $node */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseValue('[123 "abc"]');
 
         $this->assertEquals($node->toArray(), [
@@ -618,7 +390,7 @@ fragment $fragmentName on Type {
 
     public function testParsesBlockStrings()
     {
-        /** @var NullValueNode $node */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseValue('["""long""" "short"]');
 
         $this->assertEquals($node->toArray(), [
@@ -644,7 +416,7 @@ fragment $fragmentName on Type {
 
     public function testParsesWellKnownTypes()
     {
-        /** @var NamedTypeNode $node */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('String');
 
         $this->assertEquals($node->toArray(), [
@@ -660,7 +432,7 @@ fragment $fragmentName on Type {
 
     public function testParsesCustomTypes()
     {
-        /** @var NamedTypeNode $node */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('MyType');
 
         $this->assertEquals($node->toArray(), [
@@ -676,7 +448,7 @@ fragment $fragmentName on Type {
 
     public function testParsesListTypes()
     {
-        /** @var NamedTypeNode $node */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('[MyType]');
 
         $this->assertEquals($node->toArray(), [
@@ -696,7 +468,7 @@ fragment $fragmentName on Type {
 
     public function testParsesNonNullTypes()
     {
-        /** @var NamedTypeNode $node */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('MyType!');
 
         $this->assertEquals($node->toArray(), [
@@ -716,7 +488,7 @@ fragment $fragmentName on Type {
 
     public function testParsesNestedTypes()
     {
-        /** @var NamedTypeNode $node */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('[MyType!]');
 
         $this->assertEquals($node->toArray(), [

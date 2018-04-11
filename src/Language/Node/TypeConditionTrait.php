@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Language\Node;
 
 trait TypeConditionTrait
 {
-
     /**
      * @var NamedTypeNode|null
      */
@@ -16,6 +15,14 @@ trait TypeConditionTrait
     public function getTypeCondition(): ?NamedTypeNode
     {
         return $this->typeCondition;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getTypeConditionAsArray(): ?array
+    {
+        return null !== $this->typeCondition ? $this->typeCondition->toArray() : null;
     }
 
     /**

@@ -2,19 +2,28 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class ObjectValueNode extends AbstractNode implements ValueNodeInterface
 {
     /**
-     * @var string
-     */
-    protected $kind = NodeKindEnum::OBJECT;
-
-    /**
      * @var ObjectFieldNode[]
      */
     protected $fields;
+
+    /**
+     * ObjectValueNode constructor.
+     *
+     * @param ObjectFieldNode[] $fields
+     * @param Location|null     $location
+     */
+    public function __construct(array $fields, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::OBJECT, $location);
+
+        $this->fields = $fields;
+    }
 
     /**
      * @return ObjectFieldNode[]
@@ -29,7 +38,7 @@ class ObjectValueNode extends AbstractNode implements ValueNodeInterface
      */
     public function getFieldsAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->fields);
     }

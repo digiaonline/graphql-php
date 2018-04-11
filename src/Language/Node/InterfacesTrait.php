@@ -33,7 +33,7 @@ trait InterfacesTrait
      */
     public function getInterfacesAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->interfaces);
     }

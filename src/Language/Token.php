@@ -12,42 +12,42 @@ class Token implements SerializationInterface
     /**
      * @var string
      */
-    private $kind;
+    protected $kind;
 
     /**
      * @var int
      */
-    private $start;
+    protected $start;
 
     /**
      * @var int
      */
-    private $end;
+    protected $end;
 
     /**
      * @var int
      */
-    private $line;
+    protected $line;
 
     /**
      * @var int
      */
-    private $column;
+    protected $column;
 
     /**
-     * @var ?Token
+     * @var Token|null
      */
-    private $prev;
+    protected $prev;
 
     /**
-     * @var ?Token
+     * @var Token|null
      */
-    private $next;
+    protected $next;
 
     /**
-     * @var ?string
+     * @var string|null
      */
-    private $value;
+    protected $value;
 
     /**
      * Token constructor.
@@ -135,21 +135,21 @@ class Token implements SerializationInterface
     }
 
     /**
-     * @param Token $next
-     * @return $this
-     */
-    public function setNext(Token $next)
-    {
-        $this->next = $next;
-        return $this;
-    }
-
-    /**
      * @return mixed
      */
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * @param Token|null $next
+     * @return $this
+     */
+    public function setNext(?Token $next)
+    {
+        $this->next = $next;
+        return $this;
     }
 
     /**

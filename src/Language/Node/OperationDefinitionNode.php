@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class OperationDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface, DirectivesAwareInterface
 {
     use NameTrait;
@@ -9,12 +11,37 @@ class OperationDefinitionNode extends AbstractNode implements ExecutableDefiniti
     use VariableDefinitionsTrait;
     use SelectionSetTrait;
 
-    protected $kind = NodeKindEnum::OPERATION_DEFINITION;
-
     /**
      * @var string
      */
     protected $operation;
+
+    /**
+     * OperationDefinitionNode constructor.
+     *
+     * @param string                   $operation
+     * @param NameNode|null            $name
+     * @param VariableDefinitionNode[] $variableDefinitions
+     * @param DirectiveNode[]          $directives
+     * @param SelectionSetNode|null    $selectionSet
+     * @param Location|null            $location
+     */
+    public function __construct(
+        string $operation,
+        ?NameNode $name,
+        array $variableDefinitions,
+        array $directives,
+        ?SelectionSetNode $selectionSet,
+        ?Location $location
+    ) {
+        parent::__construct(NodeKindEnum::OPERATION_DEFINITION, $location);
+
+        $this->operation           = $operation;
+        $this->name                = $name;
+        $this->variableDefinitions = $variableDefinitions;
+        $this->directives          = $directives;
+        $this->selectionSet        = $selectionSet;
+    }
 
     /**
      * @return string

@@ -2,17 +2,24 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 
 class FloatValueNode extends AbstractNode implements ValueNodeInterface
 {
-
     use ValueTrait;
 
     /**
-     * @var string
+     * FloatValueNode constructor.
+     *
+     * @param mixed         $value
+     * @param Location|null $location
      */
-    protected $kind = NodeKindEnum::FLOAT;
+    public function __construct($value, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::FLOAT, $location);
+
+        $this->value = $value;
+    }
 
     /**
      * @inheritdoc

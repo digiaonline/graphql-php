@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class InputValueDefinitionNode extends AbstractNode implements DefinitionNodeInterface, DirectivesAwareInterface,
     NameAwareInterface
 {
@@ -12,9 +14,31 @@ class InputValueDefinitionNode extends AbstractNode implements DefinitionNodeInt
     use DirectivesTrait;
 
     /**
-     * @var string
+     * InputValueDefinitionNode constructor.
+     *
+     * @param StringValueNode|null    $description
+     * @param NameNode                $name
+     * @param TypeNodeInterface       $type
+     * @param ValueNodeInterface|null $defaultValue
+     * @param DirectiveNode[]         $directives
+     * @param Location|null           $location
      */
-    protected $kind = NodeKindEnum::INPUT_VALUE_DEFINITION;
+    public function __construct(
+        ?StringValueNode $description,
+        NameNode $name,
+        TypeNodeInterface $type,
+        ?ValueNodeInterface $defaultValue,
+        array $directives,
+        ?Location $location
+    ) {
+        parent::__construct(NodeKindEnum::INPUT_VALUE_DEFINITION, $location);
+
+        $this->description  = $description;
+        $this->name         = $name;
+        $this->type         = $type;
+        $this->defaultValue = $defaultValue;
+        $this->directives   = $directives;
+    }
 
     /**
      * @inheritdoc

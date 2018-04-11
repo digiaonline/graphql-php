@@ -2,9 +2,10 @@
 
 namespace Digia\GraphQL\Language;
 
+use Digia\GraphQL\Error\SyntaxErrorException;
+
 interface LexerInterface
 {
-
     /**
      * Advances the token stream to the next non-ignored token.
      *
@@ -21,11 +22,8 @@ interface LexerInterface
     public function lookahead(): Token;
 
     /**
-     * @return string
-     */
-    public function getBody(): string;
-
-    /**
+     * Returns an option given to this Lexer by its name.
+     *
      * @param string     $name
      * @param mixed|null $default
      * @return mixed
@@ -33,39 +31,31 @@ interface LexerInterface
     public function getOption(string $name, $default = null);
 
     /**
-     * @return string
-     */
-    public function getTokenKind(): string;
-
-    /**
-     * @return string|null
-     */
-    public function getTokenValue(): ?string;
-
-    /**
-     * @return Token
-     */
-    public function getToken(): Token;
-
-    /**
+     * Returns the source lexed by this Lexer.
+     *
      * @return Source
      */
     public function getSource(): Source;
 
     /**
+     * Returns the token at the Lexer's current position.
+     *
+     * @return Token
+     */
+    public function getToken(): Token;
+
+    /**
+     * Returns the previous focused token for this Lexer.
+     *
      * @return Token
      */
     public function getLastToken(): Token;
 
     /**
-     * @param Source $source
-     * @return $this
+     * Creates a `SyntaxErrorException` for the current position in the source file.
+     *
+     * @param null|string $description
+     * @return SyntaxErrorException
      */
-    public function setSource(Source $source);
-
-    /**
-     * @param array $options
-     * @return $this
-     */
-    public function setOptions(array $options);
+    public function createSyntaxErrorException(?string $description = null): SyntaxErrorException;
 }

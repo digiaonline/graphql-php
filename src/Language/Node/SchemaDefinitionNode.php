@@ -2,26 +2,35 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionNodeInterface
 {
-
     use DirectivesTrait;
 
     /**
-     * @var string
-     */
-    protected $kind = NodeKindEnum::SCHEMA_DEFINITION;
-
-    /**
-     * @var array|OperationTypeDefinitionNode[]
+     * @var OperationTypeDefinitionNode[]
      */
     protected $operationTypes;
 
     /**
-     * @return array|OperationTypeDefinitionNode[]
+     * SchemaDefinitionNode constructor.
+     *
+     * @param DirectiveNode[]               $directives
+     * @param OperationTypeDefinitionNode[] $operationTypes
+     * @param Location|null                 $location
+     */
+    public function __construct(array $directives, array $operationTypes, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::SCHEMA_DEFINITION, $location);
+
+        $this->directives     = $directives;
+        $this->operationTypes = $operationTypes;
+    }
+
+    /**
+     * @return OperationTypeDefinitionNode[]
      */
     public function getOperationTypes(): array
     {
@@ -33,13 +42,13 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
      */
     public function getOperationTypesAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->operationTypes);
     }
 
     /**
-     * @param array|OperationTypeDefinitionNode[] $operationTypes
+     * @param OperationTypeDefinitionNode[] $operationTypes
      * @return $this
      */
     public function setOperationTypes(array $operationTypes)

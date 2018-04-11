@@ -2,17 +2,24 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 
 class ListTypeNode extends AbstractNode implements TypeNodeInterface
 {
-
     use TypeTrait;
 
     /**
-     * @var string
+     * FloatValueNode constructor.
+     *
+     * @param mixed         $value
+     * @param Location|null $location
      */
-    protected $kind = NodeKindEnum::LIST_TYPE;
+    public function __construct(TypeNodeInterface $type, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::LIST_TYPE, $location);
+
+        $this->type = $type;
+    }
 
     /**
      * @inheritdoc

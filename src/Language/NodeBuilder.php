@@ -58,7 +58,8 @@ class NodeBuilder implements NodeBuilderInterface
     public function build(array $ast): NodeInterface
     {
         if (!isset($ast['kind'])) {
-            throw new LanguageException(sprintf('Nodes must specify a kind, got %s', json_encode($ast)));
+            /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
+            throw new LanguageException(\sprintf('Nodes must specify a kind, got %s', \json_encode($ast)));
         }
 
         ['kind' => $kind] = $ast;
@@ -150,7 +151,8 @@ class NodeBuilder implements NodeBuilderInterface
                 return $this->buildVariable($ast);
         }
 
-        throw new LanguageException(sprintf('Node of kind "%s" not supported.', $kind));
+        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
+        throw new LanguageException(\sprintf('Node of kind "%s" not supported.', $kind));
     }
 
     /**
@@ -160,11 +162,11 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildArgument(array $ast): ArgumentNode
     {
-        return new ArgumentNode([
-            'name'     => $this->buildNode($ast, 'name'),
-            'value'    => $this->buildNode($ast, 'value'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new ArgumentNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNode($ast, 'value'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -173,10 +175,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildBoolean(array $ast): BooleanValueNode
     {
-        return new BooleanValueNode([
-            'value'    => $this->getValue($ast, 'value'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new BooleanValueNode(
+            $this->getValue($ast, 'value'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -186,13 +188,13 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildDirectiveDefinition(array $ast): DirectiveDefinitionNode
     {
-        return new DirectiveDefinitionNode([
-            'description' => $this->buildNode($ast, 'description'),
-            'name'        => $this->buildNode($ast, 'name'),
-            'arguments'   => $this->buildNodes($ast, 'arguments'),
-            'locations'   => $this->buildNodes($ast, 'locations'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new DirectiveDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'arguments'),
+            $this->buildNodes($ast, 'locations'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -202,11 +204,11 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildDirective(array $ast): DirectiveNode
     {
-        return new DirectiveNode([
-            'name'      => $this->buildNode($ast, 'name'),
-            'arguments' => $this->buildNodes($ast, 'arguments'),
-            'location'  => $this->createLocation($ast),
-        ]);
+        return new DirectiveNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'arguments'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -216,10 +218,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildDocument(array $ast): DocumentNode
     {
-        return new DocumentNode([
-            'definitions' => $this->buildNodes($ast, 'definitions'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new DocumentNode(
+            $this->buildNodes($ast, 'definitions'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -228,10 +230,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildEnum(array $ast): EnumValueNode
     {
-        return new EnumValueNode([
-            'value'    => $this->getValue($ast, 'value'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new EnumValueNode(
+            $this->getValue($ast, 'value'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -241,13 +243,13 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildEnumTypeDefinition(array $ast): EnumTypeDefinitionNode
     {
-        return new EnumTypeDefinitionNode([
-            'description' => $this->buildNode($ast, 'description'),
-            'name'        => $this->buildNode($ast, 'name'),
-            'directives'  => $this->buildNodes($ast, 'directives'),
-            'values'      => $this->buildNodes($ast, 'values'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new EnumTypeDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'values'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -257,12 +259,12 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildEnumTypeExtension(array $ast): EnumTypeExtensionNode
     {
-        return new EnumTypeExtensionNode([
-            'name'       => $this->buildNode($ast, 'name'),
-            'directives' => $this->buildNodes($ast, 'directives'),
-            'values'     => $this->buildNodes($ast, 'values'),
-            'location'   => $this->createLocation($ast),
-        ]);
+        return new EnumTypeExtensionNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'values'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -272,12 +274,12 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildEnumValueDefinition(array $ast): EnumValueDefinitionNode
     {
-        return new EnumValueDefinitionNode([
-            'description' => $this->buildNode($ast, 'description'),
-            'name'        => $this->buildNode($ast, 'name'),
-            'directives'  => $this->buildNodes($ast, 'directives'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new EnumValueDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -287,14 +289,14 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildFieldDefinition(array $ast): FieldDefinitionNode
     {
-        return new FieldDefinitionNode([
-            'description' => $this->buildNode($ast, 'description'),
-            'name'        => $this->buildNode($ast, 'name'),
-            'arguments'   => $this->buildNodes($ast, 'arguments'),
-            'type'        => $this->buildNode($ast, 'type'),
-            'directives'  => $this->buildNodes($ast, 'directives'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new FieldDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'arguments'),
+            $this->buildNode($ast, 'type'),
+            $this->buildNodes($ast, 'directives'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -304,14 +306,14 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildField(array $ast): FieldNode
     {
-        return new FieldNode([
-            'alias'        => $this->buildNode($ast, 'alias'),
-            'name'         => $this->buildNode($ast, 'name'),
-            'arguments'    => $this->buildNodes($ast, 'arguments'),
-            'directives'   => $this->buildNodes($ast, 'directives'),
-            'selectionSet' => $this->buildNode($ast, 'selectionSet'),
-            'location'     => $this->createLocation($ast),
-        ]);
+        return new FieldNode(
+            $this->buildNode($ast, 'alias'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'arguments'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNode($ast, 'selectionSet'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -320,10 +322,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildFloat(array $ast): FloatValueNode
     {
-        return new FloatValueNode([
-            'value'    => $this->getValue($ast, 'value'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new FloatValueNode(
+            $this->getValue($ast, 'value'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -333,14 +335,14 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildFragmentDefinition(array $ast): FragmentDefinitionNode
     {
-        return new FragmentDefinitionNode([
-            'name'                => $this->buildNode($ast, 'name'),
-            'variableDefinitions' => $this->buildNodes($ast, 'variableDefinitions'),
-            'typeCondition'       => $this->buildNode($ast, 'typeCondition'),
-            'directives'          => $this->buildNodes($ast, 'directives'),
-            'selectionSet'        => $this->buildNode($ast, 'selectionSet'),
-            'location'            => $this->createLocation($ast),
-        ]);
+        return new FragmentDefinitionNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'variableDefinitions'),
+            $this->buildNode($ast, 'typeCondition'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNode($ast, 'selectionSet'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -350,12 +352,12 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildFragmentSpread(array $ast): FragmentSpreadNode
     {
-        return new FragmentSpreadNode([
-            'name'         => $this->buildNode($ast, 'name'),
-            'directives'   => $this->buildNodes($ast, 'directives'),
-            'selectionSet' => $this->buildNode($ast, 'selectionSet'),
-            'location'     => $this->createLocation($ast),
-        ]);
+        return new FragmentSpreadNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNode($ast, 'selectionSet'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -365,12 +367,12 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildInlineFragment(array $ast): InlineFragmentNode
     {
-        return new InlineFragmentNode([
-            'typeCondition' => $this->buildNode($ast, 'typeCondition'),
-            'directives'    => $this->buildNodes($ast, 'directives'),
-            'selectionSet'  => $this->buildNode($ast, 'selectionSet'),
-            'location'      => $this->createLocation($ast),
-        ]);
+        return new InlineFragmentNode(
+            $this->buildNode($ast, 'typeCondition'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNode($ast, 'selectionSet'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -380,13 +382,13 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildInputObjectTypeDefinition(array $ast): InputObjectTypeDefinitionNode
     {
-        return new InputObjectTypeDefinitionNode([
-            'description' => $this->buildNode($ast, 'description'),
-            'name'        => $this->buildNode($ast, 'name'),
-            'directives'  => $this->buildNodes($ast, 'directives'),
-            'fields'      => $this->buildNodes($ast, 'fields'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new InputObjectTypeDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'fields'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -396,12 +398,12 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildInputObjectTypeExtension(array $ast): InputObjectTypeExtensionNode
     {
-        return new InputObjectTypeExtensionNode([
-            'name'       => $this->buildNode($ast, 'name'),
-            'directives' => $this->buildNodes($ast, 'directives'),
-            'fields'     => $this->buildNodes($ast, 'fields'),
-            'location'   => $this->createLocation($ast),
-        ]);
+        return new InputObjectTypeExtensionNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'fields'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -411,14 +413,14 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildInputValueDefinition(array $ast): InputValueDefinitionNode
     {
-        return new InputValueDefinitionNode([
-            'description'  => $this->buildNode($ast, 'description'),
-            'name'         => $this->buildNode($ast, 'name'),
-            'type'         => $this->buildNode($ast, 'type'),
-            'defaultValue' => $this->buildNode($ast, 'defaultValue'),
-            'directives'   => $this->buildNodes($ast, 'directives'),
-            'location'     => $this->createLocation($ast),
-        ]);
+        return new InputValueDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNode($ast, 'type'),
+            $this->buildNode($ast, 'defaultValue'),
+            $this->buildNodes($ast, 'directives'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -428,13 +430,13 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildInterfaceTypeDefinition(array $ast): InterfaceTypeDefinitionNode
     {
-        return new InterfaceTypeDefinitionNode([
-            'description' => $this->buildNode($ast, 'description'),
-            'name'        => $this->buildNode($ast, 'name'),
-            'directives'  => $this->buildNodes($ast, 'directives'),
-            'fields'      => $this->buildNodes($ast, 'fields'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new InterfaceTypeDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'fields'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -444,12 +446,12 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildInterfaceTypeExtension(array $ast): InterfaceTypeExtensionNode
     {
-        return new InterfaceTypeExtensionNode([
-            'name'       => $this->buildNode($ast, 'name'),
-            'directives' => $this->buildNodes($ast, 'directives'),
-            'fields'     => $this->buildNodes($ast, 'fields'),
-            'location'   => $this->createLocation($ast),
-        ]);
+        return new InterfaceTypeExtensionNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'fields'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -458,10 +460,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildInt(array $ast): IntValueNode
     {
-        return new IntValueNode([
-            'value'    => $this->getValue($ast, 'value'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new IntValueNode(
+            $this->getValue($ast, 'value'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -471,10 +473,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildListType(array $ast): ListTypeNode
     {
-        return new ListTypeNode([
-            'type'     => $this->buildNode($ast, 'type'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new ListTypeNode(
+            $this->buildNode($ast, 'type'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -484,10 +486,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildList(array $ast): ListValueNode
     {
-        return new ListValueNode([
-            'values'   => $this->buildNodes($ast, 'values'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new ListValueNode(
+            $this->buildNodes($ast, 'values'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -497,10 +499,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildNamedType(array $ast): NamedTypeNode
     {
-        return new NamedTypeNode([
-            'name'     => $this->buildNode($ast, 'name'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new NamedTypeNode(
+            $this->buildNode($ast, 'name'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -509,10 +511,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildName(array $ast): NameNode
     {
-        return new NameNode([
-            'value'    => $this->getValue($ast, 'value'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new NameNode(
+            $this->getValue($ast, 'value'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -522,10 +524,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildNonNullType(array $ast): NonNullTypeNode
     {
-        return new NonNullTypeNode([
-            'type'     => $this->buildNode($ast, 'type'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new NonNullTypeNode(
+            $this->buildNode($ast, 'type'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -534,9 +536,7 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildNull(array $ast): NullValueNode
     {
-        return new NullValueNode([
-            'location' => $this->createLocation($ast),
-        ]);
+        return new NullValueNode($this->createLocation($ast));
     }
 
     /**
@@ -546,11 +546,11 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildObjectField(array $ast): ObjectFieldNode
     {
-        return new ObjectFieldNode([
-            'name'     => $this->buildNode($ast, 'name'),
-            'value'    => $this->buildNode($ast, 'value'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new ObjectFieldNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNode($ast, 'value'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -560,14 +560,14 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildObjectTypeDefinition(array $ast): ObjectTypeDefinitionNode
     {
-        return new ObjectTypeDefinitionNode([
-            'description' => $this->buildNode($ast, 'description'),
-            'name'        => $this->buildNode($ast, 'name'),
-            'interfaces'  => $this->buildNodes($ast, 'interfaces'),
-            'directives'  => $this->buildNodes($ast, 'directives'),
-            'fields'      => $this->buildNodes($ast, 'fields'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new ObjectTypeDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'interfaces'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'fields'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -577,13 +577,13 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildObjectTypeExtension(array $ast): ObjectTypeExtensionNode
     {
-        return new ObjectTypeExtensionNode([
-            'name'       => $this->buildNode($ast, 'name'),
-            'interfaces' => $this->buildNodes($ast, 'interfaces'),
-            'directives' => $this->buildNodes($ast, 'directives'),
-            'fields'     => $this->buildNodes($ast, 'fields'),
-            'location'   => $this->createLocation($ast),
-        ]);
+        return new ObjectTypeExtensionNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'interfaces'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'fields'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -593,10 +593,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildObject(array $ast): ObjectValueNode
     {
-        return new ObjectValueNode([
-            'fields'   => $this->buildNodes($ast, 'fields'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new ObjectValueNode(
+            $this->buildNodes($ast, 'fields'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -606,14 +606,14 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildOperationDefinition(array $ast): OperationDefinitionNode
     {
-        return new OperationDefinitionNode([
-            'operation'           => $this->getValue($ast, 'operation'),
-            'name'                => $this->buildNode($ast, 'name'),
-            'variableDefinitions' => $this->buildNodes($ast, 'variableDefinitions'),
-            'directives'          => $this->buildNodes($ast, 'directives'),
-            'selectionSet'        => $this->buildNode($ast, 'selectionSet'),
-            'location'            => $this->createLocation($ast),
-        ]);
+        return new OperationDefinitionNode(
+            $this->getValue($ast, 'operation'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'variableDefinitions'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNode($ast, 'selectionSet'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -623,11 +623,11 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildOperationTypeDefinition(array $ast): OperationTypeDefinitionNode
     {
-        return new OperationTypeDefinitionNode([
-            'operation' => $this->getValue($ast, 'operation'),
-            'type'      => $this->buildNode($ast, 'type'),
-            'location'  => $this->createLocation($ast),
-        ]);
+        return new OperationTypeDefinitionNode(
+            $this->getValue($ast, 'operation'),
+            $this->buildNode($ast, 'type'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -637,12 +637,12 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildScalarTypeDefinition(array $ast): ScalarTypeDefinitionNode
     {
-        return new ScalarTypeDefinitionNode([
-            'description' => $this->buildNode($ast, 'description'),
-            'name'        => $this->buildNode($ast, 'name'),
-            'directives'  => $this->buildNodes($ast, 'directives'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new ScalarTypeDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -652,11 +652,11 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildScalarTypeExtension(array $ast): ScalarTypeExtensionNode
     {
-        return new ScalarTypeExtensionNode([
-            'name'       => $this->buildNode($ast, 'name'),
-            'directives' => $this->buildNodes($ast, 'directives'),
-            'location'   => $this->createLocation($ast),
-        ]);
+        return new ScalarTypeExtensionNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -666,11 +666,11 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildSchemaDefinition(array $ast): SchemaDefinitionNode
     {
-        return new SchemaDefinitionNode([
-            'directives'     => $this->buildNodes($ast, 'directives'),
-            'operationTypes' => $this->buildNodes($ast, 'operationTypes'),
-            'location'       => $this->createLocation($ast),
-        ]);
+        return new SchemaDefinitionNode(
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'operationTypes'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -680,10 +680,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildSelectionSet(array $ast): SelectionSetNode
     {
-        return new SelectionSetNode([
-            'selections' => $this->buildNodes($ast, 'selections'),
-            'location'   => $this->createLocation($ast),
-        ]);
+        return new SelectionSetNode(
+            $this->buildNodes($ast, 'selections'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -692,11 +692,11 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildString(array $ast): StringValueNode
     {
-        return new StringValueNode([
-            'value'    => $this->getValue($ast, 'value'),
-            'block'    => $this->getValue($ast, 'block', false),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new StringValueNode(
+            $this->getValue($ast, 'value'),
+            $this->getValue($ast, 'block', false),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -706,13 +706,13 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildUnionTypeDefinition(array $ast): UnionTypeDefinitionNode
     {
-        return new UnionTypeDefinitionNode([
-            'description' => $this->buildNode($ast, 'description'),
-            'name'        => $this->buildNode($ast, 'name'),
-            'directives'  => $this->buildNodes($ast, 'directives'),
-            'types'       => $this->buildNodes($ast, 'types'),
-            'location'    => $this->createLocation($ast),
-        ]);
+        return new UnionTypeDefinitionNode(
+            $this->buildNode($ast, 'description'),
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'types'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -722,12 +722,12 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildUnionTypeExtension(array $ast): UnionTypeExtensionNode
     {
-        return new UnionTypeExtensionNode([
-            'name'       => $this->buildNode($ast, 'name'),
-            'directives' => $this->buildNodes($ast, 'directives'),
-            'types'      => $this->buildNodes($ast, 'types'),
-            'location'   => $this->createLocation($ast),
-        ]);
+        return new UnionTypeExtensionNode(
+            $this->buildNode($ast, 'name'),
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'types'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -737,12 +737,12 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildVariableDefinition(array $ast): VariableDefinitionNode
     {
-        return new VariableDefinitionNode([
-            'variable'     => $this->buildNode($ast, 'variable'),
-            'type'         => $this->buildNode($ast, 'type'),
-            'defaultValue' => $this->buildNode($ast, 'defaultValue'),
-            'location'     => $this->createLocation($ast),
-        ]);
+        return new VariableDefinitionNode(
+            $this->buildNode($ast, 'variable'),
+            $this->buildNode($ast, 'type'),
+            $this->buildNode($ast, 'defaultValue'),
+            $this->createLocation($ast)
+        );
     }
 
     /**
@@ -752,10 +752,10 @@ class NodeBuilder implements NodeBuilderInterface
      */
     protected function buildVariable(array $ast): VariableNode
     {
-        return new VariableNode([
-            'name'     => $this->buildNode($ast, 'name'),
-            'location' => $this->createLocation($ast),
-        ]);
+        return new VariableNode(
+            $this->buildNode($ast, 'name'),
+            $this->createLocation($ast)
+        );
     }
 
     /**

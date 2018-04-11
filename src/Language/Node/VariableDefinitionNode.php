@@ -2,15 +2,11 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInterface, NameAwareInterface
-{
-    use NameTrait;
-    use DefaultValueTrait;
+use Digia\GraphQL\Language\Location;
 
-    /**
-     * @var string
-     */
-    protected $kind = NodeKindEnum::VARIABLE_DEFINITION;
+class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInterface
+{
+    use DefaultValueTrait;
 
     /**
      * @var VariableNode
@@ -21,6 +17,27 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
      * @var TypeNodeInterface
      */
     protected $type;
+
+    /**
+     * VariableDefinitionNode constructor.
+     *
+     * @param VariableNode            $variable
+     * @param TypeNodeInterface       $type
+     * @param ValueNodeInterface|null $defaultValue
+     * @param Location|null           $location
+     */
+    public function __construct(
+        VariableNode $variable,
+        TypeNodeInterface $type,
+        ?ValueNodeInterface $defaultValue,
+        ?Location $location
+    ) {
+        parent::__construct(NodeKindEnum::VARIABLE_DEFINITION, $location);
+
+        $this->variable     = $variable;
+        $this->type         = $type;
+        $this->defaultValue = $defaultValue;
+    }
 
     /**
      * @return VariableNode
@@ -63,6 +80,6 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
      */
     public function __toString(): string
     {
-        return (string)$this->getType();
+        return (string)$this->type;
     }
 }

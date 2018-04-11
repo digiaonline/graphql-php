@@ -2,13 +2,25 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class ObjectFieldNode extends AbstractNode implements NodeInterface
 {
     use NameTrait;
     use ValueLiteralTrait;
 
     /**
-     * @var string
+     * ObjectFieldNode constructor.
+     *
+     * @param NameNode                $name
+     * @param ValueNodeInterface|null $value
+     * @param Location|null           $location
      */
-    protected $kind = NodeKindEnum::OBJECT_FIELD;
+    public function __construct(NameNode $name, ?ValueNodeInterface $value, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::OBJECT_FIELD, $location);
+
+        $this->name  = $name;
+        $this->value = $value;
+    }
 }

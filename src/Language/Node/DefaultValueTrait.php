@@ -6,7 +6,6 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 trait DefaultValueTrait
 {
-
     /**
      * @var ValueNodeInterface|SerializationInterface|null
      */

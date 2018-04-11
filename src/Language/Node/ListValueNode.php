@@ -2,21 +2,28 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Util\SerializationInterface;
 
 class ListValueNode extends AbstractNode implements ValueNodeInterface
 {
-
     /**
-     * @var string
-     */
-    protected $kind = NodeKindEnum::LIST;
-
-    /**
-     * @var array|ValueNodeInterface[]
+     * @var ValueNodeInterface[]
      */
     protected $values;
+
+    /**
+     * ListValueNode constructor.
+     *
+     * @param ValueNodeInterface[] $values
+     * @param Location|null        $location
+     */
+    public function __construct(array $values, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::LIST, $location);
+
+        $this->values = $values;
+    }
 
     /**
      * @return array|ValueNodeInterface[]
@@ -31,7 +38,7 @@ class ListValueNode extends AbstractNode implements ValueNodeInterface
      */
     public function getValuesAsArray(): array
     {
-        return array_map(function (SerializationInterface $node) {
+        return \array_map(function (SerializationInterface $node) {
             return $node->toArray();
         }, $this->values);
     }
@@ -63,7 +70,7 @@ class ListValueNode extends AbstractNode implements ValueNodeInterface
      */
     public function __toString(): string
     {
-        return json_encode(array_map(function(ValueNodeInterface $node) {
+        return \json_encode(\array_map(function (ValueNodeInterface $node) {
             return $node->getValue();
         }, $this->getValues()));
     }

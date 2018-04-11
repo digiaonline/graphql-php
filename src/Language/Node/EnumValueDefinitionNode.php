@@ -2,16 +2,35 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-class EnumValueDefinitionNode extends AbstractNode implements DefinitionNodeInterface, DirectivesAwareInterface, NameAwareInterface
+use Digia\GraphQL\Language\Location;
+
+class EnumValueDefinitionNode extends AbstractNode implements DefinitionNodeInterface, DirectivesAwareInterface,
+    NameAwareInterface
 {
     use DescriptionTrait;
     use NameTrait;
     use DirectivesTrait;
 
     /**
-     * @var string
+     * EnumValueDefinitionNode constructor.
+     *
+     * @param StringValueNode|null $description
+     * @param NameNode             $name
+     * @param DirectiveNode[]      $directives
+     * @param Location|null        $location
      */
-    protected $kind = NodeKindEnum::ENUM_VALUE_DEFINITION;
+    public function __construct(
+        ?StringValueNode $description,
+        NameNode $name,
+        array $directives,
+        ?Location $location
+    ) {
+        parent::__construct(NodeKindEnum::ENUM_VALUE_DEFINITION, $location);
+
+        $this->description = $description;
+        $this->name        = $name;
+        $this->directives  = $directives;
+    }
 
     /**
      * @inheritdoc

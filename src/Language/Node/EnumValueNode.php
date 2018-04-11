@@ -2,20 +2,30 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class EnumValueNode extends AbstractNode implements ValueNodeInterface
 {
     use ValueTrait;
 
     /**
-     * @var string
+     * EnumValueNode constructor.
+     *
+     * @param mixed         $value
+     * @param Location|null $location
      */
-    protected $kind = NodeKindEnum::ENUM;
+    public function __construct($value, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::ENUM, $location);
+
+        $this->value = $value;
+    }
 
     /**
      * @inheritdoc
      */
     public function __toString(): string
     {
-        return (string)$this->getValue();
+        return (string)$this->value;
     }
 }

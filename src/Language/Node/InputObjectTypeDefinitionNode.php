@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class InputObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNodeInterface,
     DirectivesAwareInterface, NameAwareInterface
 {
@@ -11,9 +13,28 @@ class InputObjectTypeDefinitionNode extends AbstractNode implements TypeDefiniti
     use InputFieldsTrait;
 
     /**
-     * @var string
+     * InputObjectTypeDefinitionNode constructor.
+     *
+     * @param StringValueNode|null       $description
+     * @param NameNode                   $name
+     * @param DirectiveNode[]            $directives
+     * @param InputValueDefinitionNode[] $fields
+     * @param Location|null              $location
      */
-    protected $kind = NodeKindEnum::INPUT_OBJECT_TYPE_DEFINITION;
+    public function __construct(
+        ?StringValueNode $description,
+        NameNode $name,
+        array $directives,
+        array $fields,
+        ?Location $location
+    ) {
+        parent::__construct(NodeKindEnum::INPUT_OBJECT_TYPE_DEFINITION, $location);
+
+        $this->description = $description;
+        $this->name        = $name;
+        $this->directives  = $directives;
+        $this->fields      = $fields;
+    }
 
     /**
      * @inheritdoc

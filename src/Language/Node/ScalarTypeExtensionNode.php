@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\Node;
 
+use Digia\GraphQL\Language\Location;
+
 class ScalarTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface, DirectivesAwareInterface,
     NameAwareInterface
 {
@@ -9,9 +11,19 @@ class ScalarTypeExtensionNode extends AbstractNode implements TypeExtensionNodeI
     use DirectivesTrait;
 
     /**
-     * @var string
+     * ScalarTypeDefinitionNode constructor.
+     *
+     * @param NameNode        $name
+     * @param DirectiveNode[] $directives
+     * @param Location|null   $location
      */
-    protected $kind = NodeKindEnum::SCALAR_TYPE_EXTENSION;
+    public function __construct(NameNode $name, array $directives, ?Location $location)
+    {
+        parent::__construct(NodeKindEnum::SCALAR_TYPE_EXTENSION, $location);
+
+        $this->name       = $name;
+        $this->directives = $directives;
+    }
 
     /**
      * @inheritdoc

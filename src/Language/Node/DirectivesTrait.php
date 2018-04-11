@@ -7,7 +7,7 @@ trait DirectivesTrait
     /**
      * @var DirectiveNode[]
      */
-    protected $directives;
+    protected $directives = [];
 
     /**
      * @return bool
@@ -30,8 +30,9 @@ trait DirectivesTrait
      */
     public function getDirectivesAsArray(): array
     {
-        // TODO: Implement this method.
-        return [];
+        return \array_map(function (DirectiveNode $directive) {
+            return $directive->toArray();
+        }, $this->directives);
     }
 
     /**

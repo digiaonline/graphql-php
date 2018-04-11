@@ -43,14 +43,14 @@ class ValueHelperTest extends TestCase
 
     public function testResolveNonNullWithStringValue()
     {
-        $node = new StringValueNode(['value' => 'foo']);
+        $node = new StringValueNode('foo', false, null);
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals('foo', $this->helper->fromAST($node, newNonNull(String())));
     }
 
     public function testResolveNonNullWithNullValue()
     {
-        $node = new NullValueNode();
+        $node = new NullValueNode(null);
         $this->expectException(ResolutionException::class);
         $this->expectExceptionMessage('Cannot resolve non-null values from null value node');
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -59,26 +59,28 @@ class ValueHelperTest extends TestCase
 
     public function testResolveValidListOfStrings()
     {
-        $node = new ListValueNode([
-            'values' => [
-                new StringValueNode(['value' => 'A']),
-                new StringValueNode(['value' => 'B']),
-                new StringValueNode(['value' => 'C']),
+        $node = new ListValueNode(
+            [
+                new StringValueNode('A', false, null),
+                new StringValueNode('B', false, null),
+                new StringValueNode('C', false, null),
             ],
-        ]);
+            null
+        );
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newList(String())));
     }
 
     public function testResolveListWithMissingVariableValue()
     {
-        $node = new ListValueNode([
-            'values' => [
-                new VariableNode(['name' => new NameNode(['value' => '$a'])]),
-                new VariableNode(['name' => new NameNode(['value' => '$b'])]),
-                new VariableNode(['name' => new NameNode(['value' => '$c'])]),
+        $node = new ListValueNode(
+            [
+                new VariableNode(new NameNode('$a', null), null),
+                new VariableNode(new NameNode('$b', null), null),
+                new VariableNode(new NameNode('$c', null), null),
             ],
-        ]);
+            null
+        );
         // Null-able inputs in a variable can be omitted
         $variables = ['$a' => 'A', '$c' => 'C'];
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -87,14 +89,10 @@ class ValueHelperTest extends TestCase
 
     public function testResolveValidInputObject()
     {
-        $node = new ObjectValueNode([
-            'fields' => [
-                new ObjectFieldNode([
-                    'name'  => new NameNode(['value' => 'a']),
-                    'value' => new IntValueNode(['value' => 1]),
-                ]),
-            ],
-        ]);
+        $node = new ObjectValueNode(
+            [new ObjectFieldNode(new NameNode('a', null), new IntValueNode(1, null), null)],
+            null
+        );
 
         $type = newInputObjectType([
             'name'   => 'InputObject',
@@ -109,7 +107,7 @@ class ValueHelperTest extends TestCase
 
     public function testResolveInputObjectWithNodeOfInvalidType()
     {
-        $node = new StringValueNode(['value' => null]);
+        $node = new StringValueNode(null, false, null);
 
         $type = newInputObjectType([
             'name'   => 'InputObject',
@@ -126,14 +124,10 @@ class ValueHelperTest extends TestCase
 
     public function testResolveInputObjectWithMissingNonNullField()
     {
-        $node = new ObjectValueNode([
-            'fields' => [
-                new ObjectFieldNode([
-                    'name'  => new NameNode(['value' => 'a']),
-                    'value' => new IntValueNode(['value' => 1]),
-                ]),
-            ],
-        ]);
+        $node = new ObjectValueNode(
+            [new ObjectFieldNode(new NameNode('a', null), new IntValueNode(1, null), null)],
+            null
+        );
 
         $type = newInputObjectType([
             'name'   => 'InputObject',
@@ -151,7 +145,7 @@ class ValueHelperTest extends TestCase
 
     public function testResolveEnumWithIntValue()
     {
-        $node = new EnumValueNode(['value' => 'FOO']);
+        $node = new EnumValueNode('FOO', null);
         $type = newEnumType([
             'name'   => 'EnumType',
             'values' => [
@@ -164,7 +158,7 @@ class ValueHelperTest extends TestCase
 
     public function testResolveEnumWithNodeOfInvalidType()
     {
-        $node = new StringValueNode(['value' => null]);
+        $node = new StringValueNode(null, false, null);
         $type = newEnumType([
             'name' => 'EnumType',
         ]);
@@ -177,7 +171,7 @@ class ValueHelperTest extends TestCase
 
     public function testResolveEnumWithMissingValue()
     {
-        $node = new EnumValueNode(['value' => 'FOO']);
+        $node = new EnumValueNode('FOO', null);
         $type = newEnumType([
             'name'   => 'EnumType',
             'values' => [
@@ -192,14 +186,14 @@ class ValueHelperTest extends TestCase
 
     public function testResolveValidScalar()
     {
-        $node = new StringValueNode(['value' => 'foo']);
+        $node = new StringValueNode('foo', false, null);
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals('foo', $this->helper->fromAST($node, String()));
     }
 
     public function testResolveInvalidScalar()
     {
-        $node = new StringValueNode(['value' => null]);
+        $node = new StringValueNode(null, false, null);
 
         $this->expectException(ResolutionException::class);
         /** @noinspection PhpUnhandledExceptionInspection */
