@@ -35,7 +35,7 @@ use function Digia\GraphQL\Util\typeFromAST;
  * Class AbstractStrategy
  * @package Digia\GraphQL\Execution\Strategies
  */
-abstract class ExecutionStrategy
+class Executor
 {
     /**
      * @var ExecutionContext
@@ -78,10 +78,82 @@ abstract class ExecutionStrategy
         $this->rootValue = $rootValue;
     }
 
+
     /**
      * @return array|null
+     * @throws ExecutionException
+     * @throws \Throwable
      */
-    abstract function execute(): ?array;
+    function execute(): ?array
+    {
+        $operation = $this->context->getOperation();
+        $schema    = $this->context->getSchema();
+
+        $path = [];
+
+        $objectType = $this->getOperationType($schema, $operation);
+
+        $fields               = [];
+        $visitedFragmentNames = [];
+        try {
+            $fields = $this->collectFields(
+                $objectType,
+                $this->operation->getSelectionSet(),
+                $fields,
+                $visitedFragmentNames
+            );
+
+            $result = ($operation->getOperation() === 'mutation')
+                ? $this->executeFieldsSerially($objectType, $this->rootValue, $path, $fields)
+                : $this->executeFields($objectType, $this->rootValue, $path, $fields);
+
+        } catch (\Exception $ex) {
+            $this->context->addError(
+                new ExecutionException($ex->getMessage())
+            );
+
+            //@TODO return [null]
+            return [$ex->getMessage()];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param Schema                  $schema
+     * @param OperationDefinitionNode $operation
+     * @throws ExecutionException
+     */
+    public function getOperationType(Schema $schema, OperationDefinitionNode $operation)
+    {
+        switch ($operation->getOperation()) {
+            case 'query':
+                return $schema->getQueryType();
+            case 'mutation':
+                $mutationType = $schema->getMutationType();
+                if (!$mutationType) {
+                    throw new ExecutionException(
+                        'Schema is not configured for mutations',
+                        [$operation]
+                    );
+                }
+                return $mutationType;
+            case 'subscription':
+                $subscriptionType = $schema->getSubscriptionType();
+                if (!$subscriptionType) {
+                    throw new ExecutionException(
+                        'Schema is not configured for subscriptions',
+                        [$operation]
+                    );
+                }
+                return $subscriptionType;
+            default:
+                throw new ExecutionException(
+                    'Can only execute queries, mutations and subscriptions',
+                    [$operation]
+                );
+        }
+    }
 
     /**
      * @param ObjectType       $runtimeType
