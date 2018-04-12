@@ -61,6 +61,6 @@ class InterfaceType implements NamedTypeInterface, AbstractTypeInterface, Compos
         $this->astNode             = $astNode;
         $this->extensionAstNodes   = $extensionASTNodes;
 
-        invariant(null !== $this->getName(), 'Must provide name.');
+        invariant(null !== $this->name, 'Must provide name.');
     }
 }

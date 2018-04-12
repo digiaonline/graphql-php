@@ -70,7 +70,7 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
         $this->fieldsOrThunk = $fieldsOrThunk;
         $this->astNode       = $astNode;
 
-        invariant(null !== $this->getName(), 'Must provide name.');
+        invariant(null !== $this->name, 'Must provide name.');
     }
 
     /**

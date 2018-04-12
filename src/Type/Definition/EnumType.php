@@ -71,7 +71,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
         $this->astNode     = $astNode;
         $this->valueMap    = $values;
 
-        invariant(null !== $this->getName(), 'Must provide name.');
+        invariant(null !== $this->name, 'Must provide name.');
     }
 
     /**
@@ -189,7 +189,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     {
         invariant(
             isAssocArray($valueMap),
-            \sprintf('%s values must be an associative array with value names as keys.', $this->getName())
+            \sprintf('%s values must be an associative array with value names as keys.', $this->name)
         );
 
         $values = [];

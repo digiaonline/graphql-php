@@ -77,7 +77,7 @@ class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeT
         $this->resolveTypeCallback = $resolveTypeCallback;
         $this->astNode             = $astNode;
 
-        invariant(null !== $this->getName(), 'Must provide name.');
+        invariant(null !== $this->name, 'Must provide name.');
     }
 
     /**

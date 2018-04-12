@@ -108,12 +108,12 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
         $this->astNode           = $astNode;
         $this->extensionAstNodes = $extensionASTNodes;
 
-        invariant(null !== $this->getName(), 'Must provide name.');
+        invariant(null !== $this->name, 'Must provide name.');
 
         if (null !== $this->isTypeOfCallback) {
             invariant(
-                \is_callable($this->getIsTypeOf()),
-                \sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
+                \is_callable($this->isTypeOfCallback),
+                \sprintf('%s must provide "isTypeOf" as a function.', $this->name)
             );
         }
     }
@@ -162,7 +162,7 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
 
         invariant(
             \is_array($interfaces),
-            \sprintf('%s interfaces must be an array or a function which returns an array.', $this->getName())
+            \sprintf('%s interfaces must be an array or a function which returns an array.', $this->name)
         );
 
         return $interfaces;
