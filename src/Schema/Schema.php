@@ -312,66 +312,6 @@ class Schema implements SchemaInterface
     }
 
     /**
-     * @param TypeInterface|null $query
-     * @return Schema
-     */
-    protected function setQuery(?TypeInterface $query): Schema
-    {
-        $this->query = $query;
-        return $this;
-    }
-
-    /**
-     * @param TypeInterface|null $mutation
-     * @return Schema
-     */
-    protected function setMutation(?TypeInterface $mutation): Schema
-    {
-        $this->mutation = $mutation;
-        return $this;
-    }
-
-    /**
-     * @param TypeInterface|null $subscription
-     * @return Schema
-     */
-    protected function setSubscription(?TypeInterface $subscription): Schema
-    {
-        $this->subscription = $subscription;
-        return $this;
-    }
-
-    /**
-     * @param array $types
-     * @return Schema
-     */
-    protected function setTypes(array $types): Schema
-    {
-        $this->types = $types;
-        return $this;
-    }
-
-    /**
-     * @param Directive[] $directives
-     * @return Schema
-     */
-    protected function setDirectives(array $directives): Schema
-    {
-        $this->directives = $directives;
-        return $this;
-    }
-
-    /**
-     * @param bool $assumeValid
-     * @return Schema
-     */
-    protected function setAssumeValid(bool $assumeValid): Schema
-    {
-        $this->assumeValid = $assumeValid;
-        return $this;
-    }
-
-    /**
      * @param array                                 $map
      * @param TypeInterface|NameAwareInterface|null $type
      * @return array
