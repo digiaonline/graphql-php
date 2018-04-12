@@ -18,10 +18,10 @@ use function Digia\GraphQL\Util\invariant;
  * when the field is resolved.
  *
  * Example:
- *     $EntityType = GraphQLInterfaceType([
+ *     $EntityType = newInterfaceType([
  *       'name' => 'Entity',
  *       'fields' => [
- *         'name' => ['type' => GraphQLString()]
+ *         'name' => ['type' => String()]
  *       ]
  *     ]);
  */

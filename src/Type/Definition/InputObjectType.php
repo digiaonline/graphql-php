@@ -20,12 +20,12 @@ use function Digia\GraphQL\Util\invariant;
  *
  * Example:
  *
- *     $GeoPoint = GraphQLInputObjectType([
+ *     $GeoPoint = newInputObjectType([
  *       'name': 'GeoPoint',
  *       'fields': [
- *         'lat': ['type' => GraphQLNonNull(GraphQLFloat())],
- *         'lon': ['type' => GraphQLNonNull(GraphQLFloat())],
- *         'alt': ['type' => GraphQLFloat(), 'defaultValue' => 0],
+ *         'lat': ['type' => newNonNull(Float())],
+ *         'lon': ['type' => newNonNull(Float())],
+ *         'alt': ['type' => Float(), 'defaultValue' => 0],
  *       ]
  *     ]);
  */
@@ -82,17 +82,8 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
         if (!isset($this->fieldMap)) {
             $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk);
         }
-        return $this->fieldMap;
-    }
 
-    /**
-     * @param array|callable $fieldsOrThunk
-     * @return $this
-     */
-    protected function setFields($fieldsOrThunk)
-    {
-        $this->fieldsOrThunk = $fieldsOrThunk;
-        return $this;
+        return $this->fieldMap;
     }
 
     /**

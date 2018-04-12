@@ -225,6 +225,7 @@ class ExtensionContext implements ExtensionContextInterface
     /**
      * @param ObjectType $type
      * @return ObjectType
+     * @throws InvariantException
      */
     protected function extendObjectType(ObjectType $type): ObjectType
     {
@@ -253,6 +254,7 @@ class ExtensionContext implements ExtensionContextInterface
     /**
      * @param InterfaceType $type
      * @return InterfaceType
+     * @throws InvariantException
      */
     protected function extendInterfaceType(InterfaceType $type): InterfaceType
     {
@@ -271,7 +273,7 @@ class ExtensionContext implements ExtensionContextInterface
             },
             'astNode'           => $type->getAstNode(),
             'extensionASTNodes' => $extensionASTNodes,
-            'resolveType'       => $type->getResolveType(),
+            'resolveType'       => $type->getResolveTypeCallback(),
         ]);
     }
 
@@ -300,7 +302,7 @@ class ExtensionContext implements ExtensionContextInterface
                 return $this->getExtendedType($unionType);
             }, $type->getTypes()),
             'astNode'     => $type->getAstNode(),
-            'resolveType' => $type->getResolveType(),
+            'resolveType' => $type->getResolveTypeCallback(),
         ]);
     }
 
@@ -359,7 +361,7 @@ class ExtensionContext implements ExtensionContextInterface
                     return $argument->getName();
                 }),
                 'astNode'           => $field->getAstNode(),
-                'resolve'           => $field->getResolve(),
+                'resolve'           => $field->getResolveCallback(),
             ];
         }
 

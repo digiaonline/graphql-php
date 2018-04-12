@@ -24,14 +24,4 @@ trait DeprecationTrait
     {
         return null !== $this->deprecationReason;
     }
-
-    /**
-     * @param null|string $deprecationReason
-     * @return $this
-     */
-    protected function setDeprecationReason(?string $deprecationReason)
-    {
-        $this->deprecationReason = $deprecationReason;
-        return $this;
-    }
 }

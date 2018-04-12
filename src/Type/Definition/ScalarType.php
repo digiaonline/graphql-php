@@ -124,34 +124,4 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
     {
         return null !== $this->parseLiteral($node);
     }
-
-    /**
-     * @param callable $serializeFunction
-     * @return ScalarType
-     */
-    protected function setSerialize(callable $serializeFunction): ScalarType
-    {
-        $this->serializeCallback = $serializeFunction;
-        return $this;
-    }
-
-    /**
-     * @param callable $parseValueFunction
-     * @return ScalarType
-     */
-    protected function setParseValue(callable $parseValueFunction): ScalarType
-    {
-        $this->parseValueCallback = $parseValueFunction;
-        return $this;
-    }
-
-    /**
-     * @param callable $parseLiteralFunction
-     * @return ScalarType
-     */
-    protected function setParseLiteral(callable $parseLiteralFunction): ScalarType
-    {
-        $this->parseLiteralCallback = $parseLiteralFunction;
-        return $this;
-    }
 }

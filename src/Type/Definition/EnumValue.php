@@ -34,6 +34,6 @@ class EnumValue implements ASTNodeAwareInterface
         $this->description       = $description;
         $this->deprecationReason = $deprecationReason;
         $this->astNode           = $astNode;
-        $this->value             = $value ?? $this->name; // By default, enum values use their value as their name.
+        $this->value             = $value ?? $name; // By default, enum values use their value as their name.
     }
 }

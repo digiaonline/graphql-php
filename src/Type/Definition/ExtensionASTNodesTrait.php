@@ -26,14 +26,4 @@ trait ExtensionASTNodesTrait
     {
         return $this->extensionAstNodes;
     }
-
-    /**
-     * @param ObjectTypeExtensionNode[] $extensionAstNodes
-     * @return $this
-     */
-    protected function setExtensionAstNodes(array $extensionAstNodes)
-    {
-        $this->extensionAstNodes = $extensionAstNodes;
-        return $this;
-    }
 }

@@ -18,7 +18,7 @@ use function Digia\GraphQL\Util\invariant;
  *
  * Example:
  *
- *     $PetType = GraphQLUnionType([
+ *     $PetType = newUnionType([
  *       'name' => 'Pet',
  *       'types' => [$DogType, $CatType],
  *       'resolveType' => function ($value) {
@@ -90,17 +90,8 @@ class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeT
         if (!isset($this->typeMap)) {
             $this->typeMap = $this->buildTypeMap($this->typesOrThunk);
         }
-        return $this->typeMap;
-    }
 
-    /**
-     * @param array|callable $typesOrThunk
-     * @return UnionType
-     */
-    protected function setTypes($typesOrThunk): UnionType
-    {
-        $this->typesOrThunk = $typesOrThunk;
-        return $this;
+        return $this->typeMap;
     }
 
     /**

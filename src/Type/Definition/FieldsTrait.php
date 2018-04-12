@@ -26,6 +26,11 @@ trait FieldsTrait
     protected $fieldMap;
 
     /**
+     * @return null|string
+     */
+    abstract public function getName(): ?string;
+
+    /**
      * @param string $fieldName
      * @return Field|null
      * @throws InvariantException
@@ -45,21 +50,12 @@ trait FieldsTrait
         if (!isset($this->fieldMap)) {
             $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk);
         }
+
         return $this->fieldMap;
     }
 
     /**
      * @param array|callable $fieldsOrThunk
-     * @return $this
-     */
-    protected function setFields($fieldsOrThunk)
-    {
-        $this->fieldsOrThunk = $fieldsOrThunk;
-        return $this;
-    }
-
-    /**
-     * @param mixed $fieldsOrThunk
      * @return array
      * @throws InvariantException
      */
@@ -71,7 +67,7 @@ trait FieldsTrait
             isAssocArray($fields),
             \sprintf(
                 '%s fields must be an associative array with field names as key or a callable which returns such an array.',
-                $this->name
+                $this->getName()
             )
         );
 
@@ -80,14 +76,14 @@ trait FieldsTrait
         foreach ($fields as $fieldName => $fieldConfig) {
             invariant(
                 \is_array($fieldConfig),
-                \sprintf('%s.%s field config must be an array', $this->name, $fieldName)
+                \sprintf('%s.%s field config must be an array', $this->getName(), $fieldName)
             );
 
             invariant(
                 !isset($fieldConfig['isDeprecated']),
                 \sprintf(
                     '%s.%s should provide "deprecationReason" instead of "isDeprecated".',
-                    $this->name,
+                    $this->getName(),
                     $fieldName
                 )
             );
@@ -97,7 +93,7 @@ trait FieldsTrait
                     null === $fieldConfig['resolve'] || \is_callable($fieldConfig['resolve']),
                     \sprintf(
                         '%s.%s field resolver must be a function if provided, but got: %s',
-                        $this->name,
+                        $this->getName(),
                         $fieldName,
                         toString($fieldConfig['resolve'])
                     )

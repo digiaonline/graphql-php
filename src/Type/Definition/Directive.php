@@ -51,14 +51,4 @@ class Directive implements ASTNodeAwareInterface, ArgumentsAwareInterface
     {
         return $this->locations;
     }
-
-    /**
-     * @param string[] $locations
-     * @return $this
-     */
-    protected function setLocations(array $locations)
-    {
-        $this->locations = $locations;
-        return $this;
-    }
 }

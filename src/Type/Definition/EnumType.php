@@ -21,7 +21,7 @@ use function Digia\GraphQL\Util\toString;
  *
  * Example:
  *
- *     $RGBType = new GraphQLEnumType([
+ *     $RGBType = new newEnumType([
  *       'name'   => 'RGB',
  *       'values' => [
  *         'RED'   => ['value' => 0],
@@ -79,7 +79,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
      * @return null|string
      * @throws InvariantException
      */
-    public function serialize($value)
+    public function serialize($value): ?string
     {
         $enumValue = $this->getValueByValue($value);
 
@@ -149,16 +149,6 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     }
 
     /**
-     * @param array $valueMap
-     * @return $this
-     */
-    protected function setValues(array $valueMap): EnumType
-    {
-        $this->valueMap = $valueMap;
-        return $this;
-    }
-
-    /**
      * @param string $name
      * @return EnumValue|null
      * @throws InvariantException
@@ -209,7 +199,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
                 isAssocArray($valueConfig),
                 \sprintf(
                     '%s.%s must refer to an object with a "value" key representing an internal value but got: %s',
-                    $this->getName(),
+                    $this->name,
                     $valueName,
                     toString($valueConfig)
                 )
@@ -219,7 +209,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
                 !isset($valueConfig['isDeprecated']),
                 \sprintf(
                     '%s.%s should provided "deprecationReason" instead of "isDeprecated".',
-                    $this->getName(),
+                    $this->name,
                     $valueName
                 )
             );

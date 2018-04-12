@@ -24,18 +24,8 @@ trait ResolveTypeTrait
     /**
      * @return callable|null
      */
-    public function getResolveType(): ?callable
+    public function getResolveTypeCallback(): ?callable
     {
         return $this->resolveTypeCallback;
-    }
-
-    /**
-     * @param callable|null $resolveTypeFunction
-     * @return $this
-     */
-    protected function setResolveType(?callable $resolveTypeFunction)
-    {
-        $this->resolveTypeCallback = $resolveTypeFunction;
-        return $this;
     }
 }

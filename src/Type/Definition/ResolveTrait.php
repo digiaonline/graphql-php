@@ -23,7 +23,7 @@ trait ResolveTrait
     /**
      * @return bool
      */
-    public function hasResolve()
+    public function hasResolveCallback()
     {
         return null !== $this->resolveCallback;
     }
@@ -31,18 +31,8 @@ trait ResolveTrait
     /**
      * @return callable|null
      */
-    public function getResolve(): ?callable
+    public function getResolveCallback(): ?callable
     {
         return $this->resolveCallback;
-    }
-
-    /**
-     * @param callable|null $resolveCallback
-     * @return $this
-     */
-    protected function setResolve(?callable $resolveCallback)
-    {
-        $this->resolveCallback = $resolveCallback;
-        return $this;
     }
 }

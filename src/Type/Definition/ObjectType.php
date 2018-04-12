@@ -19,13 +19,13 @@ use function Digia\GraphQL\Util\invariant;
  *
  * Example:
  *
- *     $AddressType = GraphQLObjectType([
+ *     $AddressType = newObjectType([
  *       'name'   => 'Address',
  *       'fields' => [
- *         'street'    => ['type' => GraphQLString()],
- *         'number'    => ['type' => GraphQLInt()],
+ *         'street'    => ['type' => String()],
+ *         'number'    => ['type' => LInt()],
  *         'formatted' => [
- *           'type'    => GraphQLString(),
+ *           'type'    => String(),
  *           'resolve' => function ($obj) {
  *             return $obj->number . ' ' . $obj->street
  *           }
@@ -39,11 +39,11 @@ use function Digia\GraphQL\Util\invariant;
  *
  * Example:
  *
- *     $PersonType = GraphQLObjectType([
+ *     $PersonType = newObjectType([
  *       'name' => 'Person',
  *       'fields' => function () {
  *         return [
- *           'name'       => ['type' => GraphQLString()],
+ *           'name'       => ['type' => String()],
  *           'bestFriend' => ['type' => $PersonType],
  *         ];
  *       }
@@ -144,31 +144,11 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
     }
 
     /**
-     * @param array|callable $interfacesOrThunk
-     * @return $this
-     */
-    protected function setInterfaces($interfacesOrThunk)
-    {
-        $this->interfacesOrThunk = $interfacesOrThunk;
-        return $this;
-    }
-
-    /**
      * @return null|callable
      */
     public function getIsTypeOf(): ?callable
     {
         return $this->isTypeOfCallback;
-    }
-
-    /**
-     * @param null|callable $isTypeOfFunction
-     * @return $this
-     */
-    protected function setIsTypeOf(?callable $isTypeOfFunction)
-    {
-        $this->isTypeOfCallback = $isTypeOfFunction;
-        return $this;
     }
 
     /**
