@@ -21,7 +21,7 @@ use function Digia\GraphQL\Util\toString;
  *
  * Example:
  *
- *     $RGBType = new newEnumType([
+ *     $RGBType = newEnumType([
  *       'name'   => 'RGB',
  *       'values' => [
  *         'RED'   => ['value' => 0],
