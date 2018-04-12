@@ -10,7 +10,7 @@ use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
@@ -47,7 +47,7 @@ class TypesRule extends AbstractRule
                 $this->context->reportError(
                     new SchemaValidationException(
                         \sprintf('Expected GraphQL named type but got: %s.', toString($type)),
-                        $type instanceof NodeAwareInterface ? [$type->getAstNode()] : null
+                        $type instanceof ASTNodeAwareInterface ? [$type->getAstNode()] : null
                     )
                 );
 

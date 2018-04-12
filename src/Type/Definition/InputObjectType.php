@@ -2,11 +2,10 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
@@ -21,39 +20,57 @@ use function Digia\GraphQL\Util\invariant;
  *
  * Example:
  *
- *     $GeoPoint = GraphQLInputObjectType([
+ *     $GeoPoint = newInputObjectType([
  *       'name': 'GeoPoint',
  *       'fields': [
- *         'lat': ['type' => GraphQLNonNull(GraphQLFloat())],
- *         'lon': ['type' => GraphQLNonNull(GraphQLFloat())],
- *         'alt': ['type' => GraphQLFloat(), 'defaultValue' => 0],
+ *         'lat': ['type' => newNonNull(Float())],
+ *         'lon': ['type' => newNonNull(Float())],
+ *         'alt': ['type' => Float(), 'defaultValue' => 0],
  *       ]
  *     ]);
  */
-class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInterface, ConfigAwareInterface,
-    NodeAwareInterface
+class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInterface, ASTNodeAwareInterface
 {
-    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
-    use NodeTrait;
+    use ASTNodeTrait;
 
     /**
+     * Fields can be defined either as an array or as a thunk.
+     * Using thunks allows for cross-referencing of fields.
+     *
      * @var array|callable
      */
     protected $fieldsOrThunk;
 
     /**
+     * A key-value map over field names and their corresponding field instances.
+     *
      * @var null|InputField[]
      */
     protected $fieldMap;
 
     /**
-     * @inheritdoc
+     * InputObjectType constructor.
+     *
+     * @param string                             $name
+     * @param null|string                        $description
+     * @param array|callable                     $fieldsOrThunk
+     * @param InputObjectTypeDefinitionNode|null $astNode
+     * @throws InvariantException
      */
-    protected function afterConfig(): void
-    {
-        invariant(null !== $this->getName(), 'Must provide name.');
+    public function __construct(
+        string $name,
+        ?string $description,
+        $fieldsOrThunk,
+        ?InputObjectTypeDefinitionNode $astNode
+    ) {
+        $this->name          = $name;
+        $this->description   = $description;
+        $this->fieldsOrThunk = $fieldsOrThunk;
+        $this->astNode       = $astNode;
+
+        invariant(null !== $this->name, 'Must provide name.');
     }
 
     /**
@@ -63,22 +80,10 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
     public function getFields(): array
     {
         if (!isset($this->fieldMap)) {
-            $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk ?? []);
+            $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk);
         }
-        return $this->fieldMap;
-    }
 
-    /**
-     * Input fields are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['fields']`.
-     *
-     * @param array|callable $fieldsOrThunk
-     * @return $this
-     */
-    protected function setFields($fieldsOrThunk)
-    {
-        $this->fieldsOrThunk = $fieldsOrThunk;
-        return $this;
+        return $this->fieldMap;
     }
 
     /**
@@ -88,13 +93,13 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
      */
     protected function buildFieldMap($fieldsOrThunk): array
     {
-        $fields = resolveThunk($fieldsOrThunk) ?? [];
+        $fields = resolveThunk($fieldsOrThunk);
 
         invariant(
             isAssocArray($fields),
             \sprintf(
                 '%s fields must be an associative array with field names as keys or a function which returns such an array.',
-                $this->getName()
+                $this->name
             )
         );
 
@@ -105,13 +110,18 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
                 !isset($fieldConfig['resolve']),
                 \sprintf(
                     '%s.%s field type has a resolve property, but Input Types cannot define resolvers.',
-                    $this->getName(),
+                    $this->name,
                     $fieldName
                 )
             );
 
-            $fieldConfig['name']  = $fieldName;
-            $fieldMap[$fieldName] = new InputField($fieldConfig);
+            $fieldMap[$fieldName] = new InputField(
+                $fieldName,
+                $fieldConfig['type'] ?? null,
+                $fieldConfig['defaultValue'] ?? null,
+                $fieldConfig['description'] ?? null,
+                $fieldConfig['astNode'] ?? null
+            );
         }
 
         return $fieldMap;

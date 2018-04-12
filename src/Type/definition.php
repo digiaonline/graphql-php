@@ -324,73 +324,133 @@ function getNamedType(?TypeInterface $type): ?NamedTypeInterface
 /**
  * @param array $config
  * @return ScalarType
+ * @throws InvariantException
  */
 function newScalarType(array $config = []): ScalarType
 {
-    return new ScalarType($config);
+    return new ScalarType(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['serialize'] ?? null,
+        $config['parseValue'] ?? null,
+        $config['parseLiteral'] ?? null,
+        $config['astNode'] ?? null
+    );
 }
 
 /**
  * @param array $config
  * @return EnumType
+ * @throws InvariantException
  */
 function newEnumType(array $config = []): EnumType
 {
-    return new EnumType($config);
+    return new EnumType(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['values'] ?? [],
+        $config['astNode'] ?? null
+    );
 }
 
 /**
  * @param array $config
  * @return InputObjectType
+ * @throws InvariantException
  */
 function newInputObjectType(array $config = []): InputObjectType
 {
-    return new InputObjectType($config);
+    return new InputObjectType(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['fields'] ?? [],
+        $config['astNode'] ?? null
+    );
 }
 
 /**
  * @param array $config
  * @return InterfaceType
+ * @throws InvariantException
  */
 function newInterfaceType(array $config = []): InterfaceType
 {
-    return new InterfaceType($config);
+    return new InterfaceType(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['fields'] ?? [],
+        $config['resolveType'] ?? null,
+        $config['astNode'] ?? null,
+        $config['extensionASTNodes'] ?? []
+    );
 }
 
 /**
  * @param array $config
  * @return ObjectType
+ * @throws InvariantException
  */
 function newObjectType(array $config = []): ObjectType
 {
-    return new ObjectType($config);
+    return new ObjectType(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['fields'] ?? [],
+        $config['interfaces'] ?? [],
+        $config['isTypeOf'] ?? null,
+        $config['astNode'] ?? null,
+        $config['extensionASTNodes'] ?? []
+    );
 }
 
 /**
  * @param array $config
  * @return UnionType
+ * @throws InvariantException
  */
 function newUnionType(array $config = []): UnionType
 {
-    return new UnionType($config);
+    return new UnionType(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['types'] ?? [],
+        $config['resolveType'] ?? null,
+        $config['astNode'] ?? null
+    );
 }
 
 /**
  * @param array $config
  * @return Schema
+ * @throws InvariantException
  */
 function newSchema(array $config = []): Schema
 {
-    return new Schema($config);
+    return new Schema(
+        $config['query'] ?? null,
+        $config['mutation'] ?? null,
+        $config['subscription'] ?? null,
+        $config['types'] ?? [],
+        $config['directives'] ?? [],
+        $config['assumeValue'] ?? false,
+        $config['astNode'] ?? null
+    );
 }
 
 /**
  * @param array $config
  * @return Directive
+ * @throws InvariantException
  */
 function newDirective(array $config = []): Directive
 {
-    return new Directive($config);
+    return new Directive(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['locations'] ?? [],
+        $config['args'] ?? [],
+        $config['astNode'] ?? null
+    );
 }
 
 /**

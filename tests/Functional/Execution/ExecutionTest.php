@@ -5,8 +5,6 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\parse;
@@ -28,15 +26,14 @@ class ExecutionTest extends TestCase
         $this->expectException(\TypeError::class);
 
         $schema = newSchema([
-            'query' =>
-                new ObjectType([
-                    'name'   => 'Type',
-                    'fields' => [
-                        'a' => [
-                            'type' => String()
-                        ]
+            'query' => newObjectType([
+                'name'   => 'Type',
+                'fields' => [
+                    'a' => [
+                        'type' => String()
                     ]
-                ])
+                ]
+            ])
         ]);
 
         graphql($schema, null);
@@ -60,19 +57,18 @@ class ExecutionTest extends TestCase
      */
     public function testAcceptAnObjectWithNamedPropertiesAsArguments()
     {
-        $schema = new Schema([
-            'query' =>
-                new ObjectType([
-                    'name'   => 'Greeting',
-                    'fields' => [
-                        'a' => [
-                            'type'    => String(),
-                            'resolve' => function ($source, $args, $context, $info) {
-                                return $source;
-                            }
-                        ]
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'Greeting',
+                'fields' => [
+                    'a' => [
+                        'type'    => String(),
+                        'resolve' => function ($source, $args, $context, $info) {
+                            return $source;
+                        }
                     ]
-                ])
+                ]
+            ])
         ]);
 
         $rootValue = 'rootValue';
@@ -89,19 +85,18 @@ class ExecutionTest extends TestCase
      */
     public function testExecuteHelloQuery()
     {
-        $schema = new Schema([
-            'query' =>
-                new ObjectType([
-                    'name'   => 'Greeting',
-                    'fields' => [
-                        'hello' => [
-                            'type'    => String(),
-                            'resolve' => function () {
-                                return 'world';
-                            }
-                        ]
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'Greeting',
+                'fields' => [
+                    'hello' => [
+                        'type'    => String(),
+                        'resolve' => function () {
+                            return 'world';
+                        }
                     ]
-                ])
+                ]
+            ])
         ]);
 
         /** @var ExecutionResult $executionResult */
@@ -116,7 +111,7 @@ class ExecutionTest extends TestCase
      */
     public function testExecuteArbitraryCode()
     {
-        $deep = new ObjectType([
+        $deep = newObjectType([
             'name'   => 'DeepDataType',
             'fields' => function () use (&$dataType) {
                 return [
@@ -159,7 +154,7 @@ class ExecutionTest extends TestCase
             }
         ]);
 
-        $dataType = new ObjectType([
+        $dataType = newObjectType([
             'name'   => 'DataType',
             'fields' => function () use (&$dataType, &$deep) {
                 return [
@@ -256,9 +251,7 @@ class ExecutionTest extends TestCase
       }
     ';
 
-        $schema = new Schema([
-            'query' => $dataType
-        ]);
+        $schema = newSchema(['query' => $dataType]);
 
         /** @var ExecutionResult $executionResult */
         $executionResult = execute($schema, parse($source), null, null, ['size' => 100]);
@@ -295,23 +288,22 @@ class ExecutionTest extends TestCase
     public function testExecuteQueryHelloWithArgs()
     {
         $schema = newSchema([
-            'query' =>
-                newObjectType([
-                    'name'   => 'Greeting',
-                    'fields' => [
-                        'greeting' => [
-                            'type'    => String(),
-                            'resolve' => function ($source, $args, $context, $info) {
-                                return sprintf('Hello %s', $args['name']);
-                            },
-                            'args'    => [
-                                'name' => [
-                                    'type' => String(),
-                                ]
+            'query' => newObjectType([
+                'name'   => 'Greeting',
+                'fields' => [
+                    'greeting' => [
+                        'type'    => String(),
+                        'resolve' => function ($source, $args, $context, $info) {
+                            return sprintf('Hello %s', $args['name']);
+                        },
+                        'args'    => [
+                            'name' => [
+                                'type' => String(),
                             ]
                         ]
                     ]
-                ])
+                ]
+            ])
         ]);
 
         $source         = 'query Hello($name: String) {greeting(name: $name)}';
@@ -328,43 +320,42 @@ class ExecutionTest extends TestCase
      */
     public function testExecuteQueryWithMultipleFields()
     {
-        $schema = new Schema([
-            'query' =>
-                new ObjectType([
-                    'name'   => 'Human',
-                    'fields' => [
-                        'id'         => [
-                            'type'    => Int(),
-                            'resolve' => function () {
-                                return 1000;
-                            }
-                        ],
-                        'type'       => [
-                            'type'    => String(),
-                            'resolve' => function () {
-                                return 'Human';
-                            }
-                        ],
-                        'friends'    => [
-                            'type'    => newList(String()),
-                            'resolve' => function () {
-                                return ['1002', '1003', '2000', '2001'];
-                            }
-                        ],
-                        'appearsIn'  => [
-                            'type'    => newList(Int()),
-                            'resolve' => function () {
-                                return [4, 5, 6];
-                            }
-                        ],
-                        'homePlanet' => [
-                            'type'    => String(),
-                            'resolve' => function () {
-                                return 'Tatooine';
-                            }
-                        ],
-                    ]
-                ])
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'Human',
+                'fields' => [
+                    'id'         => [
+                        'type'    => Int(),
+                        'resolve' => function () {
+                            return 1000;
+                        }
+                    ],
+                    'type'       => [
+                        'type'    => String(),
+                        'resolve' => function () {
+                            return 'Human';
+                        }
+                    ],
+                    'friends'    => [
+                        'type'    => newList(String()),
+                        'resolve' => function () {
+                            return ['1002', '1003', '2000', '2001'];
+                        }
+                    ],
+                    'appearsIn'  => [
+                        'type'    => newList(Int()),
+                        'resolve' => function () {
+                            return [4, 5, 6];
+                        }
+                    ],
+                    'homePlanet' => [
+                        'type'    => String(),
+                        'resolve' => function () {
+                            return 'Tatooine';
+                        }
+                    ],
+                ],
+            ]),
         ]);
 
         /** @var ExecutionResult $executionResult */
@@ -398,9 +389,9 @@ fragment FragTwo on Type {
 }
 SRC;
 
-        $Type = new ObjectType([
+        $type = newObjectType([
             'name'   => 'Type',
-            'fields' => function () use (&$Type) {
+            'fields' => function () use (&$type) {
                 return [
                     'a'    => [
                         'type'    => String(),
@@ -421,7 +412,7 @@ SRC;
                         }
                     ],
                     'deep' => [
-                        'type'    => $Type,
+                        'type'    => $type,
                         'resolve' => function () {
                             return [];
                         }
@@ -430,9 +421,7 @@ SRC;
             }
         ]);
 
-        $schema = new Schema([
-            'query' => $Type
-        ]);
+        $schema = newSchema(['query' => $type]);
 
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, $source);
@@ -463,19 +452,18 @@ SRC;
     public function testProvidesInfoAboutCurrentExecutionState()
     {
         $info   = null;
-        $schema = new Schema([
-            'query' =>
-                new ObjectType([
-                    'name'   => 'Test',
-                    'fields' => [
-                        'test' => [
-                            'type'    => String(),
-                            'resolve' => function ($source, $args, $context, $_info) use (&$info) {
-                                $info = $_info;
-                            }
-                        ]
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'Test',
+                'fields' => [
+                    'test' => [
+                        'type'    => String(),
+                        'resolve' => function ($source, $args, $context, $_info) use (&$info) {
+                            $info = $_info;
+                        }
                     ]
-                ])
+                ]
+            ]),
         ]);
 
         $rootValue = [
@@ -510,19 +498,19 @@ SRC;
     public function testThreadsRootValueContextCorrectly()
     {
         $resolvedRootValue = null;
-        $schema            = new Schema([
-            'query' =>
-                new ObjectType([
-                    'name'   => 'Test',
-                    'fields' => [
-                        'a' => [
-                            'type'    => String(),
-                            'resolve' => function ($rootValue) use (&$resolvedRootValue) {
-                                $resolvedRootValue = $rootValue;
-                            }
-                        ]
+
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'Test',
+                'fields' => [
+                    'a' => [
+                        'type'    => String(),
+                        'resolve' => function ($rootValue) use (&$resolvedRootValue) {
+                            $resolvedRootValue = $rootValue;
+                        }
                     ]
-                ])
+                ]
+            ]),
         ]);
 
         $data = ['contextThing' => 'thing'];
@@ -544,23 +532,22 @@ SRC;
     {
         $resolvedArgs = null;
 
-        $schema = new Schema([
-            'query' =>
-                new ObjectType([
-                    'name'   => 'Type',
-                    'fields' => [
-                        'b' => [
-                            'type'    => Int(),
-                            'args'    => [
-                                'numArg'    => ['type' => Int()],
-                                'stringArg' => ['type' => String()]
-                            ],
-                            'resolve' => function ($source, $args) use (&$resolvedArgs) {
-                                $resolvedArgs = $args;
-                            }
-                        ]
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'Type',
+                'fields' => [
+                    'b' => [
+                        'type'    => Int(),
+                        'args'    => [
+                            'numArg'    => ['type' => Int()],
+                            'stringArg' => ['type' => String()]
+                        ],
+                        'resolve' => function ($source, $args) use (&$resolvedArgs) {
+                            $resolvedArgs = $args;
+                        }
                     ]
-                ])
+                ]
+            ]),
         ]);
 
         execute($schema, parse('query Example { b(numArg: 123, stringArg: "foo") }'));
@@ -641,25 +628,24 @@ SRC;
             },
         ];
 
-        $schema = new Schema([
-            'query' =>
-                new ObjectType([
-                    'name'   => 'Type',
-                    'fields' => [
-                        'sync'                => ['type' => String()],
-                        'syncError'           => ['type' => String()],
-                        'syncRawError'        => ['type' => String()],
-                        'syncReturnError'     => ['type' => String()],
-                        'syncReturnErrorList' => ['type' => newList(String())],
-                        'async'               => ['type' => String()],
-                        'asyncReject'         => ['type' => String()],
-                        'asyncRawReject'      => ['type' => String()],
-                        'asyncEmptyReject'    => ['type' => String()],
-                        'asyncError'          => ['type' => String()],
-                        'asyncRawError'       => ['type' => String()],
-                        'asyncReturnError'    => ['type' => String()],
-                    ]
-                ])
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'Type',
+                'fields' => [
+                    'sync'                => ['type' => String()],
+                    'syncError'           => ['type' => String()],
+                    'syncRawError'        => ['type' => String()],
+                    'syncReturnError'     => ['type' => String()],
+                    'syncReturnErrorList' => ['type' => newList(String())],
+                    'async'               => ['type' => String()],
+                    'asyncReject'         => ['type' => String()],
+                    'asyncRawReject'      => ['type' => String()],
+                    'asyncEmptyReject'    => ['type' => String()],
+                    'asyncError'          => ['type' => String()],
+                    'asyncRawError'       => ['type' => String()],
+                    'asyncReturnError'    => ['type' => String()],
+                ]
+            ]),
         ]);
 
         $result = execute($schema, parse($source), $data);
@@ -800,8 +786,8 @@ SRC;
           }
         ';
 
-        $schema = new Schema([
-            'query' => new ObjectType([
+        $schema = newSchema([
+            'query' => newObjectType([
                 'name'   => 'Type',
                 'fields' => [
                     'foods' => [
@@ -818,7 +804,7 @@ SRC;
                         }
                     ],
                 ]
-            ])
+            ]),
         ]);
 
         $result = execute($schema, parse($query));
@@ -890,9 +876,7 @@ SRC;
             }
         ]);
 
-        $schema = newSchema([
-            'query' => $queryType
-        ]);
+        $schema = newSchema(['query' => $queryType]);
 
         $query = '
           query {
@@ -1328,13 +1312,13 @@ SRC;
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
         $schema = newSchema([
-            'query'    => new ObjectType([
+            'query'    => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => ['type' => String()],
                 ]
             ]),
-            'mutation' => new ObjectType([
+            'mutation' => newObjectType([
                 'name'   => 'M',
                 'fields' => [
                     'c' => ['type' => String()],

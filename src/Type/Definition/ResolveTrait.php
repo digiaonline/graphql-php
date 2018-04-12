@@ -4,11 +4,10 @@ namespace Digia\GraphQL\Type\Definition;
 
 trait ResolveTrait
 {
-
     /**
      * @var callable|null
      */
-    protected $resolveFunction;
+    protected $resolveCallback;
 
     /**
      * @param array ...$args
@@ -16,37 +15,24 @@ trait ResolveTrait
      */
     public function resolve(...$args)
     {
-        return isset($this->resolveFunction)
-            ? \call_user_func_array($this->resolveFunction, $args)
+        return null !== $this->resolveCallback
+            ? \call_user_func_array($this->resolveCallback, $args)
             : null;
     }
 
     /**
      * @return bool
      */
-    public function hasResolve()
+    public function hasResolveCallback()
     {
-        return null !== $this->resolveFunction;
+        return null !== $this->resolveCallback;
     }
 
     /**
      * @return callable|null
      */
-    public function getResolve(): ?callable
+    public function getResolveCallback(): ?callable
     {
-        return $this->resolveFunction;
-    }
-
-    /**
-     * Classes that use the `ResolveTrait` are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['resolve']`.
-     *
-     * @param callable|null $resolveFunction
-     * @return $this
-     */
-    protected function setResolve(?callable $resolveFunction)
-    {
-        $this->resolveFunction = $resolveFunction;
-        return $this;
+        return $this->resolveCallback;
     }
 }

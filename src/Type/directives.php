@@ -2,7 +2,6 @@
 
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Type\Definition\Directive;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use function Digia\GraphQL\Util\arraySome;
 
 /**
@@ -44,14 +43,14 @@ function specifiedDirectives(): array
 }
 
 /**
- * @param DirectiveInterface $directive
+ * @param Directive $directive
  * @return bool
  */
-function isSpecifiedDirective(DirectiveInterface $directive): bool
+function isSpecifiedDirective(Directive $directive): bool
 {
     return arraySome(
         specifiedDirectives(),
-        function (DirectiveInterface $specifiedDirective) use ($directive) {
+        function (Directive $specifiedDirective) use ($directive) {
             return $specifiedDirective->getName() === $directive->getName();
         }
     );

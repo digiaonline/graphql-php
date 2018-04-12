@@ -11,18 +11,29 @@ use function Digia\GraphQL\Util\toString;
 trait FieldsTrait
 {
     /**
+     * Fields can be defined either as an array or as a thunk.
+     * Using thunks allows for cross-referencing of fields.
+     *
      * @var array|callable
      */
     protected $fieldsOrThunk;
 
     /**
+     * A key-value map over field names and their corresponding field instances.
+     *
      * @var Field[]
      */
     protected $fieldMap;
 
     /**
+     * @return null|string
+     */
+    abstract public function getName(): ?string;
+
+    /**
      * @param string $fieldName
      * @return Field|null
+     * @throws InvariantException
      */
     public function getField(string $fieldName): ?Field
     {
@@ -37,26 +48,14 @@ trait FieldsTrait
     {
         // Fields are built lazily to avoid concurrency issues.
         if (!isset($this->fieldMap)) {
-            $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk ?? []);
+            $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk);
         }
+
         return $this->fieldMap;
     }
 
     /**
-     * Fields are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['fields']`.
-     *
      * @param array|callable $fieldsOrThunk
-     * @return $this
-     */
-    protected function setFields($fieldsOrThunk)
-    {
-        $this->fieldsOrThunk = $fieldsOrThunk;
-        return $this;
-    }
-
-    /**
-     * @param mixed $fieldsOrThunk
      * @return array
      * @throws InvariantException
      */
@@ -101,8 +100,15 @@ trait FieldsTrait
                 );
             }
 
-            $fieldConfig['name'] = $fieldName;
-            $fieldMap[$fieldName] = new Field($fieldConfig);
+            $fieldMap[$fieldName] = new Field(
+                $fieldName,
+                $fieldConfig['description'] ?? null,
+                $fieldConfig['type'] ?? null,
+                $fieldConfig['args'] ?? [],
+                $fieldConfig['resolve'] ?? null,
+                $fieldConfig['deprecationReason'] ?? null,
+                $fieldConfig['astNode'] ?? null
+            );
         }
 
         return $fieldMap;

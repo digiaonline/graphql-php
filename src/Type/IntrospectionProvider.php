@@ -9,7 +9,7 @@ use Digia\GraphQL\Language\DirectiveLocationEnum;
 use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\ArgumentsAwareInterface;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -131,7 +131,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                         ],
                         'args'        => [
                             'type'    => newNonNull(newList(newNonNull(__InputValue()))),
-                            'resolve' => function (DirectiveInterface $directive): array {
+                            'resolve' => function (Directive $directive): array {
                                 return $directive->getArguments() ?: [];
                             },
                         ],
@@ -268,7 +268,7 @@ class IntrospectionProvider extends AbstractServiceProvider
 
                                     if (!$includeDeprecated) {
                                         $fields = array_filter($fields, function (Field $field) {
-                                            return !$field->getIsDeprecated();
+                                            return !$field->isDeprecated();
                                         });
                                     }
 
@@ -312,7 +312,7 @@ class IntrospectionProvider extends AbstractServiceProvider
 
                                     if (!$includeDeprecated) {
                                         $values = array_filter($values, function (Field $field) {
-                                            return !$field->getIsDeprecated();
+                                            return !$field->isDeprecated();
                                         });
                                     }
 
@@ -447,44 +447,50 @@ class IntrospectionProvider extends AbstractServiceProvider
     protected function registerMetaFields()
     {
         $this->container->add(GraphQL::SCHEMA_META_FIELD_DEFINITION, function ($__Schema) {
-            return new Field([
-                'name'        => '__schema',
-                'type'        => newNonNull($__Schema),
-                'description' => 'Access the current type schema of this server.',
-                'resolve'     => function ($source, $args, $context, ResolveInfo $info): SchemaInterface {
+            return new Field(
+                '__schema',
+                'Access the current type schema of this server.',
+                newNonNull($__Schema),
+                [],
+                function ($source, $args, $context, ResolveInfo $info): SchemaInterface {
                     return $info->getSchema();
-                }
-            ]);
+                },
+                null,
+                null
+            );
         })
             ->withArgument(GraphQL::SCHEMA_INTROSPECTION);
 
         $this->container->add(GraphQL::TYPE_META_FIELD_DEFINITION, function ($__Type) {
-            return new Field([
-                'name'        => '__type',
-                'type'        => $__Type,
-                'description' => 'Request the type information of a single type.',
-                'args'        => [
-                    'name' => ['type' => newNonNull(String())],
-                ],
-                'resolve'     => function ($source, $args, $context, ResolveInfo $info): TypeInterface {
+            return new Field(
+                '__type',
+                'Request the type information of a single type.',
+                $__Type,
+                ['name' => ['type' => newNonNull(String())]],
+                function ($source, $args, $context, ResolveInfo $info): TypeInterface {
                     ['name' => $name] = $args;
                     $schema = $info->getSchema();
                     return $schema->getType($name);
-                }
-            ]);
+                },
+                null,
+                null
+            );
         })
             ->withArgument(GraphQL::TYPE_INTROSPECTION);
 
         $this->container->add(GraphQL::TYPE_NAME_META_FIELD_DEFINITION, function () {
-            return new Field([
-                'name'        => '__typename',
-                'type'        => newNonNull(String()),
-                'description' => 'The name of the current Object type at runtime.',
-                'resolve'     => function ($source, $args, $context, ResolveInfo $info): string {
+            return new Field(
+                '__typename',
+                'The name of the current Object type at runtime.',
+                newNonNull(String()),
+                [],
+                function ($source, $args, $context, ResolveInfo $info): string {
                     $parentType = $info->getParentType();
                     return null !== $parentType ? $parentType->getName() : null;
-                }
-            ]);
+                },
+                null,
+                null
+            );
         });
     }
 }

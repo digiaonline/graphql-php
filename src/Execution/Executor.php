@@ -400,12 +400,12 @@ class Executor
         ExecutionContext $context
     ) {
 
-        if ($field->hasResolve()) {
-            return $field->getResolve();
+        if ($field->hasResolveCallback()) {
+            return $field->getResolveCallback();
         }
 
-        if ($objectType->hasResolve()) {
-            return $objectType->getResolve();
+        if ($objectType->hasResolveCallback()) {
+            return $objectType->getResolveCallback();
         }
 
         return $this->context->getFieldResolver() ?? self::$defaultFieldResolver;

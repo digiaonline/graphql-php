@@ -2,11 +2,11 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
@@ -19,13 +19,13 @@ use function Digia\GraphQL\Util\invariant;
  *
  * Example:
  *
- *     $AddressType = GraphQLObjectType([
+ *     $AddressType = newObjectType([
  *       'name'   => 'Address',
  *       'fields' => [
- *         'street'    => ['type' => GraphQLString()],
- *         'number'    => ['type' => GraphQLInt()],
+ *         'street'    => ['type' => String()],
+ *         'number'    => ['type' => LInt()],
  *         'formatted' => [
- *           'type'    => GraphQLString(),
+ *           'type'    => String(),
  *           'resolve' => function ($obj) {
  *             return $obj->number . ' ' . $obj->street
  *           }
@@ -39,53 +39,81 @@ use function Digia\GraphQL\Util\invariant;
  *
  * Example:
  *
- *     $PersonType = GraphQLObjectType([
+ *     $PersonType = newObjectType([
  *       'name' => 'Person',
  *       'fields' => function () {
  *         return [
- *           'name'       => ['type' => GraphQLString()],
+ *           'name'       => ['type' => String()],
  *           'bestFriend' => ['type' => $PersonType],
  *         ];
  *       }
  *     ]);
  */
 class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
-    ConfigAwareInterface, NodeAwareInterface
+    ASTNodeAwareInterface
 {
-    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use FieldsTrait;
     use ResolveTrait;
-    use NodeTrait;
+    use ASTNodeTrait;
     use ExtensionASTNodesTrait;
 
     /**
      * @var callable
      */
-    protected $isTypeOfFunction;
+    protected $isTypeOfCallback;
 
     /**
+     * Interfaces can be defined either as an array or as a thunk.
+     * Using thunks allows for cross-referencing of interfaces.
+     *
      * @var array|callable
      */
     protected $interfacesOrThunk;
 
     /**
+     * A list of interface instances.
+     *
      * @var InterfaceType[]|null
      */
     protected $interfaces;
 
     /**
-     * @inheritdoc
+     * ObjectType constructor.
+     *
+     * @param string                        $name
+     * @param null|string                   $description
+     * @param array|callable                $fieldsOrThunk
+     * @param array|callable                $interfacesOrThunk
+     * @param callable|null                 $isTypeOfCallback
+     * @param ObjectTypeDefinitionNode|null $astNode
+     * @param ObjectTypeExtensionNode[]     $extensionASTNodes
+     * @throws InvariantException
      */
-    protected function afterConfig(): void
-    {
-        invariant(null !== $this->getName(), 'Must provide name.');
+    public function __construct(
+        string $name,
+        ?string $description,
+        $fieldsOrThunk,
+        $interfacesOrThunk,
+        ?callable $isTypeOfCallback,
+        ?ObjectTypeDefinitionNode $astNode,
+        array $extensionASTNodes
+    ) {
+        $this->name              = $name;
+        $this->description       = $description;
+        $this->fieldsOrThunk     = $fieldsOrThunk;
+        $this->interfacesOrThunk = $interfacesOrThunk;
+        $this->isTypeOfCallback  = $isTypeOfCallback;
+        $this->astNode           = $astNode;
+        $this->extensionAstNodes = $extensionASTNodes;
 
-        if ($this->getIsTypeOf() !== null) {
+        invariant(null !== $this->name, 'Must provide name.');
+
+        if (null !== $this->isTypeOfCallback) {
             invariant(
-                \is_callable($this->getIsTypeOf()),
-                \sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
+                \is_callable($this->isTypeOfCallback),
+                \sprintf('%s must provide "isTypeOf" as a function.', $this->name)
             );
         }
     }
@@ -98,8 +126,8 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
      */
     public function isTypeOf($value, $context, $info)
     {
-        return isset($this->isTypeOfFunction)
-            ? \call_user_func($this->isTypeOfFunction, $value, $context, $info)
+        return isset($this->isTypeOfCallback)
+            ? \call_user_func($this->isTypeOfCallback, $value, $context, $info)
             : false;
     }
 
@@ -110,22 +138,9 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
     public function getInterfaces(): array
     {
         if (!isset($this->interfaces)) {
-            $this->interfaces = $this->buildInterfaces($this->interfacesOrThunk ?? []);
+            $this->interfaces = $this->buildInterfaces($this->interfacesOrThunk);
         }
         return $this->interfaces;
-    }
-
-    /**
-     * Objects are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['interfaces']`.
-     *
-     * @param array|callable $interfacesOrThunk
-     * @return $this
-     */
-    protected function setInterfaces($interfacesOrThunk)
-    {
-        $this->interfacesOrThunk = $interfacesOrThunk;
-        return $this;
     }
 
     /**
@@ -133,17 +148,7 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
      */
     public function getIsTypeOf(): ?callable
     {
-        return $this->isTypeOfFunction;
-    }
-
-    /**
-     * @param null|callable $isTypeOfFunction
-     * @return $this
-     */
-    protected function setIsTypeOf(?callable $isTypeOfFunction)
-    {
-        $this->isTypeOfFunction = $isTypeOfFunction;
-        return $this;
+        return $this->isTypeOfCallback;
     }
 
     /**
@@ -157,7 +162,7 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
 
         invariant(
             \is_array($interfaces),
-            \sprintf('%s interfaces must be an array or a function which returns an array.', $this->getName())
+            \sprintf('%s interfaces must be an array or a function which returns an array.', $this->name)
         );
 
         return $interfaces;

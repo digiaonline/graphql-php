@@ -254,7 +254,7 @@ class ExtensionTest extends TestCase
             ->getType('TypeWithDeprecatedField')
             ->getField('newDeprecatedField');
 
-        $this->assertTrue($deprecatedFieldDefinition->getIsDeprecated());
+        $this->assertTrue($deprecatedFieldDefinition->isDeprecated());
         $this->assertEquals('not used anymore', $deprecatedFieldDefinition->getDeprecationReason());
 
         /** @var EnumValue $deprecatedEnumDefinition */
@@ -263,7 +263,7 @@ class ExtensionTest extends TestCase
             ->getType('EnumWithDeprecatedValue')
             ->getValue('DEPRECATED');
 
-        $this->assertTrue($deprecatedEnumDefinition->getIsDeprecated());
+        $this->assertTrue($deprecatedEnumDefinition->isDeprecated());
         $this->assertEquals('do not use', $deprecatedEnumDefinition->getDeprecationReason());
     }
 
@@ -283,7 +283,7 @@ class ExtensionTest extends TestCase
             ->getType('Foo')
             ->getField('deprecatedField');
 
-        $this->assertTrue($deprecatedFieldDefinition->getIsDeprecated());
+        $this->assertTrue($deprecatedFieldDefinition->isDeprecated());
         $this->assertEquals('not used anymore', $deprecatedFieldDefinition->getDeprecationReason());
     }
 

@@ -2,10 +2,11 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use function Digia\GraphQL\Util\invariant;
 
 /**
@@ -17,29 +18,49 @@ use function Digia\GraphQL\Util\invariant;
  * when the field is resolved.
  *
  * Example:
- *     $EntityType = GraphQLInterfaceType([
+ *     $EntityType = newInterfaceType([
  *       'name' => 'Entity',
  *       'fields' => [
- *         'name' => ['type' => GraphQLString()]
+ *         'name' => ['type' => String()]
  *       ]
  *     ]);
  */
 class InterfaceType implements NamedTypeInterface, AbstractTypeInterface, CompositeTypeInterface,
-    OutputTypeInterface, ConfigAwareInterface, NodeAwareInterface
+    OutputTypeInterface, ASTNodeAwareInterface
 {
-    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use FieldsTrait;
-    use NodeTrait;
-    use ExtensionASTNodesTrait;
     use ResolveTypeTrait;
+    use ASTNodeTrait;
+    use ExtensionASTNodesTrait;
 
     /**
-     * @inheritdoc
+     * InterfaceType constructor.
+     *
+     * @param string                           $name
+     * @param null|string                      $description
+     * @param array|callable                   $fieldsOrThunk
+     * @param callable|null                    $resolveTypeCallback
+     * @param InterfaceTypeDefinitionNode|null $astNode
+     * @param InterfaceTypeExtensionNode[]     $extensionASTNodes
+     * @throws InvariantException
      */
-    protected function afterConfig(): void
-    {
-        invariant(null !== $this->getName(), 'Must provide name.');
+    public function __construct(
+        string $name,
+        ?string $description,
+        $fieldsOrThunk,
+        ?callable $resolveTypeCallback,
+        ?InterfaceTypeDefinitionNode $astNode,
+        array $extensionASTNodes
+    ) {
+        $this->name                = $name;
+        $this->description         = $description;
+        $this->fieldsOrThunk       = $fieldsOrThunk;
+        $this->resolveTypeCallback = $resolveTypeCallback;
+        $this->astNode             = $astNode;
+        $this->extensionAstNodes   = $extensionASTNodes;
+
+        invariant(null !== $this->name, 'Must provide name.');
     }
 }

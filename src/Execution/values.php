@@ -5,10 +5,9 @@ namespace Digia\GraphQL\Execution;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\ArgumentsAwareInterface;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
-use Digia\GraphQL\Type\Definition\Directive;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
-use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Type\Definition\Directive;
+use Digia\GraphQL\Type\Definition\Field;
 
 /**
  * @param SchemaInterface          $schema
@@ -33,9 +32,9 @@ function coerceArgumentValues($definition, ArgumentsAwareInterface $node, array 
 }
 
 /**
- * @param DirectiveInterface $directive
- * @param mixed              $node
- * @param array              $variableValues
+ * @param Directive $directive
+ * @param mixed     $node
+ * @param array     $variableValues
  * @return array|null
  */
 function coerceDirectiveValues(Directive $directive, $node, array $variableValues = []): ?array

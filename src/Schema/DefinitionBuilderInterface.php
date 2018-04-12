@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\FieldDefinitionNode;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
 interface DefinitionBuilderInterface
@@ -25,9 +25,9 @@ interface DefinitionBuilderInterface
 
     /**
      * @param DirectiveDefinitionNode $node
-     * @return DirectiveInterface
+     * @return Directive
      */
-    public function buildDirective(DirectiveDefinitionNode $node): DirectiveInterface;
+    public function buildDirective(DirectiveDefinitionNode $node): Directive;
 
     /**
      * @param FieldDefinitionNode|InputValueDefinitionNode $node

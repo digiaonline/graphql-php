@@ -21,6 +21,6 @@ class TypeNameEnum
      */
     public static function values(): array
     {
-        return array_values((new \ReflectionClass(__CLASS__))->getConstants());
+        return \array_values((new \ReflectionClass(__CLASS__))->getConstants());
     }
 }

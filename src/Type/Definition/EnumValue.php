@@ -2,28 +2,38 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\EnumValueDefinitionNode;
 
-class EnumValue implements ConfigAwareInterface, NodeAwareInterface
+class EnumValue implements ASTNodeAwareInterface
 {
-    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use DeprecationTrait;
     use ValueTrait;
-    use NodeTrait;
+    use ASTNodeTrait;
 
     /**
-     * @inheritdoc
+     * EnumValue constructor.
+     *
+     * @param string                       $name
+     * @param null|string                  $description
+     * @param null|string                  $deprecationReason
+     * @param EnumValueDefinitionNode|null $astNode
+     * @param mixed                        $value
      */
-    protected function afterConfig(): void
-    {
-        // By default, enum values use their value as their name.
-        if ($this->value === null) {
-            $this->value = $this->getName();
-        }
+    public function __construct(
+        string $name,
+        ?string $description,
+        ?string $deprecationReason,
+        ?EnumValueDefinitionNode $astNode,
+        $value
+    ) {
+        $this->name              = $name;
+        $this->description       = $description;
+        $this->deprecationReason = $deprecationReason;
+        $this->astNode           = $astNode;
+        $this->value             = $value ?? $name; // By default, enum values use their value as their name.
     }
 }
