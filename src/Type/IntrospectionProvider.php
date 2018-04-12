@@ -456,6 +456,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                     return $info->getSchema();
                 },
                 null,
+                null,
                 null
             );
         })
@@ -473,6 +474,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                     return $schema->getType($name);
                 },
                 null,
+                null,
                 null
             );
         })
@@ -488,6 +490,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                     $parentType = $info->getParentType();
                     return null !== $parentType ? $parentType->getName() : null;
                 },
+                null,
                 null,
                 null
             );

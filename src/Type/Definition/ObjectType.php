@@ -109,13 +109,6 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
         $this->extensionAstNodes = $extensionASTNodes;
 
         invariant(null !== $this->name, 'Must provide name.');
-
-        if (null !== $this->isTypeOfCallback) {
-            invariant(
-                \is_callable($this->isTypeOfCallback),
-                \sprintf('%s must provide "isTypeOf" as a function.', $this->name)
-            );
-        }
     }
 
     /**
