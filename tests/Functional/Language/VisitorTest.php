@@ -2,17 +2,12 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\GraphQL;
-use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
-use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
-use Digia\GraphQL\Language\NodeBuilder;
 use Digia\GraphQL\Language\NodeBuilderInterface;
 use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
@@ -1248,13 +1243,13 @@ class VisitorTest extends TestCase
                         && getNamedType($type) instanceof CompositeTypeInterface
                     ) {
                         return $nodeBuilder->build([
-                            'kind' => NodeKindEnum::FIELD,
-                            'alias' => $node->getAliasAsArray(),
-                            'name' => $node->getNameAsArray(),
-                            'arguments' => $node->getArgumentsAsArray(),
-                            'directives' => $node->getDirectivesAsArray(),
+                            'kind'         => NodeKindEnum::FIELD,
+                            'alias'        => $node->getAliasAsArray(),
+                            'name'         => $node->getNameAsArray(),
+                            'arguments'    => $node->getArgumentsAsArray(),
+                            'directives'   => $node->getDirectivesAsArray(),
                             'selectionSet' => [
-                                'kind' => NodeKindEnum::SELECTION_SET,
+                                'kind'   => NodeKindEnum::SELECTION_SET,
                                 'fields' => [
                                     [
                                         'kind' => NodeKindEnum::FIELD,

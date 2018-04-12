@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Schema;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
@@ -53,9 +51,8 @@ use function Digia\GraphQL\Util\invariant;
  * @package Digia\GraphQL\Type
  * @property SchemaDefinitionNode $astNode
  */
-class Schema implements SchemaInterface, ConfigAwareInterface
+class Schema implements SchemaInterface
 {
-    use ConfigAwareTrait;
     use ASTNodeTrait;
 
     /**
@@ -74,7 +71,7 @@ class Schema implements SchemaInterface, ConfigAwareInterface
     protected $subscription;
 
     /**
-     * @var TypeInterface
+     * @var TypeInterface[]
      */
     protected $types = [];
 
@@ -102,6 +99,42 @@ class Schema implements SchemaInterface, ConfigAwareInterface
      * @var array
      */
     protected $possibleTypesMap = [];
+
+    /**
+     * Schema constructor.
+     *
+     * @param SchemaDefinitionNode   $astNode
+     * @param TypeInterface|null     $query
+     * @param TypeInterface|null     $mutation
+     * @param TypeInterface|null     $subscription
+     * @param TypeInterface[]        $types
+     * @param Directive[]            $directives
+     * @param bool                   $assumeValid
+     * @param SchemaDefinitionNode[] $astNode
+     * @throws InvariantException
+     */
+    public function __construct(
+        ?TypeInterface $query,
+        ?TypeInterface $mutation,
+        ?TypeInterface $subscription,
+        array $types,
+        array $directives,
+        bool $assumeValid,
+        ?SchemaDefinitionNode $astNode
+    ) {
+        $this->query        = $query;
+        $this->mutation     = $mutation;
+        $this->subscription = $subscription;
+        $this->types        = $types;
+        $this->directives   = !empty($directives)
+            ? $directives
+            : specifiedDirectives();
+        $this->assumeValid  = $assumeValid;
+        $this->astNode      = $astNode;
+
+        $this->buildTypeMap();
+        $this->buildImplementations();
+    }
 
     /**
      * @inheritdoc
@@ -163,6 +196,7 @@ class Schema implements SchemaInterface, ConfigAwareInterface
 
     /**
      * @inheritdoc
+     * @throws InvariantException
      */
     public function isPossibleType(AbstractTypeInterface $abstractType, TypeInterface $possibleType): bool
     {
@@ -184,12 +218,15 @@ class Schema implements SchemaInterface, ConfigAwareInterface
                 )
             );
 
-            $this->possibleTypesMap[$abstractTypeName] = \array_reduce($possibleTypes,
+            $this->possibleTypesMap[$abstractTypeName] = \array_reduce(
+                $possibleTypes,
                 function (array $map, TypeInterface $type) {
                     /** @var NameAwareInterface $type */
                     $map[$type->getName()] = true;
                     return $map;
-                }, []);
+                },
+                []
+            );
         }
 
         return isset($this->possibleTypesMap[$abstractTypeName][$possibleTypeName]);
@@ -197,6 +234,7 @@ class Schema implements SchemaInterface, ConfigAwareInterface
 
     /**
      * @inheritdoc
+     * @throws InvariantException
      */
     public function getPossibleTypes(AbstractTypeInterface $abstractType): ?array
     {
@@ -216,23 +254,6 @@ class Schema implements SchemaInterface, ConfigAwareInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    protected function beforeConfig(): void
-    {
-        $this->setDirectives(specifiedDirectives());
-    }
-
-    /**
-     * @throws InvariantException
-     */
-    protected function afterConfig(): void
-    {
-        $this->buildTypeMap();
-        $this->buildImplementations();
-    }
-
-    /**
      *
      */
     protected function buildTypeMap(): void
@@ -241,7 +262,7 @@ class Schema implements SchemaInterface, ConfigAwareInterface
             $this->query,
             $this->mutation,
             $this->subscription,
-            __Schema(), // Introspection
+            __Schema(), // Introspection schema
         ];
 
         if ($this->types) {
@@ -433,5 +454,4 @@ class Schema implements SchemaInterface, ConfigAwareInterface
             return $this->typeMapReducer($map, $argument->getType());
         }, $map);
     }
-
 }

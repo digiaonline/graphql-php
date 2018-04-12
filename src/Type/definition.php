@@ -422,15 +422,25 @@ function newUnionType(array $config = []): UnionType
 /**
  * @param array $config
  * @return Schema
+ * @throws InvariantException
  */
 function newSchema(array $config = []): Schema
 {
-    return new Schema($config);
+    return new Schema(
+        $config['query'] ?? null,
+        $config['mutation'] ?? null,
+        $config['subscription'] ?? null,
+        $config['types'] ?? [],
+        $config['directives'] ?? [],
+        $config['assumeValue'] ?? false,
+        $config['astNode'] ?? null
+    );
 }
 
 /**
  * @param array $config
  * @return Directive
+ * @throws InvariantException
  */
 function newDirective(array $config = []): Directive
 {
