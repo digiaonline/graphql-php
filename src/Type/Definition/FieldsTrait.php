@@ -106,6 +106,7 @@ trait FieldsTrait
                 $fieldConfig['type'] ?? null,
                 $fieldConfig['args'] ?? [],
                 $fieldConfig['resolve'] ?? null,
+                $fieldConfig['subscribe'] ?? null,
                 $fieldConfig['deprecationReason'] ?? null,
                 $fieldConfig['astNode'] ?? null
             );
