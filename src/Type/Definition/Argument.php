@@ -2,17 +2,38 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 
-class Argument implements ConfigAwareInterface, NodeAwareInterface
+class Argument implements ASTNodeAwareInterface
 {
-    use ConfigAwareTrait;
     use NameTrait;
-    use DescriptionTrait;
     use TypeTrait;
     use DefaultValueTrait;
-    use NodeTrait;
+    use DescriptionTrait;
+    use ASTNodeTrait;
+
+    /**
+     * Argument constructor.
+     *
+     * @param string                                                      $name
+     * @param TypeInterface|InputTypeInterface|WrappingTypeInterface|null $type
+     * @param mixed|null                                                  $defaultValue
+     * @param null|string                                                 $description
+     * @param InputValueDefinitionNode|null                               $astNode
+     */
+    public function __construct(
+        string $name,
+        ?TypeInterface $type,
+        $defaultValue,
+        ?string $description,
+        ?InputValueDefinitionNode $astNode
+    ) {
+        $this->name         = $name;
+        $this->type         = $type;
+        $this->defaultValue = $defaultValue;
+        $this->description  = $description;
+        $this->astNode      = $astNode;
+    }
 }

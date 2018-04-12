@@ -11,11 +11,16 @@ use function Digia\GraphQL\Util\toString;
 trait FieldsTrait
 {
     /**
+     * Fields can be defined either as an array or as a thunk.
+     * Using thunks allows for cross-referencing of fields.
+     *
      * @var array|callable
      */
     protected $fieldsOrThunk;
 
     /**
+     * A key-value map over field names and their corresponding field instances.
+     *
      * @var Field[]
      */
     protected $fieldMap;
@@ -23,6 +28,7 @@ trait FieldsTrait
     /**
      * @param string $fieldName
      * @return Field|null
+     * @throws InvariantException
      */
     public function getField(string $fieldName): ?Field
     {
@@ -37,15 +43,12 @@ trait FieldsTrait
     {
         // Fields are built lazily to avoid concurrency issues.
         if (!isset($this->fieldMap)) {
-            $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk ?? []);
+            $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk);
         }
         return $this->fieldMap;
     }
 
     /**
-     * Fields are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['fields']`.
-     *
      * @param array|callable $fieldsOrThunk
      * @return $this
      */
@@ -68,7 +71,7 @@ trait FieldsTrait
             isAssocArray($fields),
             \sprintf(
                 '%s fields must be an associative array with field names as key or a callable which returns such an array.',
-                $this->getName()
+                $this->name
             )
         );
 
@@ -77,14 +80,14 @@ trait FieldsTrait
         foreach ($fields as $fieldName => $fieldConfig) {
             invariant(
                 \is_array($fieldConfig),
-                \sprintf('%s.%s field config must be an array', $this->getName(), $fieldName)
+                \sprintf('%s.%s field config must be an array', $this->name, $fieldName)
             );
 
             invariant(
                 !isset($fieldConfig['isDeprecated']),
                 \sprintf(
                     '%s.%s should provide "deprecationReason" instead of "isDeprecated".',
-                    $this->getName(),
+                    $this->name,
                     $fieldName
                 )
             );
@@ -94,15 +97,22 @@ trait FieldsTrait
                     null === $fieldConfig['resolve'] || \is_callable($fieldConfig['resolve']),
                     \sprintf(
                         '%s.%s field resolver must be a function if provided, but got: %s',
-                        $this->getName(),
+                        $this->name,
                         $fieldName,
                         toString($fieldConfig['resolve'])
                     )
                 );
             }
 
-            $fieldConfig['name'] = $fieldName;
-            $fieldMap[$fieldName] = new Field($fieldConfig);
+            $fieldMap[$fieldName] = new Field(
+                $fieldName,
+                $fieldConfig['description'] ?? null,
+                $fieldConfig['type'] ?? null,
+                $fieldConfig['args'] ?? [],
+                $fieldConfig['resolve'] ?? null,
+                $fieldConfig['deprecationReason'] ?? null,
+                $fieldConfig['astNode'] ?? null
+            );
         }
 
         return $fieldMap;

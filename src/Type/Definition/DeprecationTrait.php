@@ -10,11 +10,6 @@ trait DeprecationTrait
     protected $deprecationReason;
 
     /**
-     * @var bool
-     */
-    protected $isDeprecated = false;
-
-    /**
      * @return null|string
      */
     public function getDeprecationReason(): ?string
@@ -25,9 +20,9 @@ trait DeprecationTrait
     /**
      * @return bool
      */
-    public function getIsDeprecated(): bool
+    public function isDeprecated(): bool
     {
-        return $this->isDeprecated;
+        return null !== $this->deprecationReason;
     }
 
     /**
@@ -36,10 +31,6 @@ trait DeprecationTrait
      */
     protected function setDeprecationReason(?string $deprecationReason)
     {
-        if (null !== $deprecationReason) {
-            $this->isDeprecated = true;
-        }
-
         $this->deprecationReason = $deprecationReason;
         return $this;
     }

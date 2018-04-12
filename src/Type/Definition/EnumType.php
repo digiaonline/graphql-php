@@ -2,13 +2,12 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumValueNode;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
@@ -34,29 +33,44 @@ use function Digia\GraphQL\Util\toString;
  * Note: If a value is not provided in a definition, the name of the enum value
  * will be used as its internal value.
  */
-class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
-    LeafTypeInterface, OutputTypeInterface, ConfigAwareInterface, NodeAwareInterface
+class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface, LeafTypeInterface,
+    OutputTypeInterface, ASTNodeAwareInterface
 {
-    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
-    use NodeTrait;
+    use ASTNodeTrait;
 
     /**
+     * Values can be defined either as an array or as a thunk.
+     * Using thunks allows for cross-referencing of values.
+     *
      * @var array
      */
     protected $valueMap;
 
     /**
+     * A list of enum value instances.
+     *
      * @var EnumValue[]
      */
     protected $values;
 
     /**
-     * @inheritdoc
+     * EnumType constructor.
+     *
+     * @param string                      $name
+     * @param null|string                 $description
+     * @param EnumValue[]                 $values
+     * @param EnumTypeDefinitionNode|null $astNode
+     * @throws InvariantException
      */
-    protected function afterConfig(): void
+    public function __construct(string $name, ?string $description, array $values, ?EnumTypeDefinitionNode $astNode)
     {
+        $this->name        = $name;
+        $this->description = $description;
+        $this->astNode     = $astNode;
+        $this->valueMap    = $values;
+
         invariant(null !== $this->getName(), 'Must provide name.');
     }
 
@@ -129,7 +143,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     public function getValues(): array
     {
         if (!isset($this->values)) {
-            $this->values = $this->buildValues($this->valueMap ?? []);
+            $this->values = $this->buildValues($this->valueMap);
         }
         return $this->values;
     }
@@ -210,7 +224,13 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
                 )
             );
 
-            $values[] = new EnumValue(\array_merge($valueConfig, ['name' => $valueName]));
+            $values[] = new EnumValue(
+                $valueName,
+                $valueConfig['description'] ?? null,
+                $valueConfig['deprecationReason'] ?? null,
+                $valueConfig['astNode'] ?? null,
+                $valueConfig['value'] ?? null
+            );
         }
 
         return $values;

@@ -5,7 +5,6 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Schema\Schema;
 use React\Promise\Promise;
 use function Digia\GraphQL\execute;
@@ -26,7 +25,7 @@ class MutationTest extends TestCase
     {
         $schema = newSchema([
             'mutation' =>
-                new ObjectType([
+                newObjectType([
                     'name'   => 'M',
                     'fields' => [
                         'greeting' => [

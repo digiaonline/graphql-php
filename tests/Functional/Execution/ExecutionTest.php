@@ -5,7 +5,6 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\graphql;
@@ -29,7 +28,7 @@ class ExecutionTest extends TestCase
 
         $schema = newSchema([
             'query' =>
-                new ObjectType([
+                newObjectType([
                     'name'   => 'Type',
                     'fields' => [
                         'a' => [
@@ -62,7 +61,7 @@ class ExecutionTest extends TestCase
     {
         $schema = new Schema([
             'query' =>
-                new ObjectType([
+                newObjectType([
                     'name'   => 'Greeting',
                     'fields' => [
                         'a' => [
@@ -91,7 +90,7 @@ class ExecutionTest extends TestCase
     {
         $schema = new Schema([
             'query' =>
-                new ObjectType([
+                newObjectType([
                     'name'   => 'Greeting',
                     'fields' => [
                         'hello' => [
@@ -116,7 +115,7 @@ class ExecutionTest extends TestCase
      */
     public function testExecuteArbitraryCode()
     {
-        $deep = new ObjectType([
+        $deep = newObjectType([
             'name'   => 'DeepDataType',
             'fields' => function () use (&$dataType) {
                 return [
@@ -159,7 +158,7 @@ class ExecutionTest extends TestCase
             }
         ]);
 
-        $dataType = new ObjectType([
+        $dataType = newObjectType([
             'name'   => 'DataType',
             'fields' => function () use (&$dataType, &$deep) {
                 return [
@@ -330,7 +329,7 @@ class ExecutionTest extends TestCase
     {
         $schema = new Schema([
             'query' =>
-                new ObjectType([
+                newObjectType([
                     'name'   => 'Human',
                     'fields' => [
                         'id'         => [
@@ -398,7 +397,7 @@ fragment FragTwo on Type {
 }
 SRC;
 
-        $Type = new ObjectType([
+        $Type = newObjectType([
             'name'   => 'Type',
             'fields' => function () use (&$Type) {
                 return [
@@ -465,7 +464,7 @@ SRC;
         $info   = null;
         $schema = new Schema([
             'query' =>
-                new ObjectType([
+                newObjectType([
                     'name'   => 'Test',
                     'fields' => [
                         'test' => [
@@ -512,7 +511,7 @@ SRC;
         $resolvedRootValue = null;
         $schema            = new Schema([
             'query' =>
-                new ObjectType([
+                newObjectType([
                     'name'   => 'Test',
                     'fields' => [
                         'a' => [
@@ -546,7 +545,7 @@ SRC;
 
         $schema = new Schema([
             'query' =>
-                new ObjectType([
+                newObjectType([
                     'name'   => 'Type',
                     'fields' => [
                         'b' => [
@@ -643,7 +642,7 @@ SRC;
 
         $schema = new Schema([
             'query' =>
-                new ObjectType([
+                newObjectType([
                     'name'   => 'Type',
                     'fields' => [
                         'sync'                => ['type' => String()],
@@ -801,7 +800,7 @@ SRC;
         ';
 
         $schema = new Schema([
-            'query' => new ObjectType([
+            'query' => newObjectType([
                 'name'   => 'Type',
                 'fields' => [
                     'foods' => [
@@ -1328,13 +1327,13 @@ SRC;
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
         $schema = newSchema([
-            'query'    => new ObjectType([
+            'query'    => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => ['type' => String()],
                 ]
             ]),
-            'mutation' => new ObjectType([
+            'mutation' => newObjectType([
                 'name'   => 'M',
                 'fields' => [
                     'c' => ['type' => String()],

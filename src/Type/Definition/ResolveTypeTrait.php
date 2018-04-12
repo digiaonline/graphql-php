@@ -8,7 +8,7 @@ trait ResolveTypeTrait
     /**
      * @var callable|null
      */
-    protected $resolveTypeFunction;
+    protected $resolveTypeCallback;
 
     /**
      * @param array ...$args
@@ -16,8 +16,8 @@ trait ResolveTypeTrait
      */
     public function resolveType(...$args)
     {
-        return isset($this->resolveTypeFunction)
-            ? \call_user_func_array($this->resolveTypeFunction, $args)
+        return null !== $this->resolveTypeCallback
+            ? \call_user_func_array($this->resolveTypeCallback, $args)
             : null;
     }
 
@@ -26,19 +26,16 @@ trait ResolveTypeTrait
      */
     public function getResolveType(): ?callable
     {
-        return $this->resolveTypeFunction;
+        return $this->resolveTypeCallback;
     }
 
     /**
-     * Classes that use the `ResolveType Trait` are created using the `ConfigAwareTrait` constructor which will
-     * automatically call this method when setting arguments from `$config['resolveType']`.
-     *
      * @param callable|null $resolveTypeFunction
      * @return $this
      */
     protected function setResolveType(?callable $resolveTypeFunction)
     {
-        $this->resolveTypeFunction = $resolveTypeFunction;
+        $this->resolveTypeCallback = $resolveTypeFunction;
         return $this;
     }
 }

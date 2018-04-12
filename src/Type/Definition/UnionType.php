@@ -2,11 +2,10 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
 
@@ -33,29 +32,51 @@ use function Digia\GraphQL\Util\invariant;
  *     ]);
  */
 class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
-    ConfigAwareInterface, NodeAwareInterface
+    ASTNodeAwareInterface
 {
-    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use ResolveTypeTrait;
-    use NodeTrait;
+    use ASTNodeTrait;
 
     /**
+     * Types can be defined either as an array or as a thunk.
+     * Using thunks allows for cross-referencing of types.
+     *
      * @var array|callable
      */
     protected $typesOrThunk;
 
     /**
+     * A key-value map over type names and their corresponding type instances.
+     *
      * @var TypeInterface[]
      */
     protected $typeMap;
 
     /**
-     * @inheritdoc
+     * UnionType constructor.
+     *
+     * @param string                       $name
+     * @param null|string                  $description
+     * @param array|callable               $typesOrThunk
+     * @param callable|null                $resolveTypeCallback
+     * @param UnionTypeDefinitionNode|null $astNode
+     * @throws InvariantException
      */
-    protected function afterConfig(): void
-    {
+    public function __construct(
+        string $name,
+        ?string $description,
+        $typesOrThunk,
+        ?callable $resolveTypeCallback,
+        ?UnionTypeDefinitionNode $astNode
+    ) {
+        $this->name                = $name;
+        $this->description         = $description;
+        $this->typesOrThunk        = $typesOrThunk;
+        $this->resolveTypeCallback = $resolveTypeCallback;
+        $this->astNode             = $astNode;
+
         invariant(null !== $this->getName(), 'Must provide name.');
     }
 
@@ -67,15 +88,12 @@ class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeT
     {
         // Types are built lazily to avoid concurrency issues.
         if (!isset($this->typeMap)) {
-            $this->typeMap = $this->buildTypeMap($this->typesOrThunk ?? []);
+            $this->typeMap = $this->buildTypeMap($this->typesOrThunk);
         }
         return $this->typeMap;
     }
 
     /**
-     * Unions are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['types']`.
-     *
      * @param array|callable $typesOrThunk
      * @return UnionType
      */
@@ -98,7 +116,7 @@ class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeT
             \is_array($typeMap),
             \sprintf(
                 'Must provide Array of types or a function which returns such an array for Union %s.',
-                $this->getName()
+                $this->name
             )
         );
 

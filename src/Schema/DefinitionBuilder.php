@@ -26,7 +26,7 @@ use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -117,8 +117,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @param NamedTypeNode|TypeDefinitionNodeInterface $node
      * @inheritdoc
+     * @param NamedTypeNode|TypeDefinitionNodeInterface $node
      */
     public function buildType(NodeInterface $node): TypeInterface
     {
@@ -142,7 +142,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @inheritdoc
      */
-    public function buildDirective(DirectiveDefinitionNode $node): DirectiveInterface
+    public function buildDirective(DirectiveDefinitionNode $node): Directive
     {
         return newDirective([
             'name'        => $node->getNameValue(),

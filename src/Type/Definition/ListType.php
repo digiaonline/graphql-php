@@ -10,11 +10,12 @@ class ListType implements TypeInterface, WrappingTypeInterface
 
     /**
      * ListType constructor.
+     *
      * @param TypeInterface $ofType
      */
     public function __construct(TypeInterface $ofType)
     {
-        $this->setOfType($ofType);
+        $this->ofType = $ofType;
     }
 
     /**
@@ -22,6 +23,6 @@ class ListType implements TypeInterface, WrappingTypeInterface
      */
     public function __toString(): string
     {
-        return '[' . (string)$this->getOfType() . ']';
+        return '[' . (string)$this->ofType . ']';
     }
 }

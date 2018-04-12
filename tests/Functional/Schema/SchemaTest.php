@@ -2,12 +2,12 @@
 
 namespace Digia\GraphQL\Test\Functional\Schema;
 
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Schema\Schema;
 use function Digia\GraphQL\Type\newDirective;
 use function Digia\GraphQL\Type\newInputObjectType;
 use function Digia\GraphQL\Type\newInterfaceType;
@@ -40,7 +40,7 @@ class SchemaTest extends TestCase
     protected $wrappedDirectiveInputType;
 
     /**
-     * @var DirectiveInterface
+     * @var Directive
      */
     protected $directive;
 

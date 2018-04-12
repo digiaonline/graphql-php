@@ -2,55 +2,75 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
+use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use function Digia\GraphQL\Util\invariant;
 
 class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface, InputTypeInterface,
-    OutputTypeInterface, ConfigAwareInterface, NodeAwareInterface
+    OutputTypeInterface, ASTNodeAwareInterface
 {
-    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
-    use NodeTrait;
+    use ASTNodeTrait;
 
     /**
      * @var callable
      */
-    protected $serializeFunction;
+    protected $serializeCallback;
 
     /**
      * @var callable|null
      */
-    protected $parseValueFunction;
+    protected $parseValueCallback;
 
     /**
      * @var callable|null
      */
-    protected $parseLiteralFunction;
+    protected $parseLiteralCallback;
 
     /**
-     * @inheritdoc
+     * ScalarType constructor.
+     *
+     * @param string                        $name
+     * @param null|string                   $description
+     * @param callable|null                 $serializeCallback
+     * @param callable|null                 $parseValueCallback
+     * @param callable|null                 $parseLiteralCallback
+     * @param ScalarTypeDefinitionNode|null $astNode
+     * @throws InvariantException
      */
-    protected function afterConfig(): void
-    {
+    public function __construct(
+        string $name,
+        ?string $description,
+        ?callable $serializeCallback,
+        ?callable $parseValueCallback,
+        ?callable $parseLiteralCallback,
+        ?ScalarTypeDefinitionNode $astNode
+    ) {
+        $this->name                 = $name;
+        $this->description          = $description;
+        $this->serializeCallback    = $serializeCallback;
+        $this->parseValueCallback   = $parseValueCallback;
+        $this->parseLiteralCallback = $parseLiteralCallback;
+        $this->astNode              = $astNode;
+
         invariant(
-            \is_callable($this->serializeFunction),
+            \is_callable($this->serializeCallback),
             \sprintf(
                 '%s must provide "serialize" function. If this custom Scalar ' .
                 'is also used as an input type, ensure "parseValue" and "parseLiteral" ' .
                 'functions are also provided.',
-                $this->getName()
+                $this->name
             )
         );
 
-        if (null !== $this->parseValueFunction || null !== $this->parseLiteralFunction) {
+        if (null !== $this->parseValueCallback || null !== $this->parseLiteralCallback) {
             invariant(
-                \is_callable($this->parseValueFunction) && \is_callable($this->parseLiteralFunction),
-                \sprintf('%s must provide both "parseValue" and "parseLiteral" functions.', $this->getName())
+                \is_callable($this->parseValueCallback) && \is_callable($this->parseLiteralCallback),
+                \sprintf('%s must provide both "parseValue" and "parseLiteral" functions.', $this->name)
             );
         }
     }
@@ -61,7 +81,7 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
      */
     public function serialize($value)
     {
-        return \call_user_func($this->serializeFunction, $value);
+        return \call_user_func($this->serializeCallback, $value);
     }
 
     /**
@@ -70,8 +90,8 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
      */
     public function parseValue($value)
     {
-        return null !== $this->parseValueFunction
-            ? \call_user_func($this->parseValueFunction, $value)
+        return null !== $this->parseValueCallback
+            ? \call_user_func($this->parseValueCallback, $value)
             : null;
     }
 
@@ -82,8 +102,8 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
      */
     public function parseLiteral(NodeInterface $node, ?array $variables = null)
     {
-        return null !== $this->parseLiteralFunction
-            ? \call_user_func($this->parseLiteralFunction, $node, $variables)
+        return null !== $this->parseLiteralCallback
+            ? \call_user_func($this->parseLiteralCallback, $node, $variables)
             : null;
     }
 
@@ -111,7 +131,7 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
      */
     protected function setSerialize(callable $serializeFunction): ScalarType
     {
-        $this->serializeFunction = $serializeFunction;
+        $this->serializeCallback = $serializeFunction;
         return $this;
     }
 
@@ -121,7 +141,7 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
      */
     protected function setParseValue(callable $parseValueFunction): ScalarType
     {
-        $this->parseValueFunction = $parseValueFunction;
+        $this->parseValueCallback = $parseValueFunction;
         return $this;
     }
 
@@ -131,7 +151,7 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
      */
     protected function setParseLiteral(callable $parseLiteralFunction): ScalarType
     {
-        $this->parseLiteralFunction = $parseLiteralFunction;
+        $this->parseLiteralCallback = $parseLiteralFunction;
         return $this;
     }
 }

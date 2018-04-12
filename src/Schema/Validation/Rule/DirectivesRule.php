@@ -5,9 +5,8 @@ namespace Digia\GraphQL\Schema\Validation\Rule;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Language\Node\DirectiveNode;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Type\Definition\Directive;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use function Digia\GraphQL\Type\isInputType;
 use function Digia\GraphQL\Util\isValidNameError;
 
@@ -15,18 +14,19 @@ class DirectivesRule extends AbstractRule
 {
     /**
      * @inheritdoc
+     * @throws InvariantException
      */
     public function evaluate(): void
     {
         $directives = $this->context->getSchema()->getDirectives();
 
         foreach ($directives as $directive) {
-            if (!($directive instanceof DirectiveInterface)) {
+            if (!($directive instanceof Directive)) {
                 $this->context->reportError(
                     new SchemaValidationException(
                         \sprintf(
                             'Expected directive but got: %s.',
-                            $directive instanceof NodeAwareInterface ? $directive->getAstNode() : $directive
+                            $directive instanceof ASTNodeAwareInterface ? $directive->getAstNode() : $directive
                         )
                     )
                 );

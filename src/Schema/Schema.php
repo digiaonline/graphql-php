@@ -5,20 +5,19 @@ namespace Digia\GraphQL\Schema;
 use Digia\GraphQL\Config\ConfigAwareInterface;
 use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use function Digia\GraphQL\Type\__Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
-use Digia\GraphQL\Type\Definition\DirectiveInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use function Digia\GraphQL\Type\__Schema;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\invariant;
 
@@ -57,7 +56,7 @@ use function Digia\GraphQL\Util\invariant;
 class Schema implements SchemaInterface, ConfigAwareInterface
 {
     use ConfigAwareTrait;
-    use NodeTrait;
+    use ASTNodeTrait;
 
     /**
      * @var TypeInterface|null
@@ -332,7 +331,7 @@ class Schema implements SchemaInterface, ConfigAwareInterface
     }
 
     /**
-     * @param DirectiveInterface[] $directives
+     * @param Directive[] $directives
      * @return Schema
      */
     protected function setDirectives(array $directives): Schema
@@ -352,7 +351,7 @@ class Schema implements SchemaInterface, ConfigAwareInterface
     }
 
     /**
-     * @param array              $map
+     * @param array                                 $map
      * @param TypeInterface|NameAwareInterface|null $type
      * @return array
      * @throws InvariantException

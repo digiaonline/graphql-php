@@ -4,6 +4,13 @@ namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
 
+/**
+ * A Lexer is a stateful stream generator in that every time
+ * it is advanced, it returns the next token in the Source. Assuming the
+ * source lexes, the final Token emitted by the lexer will be of kind
+ * EOF, after which the lexer will repeatedly return the same EOF token
+ * whenever called.
+ */
 class Lexer implements LexerInterface
 {
     protected const ENCODING = 'UTF-8';

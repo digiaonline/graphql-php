@@ -30,14 +30,11 @@ trait ArgumentsTrait
     }
 
     /**
-     * Arguments are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['args']`.
-     *
-     * @param Argument[] $arguments
+     * @param array|Argument[] $arguments
      * @return $this
      * @throws InvariantException
      */
-    protected function setArgs(array $arguments)
+    protected function buildArguments(array $arguments)
     {
         invariant(
             isAssocArray($arguments),
@@ -47,7 +44,13 @@ trait ArgumentsTrait
         foreach ($arguments as $argumentName => $argument) {
             $this->arguments[] = $argument instanceof Argument
                 ? $argument
-                : new Argument(\array_merge($argument, ['name' => $argumentName]));
+                : new Argument(
+                    $argumentName,
+                    $argument['type'] ?? null,
+                    $argument['defaultValue'] ?? null,
+                    $argument['description'] ?? null,
+                    $argument['astNode'] ?? null
+                );
         }
 
         return $this;

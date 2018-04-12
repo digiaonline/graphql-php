@@ -2,11 +2,11 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Config\ConfigAwareInterface;
-use Digia\GraphQL\Config\ConfigAwareTrait;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Language\Node\NodeAwareInterface;
-use Digia\GraphQL\Language\Node\NodeTrait;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
+use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
@@ -50,39 +50,67 @@ use function Digia\GraphQL\Util\invariant;
  *     ]);
  */
 class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
-    ConfigAwareInterface, NodeAwareInterface
+    ASTNodeAwareInterface
 {
-    use ConfigAwareTrait;
     use NameTrait;
     use DescriptionTrait;
     use FieldsTrait;
     use ResolveTrait;
-    use NodeTrait;
+    use ASTNodeTrait;
     use ExtensionASTNodesTrait;
 
     /**
      * @var callable
      */
-    protected $isTypeOfFunction;
+    protected $isTypeOfCallback;
 
     /**
+     * Interfaces can be defined either as an array or as a thunk.
+     * Using thunks allows for cross-referencing of interfaces.
+     *
      * @var array|callable
      */
     protected $interfacesOrThunk;
 
     /**
+     * A list of interface instances.
+     *
      * @var InterfaceType[]|null
      */
     protected $interfaces;
 
     /**
-     * @inheritdoc
+     * ObjectType constructor.
+     *
+     * @param string                        $name
+     * @param null|string                   $description
+     * @param array|callable                $fieldsOrThunk
+     * @param array|callable                $interfacesOrThunk
+     * @param callable|null                 $isTypeOfCallback
+     * @param ObjectTypeDefinitionNode|null $astNode
+     * @param ObjectTypeExtensionNode[]     $extensionASTNodes
+     * @throws InvariantException
      */
-    protected function afterConfig(): void
-    {
+    public function __construct(
+        string $name,
+        ?string $description,
+        $fieldsOrThunk,
+        $interfacesOrThunk,
+        ?callable $isTypeOfCallback,
+        ?ObjectTypeDefinitionNode $astNode,
+        array $extensionASTNodes
+    ) {
+        $this->name              = $name;
+        $this->description       = $description;
+        $this->fieldsOrThunk     = $fieldsOrThunk;
+        $this->interfacesOrThunk = $interfacesOrThunk;
+        $this->isTypeOfCallback  = $isTypeOfCallback;
+        $this->astNode           = $astNode;
+        $this->extensionAstNodes = $extensionASTNodes;
+
         invariant(null !== $this->getName(), 'Must provide name.');
 
-        if ($this->getIsTypeOf() !== null) {
+        if (null !== $this->isTypeOfCallback) {
             invariant(
                 \is_callable($this->getIsTypeOf()),
                 \sprintf('%s must provide "isTypeOf" as a function.', $this->getName())
@@ -98,8 +126,8 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
      */
     public function isTypeOf($value, $context, $info)
     {
-        return isset($this->isTypeOfFunction)
-            ? \call_user_func($this->isTypeOfFunction, $value, $context, $info)
+        return isset($this->isTypeOfCallback)
+            ? \call_user_func($this->isTypeOfCallback, $value, $context, $info)
             : false;
     }
 
@@ -110,15 +138,12 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
     public function getInterfaces(): array
     {
         if (!isset($this->interfaces)) {
-            $this->interfaces = $this->buildInterfaces($this->interfacesOrThunk ?? []);
+            $this->interfaces = $this->buildInterfaces($this->interfacesOrThunk);
         }
         return $this->interfaces;
     }
 
     /**
-     * Objects are created using the `ConfigAwareTrait` constructor which will automatically
-     * call this method when setting arguments from `$config['interfaces']`.
-     *
      * @param array|callable $interfacesOrThunk
      * @return $this
      */
@@ -133,7 +158,7 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
      */
     public function getIsTypeOf(): ?callable
     {
-        return $this->isTypeOfFunction;
+        return $this->isTypeOfCallback;
     }
 
     /**
@@ -142,7 +167,7 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
      */
     protected function setIsTypeOf(?callable $isTypeOfFunction)
     {
-        $this->isTypeOfFunction = $isTypeOfFunction;
+        $this->isTypeOfCallback = $isTypeOfFunction;
         return $this;
     }
 

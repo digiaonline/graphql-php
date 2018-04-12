@@ -2,12 +2,12 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-trait NodeTrait
+trait ASTNodeTrait
 {
     /**
      * @var ?NodeInterface
      */
-    private $astNode;
+    protected $astNode;
 
     /**
      * @return bool
@@ -32,7 +32,6 @@ trait NodeTrait
     protected function setAstNode(?NodeInterface $astNode)
     {
         $this->astNode = $astNode;
-
         return $this;
     }
 }

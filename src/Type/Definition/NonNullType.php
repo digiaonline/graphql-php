@@ -12,6 +12,7 @@ class NonNullType implements TypeInterface, WrappingTypeInterface
 
     /**
      * NonNullType constructor.
+     *
      * @param TypeInterface $ofType
      * @throws InvalidTypeException
      */
@@ -41,6 +42,6 @@ class NonNullType implements TypeInterface, WrappingTypeInterface
      */
     public function __toString(): string
     {
-        return (string)$this->getOfType() . '!';
+        return (string)$this->ofType . '!';
     }
 }

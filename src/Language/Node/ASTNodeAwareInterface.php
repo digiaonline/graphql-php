@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-interface NodeAwareInterface
+interface ASTNodeAwareInterface
 {
     /**
      * @return bool
