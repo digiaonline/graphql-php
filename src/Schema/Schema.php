@@ -58,17 +58,17 @@ class Schema implements SchemaInterface
     /**
      * @var TypeInterface|null
      */
-    protected $query;
+    protected $queryType;
 
     /**
      * @var TypeInterface|null
      */
-    protected $mutation;
+    protected $mutationType;
 
     /**
      * @var TypeInterface|null
      */
-    protected $subscription;
+    protected $subscriptionType;
 
     /**
      * @var TypeInterface[]
@@ -104,9 +104,9 @@ class Schema implements SchemaInterface
      * Schema constructor.
      *
      * @param SchemaDefinitionNode   $astNode
-     * @param TypeInterface|null     $query
-     * @param TypeInterface|null     $mutation
-     * @param TypeInterface|null     $subscription
+     * @param TypeInterface|null     $queryType
+     * @param TypeInterface|null     $mutationType
+     * @param TypeInterface|null     $subscriptionType
      * @param TypeInterface[]        $types
      * @param Directive[]            $directives
      * @param bool                   $assumeValid
@@ -114,23 +114,23 @@ class Schema implements SchemaInterface
      * @throws InvariantException
      */
     public function __construct(
-        ?TypeInterface $query,
-        ?TypeInterface $mutation,
-        ?TypeInterface $subscription,
+        ?TypeInterface $queryType,
+        ?TypeInterface $mutationType,
+        ?TypeInterface $subscriptionType,
         array $types,
         array $directives,
         bool $assumeValid,
         ?SchemaDefinitionNode $astNode
     ) {
-        $this->query        = $query;
-        $this->mutation     = $mutation;
-        $this->subscription = $subscription;
-        $this->types        = $types;
-        $this->directives   = !empty($directives)
+        $this->queryType        = $queryType;
+        $this->mutationType     = $mutationType;
+        $this->subscriptionType = $subscriptionType;
+        $this->types            = $types;
+        $this->directives       = !empty($directives)
             ? $directives
             : specifiedDirectives();
-        $this->assumeValid  = $assumeValid;
-        $this->astNode      = $astNode;
+        $this->assumeValid      = $assumeValid;
+        $this->astNode          = $astNode;
 
         $this->buildTypeMap();
         $this->buildImplementations();
@@ -141,7 +141,7 @@ class Schema implements SchemaInterface
      */
     public function getQueryType(): ?TypeInterface
     {
-        return $this->query;
+        return $this->queryType;
     }
 
     /**
@@ -149,7 +149,7 @@ class Schema implements SchemaInterface
      */
     public function getMutationType(): ?TypeInterface
     {
-        return $this->mutation;
+        return $this->mutationType;
     }
 
     /**
@@ -157,7 +157,7 @@ class Schema implements SchemaInterface
      */
     public function getSubscriptionType(): ?TypeInterface
     {
-        return $this->subscription;
+        return $this->subscriptionType;
     }
 
     /**
@@ -259,9 +259,9 @@ class Schema implements SchemaInterface
     protected function buildTypeMap(): void
     {
         $initialTypes = [
-            $this->query,
-            $this->mutation,
-            $this->subscription,
+            $this->queryType,
+            $this->mutationType,
+            $this->subscriptionType,
             __Schema(), // Introspection schema
         ];
 

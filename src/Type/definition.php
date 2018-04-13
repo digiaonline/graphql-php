@@ -395,9 +395,9 @@ function newInputField(array $config = []): InputField
 {
     return new InputField(
         $config['name'] ?? null,
+        $config['description'] ?? null,
         $config['type'] ?? null,
         $config['defaultValue'] ?? null,
-        $config['description'] ?? null,
         $config['astNode'] ?? null
     );
 }
