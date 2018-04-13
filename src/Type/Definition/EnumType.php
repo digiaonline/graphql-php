@@ -42,12 +42,9 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     use ASTNodeTrait;
 
     /**
-     * Values can be defined either as an array or as a thunk.
-     * Using thunks allows for cross-referencing of values.
-     *
      * @var array
      */
-    protected $valueMap;
+    protected $rawValues;
 
     /**
      * A list of enum value instances.
@@ -61,16 +58,16 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
      *
      * @param string                      $name
      * @param null|string                 $description
-     * @param EnumValue[]                 $values
+     * @param EnumValue[]                 $rawValues
      * @param EnumTypeDefinitionNode|null $astNode
      * @throws InvariantException
      */
-    public function __construct(string $name, ?string $description, array $values, ?EnumTypeDefinitionNode $astNode)
+    public function __construct(string $name, ?string $description, array $rawValues, ?EnumTypeDefinitionNode $astNode)
     {
         $this->name        = $name;
         $this->description = $description;
         $this->astNode     = $astNode;
-        $this->valueMap    = $values;
+        $this->rawValues   = $rawValues;
 
         invariant(null !== $this->name, 'Must provide name.');
     }
@@ -144,7 +141,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     public function getValues(): array
     {
         if (!isset($this->values)) {
-            $this->values = $this->buildValues($this->valueMap);
+            $this->values = $this->buildValues($this->rawValues);
         }
         return $this->values;
     }
@@ -182,20 +179,20 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     }
 
     /**
-     * @param array $valueMap
+     * @param array $rawValues
      * @return array
      * @throws InvariantException
      */
-    protected function buildValues(array $valueMap): array
+    protected function buildValues(array $rawValues): array
     {
         invariant(
-            isAssocArray($valueMap),
+            isAssocArray($rawValues),
             \sprintf('%s values must be an associative array with value names as keys.', $this->name)
         );
 
         $values = [];
 
-        foreach ($valueMap as $valueName => $valueConfig) {
+        foreach ($rawValues as $valueName => $valueConfig) {
             invariant(
                 isAssocArray($valueConfig),
                 \sprintf(

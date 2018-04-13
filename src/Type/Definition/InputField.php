@@ -25,9 +25,9 @@ class InputField implements ASTNodeAwareInterface
      */
     public function __construct(
         string $name,
+        ?string $description,
         ?TypeInterface $type,
         $defaultValue,
-        ?string $description,
         ?InputValueDefinitionNode $astNode
     ) {
         $this->name         = $name;

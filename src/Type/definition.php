@@ -332,14 +332,16 @@ function getNamedType(?TypeInterface $type): ?NamedTypeInterface
  */
 function newScalarType(array $config = []): ScalarType
 {
-    return new ScalarType(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['serialize'] ?? null,
-        $config['parseValue'] ?? null,
-        $config['parseLiteral'] ?? null,
-        $config['astNode'] ?? null
-    );
+    [
+        'name'         => $name,
+        'description'  => $description,
+        'serialize'    => $serialize,
+        'parseValue'   => $parseValue,
+        'parseLiteral' => $parseLiteral,
+        'astNode'      => $astNode,
+    ] = $config;
+
+    return new ScalarType($name, $description, $serialize, $parseValue, $parseLiteral, $astNode);
 }
 
 /**
@@ -349,12 +351,14 @@ function newScalarType(array $config = []): ScalarType
  */
 function newEnumType(array $config = []): EnumType
 {
-    return new EnumType(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['values'] ?? [],
-        $config['astNode'] ?? null
-    );
+    [
+        'name'        => $name,
+        'description' => $description,
+        'values'      => $rawValues,
+        'astNode'     => $astNode,
+    ] = $config;
+
+    return new EnumType($name, $description, $rawValues ?? [], $astNode);
 }
 
 /**
@@ -363,13 +367,15 @@ function newEnumType(array $config = []): EnumType
  */
 function newEnumValue(array $config = []): EnumValue
 {
-    return new EnumValue(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['deprecationReason'] ?? null,
-        $config['astNode'] ?? null,
-        $config['value'] ?? null
-    );
+    [
+        'name'              => $name,
+        'description'       => $description,
+        'deprecationReason' => $deprecationReason,
+        'astNode'           => $astNode,
+        'value'             => $value,
+    ] = $config;
+
+    return new EnumValue($name, $description, $deprecationReason, $astNode, $value);
 }
 
 /**
@@ -379,12 +385,14 @@ function newEnumValue(array $config = []): EnumValue
  */
 function newInputObjectType(array $config = []): InputObjectType
 {
-    return new InputObjectType(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['fields'] ?? [],
-        $config['astNode'] ?? null
-    );
+    [
+        'name'        => $name,
+        'description' => $description,
+        'fields'      => $rawFieldsOrThunk,
+        'astNode'     => $astNode,
+    ] = $config;
+
+    return new InputObjectType($name, $description, $rawFieldsOrThunk ?? [], $astNode);
 }
 
 /**
@@ -393,13 +401,15 @@ function newInputObjectType(array $config = []): InputObjectType
  */
 function newInputField(array $config = []): InputField
 {
-    return new InputField(
-        $config['name'] ?? null,
-        $config['type'] ?? null,
-        $config['defaultValue'] ?? null,
-        $config['description'] ?? null,
-        $config['astNode'] ?? null
-    );
+    [
+        'name'         => $name,
+        'description'  => $description,
+        'type'         => $type,
+        'defaultValue' => $defaultValue,
+        'astNode'      => $astNode,
+    ] = $config;
+
+    return new InputField($name, $description, $type, $defaultValue, $astNode);
 }
 
 /**
@@ -409,13 +419,23 @@ function newInputField(array $config = []): InputField
  */
 function newInterfaceType(array $config = []): InterfaceType
 {
+
+    [
+        'name'              => $name,
+        'description'       => $description,
+        'fields'            => $rawFieldsOrThunk,
+        'resolveType'       => $resolveTypeCallback,
+        'astNode'           => $astNode,
+        'extensionASTNodes' => $extensionASTNodes,
+    ] = $config;
+
     return new InterfaceType(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['fields'] ?? [],
-        $config['resolveType'] ?? null,
-        $config['astNode'] ?? null,
-        $config['extensionASTNodes'] ?? []
+        $name,
+        $description,
+        $rawFieldsOrThunk ?? [],
+        $resolveTypeCallback,
+        $astNode,
+        $extensionASTNodes ?? []
     );
 }
 
@@ -426,14 +446,24 @@ function newInterfaceType(array $config = []): InterfaceType
  */
 function newObjectType(array $config = []): ObjectType
 {
+    [
+        'name'              => $name,
+        'description'       => $description,
+        'fields'            => $rawFieldsOrThunk,
+        'interfaces'        => $interfacesOrThunk,
+        'isTypeOf'          => $isTypeOfCallback,
+        'astNode'           => $astNode,
+        'extensionASTNodes' => $extensionASTNodes,
+    ] = $config;
+
     return new ObjectType(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['fields'] ?? [],
-        $config['interfaces'] ?? [],
-        $config['isTypeOf'] ?? null,
-        $config['astNode'] ?? null,
-        $config['extensionASTNodes'] ?? []
+        $name,
+        $description,
+        $rawFieldsOrThunk ?? [],
+        $interfacesOrThunk ?? [],
+        $isTypeOfCallback,
+        $astNode,
+        $extensionASTNodes ?? []
     );
 }
 
@@ -444,28 +474,42 @@ function newObjectType(array $config = []): ObjectType
  */
 function newField(array $config = []): Field
 {
+    [
+        'name'              => $name,
+        'description'       => $description,
+        'type'              => $type,
+        'args'              => $rawArguments,
+        'resolve'           => $resolveCallback,
+        'subscribe'         => $subscribeCallback,
+        'deprecationReason' => $deprecationReason,
+        'astNode'           => $astNode,
+        'typeName'          => $typeName,
+    ] = $config;
+
     return new Field(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['type'] ?? null,
-        $config['args'] ?? [],
-        $config['resolve'] ?? null,
-        $config['subscribe'] ?? null,
-        $config['deprecationReason'] ?? null,
-        $config['astNode'] ?? null,
-        $config['typeName'] ?? ''
+        $name,
+        $description,
+        $type,
+        $rawArguments ?? [],
+        $resolveCallback,
+        $subscribeCallback,
+        $deprecationReason,
+        $astNode,
+        $typeName ?? '' // Type name is only unset for inspection meta fields
     );
 }
 
 function newArgument(array $config = []): Argument
 {
-    return new Argument(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['type'] ?? null,
-        $config['defaultValue'] ?? null,
-        $config['astNode'] ?? null
-    );
+    [
+        'name'         => $name,
+        'description'  => $description,
+        'type'         => $type,
+        'defaultValue' => $defaultValue,
+        'astNode'      => $astNode,
+    ] = $config;
+
+    return new Argument($name, $description, $type, $defaultValue, $astNode);
 }
 
 /**
@@ -475,13 +519,15 @@ function newArgument(array $config = []): Argument
  */
 function newUnionType(array $config = []): UnionType
 {
-    return new UnionType(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['types'] ?? [],
-        $config['resolveType'] ?? null,
-        $config['astNode'] ?? null
-    );
+    [
+        'name'        => $name,
+        'description' => $description,
+        'types'       => $rawTypesOrThunk,
+        'resolveType' => $resolveTypeCallback,
+        'astNode'     => $astNode,
+    ] = $config;
+
+    return new UnionType($name, $description, $rawTypesOrThunk ?? [], $resolveTypeCallback, $astNode);
 }
 
 /**
@@ -491,14 +537,24 @@ function newUnionType(array $config = []): UnionType
  */
 function newSchema(array $config = []): Schema
 {
+    [
+        'query'        => $queryType,
+        'mutation'     => $mutationType,
+        'subscription' => $subscriptionType,
+        'types'        => $types,
+        'directives'   => $directives,
+        'assumeValid'  => $assumeValid,
+        'astNode'      => $astNode,
+    ] = $config;
+
     return new Schema(
-        $config['query'] ?? null,
-        $config['mutation'] ?? null,
-        $config['subscription'] ?? null,
-        $config['types'] ?? [],
-        $config['directives'] ?? [],
-        $config['assumeValue'] ?? false,
-        $config['astNode'] ?? null
+        $queryType,
+        $mutationType,
+        $subscriptionType,
+        $types ?? [],
+        $directives ?? [],
+        $assumeValid ?? false,
+        $astNode
     );
 }
 
@@ -509,14 +565,16 @@ function newSchema(array $config = []): Schema
  */
 function newDirective(array $config = []): Directive
 {
-    return new Directive(
-        $config['name'] ?? null,
-        $config['description'] ?? null,
-        $config['locations'] ?? [],
-        $config['args'] ?? [],
-        $config['astNode'] ?? null,
-        $config['typeName'] ?? ''
-    );
+    [
+        'name'        => $name,
+        'description' => $description,
+        'locations'   => $locations,
+        'args'        => $rawArguments,
+        'astNode'     => $astNode,
+        'typeName'    => $typeName
+    ] = $config;
+
+    return new Directive($name, $description, $locations ?? [], $rawArguments ?? [], $astNode, $typeName ?? '');
 }
 
 /**

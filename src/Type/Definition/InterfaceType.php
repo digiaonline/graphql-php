@@ -40,7 +40,7 @@ class InterfaceType implements NamedTypeInterface, AbstractTypeInterface, Compos
      *
      * @param string                           $name
      * @param null|string                      $description
-     * @param array|callable                   $fieldsOrThunk
+     * @param array|callable                   $rawFieldsOrThunk
      * @param callable|null                    $resolveTypeCallback
      * @param InterfaceTypeDefinitionNode|null $astNode
      * @param InterfaceTypeExtensionNode[]     $extensionASTNodes
@@ -49,14 +49,14 @@ class InterfaceType implements NamedTypeInterface, AbstractTypeInterface, Compos
     public function __construct(
         string $name,
         ?string $description,
-        $fieldsOrThunk,
+        $rawFieldsOrThunk,
         ?callable $resolveTypeCallback,
         ?InterfaceTypeDefinitionNode $astNode,
         array $extensionASTNodes
     ) {
         $this->name                = $name;
         $this->description         = $description;
-        $this->rawFieldsOrThunk    = $fieldsOrThunk;
+        $this->rawFieldsOrThunk    = $rawFieldsOrThunk;
         $this->resolveTypeCallback = $resolveTypeCallback;
         $this->astNode             = $astNode;
         $this->extensionAstNodes   = $extensionASTNodes;
