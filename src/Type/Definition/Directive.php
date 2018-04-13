@@ -25,23 +25,26 @@ class Directive implements ASTNodeAwareInterface, ArgumentsAwareInterface
      * @param string                       $name
      * @param null|string                  $description
      * @param string[]                     $locations
-     * @param array                        $arguments
+     * @param array                        $rawArguments
      * @param DirectiveDefinitionNode|null $astNode
+     * @param string                       $typeName
      * @throws InvariantException
      */
     public function __construct(
         string $name,
         ?string $description,
         array $locations,
-        array $arguments,
-        ?DirectiveDefinitionNode $astNode
+        array $rawArguments,
+        ?DirectiveDefinitionNode $astNode,
+        string $typeName
     ) {
-        $this->name        = $name;
-        $this->description = $description;
-        $this->locations   = $locations;
-        $this->astNode     = $astNode;
+        $this->name         = $name;
+        $this->description  = $description;
+        $this->locations    = $locations;
+        $this->rawArguments = $rawArguments;
+        $this->astNode      = $astNode;
 
-        $this->buildArguments($arguments);
+        $this->arguments = $this->buildArguments($typeName, $this->rawArguments);
     }
 
     /**

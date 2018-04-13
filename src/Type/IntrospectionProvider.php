@@ -447,53 +447,41 @@ class IntrospectionProvider extends AbstractServiceProvider
     protected function registerMetaFields()
     {
         $this->container->add(GraphQL::SCHEMA_META_FIELD_DEFINITION, function ($__Schema) {
-            return new Field(
-                '__schema',
-                'Access the current type schema of this server.',
-                newNonNull($__Schema),
-                [],
-                function ($source, $args, $context, ResolveInfo $info): SchemaInterface {
+            return newField([
+                'name'        => '__schema',
+                'description' => 'Access the current type schema of this server.',
+                'type'        => newNonNull($__Schema),
+                'resolve'     => function ($source, $args, $context, ResolveInfo $info): SchemaInterface {
                     return $info->getSchema();
                 },
-                null,
-                null,
-                null
-            );
+            ]);
         })
             ->withArgument(GraphQL::SCHEMA_INTROSPECTION);
 
         $this->container->add(GraphQL::TYPE_META_FIELD_DEFINITION, function ($__Type) {
-            return new Field(
-                '__type',
-                'Request the type information of a single type.',
-                $__Type,
-                ['name' => ['type' => newNonNull(String())]],
-                function ($source, $args, $context, ResolveInfo $info): TypeInterface {
+            return newField([
+                'name'        => '__type',
+                'description' => 'Request the type information of a single type.',
+                'type'        => $__Type,
+                'args'        => ['name' => ['type' => newNonNull(String())]],
+                'resolve'     => function ($source, $args, $context, ResolveInfo $info): TypeInterface {
                     ['name' => $name] = $args;
-                    $schema = $info->getSchema();
-                    return $schema->getType($name);
+                    return $info->getSchema()->getType($name);
                 },
-                null,
-                null,
-                null
-            );
+            ]);
         })
             ->withArgument(GraphQL::TYPE_INTROSPECTION);
 
         $this->container->add(GraphQL::TYPE_NAME_META_FIELD_DEFINITION, function () {
-            return new Field(
-                '__typename',
-                'The name of the current Object type at runtime.',
-                newNonNull(String()),
-                [],
-                function ($source, $args, $context, ResolveInfo $info): string {
+            return newField([
+                'name'        => '__typename',
+                'description' => 'The name of the current Object type at runtime.',
+                'type'        => newNonNull(String()),
+                'resolve'     => function ($source, $args, $context, ResolveInfo $info): string {
                     $parentType = $info->getParentType();
                     return null !== $parentType ? $parentType->getName() : null;
                 },
-                null,
-                null,
-                null
-            );
+            ]);
         });
     }
 }

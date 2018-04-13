@@ -6,9 +6,13 @@ use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
+use Digia\GraphQL\Type\Definition\EnumValue;
+use Digia\GraphQL\Type\Definition\Field;
+use Digia\GraphQL\Type\Definition\InputField;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -355,6 +359,21 @@ function newEnumType(array $config = []): EnumType
 
 /**
  * @param array $config
+ * @return EnumValue
+ */
+function newEnumValue(array $config = []): EnumValue
+{
+    return new EnumValue(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['deprecationReason'] ?? null,
+        $config['astNode'] ?? null,
+        $config['value'] ?? null
+    );
+}
+
+/**
+ * @param array $config
  * @return InputObjectType
  * @throws InvariantException
  */
@@ -364,6 +383,21 @@ function newInputObjectType(array $config = []): InputObjectType
         $config['name'] ?? null,
         $config['description'] ?? null,
         $config['fields'] ?? [],
+        $config['astNode'] ?? null
+    );
+}
+
+/**
+ * @param array $config
+ * @return InputField
+ */
+function newInputField(array $config = []): InputField
+{
+    return new InputField(
+        $config['name'] ?? null,
+        $config['type'] ?? null,
+        $config['defaultValue'] ?? null,
+        $config['description'] ?? null,
         $config['astNode'] ?? null
     );
 }
@@ -400,6 +434,37 @@ function newObjectType(array $config = []): ObjectType
         $config['isTypeOf'] ?? null,
         $config['astNode'] ?? null,
         $config['extensionASTNodes'] ?? []
+    );
+}
+
+/**
+ * @param array $config
+ * @return Field
+ * @throws InvariantException
+ */
+function newField(array $config = []): Field
+{
+    return new Field(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['type'] ?? null,
+        $config['args'] ?? [],
+        $config['resolve'] ?? null,
+        $config['subscribe'] ?? null,
+        $config['deprecationReason'] ?? null,
+        $config['astNode'] ?? null,
+        $config['typeName'] ?? ''
+    );
+}
+
+function newArgument(array $config = []): Argument
+{
+    return new Argument(
+        $config['name'] ?? null,
+        $config['description'] ?? null,
+        $config['type'] ?? null,
+        $config['defaultValue'] ?? null,
+        $config['astNode'] ?? null
     );
 }
 
@@ -449,7 +514,8 @@ function newDirective(array $config = []): Directive
         $config['description'] ?? null,
         $config['locations'] ?? [],
         $config['args'] ?? [],
-        $config['astNode'] ?? null
+        $config['astNode'] ?? null,
+        $config['typeName'] ?? ''
     );
 }
 

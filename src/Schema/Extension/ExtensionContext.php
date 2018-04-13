@@ -8,7 +8,6 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Schema\DefinitionBuilderInterface;
-use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
@@ -25,7 +24,6 @@ use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newUnionType;
 use function Digia\GraphQL\Util\invariant;
-use function Digia\GraphQL\Util\keyMap;
 
 class ExtensionContext implements ExtensionContextInterface
 {
@@ -357,9 +355,7 @@ class ExtensionContext implements ExtensionContextInterface
                 'description'       => $field->getDescription(),
                 'deprecationReason' => $field->getDeprecationReason(),
                 'type'              => $this->extendFieldType($field->getType()),
-                'args'              => keyMap($field->getArguments(), function (Argument $argument) {
-                    return $argument->getName();
-                }),
+                'args'              => $field->getRawArguments(),
                 'astNode'           => $field->getAstNode(),
                 'resolve'           => $field->getResolveCallback(),
             ];

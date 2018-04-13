@@ -26,7 +26,7 @@ use function Digia\GraphQL\Util\invariant;
  *     ]);
  */
 class InterfaceType implements NamedTypeInterface, AbstractTypeInterface, CompositeTypeInterface,
-    OutputTypeInterface, ASTNodeAwareInterface
+    OutputTypeInterface, FieldsAwareInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -56,7 +56,7 @@ class InterfaceType implements NamedTypeInterface, AbstractTypeInterface, Compos
     ) {
         $this->name                = $name;
         $this->description         = $description;
-        $this->fieldsOrThunk       = $fieldsOrThunk;
+        $this->rawFieldsOrThunk    = $fieldsOrThunk;
         $this->resolveTypeCallback = $resolveTypeCallback;
         $this->astNode             = $astNode;
         $this->extensionAstNodes   = $extensionASTNodes;
