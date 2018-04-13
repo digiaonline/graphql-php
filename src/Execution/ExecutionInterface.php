@@ -10,7 +10,7 @@ interface ExecutionInterface
     /**
      * @param Schema        $schema
      * @param DocumentNode  $documentNode
-     * @param null          $rootValue
+     * @param object|array  $rootValue
      * @param null          $contextValue
      * @param array         $variableValues
      * @param null          $operationName
@@ -22,8 +22,8 @@ interface ExecutionInterface
         DocumentNode $documentNode,
         $rootValue = null,
         $contextValue = null,
-        $variableValues = [],
-        $operationName = null,
+        array $variableValues = [],
+        string $operationName = null,
         callable $fieldResolver = null
     ): ExecutionResult;
 }
