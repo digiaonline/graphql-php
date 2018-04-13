@@ -45,6 +45,7 @@ class ValidationTest extends TestCase
     {
         $this->schemaValidator = GraphQL::make(SchemaValidatorInterface::class);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->someScalarType = newScalarType([
             'name'         => 'SomeScalar',
             'serialize'    => function () {
@@ -55,26 +56,31 @@ class ValidationTest extends TestCase
             },
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->someObjectType = newObjectType([
             'name'   => 'SomeObject',
             'fields' => ['f' => ['type' => String()]],
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->someUnionType = newUnionType([
             'name'  => 'SomeUnion',
             'types' => [$this->someObjectType],
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->someInterfaceType = newInterfaceType([
             'name'   => 'SomeInterface',
             'fields' => ['f' => ['type' => String()]],
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->someEnumType = newEnumType([
             'name'   => 'SomeEnum',
             'values' => ['ONLY' => []],
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->someInputObjectType = newInputObjectType([
             'name'   => 'SomeInputObject',
             'fields' => [
@@ -376,6 +382,7 @@ class ValidationTest extends TestCase
 
     public function testRejectsASchemaWhoseDirectivesAreIncorrectlyTypes()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query'      => $this->someObjectType,
             'directives' => ['somedirective']
@@ -428,6 +435,7 @@ class ValidationTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $manualSchema = $this->schemaWithFieldType(
             newObjectType([
                 'name'   => 'IncompleteObject',
@@ -441,6 +449,7 @@ class ValidationTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $manualSchema2 = $this->schemaWithFieldType(
             newObjectType([
                 'name'   => 'IncompleteObject',
@@ -461,6 +470,7 @@ class ValidationTest extends TestCase
 
     public function testRejectsAnObjectTypeWithIncorrectlyNamedFields()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = $this->schemaWithFieldType(
             newObjectType([
                 'name'   => 'SomeObject',
@@ -487,6 +497,7 @@ class ValidationTest extends TestCase
 
     public function testAcceptsFieldArgumentsWithValidNames()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = $this->schemaWithFieldType(
             newObjectType([
                 'name'   => 'SomeObject',
@@ -508,6 +519,7 @@ class ValidationTest extends TestCase
 
     public function testRejectsFieldArgumentsWithInvalidNames()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = $this->schemaWithFieldType(
             newObjectType([
                 'name'   => 'SomeObject',
@@ -641,6 +653,7 @@ class ValidationTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $badUnionMemberTypes = [
             String(),
             newNonNull($this->someObjectType),
@@ -652,6 +665,7 @@ class ValidationTest extends TestCase
         ];
 
         foreach ($badUnionMemberTypes as $memberType) {
+            /** @noinspection PhpUnhandledExceptionInspection */
             $badSchema = $this->schemaWithFieldType(
                 newUnionType(['name' => 'BadUnion', 'types' => [$memberType]])
             );
@@ -849,7 +863,7 @@ class ValidationTest extends TestCase
         );
         $this->expectInvalid($schema, [
             [
-                'message' => 'The type of BadObject.badField must be Output Type but got: (null).'
+                'message' => 'The type of BadObject.badField must be Output Type but got: null.'
             ]
         ]);
     }
@@ -902,6 +916,7 @@ class ValidationTest extends TestCase
 
     public function testRejectsAnObjectImplementingANonTypeValues()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'       => 'BadObject',
@@ -912,7 +927,7 @@ class ValidationTest extends TestCase
 
         $this->expectInvalid($schema, [
             [
-                'message' => 'Type BadObject must only implement Interface types, it cannot implement (null).'
+                'message' => 'Type BadObject must only implement Interface types, it cannot implement null.'
             ]
         ]);
     }
@@ -1162,7 +1177,7 @@ class ValidationTest extends TestCase
         );
         $this->expectInvalid($schema, [
             [
-                'message' => 'The type of BadInterface.badField must be Output Type but got: (null).'
+                'message' => 'The type of BadInterface.badField must be Output Type but got: null.'
             ]
         ]);
     }
@@ -1236,7 +1251,7 @@ class ValidationTest extends TestCase
         );
         $this->expectInvalid($schema, [
             [
-                'message' => 'The type of BadObject.badField(badArg:) must be Input Type but got: (null).'
+                'message' => 'The type of BadObject.badField(badArg:) must be Input Type but got: null.'
             ]
         ]);
     }
@@ -1306,7 +1321,7 @@ class ValidationTest extends TestCase
         );
         $this->expectInvalid($schema, [
             [
-                'message' => 'The type of BadInputObject.badField must be Input Type but got: (null).'
+                'message' => 'The type of BadInputObject.badField must be Input Type but got: null.'
             ]
         ]);
     }
@@ -1848,6 +1863,7 @@ class ValidationTest extends TestCase
 
     protected function schemaWithFieldType($fieldType)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -1859,6 +1875,7 @@ class ValidationTest extends TestCase
 
     protected function objectWithFieldOfType($fieldType)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newObjectType([
             'name'   => 'BadObject',
             'fields' => [
@@ -1869,6 +1886,7 @@ class ValidationTest extends TestCase
 
     protected function interfaceWithFieldOfType($fieldType)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newInterfaceType([
             'name'   => 'BadInterface',
             'fields' => [
@@ -1879,6 +1897,7 @@ class ValidationTest extends TestCase
 
     protected function objectWithFieldArgumentOfType($argumentType)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newObjectType([
             'name'   => 'BadObject',
             'fields' => [
@@ -1894,6 +1913,7 @@ class ValidationTest extends TestCase
 
     protected function inputObjectWithFieldOfType($fieldType)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newObjectType([
             'name'   => 'BadObject',
             'fields' => [

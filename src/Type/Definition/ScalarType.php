@@ -7,7 +7,6 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
-use function Digia\GraphQL\Util\invariant;
 
 class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface, InputTypeInterface,
     OutputTypeInterface, ASTNodeAwareInterface
@@ -36,7 +35,7 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
      *
      * @param string                        $name
      * @param null|string                   $description
-     * @param callable|null                 $serializeCallback
+     * @param callable                      $serializeCallback
      * @param callable|null                 $parseValueCallback
      * @param callable|null                 $parseLiteralCallback
      * @param ScalarTypeDefinitionNode|null $astNode
@@ -45,7 +44,7 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
     public function __construct(
         string $name,
         ?string $description,
-        ?callable $serializeCallback,
+        callable $serializeCallback,
         ?callable $parseValueCallback,
         ?callable $parseLiteralCallback,
         ?ScalarTypeDefinitionNode $astNode
@@ -56,23 +55,6 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
         $this->parseValueCallback   = $parseValueCallback;
         $this->parseLiteralCallback = $parseLiteralCallback;
         $this->astNode              = $astNode;
-
-        invariant(
-            \is_callable($this->serializeCallback),
-            \sprintf(
-                '%s must provide "serialize" function. If this custom Scalar ' .
-                'is also used as an input type, ensure "parseValue" and "parseLiteral" ' .
-                'functions are also provided.',
-                $this->name
-            )
-        );
-
-        if (null !== $this->parseValueCallback || null !== $this->parseLiteralCallback) {
-            invariant(
-                \is_callable($this->parseValueCallback) && \is_callable($this->parseLiteralCallback),
-                \sprintf('%s must provide both "parseValue" and "parseLiteral" functions.', $this->name)
-            );
-        }
     }
 
     /**

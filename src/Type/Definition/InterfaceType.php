@@ -60,7 +60,5 @@ class InterfaceType implements NamedTypeInterface, AbstractTypeInterface, Compos
         $this->resolveTypeCallback = $resolveTypeCallback;
         $this->astNode             = $astNode;
         $this->extensionAstNodes   = $extensionASTNodes;
-
-        invariant(null !== $this->name, 'Must provide name.');
     }
 }

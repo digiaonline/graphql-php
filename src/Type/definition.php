@@ -27,14 +27,15 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use function Digia\GraphQL\Util\invariant;
+use function Digia\GraphQL\Util\toString;
 
 /**
- * @param $thunk
- * @return null|array
+ * @param $maybeThunk
+ * @return mixed
  */
-function resolveThunk($thunk): ?array
+function resolveThunk($maybeThunk)
 {
-    return \is_callable($thunk) ? $thunk() : $thunk;
+    return \is_callable($maybeThunk) ? $maybeThunk() : $maybeThunk;
 }
 
 /**
@@ -61,103 +62,103 @@ function assertType($type)
 {
     invariant(
         $type instanceof TypeInterface,
-        \sprintf('Expected %s to be a GraphQL type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertScalarType(TypeInterface $type)
+function assertScalarType($type)
 {
     invariant(
         $type instanceof ScalarType,
-        \sprintf('Expected %s to be a GraphQL Scalar type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL Scalar type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertObjectType(TypeInterface $type)
+function assertObjectType($type)
 {
     invariant(
         $type instanceof ObjectType,
-        \sprintf('Expected %s to be a GraphQL Object type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL Object type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertInterfaceType(TypeInterface $type)
+function assertInterfaceType($type)
 {
     invariant(
         $type instanceof InterfaceType,
-        \sprintf('Expected %s to be a GraphQL Interface type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL Interface type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertUnionType(TypeInterface $type)
+function assertUnionType($type)
 {
     invariant(
         $type instanceof UnionType,
-        \sprintf('Expected %s to be a GraphQL Union type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL Union type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertEnumType(TypeInterface $type)
+function assertEnumType($type)
 {
     invariant(
         $type instanceof EnumType,
-        \sprintf('Expected %s to be a GraphQL Enum type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL Enum type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertInputObjectType(TypeInterface $type)
+function assertInputObjectType($type)
 {
     invariant(
         $type instanceof InputObjectType,
-        \sprintf('Expected %s to be a GraphQL InputObject type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL InputObject type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertListType(TypeInterface $type)
+function assertListType($type)
 {
     invariant(
         $type instanceof ListType,
-        \sprintf('Expected %s to be a GraphQL List type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL List type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertNonNullType(TypeInterface $type)
+function assertNonNullType($type)
 {
     invariant(
         $type instanceof NonNullType,
-        \sprintf('Expected %s to be a GraphQL NonNull type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL NonNull type.', toString($type))
     );
 }
 
@@ -170,18 +171,20 @@ function assertNonNullType(TypeInterface $type)
  */
 function isInputType(?TypeInterface $type): bool
 {
-    return null !== $type && ($type instanceof InputTypeInterface || ($type instanceof WrappingTypeInterface && isInputType($type->getOfType())));
+    return null !== $type &&
+        ($type instanceof InputTypeInterface ||
+            ($type instanceof WrappingTypeInterface && isInputType($type->getOfType())));
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertInputType(TypeInterface $type)
+function assertInputType($type)
 {
     invariant(
         isInputType($type),
-        \sprintf('Expected %s to be a GraphQL input type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL input type.', toString($type))
     );
 }
 
@@ -194,88 +197,90 @@ function assertInputType(TypeInterface $type)
  */
 function isOutputType(?TypeInterface $type): bool
 {
-    return null !== $type && ($type instanceof OutputTypeInterface || ($type instanceof WrappingTypeInterface && isOutputType($type->getOfType())));
+    return null !== $type &&
+        ($type instanceof OutputTypeInterface ||
+            ($type instanceof WrappingTypeInterface && isOutputType($type->getOfType())));
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertOutputType(TypeInterface $type)
+function assertOutputType($type)
 {
     invariant(
         isOutputType($type),
-        \sprintf('Expected %s to be a GraphQL output type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL output type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertLeafType(TypeInterface $type)
+function assertLeafType($type)
 {
     invariant(
         $type instanceof LeafTypeInterface,
-        \sprintf('Expected %s to be a GraphQL leaf type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL leaf type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertCompositeType(TypeInterface $type)
+function assertCompositeType($type)
 {
     invariant(
         $type instanceof CompositeTypeInterface,
-        \sprintf('Expected %s to be a GraphQL composite type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL composite type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertAbstractType(TypeInterface $type)
+function assertAbstractType($type)
 {
     invariant(
         $type instanceof AbstractTypeInterface,
-        \sprintf('Expected %s to be a GraphQL abstract type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL abstract type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertWrappingType(TypeInterface $type)
+function assertWrappingType($type)
 {
     invariant(
         $type instanceof WrappingTypeInterface,
-        \sprintf('Expected %s to be a GraphQL wrapping type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL wrapping type.', toString($type))
     );
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @return bool
  */
-function isNullableType(TypeInterface $type): bool
+function isNullableType($type): bool
 {
     return !($type instanceof NonNullType);
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @return TypeInterface
  * @throws InvariantException
  */
-function assertNullableType(TypeInterface $type): TypeInterface
+function assertNullableType($type): TypeInterface
 {
     invariant(
         isNullableType($type),
-        \sprintf('Expected %s to be a GraphQL nullable type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL nullable type.', toString($type))
     );
 
     return $type;
@@ -295,14 +300,14 @@ function getNullableType(?TypeInterface $type): ?TypeInterface
 }
 
 /**
- * @param TypeInterface $type
+ * @param mixed $type
  * @throws InvariantException
  */
-function assertNamedType(TypeInterface $type)
+function assertNamedType($type)
 {
     invariant(
         $type instanceof NamedTypeInterface,
-        \sprintf('Expected %s to be a GraphQL named type.', (string)$type)
+        \sprintf('Expected %s to be a GraphQL named type.', toString($type))
     );
 }
 
@@ -326,16 +331,38 @@ function getNamedType(?TypeInterface $type): ?NamedTypeInterface
 }
 
 /**
+ * Returns a new Scalar type after ensuring that its state is valid.
+ *
  * @param array $config
  * @return ScalarType
  * @throws InvariantException
  */
 function newScalarType(array $config = []): ScalarType
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
+    invariant(
+        isset($config['serialize']) && \is_callable($config['serialize']),
+        \sprintf(
+            '%s must provide "serialize" function. If this custom Scalar ' .
+            'is also used as an input type, ensure "parseValue" and "parseLiteral" ' .
+            'functions are also provided.',
+            $config['name']
+        )
+    );
+
+    if (isset($config['parseValue']) || isset($config['parseLiteral'])) {
+        invariant(
+            (isset($config['parseValue']) && \is_callable($config['parseValue'])) &&
+            (isset($config['parseLiteral']) && \is_callable($config['parseLiteral'])),
+            \sprintf('%s must provide both "parseValue" and "parseLiteral" functions.', $config['name'])
+        );
+    }
+
     return new ScalarType(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
-        $config['serialize'] ?? null,
+        $config['serialize'],
         $config['parseValue'] ?? null,
         $config['parseLiteral'] ?? null,
         $config['astNode'] ?? null
@@ -343,14 +370,18 @@ function newScalarType(array $config = []): ScalarType
 }
 
 /**
+ * Returns a new Enum type after ensuring that its state is valid.
+ *
  * @param array $config
  * @return EnumType
  * @throws InvariantException
  */
 function newEnumType(array $config = []): EnumType
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
     return new EnumType(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['values'] ?? [],
         $config['astNode'] ?? null
@@ -358,13 +389,18 @@ function newEnumType(array $config = []): EnumType
 }
 
 /**
+ * Returns a new Enum value after ensuring that its state is valid.
+ *
  * @param array $config
  * @return EnumValue
+ * @throws InvariantException
  */
 function newEnumValue(array $config = []): EnumValue
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
     return new EnumValue(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['deprecationReason'] ?? null,
         $config['astNode'] ?? null,
@@ -373,14 +409,18 @@ function newEnumValue(array $config = []): EnumValue
 }
 
 /**
+ * Returns a new Input Object type after ensuring that its state is valid.
+ *
  * @param array $config
  * @return InputObjectType
  * @throws InvariantException
  */
 function newInputObjectType(array $config = []): InputObjectType
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
     return new InputObjectType(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['fields'] ?? [],
         $config['astNode'] ?? null
@@ -388,13 +428,18 @@ function newInputObjectType(array $config = []): InputObjectType
 }
 
 /**
+ * Returns a new Input field after ensuring that its state is valid.
+ *
  * @param array $config
  * @return InputField
+ * @throws InvariantException
  */
 function newInputField(array $config = []): InputField
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
     return new InputField(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['type'] ?? null,
         $config['defaultValue'] ?? null,
@@ -403,14 +448,23 @@ function newInputField(array $config = []): InputField
 }
 
 /**
+ * Returns a new Interface type after ensuring that its state is valid.
+ *
  * @param array $config
  * @return InterfaceType
  * @throws InvariantException
  */
 function newInterfaceType(array $config = []): InterfaceType
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
+    invariant(
+        !isset($config['resolveType']) || null === $config['resolveType'] || \is_callable($config['resolveType']),
+        \sprintf('%s must provide "resolveType" as a function.', $config['name'])
+    );
+
     return new InterfaceType(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['fields'] ?? [],
         $config['resolveType'] ?? null,
@@ -420,14 +474,25 @@ function newInterfaceType(array $config = []): InterfaceType
 }
 
 /**
+ * Returns a new Object type after ensuring that its state is valid.
+ *
  * @param array $config
  * @return ObjectType
  * @throws InvariantException
  */
 function newObjectType(array $config = []): ObjectType
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
+    if (isset($config['isTypeOf'])) {
+        invariant(
+            \is_callable($config['isTypeOf']),
+            \sprintf('%s must provide "isTypeOf" as a function.', $config['name'])
+        );
+    }
+
     return new ObjectType(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['fields'] ?? [],
         $config['interfaces'] ?? [],
@@ -438,14 +503,18 @@ function newObjectType(array $config = []): ObjectType
 }
 
 /**
+ * Returns a new Field after ensuring that its state is valid.
+ *
  * @param array $config
  * @return Field
  * @throws InvariantException
  */
 function newField(array $config = []): Field
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
     return new Field(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['type'] ?? null,
         $config['args'] ?? [],
@@ -457,10 +526,19 @@ function newField(array $config = []): Field
     );
 }
 
+/**
+ * Returns a new Argument after ensuring that its state is valid.
+ *
+ * @param array $config
+ * @return Argument
+ * @throws InvariantException
+ */
 function newArgument(array $config = []): Argument
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
     return new Argument(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['type'] ?? null,
         $config['defaultValue'] ?? null,
@@ -469,14 +547,25 @@ function newArgument(array $config = []): Argument
 }
 
 /**
+ * Returns a new Union type after ensuring that its state is valid.
+ *
  * @param array $config
  * @return UnionType
  * @throws InvariantException
  */
 function newUnionType(array $config = []): UnionType
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
+    if (isset($config['resolveType'])) {
+        invariant(
+            \is_callable($config['resolveType']),
+            \sprintf('%s must provide "resolveType" as a function.', $config['name'])
+        );
+    }
+
     return new UnionType(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['types'] ?? [],
         $config['resolveType'] ?? null,
@@ -485,34 +574,61 @@ function newUnionType(array $config = []): UnionType
 }
 
 /**
+ * Returns a new Schema after ensuring that its state is valid.
+ *
  * @param array $config
  * @return Schema
  * @throws InvariantException
  */
 function newSchema(array $config = []): Schema
 {
+    if (!isset($config['assumeValid']) || !$config['assumeValid']) {
+        if (isset($config['types'])) {
+            invariant(
+                \is_array($config['types']),
+                \sprintf('"types" must be Array if provided but got: %s.', toString($config['types']))
+            );
+        }
+
+        if (isset($config['directives'])) {
+            invariant(
+                \is_array($config['directives']),
+                \sprintf('"directives" must be Array if provided but got: %s.', toString($config['directives']))
+            );
+        }
+    }
+
     return new Schema(
         $config['query'] ?? null,
         $config['mutation'] ?? null,
         $config['subscription'] ?? null,
         $config['types'] ?? [],
         $config['directives'] ?? [],
-        $config['assumeValue'] ?? false,
+        $config['assumeValid'] ?? false,
         $config['astNode'] ?? null
     );
 }
 
 /**
+ * Returns a new Directive after ensuring that its state is valid.
+ *
  * @param array $config
  * @return Directive
  * @throws InvariantException
  */
 function newDirective(array $config = []): Directive
 {
+    invariant(isset($config['name']), 'Must provide name.');
+
+    invariant(
+        isset($config['locations']) && \is_array($config['locations']),
+        'Must provide locations for directive.'
+    );
+
     return new Directive(
         $config['name'] ?? null,
         $config['description'] ?? null,
-        $config['locations'] ?? [],
+        $config['locations'],
         $config['args'] ?? [],
         $config['astNode'] ?? null,
         $config['typeName'] ?? ''
@@ -520,20 +636,29 @@ function newDirective(array $config = []): Directive
 }
 
 /**
- * @param TypeInterface $ofType
+ * Returns a new List type after ensuring that its state is valid.
+ *
+ * @param mixed $ofType
  * @return ListType
+ * @throws InvariantException
  */
-function newList(TypeInterface $ofType): ListType
+function newList($ofType): ListType
 {
+    assertType($ofType);
+
     return new ListType($ofType);
 }
 
 /**
- * @param TypeInterface $ofType
+ * Returns a new Non-null type after ensuring that its state is valid.
+ *
+ * @param mixed $ofType
  * @return NonNullType
- * @throws InvalidTypeException
+ * @throws InvariantException
  */
-function newNonNull(TypeInterface $ofType): NonNullType
+function newNonNull($ofType): NonNullType
 {
+    assertNullableType($ofType);
+
     return new NonNullType($ofType);
 }
