@@ -11,7 +11,6 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\typeFromAST;
 
 /**
@@ -35,7 +34,7 @@ class FieldCollector
     }
 
     /**
-     * @param TypeInterface       $runtimeType
+     * @param ObjectType       $runtimeType
      * @param SelectionSetNode $selectionSet
      * @param array            $fields
      * @param array            $visitedFragmentNames
@@ -45,7 +44,7 @@ class FieldCollector
      * @throws \Digia\GraphQL\Error\InvariantException
      */
     public function collectFields(
-        TypeInterface $runtimeType,
+        ObjectType $runtimeType,
         SelectionSetNode $selectionSet,
         array &$fields,
         array &$visitedFragmentNames

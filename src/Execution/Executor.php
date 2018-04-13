@@ -16,6 +16,7 @@ use Digia\GraphQL\Type\Definition\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use React\Promise\ExtendedPromiseInterface;
@@ -93,6 +94,7 @@ class Executor
 
         $path = [];
 
+        /** @var ObjectType $objectType */
         $objectType = $this->getOperationType($schema, $operation);
 
         $fields               = [];
@@ -114,8 +116,7 @@ class Executor
                 new ExecutionException($ex->getMessage())
             );
 
-            //@TODO return [null]
-            return [$ex->getMessage()];
+            return [null];
         }
 
         return $result;
@@ -351,7 +352,7 @@ class Executor
             $fieldNodes,
             $info,
             $path,
-            $result// $result is passed as $source
+            $result
         );
 
         return $result;
@@ -659,6 +660,7 @@ class Executor
      * @param                       $result
      * @return TypeInterface|ObjectType|null
      * @throws ExecutionException
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     private function ensureValidRuntimeType(
         $runtimeTypeOrName,
@@ -801,6 +803,7 @@ class Executor
      */
     private function completeLeafValue(LeafTypeInterface $returnType, &$result)
     {
+        /** @var ScalarType $returnType */
         $serializedResult = $returnType->serialize($result);
 
         if ($serializedResult === null) {
