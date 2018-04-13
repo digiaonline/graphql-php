@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Error\InvariantException;
 use function Digia\GraphQL\Type\isAssocArray;
+use function Digia\GraphQL\Type\newField;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
@@ -16,7 +17,7 @@ trait FieldsTrait
      *
      * @var array|callable
      */
-    protected $fieldsOrThunk;
+    protected $rawFieldsOrThunk;
 
     /**
      * A key-value map over field names and their corresponding field instances.
@@ -48,23 +49,23 @@ trait FieldsTrait
     {
         // Fields are built lazily to avoid concurrency issues.
         if (!isset($this->fieldMap)) {
-            $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk);
+            $this->fieldMap = $this->buildFieldMap($this->rawFieldsOrThunk);
         }
 
         return $this->fieldMap;
     }
 
     /**
-     * @param array|callable $fieldsOrThunk
-     * @return array
+     * @param array|callable $rawFieldsOrThunk
+     * @return Field[]
      * @throws InvariantException
      */
-    protected function buildFieldMap($fieldsOrThunk): array
+    protected function buildFieldMap($rawFieldsOrThunk): array
     {
-        $fields = resolveThunk($fieldsOrThunk);
+        $rawFields = resolveThunk($rawFieldsOrThunk);
 
         invariant(
-            isAssocArray($fields),
+            isAssocArray($rawFields),
             \sprintf(
                 '%s fields must be an associative array with field names as key or a callable which returns such an array.',
                 $this->getName()
@@ -73,7 +74,7 @@ trait FieldsTrait
 
         $fieldMap = [];
 
-        foreach ($fields as $fieldName => $fieldConfig) {
+        foreach ($rawFields as $fieldName => $fieldConfig) {
             invariant(
                 \is_array($fieldConfig),
                 \sprintf('%s.%s field config must be an array', $this->getName(), $fieldName)
@@ -100,16 +101,10 @@ trait FieldsTrait
                 );
             }
 
-            $fieldMap[$fieldName] = new Field(
-                $fieldName,
-                $fieldConfig['description'] ?? null,
-                $fieldConfig['type'] ?? null,
-                $fieldConfig['args'] ?? [],
-                $fieldConfig['resolve'] ?? null,
-                $fieldConfig['subscribe'] ?? null,
-                $fieldConfig['deprecationReason'] ?? null,
-                $fieldConfig['astNode'] ?? null
-            );
+            $fieldConfig['name']     = $fieldName;
+            $fieldConfig['typeName'] = $this->getName();
+
+            $fieldMap[$fieldName] = newField($fieldConfig);
         }
 
         return $fieldMap;

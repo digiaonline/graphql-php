@@ -18,22 +18,22 @@ class Argument implements ASTNodeAwareInterface
      * Argument constructor.
      *
      * @param string                                                      $name
+     * @param null|string                                                 $description
      * @param TypeInterface|InputTypeInterface|WrappingTypeInterface|null $type
      * @param mixed|null                                                  $defaultValue
-     * @param null|string                                                 $description
      * @param InputValueDefinitionNode|null                               $astNode
      */
     public function __construct(
         string $name,
+        ?string $description,
         ?TypeInterface $type,
         $defaultValue,
-        ?string $description,
         ?InputValueDefinitionNode $astNode
     ) {
         $this->name         = $name;
+        $this->description  = $description;
         $this->type         = $type;
         $this->defaultValue = $defaultValue;
-        $this->description  = $description;
         $this->astNode      = $astNode;
     }
 }

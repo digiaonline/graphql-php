@@ -50,7 +50,7 @@ use function Digia\GraphQL\Util\invariant;
  *     ]);
  */
 class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
-    ASTNodeAwareInterface
+    FieldsAwareInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -102,7 +102,7 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
     ) {
         $this->name              = $name;
         $this->description       = $description;
-        $this->fieldsOrThunk     = $fieldsOrThunk;
+        $this->rawFieldsOrThunk  = $fieldsOrThunk;
         $this->interfacesOrThunk = $interfacesOrThunk;
         $this->isTypeOfCallback  = $isTypeOfCallback;
         $this->astNode           = $astNode;

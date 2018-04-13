@@ -25,35 +25,38 @@ class Field implements ASTNodeAwareInterface, ArgumentsAwareInterface
     /**
      * Field constructor.
      *
-     * @param string                                                       $name
-     * @param null|string                                                  $description
-     * @param TypeInterface|OutputTypeInterface|WrappingTypeInterface|null $type
-     * @param Argument[]|array[]                                           $arguments
-     * @param callable|null                                                $resolveCallback
-     * @param callable|null                                                $subscribeCallback
-     * @param null|string                                                  $deprecationReason
-     * @param FieldDefinitionNode|null                                     $astNode
+     * @param string                   $name
+     * @param null|string              $description
+     * @param TypeInterface|null       $type
+     * @param Argument[]|array[]       $rawArguments
+     * @param callable|null            $resolveCallback
+     * @param callable|null            $subscribeCallback
+     * @param null|string              $deprecationReason
+     * @param FieldDefinitionNode|null $astNode
+     * @param string                   $typeName
      * @throws InvariantException
      */
     public function __construct(
         string $name,
         ?string $description,
         ?TypeInterface $type,
-        array $arguments,
+        array $rawArguments,
         ?callable $resolveCallback,
         ?callable $subscribeCallback,
         ?string $deprecationReason,
-        ?FieldDefinitionNode $astNode
+        ?FieldDefinitionNode $astNode,
+        string $typeName
     ) {
         $this->name              = $name;
         $this->description       = $description;
         $this->type              = $type;
+        $this->rawArguments      = $rawArguments;
         $this->resolveCallback   = $resolveCallback;
         $this->subscribeCallback = $subscribeCallback;
         $this->deprecationReason = $deprecationReason;
         $this->astNode           = $astNode;
 
-        $this->buildArguments($arguments);
+        $this->arguments = $this->buildArguments($typeName, $this->rawArguments);
     }
 
     /**

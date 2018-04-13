@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use function Digia\GraphQL\Type\isAssocArray;
+use function Digia\GraphQL\Type\newEnumValue;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
@@ -214,13 +215,9 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
                 )
             );
 
-            $values[] = new EnumValue(
-                $valueName,
-                $valueConfig['description'] ?? null,
-                $valueConfig['deprecationReason'] ?? null,
-                $valueConfig['astNode'] ?? null,
-                $valueConfig['value'] ?? null
-            );
+            $valueConfig['name'] = $valueName;
+
+            $values[] = newEnumValue($valueConfig);
         }
 
         return $values;

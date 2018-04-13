@@ -84,7 +84,7 @@ function suggestionList(string $input, array $options): array
  */
 function quotedOrList(array $items): string
 {
-    return orList(array_map(function ($item) {
+    return orList(\array_map(function ($item) {
         return '"' . $item . '"';
     }, $items));
 }
@@ -98,7 +98,7 @@ function quotedOrList(array $items): string
  */
 function arrayEvery(array $array, callable $fn): bool
 {
-    return array_reduce($array, function ($result, $value) use ($fn) {
+    return \array_reduce($array, function ($result, $value) use ($fn) {
         return $result && $fn($value);
     }, true);
 }
@@ -110,7 +110,7 @@ function arrayEvery(array $array, callable $fn): bool
  */
 function arraySome(array $array, callable $fn)
 {
-    return array_reduce($array, function ($result, $value) use ($fn) {
+    return \array_reduce($array, function ($result, $value) use ($fn) {
         return $result || $fn($value);
     });
 }
@@ -138,7 +138,7 @@ function find(array $array, callable $predicate)
  */
 function keyMap(array $array, callable $keyFn): array
 {
-    return array_reduce($array, function ($map, $item) use ($keyFn) {
+    return \array_reduce($array, function ($map, $item) use ($keyFn) {
         $map[$keyFn($item)] = $item;
         return $map;
     }, []);
@@ -152,7 +152,7 @@ function keyMap(array $array, callable $keyFn): array
  */
 function keyValueMap(array $array, callable $keyFn, callable $valFn): array
 {
-    return array_reduce($array, function ($map, $item) use ($keyFn, $valFn) {
+    return \array_reduce($array, function ($map, $item) use ($keyFn, $valFn) {
         $map[$keyFn($item)] = $valFn($item);
         return $map;
     }, []);

@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
 use function Digia\GraphQL\Type\isAssocArray;
+use function Digia\GraphQL\Type\newInputField;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\invariant;
 
@@ -41,7 +42,7 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
      *
      * @var array|callable
      */
-    protected $fieldsOrThunk;
+    protected $rawFieldsOrThunk;
 
     /**
      * A key-value map over field names and their corresponding field instances.
@@ -55,20 +56,20 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
      *
      * @param string                             $name
      * @param null|string                        $description
-     * @param array|callable                     $fieldsOrThunk
+     * @param array|callable                     $rawFieldsOrThunk
      * @param InputObjectTypeDefinitionNode|null $astNode
      * @throws InvariantException
      */
     public function __construct(
         string $name,
         ?string $description,
-        $fieldsOrThunk,
+        $rawFieldsOrThunk,
         ?InputObjectTypeDefinitionNode $astNode
     ) {
-        $this->name          = $name;
-        $this->description   = $description;
-        $this->fieldsOrThunk = $fieldsOrThunk;
-        $this->astNode       = $astNode;
+        $this->name             = $name;
+        $this->description      = $description;
+        $this->rawFieldsOrThunk = $rawFieldsOrThunk;
+        $this->astNode          = $astNode;
 
         invariant(null !== $this->name, 'Must provide name.');
     }
@@ -80,23 +81,23 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
     public function getFields(): array
     {
         if (!isset($this->fieldMap)) {
-            $this->fieldMap = $this->buildFieldMap($this->fieldsOrThunk);
+            $this->fieldMap = $this->buildFieldMap($this->rawFieldsOrThunk);
         }
 
         return $this->fieldMap;
     }
 
     /**
-     * @param array|callable $fieldsOrThunk
+     * @param array|callable $rawFieldsOrThunk
      * @return array
      * @throws InvariantException
      */
-    protected function buildFieldMap($fieldsOrThunk): array
+    protected function buildFieldMap($rawFieldsOrThunk): array
     {
-        $fields = resolveThunk($fieldsOrThunk);
+        $rawFields = resolveThunk($rawFieldsOrThunk);
 
         invariant(
-            isAssocArray($fields),
+            isAssocArray($rawFields),
             \sprintf(
                 '%s fields must be an associative array with field names as keys or a function which returns such an array.',
                 $this->name
@@ -105,7 +106,7 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
 
         $fieldMap = [];
 
-        foreach ($fields as $fieldName => $fieldConfig) {
+        foreach ($rawFields as $fieldName => $fieldConfig) {
             invariant(
                 !isset($fieldConfig['resolve']),
                 \sprintf(
@@ -115,13 +116,9 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
                 )
             );
 
-            $fieldMap[$fieldName] = new InputField(
-                $fieldName,
-                $fieldConfig['type'] ?? null,
-                $fieldConfig['defaultValue'] ?? null,
-                $fieldConfig['description'] ?? null,
-                $fieldConfig['astNode'] ?? null
-            );
+            $fieldConfig['name'] = $fieldName;
+
+            $fieldMap[$fieldName] = newInputField($fieldConfig);
         }
 
         return $fieldMap;
