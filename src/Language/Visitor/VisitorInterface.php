@@ -7,7 +7,6 @@ use Digia\GraphQL\Util\SerializationInterface;
 
 interface VisitorInterface
 {
-
     /**
      * @param NodeInterface|AcceptsVisitorsTrait $node
      * @return NodeInterface|SerializationInterface|null

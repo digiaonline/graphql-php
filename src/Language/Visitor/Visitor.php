@@ -6,26 +6,26 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class Visitor implements VisitorInterface
 {
+    /**
+     * @var callable|null
+     */
+    protected $enterCallback;
 
     /**
      * @var callable|null
      */
-    protected $enterFunction;
+    protected $leaveCallback;
 
     /**
-     * @var callable|null
+     * Visitor constructor.
+     *
+     * @param callable|null $enterCallback
+     * @param callable|null $leaveCallback
      */
-    protected $leaveFunction;
-
-    /**
-     * TestableVisitor constructor.
-     * @param callable|null $enterFunction
-     * @param callable|null $leaveFunction
-     */
-    public function __construct(?callable $enterFunction = null, ?callable $leaveFunction = null)
+    public function __construct(?callable $enterCallback = null, ?callable $leaveCallback = null)
     {
-        $this->enterFunction = $enterFunction;
-        $this->leaveFunction = $leaveFunction;
+        $this->enterCallback = $enterCallback;
+        $this->leaveCallback = $leaveCallback;
     }
 
     /**
@@ -33,8 +33,8 @@ class Visitor implements VisitorInterface
      */
     public function enterNode(NodeInterface $node): ?NodeInterface
     {
-        return null !== $this->enterFunction
-            ? \call_user_func($this->enterFunction, $node)
+        return null !== $this->enterCallback
+            ? \call_user_func($this->enterCallback, $node)
             : $node;
     }
 
@@ -43,8 +43,8 @@ class Visitor implements VisitorInterface
      */
     public function leaveNode(NodeInterface $node): ?NodeInterface
     {
-        return null !== $this->leaveFunction
-            ? \call_user_func($this->leaveFunction, $node)
+        return null !== $this->leaveCallback
+            ? \call_user_func($this->leaveCallback, $node)
             : $node;
     }
 }

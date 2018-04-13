@@ -7,14 +7,14 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 class ParallelVisitor implements VisitorInterface
 {
     /**
-     * @var array|VisitorInterface[]
+     * @var VisitorInterface[]
      */
     protected $visitors;
 
     /**
      * @var array
      */
-    protected $_skipping = [];
+    protected $skipping = [];
 
     /**
      * ParallelVisitor constructor.
@@ -33,16 +33,16 @@ class ParallelVisitor implements VisitorInterface
         $newNode = null;
 
         foreach ($this->visitors as $i => $visitor) {
-            if (!isset($this->_skipping[$i])) {
+            if (!isset($this->skipping[$i])) {
                 try {
                     $newNode = $visitor->enterNode($node);
                 } catch (VisitorBreak $break) {
-                    $this->_skipping[$i] = $break;
+                    $this->skipping[$i] = $break;
                     continue;
                 }
 
                 if (null === $newNode) {
-                    $this->_skipping[$i] = $node;
+                    $this->skipping[$i] = $node;
 
                     $newNode = $node;
                 }
@@ -60,15 +60,15 @@ class ParallelVisitor implements VisitorInterface
         $newNode = null;
 
         foreach ($this->visitors as $i => $visitor) {
-            if (!isset($this->_skipping[$i])) {
+            if (!isset($this->skipping[$i])) {
                 try {
                     $newNode = $visitor->leaveNode($node);
                 } catch (VisitorBreak $break) {
-                    $this->_skipping[$i] = $break;
+                    $this->skipping[$i] = $break;
                     continue;
                 }
-            } elseif ($this->_skipping[$i] === $node) {
-                unset($this->_skipping[$i]);
+            } elseif ($this->skipping[$i] === $node) {
+                unset($this->skipping[$i]);
             }
         }
 
