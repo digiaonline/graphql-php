@@ -155,3 +155,16 @@ function dedent(string $str): string
     $indent = $matches[0];
     return \str_replace($indent, '', $trimmed); // Remove indent
 }
+
+/**
+ * @param mixed $value
+ * @param bool  $isDescription
+ * @return null|string|string[]
+ */
+function printBlockString($value, bool $isDescription)
+{
+    $escaped = \preg_replace('/"""/g', '\\"""', $value);
+    return $value{0} === ' ' || ($value{0} === "\t" && false === strpos($value, "\n"))
+        ? '"""' . \preg_replace('/"$/', "\"\n", $escaped) . '"""'
+        : '"""' . $isDescription ? $escaped : indent($escaped) . "\n" . '"""';
+}

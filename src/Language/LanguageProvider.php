@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Language\Writer\SupportedWriters;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class LanguageProvider extends AbstractServiceProvider
@@ -25,7 +24,6 @@ class LanguageProvider extends AbstractServiceProvider
 
         $this->container->add(ParserInterface::class, Parser::class);
 
-        $this->container->add(PrinterInterface::class, Printer::class, true/* $shared */)
-            ->withArgument(SupportedWriters::get());
+        $this->container->add(PrinterInterface::class, Printer::class, true/* $shared */);
     }
 }

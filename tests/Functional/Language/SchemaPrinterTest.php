@@ -10,7 +10,6 @@ use function Digia\GraphQL\Test\readFileContents;
 
 class SchemaPrinterTest extends TestCase
 {
-
     public function testDoesNotAlterAST()
     {
         // This test seems kind of dumb test, but it makes sure that our parser
@@ -18,8 +17,9 @@ class SchemaPrinterTest extends TestCase
 
         $kitchenSink = readFileContents(__DIR__ . '/schema-kitchen-sink.graphqls');
 
-        /** @var DocumentNode $ast */
-        $ast       = parse($kitchenSink);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $ast = parse($kitchenSink);
+
         $astBefore = $ast->toJSON();
 
         printNode($ast);
