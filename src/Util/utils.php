@@ -183,13 +183,13 @@ function toString($value): string
         return '(empty string)';
     }
     if ($value === null) {
-        return '(null)';
+        return 'null';
     }
     if ($value === true) {
-        return '(true)';
+        return 'true';
     }
     if ($value === false) {
-        return '(false)';
+        return 'false';
     }
     if (\is_string($value)) {
         return "\"{$value}\"";

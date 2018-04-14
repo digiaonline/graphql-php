@@ -67,7 +67,8 @@ trait FieldsTrait
         invariant(
             isAssocArray($rawFields),
             \sprintf(
-                '%s fields must be an associative array with field names as key or a callable which returns such an array.',
+                '%s fields must be an associative array with field names as keys or a ' .
+                'callable which returns such an array.',
                 $this->getName()
             )
         );
@@ -77,7 +78,7 @@ trait FieldsTrait
         foreach ($rawFields as $fieldName => $fieldConfig) {
             invariant(
                 \is_array($fieldConfig),
-                \sprintf('%s.%s field config must be an array', $this->getName(), $fieldName)
+                \sprintf('%s.%s field config must be an associative array.', $this->getName(), $fieldName)
             );
 
             invariant(
@@ -93,7 +94,7 @@ trait FieldsTrait
                 invariant(
                     null === $fieldConfig['resolve'] || \is_callable($fieldConfig['resolve']),
                     \sprintf(
-                        '%s.%s field resolver must be a function if provided, but got: %s',
+                        '%s.%s field resolver must be a function if provided, but got: %s.',
                         $this->getName(),
                         $fieldName,
                         toString($fieldConfig['resolve'])

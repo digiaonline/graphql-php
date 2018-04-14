@@ -76,8 +76,6 @@ class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeT
         $this->typesOrThunk        = $typesOrThunk;
         $this->resolveTypeCallback = $resolveTypeCallback;
         $this->astNode             = $astNode;
-
-        invariant(null !== $this->name, 'Must provide name.');
     }
 
     /**
@@ -106,7 +104,7 @@ class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeT
         invariant(
             \is_array($typeMap),
             \sprintf(
-                'Must provide Array of types or a function which returns such an array for Union %s.',
+                'Must provide array of types or a function which returns such an array for Union %s.',
                 $this->name
             )
         );

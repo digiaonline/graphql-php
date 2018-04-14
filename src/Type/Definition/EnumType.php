@@ -68,8 +68,6 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
         $this->description = $description;
         $this->astNode     = $astNode;
         $this->rawValues   = $rawValues;
-
-        invariant(null !== $this->name, 'Must provide name.');
     }
 
     /**
@@ -196,7 +194,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
             invariant(
                 isAssocArray($valueConfig),
                 \sprintf(
-                    '%s.%s must refer to an object with a "value" key representing an internal value but got: %s',
+                    '%s.%s must refer to an object with a "value" key representing an internal value but got: %s.',
                     $this->name,
                     $valueName,
                     toString($valueConfig)
@@ -206,13 +204,16 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
             invariant(
                 !isset($valueConfig['isDeprecated']),
                 \sprintf(
-                    '%s.%s should provided "deprecationReason" instead of "isDeprecated".',
+                    '%s.%s should provide "deprecationReason" instead of "isDeprecated".',
                     $this->name,
                     $valueName
                 )
             );
 
-            $valueConfig['name'] = $valueName;
+            $valueConfig['name']  = $valueName;
+            $valueConfig['value'] = \array_key_exists('value', $valueConfig)
+                ? $valueConfig['value']
+                : $valueName;
 
             $values[] = newEnumValue($valueConfig);
         }

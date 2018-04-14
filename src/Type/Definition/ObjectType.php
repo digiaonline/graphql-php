@@ -107,8 +107,6 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
         $this->isTypeOfCallback  = $isTypeOfCallback;
         $this->astNode           = $astNode;
         $this->extensionAstNodes = $extensionASTNodes;
-
-        invariant(null !== $this->name, 'Must provide name.');
     }
 
     /**

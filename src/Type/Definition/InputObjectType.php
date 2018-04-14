@@ -70,8 +70,16 @@ class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInt
         $this->description      = $description;
         $this->rawFieldsOrThunk = $rawFieldsOrThunk;
         $this->astNode          = $astNode;
+    }
 
-        invariant(null !== $this->name, 'Must provide name.');
+    /**
+     * @param string $fieldName
+     * @return InputField|null
+     * @throws InvariantException
+     */
+    public function getField(string $fieldName): ?InputField
+    {
+        return $this->getFields()[$fieldName] ?? null;
     }
 
     /**
