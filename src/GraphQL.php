@@ -12,7 +12,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\ParserInterface;
-use Digia\GraphQL\Language\PrinterInterface;
+use Digia\GraphQL\Language\NodePrinterInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
 use Digia\GraphQL\Schema\Building\SchemaBuildingProvider;
@@ -254,7 +254,7 @@ class GraphQL
      */
     public static function print(NodeInterface $node): string
     {
-        return static::make(PrinterInterface::class)->print($node);
+        return static::make(NodePrinterInterface::class)->print($node);
     }
 
     /**

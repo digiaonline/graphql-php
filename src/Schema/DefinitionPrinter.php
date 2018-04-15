@@ -1,0 +1,432 @@
+<?php
+
+namespace Digia\GraphQL\Schema;
+
+use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Error\PrintException;
+use Digia\GraphQL\Type\Definition\DeprecationAwareInterface;
+use Digia\GraphQL\Type\Definition\DescriptionAwareInterface;
+use Digia\GraphQL\Type\Definition\Directive;
+use Digia\GraphQL\Type\Definition\EnumType;
+use Digia\GraphQL\Type\Definition\EnumValue;
+use Digia\GraphQL\Type\Definition\InputObjectType;
+use Digia\GraphQL\Type\Definition\InterfaceType;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Definition\ScalarType;
+use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Type\Definition\UnionType;
+use function Digia\GraphQL\Type\isIntrospectionType;
+use function Digia\GraphQL\Type\isSpecifiedScalarType;
+use function Digia\GraphQL\Util\toString;
+
+class DefinitionPrinter implements DefinitionPrinterInterface
+{
+    /**
+     * @var array
+     */
+    protected $options;
+
+    /**
+     * @inheritdoc
+     * @throws PrintException
+     */
+    public function printSchema(SchemaInterface $schema, array $options = []): string
+    {
+        $this->options = $options;
+
+        return $this->printFilteredSchema(
+            $schema,
+            function (Directive $directive): bool {
+                return !isSpecifiedDirective($directive);
+            },
+            function (TypeInterface $type): bool {
+                return !isSpecifiedScalarType($type) && !isIntrospectionType($type);
+            }
+        );
+    }
+
+    /**
+     * @inheritdoc
+     * @throws PrintException
+     */
+    public function printIntrospectionSchema(SchemaInterface $schema, array $options = []): string
+    {
+        $this->options = $options;
+
+        return $this->printFilteredSchema(
+            $schema,
+            function (Directive $directive): bool {
+                return isSpecifiedDirective($directive);
+            },
+            function (TypeInterface $type): bool {
+                return isIntrospectionType($type);
+            }
+        );
+    }
+
+    /**
+     * @param mixed $definition
+     * @return string
+     * @throws PrintException
+     */
+    public function print(DefinitionInterface $definition): string
+    {
+        if ($definition instanceof Schema) {
+            return $this->printSchemaDefinition($definition);
+        }
+        if ($definition instanceof NamedTypeInterface) {
+            return $this->printType($definition);
+        }
+
+        throw new PrintException(\sprintf('Invalid definition object: %s.', toString($definition)));
+    }
+
+    /**
+     * @param SchemaInterface $schema
+     * @param callable        $directiveFilter
+     * @param callable        $typeFilter
+     * @return string
+     * @throws PrintException
+     */
+    protected function printFilteredSchema(
+        SchemaInterface $schema,
+        callable $directiveFilter,
+        callable $typeFilter
+    ): string {
+        /** @noinspection PhpParamsInspection */
+        $lines = \array_filter(\array_merge(
+            [$this->printOne($schema)],
+            $this->printMany($this->getSchemaDirectives($schema, $directiveFilter)),
+            $this->printMany($this->getSchemaTypes($schema, $typeFilter))
+        ));
+
+        return printArray($lines, "\n\n") . "\n";
+    }
+
+    /**
+     * @param SchemaInterface $schema
+     * @param callable        $filter
+     * @return array
+     */
+    protected function getSchemaDirectives(SchemaInterface $schema, callable $filter): array
+    {
+        return \array_filter($schema->getDirectives(), $filter);
+    }
+
+    /**
+     * @param SchemaInterface $schema
+     * @param callable        $filter
+     * @return array
+     */
+    protected function getSchemaTypes(SchemaInterface $schema, callable $filter): array
+    {
+        $types = \array_filter(\array_values($schema->getTypeMap()), $filter);
+
+        \usort($types, function (NamedTypeInterface $typeA, NamedTypeInterface $typeB) {
+            return \strcasecmp($typeA->getName(), $typeB->getName());
+        });
+
+        return $types;
+    }
+
+    /**
+     * @param Schema $definition
+     * @return string
+     */
+    protected function printSchemaDefinition(Schema $definition): string
+    {
+        if ($this->isSchemaOfCommonNames($definition)) {
+            return '';
+        }
+
+        $operationTypes = [];
+
+        if (null !== ($queryType = $definition->getQueryType())) {
+            $operationTypes[] = "  query: {$queryType->getName()}";
+        }
+
+        if (null !== ($mutationType = $definition->getMutationType())) {
+            $operationTypes[] = "  mutation: {$mutationType->getName()}";
+        }
+
+        if (null !== ($subscriptionType = $definition->getSubscriptionType())) {
+            $operationTypes[] = "  subscription: {$subscriptionType->getName()}";
+        }
+
+        return printLines([
+            'schema {\n',
+            printLines($operationTypes),
+            '}'
+        ]);
+    }
+
+    /**
+     * GraphQL schema define root types for each type of operation. These types are
+     * the same as any other type and can be named in any manner, however there is
+     * a common naming convention:
+     *
+     *   schema {
+     *     query: Query
+     *     mutation: Mutation
+     *     subscription: Subscription
+     *   }
+     *
+     * When using this naming convention, the schema description can be omitted.
+     *
+     * @param SchemaInterface $schema
+     * @return bool
+     */
+    protected function isSchemaOfCommonNames(SchemaInterface $schema): bool
+    {
+        if (null !== ($queryType = $schema->getQueryType()) &&
+            $queryType->getName() !== 'Query') {
+            return false;
+        }
+
+        if (null !== ($mutationType = $schema->getMutationType()) &&
+            $mutationType->getName() !== 'Mutation') {
+            return false;
+        }
+
+        if (null !== ($subscriptionType = $schema->getSubscriptionType()) &&
+            $subscriptionType->getName() !== 'Subscription') {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param NamedTypeInterface $type
+     * @return string
+     * @throws PrintException
+     * @throws InvariantException
+     */
+    protected function printType(NamedTypeInterface $type): string
+    {
+        if ($type instanceof ScalarType) {
+            return $this->printScalarType($type);
+        }
+        if ($type instanceof ObjectType) {
+            return $this->printObjectType($type);
+        }
+        if ($type instanceof InterfaceType) {
+            return $this->printInterfaceType($type);
+        }
+        if ($type instanceof UnionType) {
+            return $this->printUnionType($type);
+        }
+        if ($type instanceof EnumType) {
+            return $this->printEnumType($type);
+        }
+        if ($type instanceof InputObjectType) {
+            return $this->printInputObjectType($type);
+        }
+
+        throw new PrintException(\sprintf('Unknown type: %s', (string)$type));
+    }
+
+    /**
+     * @param ScalarType $type
+     * @return string
+     */
+    protected function printScalarType(ScalarType $type): string
+    {
+        return printLines([
+            $this->printDescription($type),
+            "scalar {$type->getName()}"
+        ]);
+    }
+
+    /**
+     * @param ObjectType $type
+     * @return string
+     * @throws InvariantException
+     */
+    protected function printObjectType(ObjectType $type): string
+    {
+        $description = $this->printDescription($type);
+        $name        = $type->getName();
+        $implements  = $type->hasInterfaces()
+            ? ' implements ' . printArray(' & ', \array_map(function (InterfaceType $interface) {
+                return $interface->getName();
+            }, $type->getInterfaces()))
+            : '';
+        $fields      = $this->printMany($type->getFields());
+
+        return printLines([
+            $description,
+            "type {$name}{$implements} {",
+            $fields,
+            '}'
+        ]);
+    }
+
+    /**
+     * @param InterfaceType $type
+     * @return string
+     * @throws InvariantException
+     */
+    protected function printInterfaceType(InterfaceType $type): string
+    {
+        $description = $this->printDescription($type);
+        $fields      = $this->printMany($type->getFields());
+
+        return printLines([
+            $description,
+            "interface {$type->getName()} {",
+            $fields,
+            '}'
+        ]);
+    }
+
+    /**
+     * @param UnionType $type
+     * @return string
+     * @throws InvariantException
+     */
+    protected function printUnionType(UnionType $type): string
+    {
+        $description = $this->printDescription($type);
+        $types       = printArray(' | ', $type->getTypes());
+
+        return printLines([
+            $description,
+            "union {$type->getName()} = {$types}"
+        ]);
+    }
+
+    /**
+     * @param EnumType $type
+     * @return string
+     * @throws InvariantException
+     */
+    protected function printEnumType(EnumType $type): string
+    {
+        $description = $this->printDescription($type);
+        $values      = $this->printEnumValues($type->getValues());
+
+        return printLines([
+            $description,
+            "enum {$type->getName()} {",
+            $values,
+            '}'
+        ]);
+    }
+
+    protected function printEnumValues(array $values): string
+    {
+        return printLines(\array_map(function (EnumValue $value, $i) {
+            $description = $this->printDescription($value, '  ', 0 === $i);
+            $name        = $value->getName();
+            $deprecated  = $this->printDeprecated($value);
+            return printLines([
+                "  {$description}",
+                "  {$name} {$deprecated}"
+            ]);
+        }, $values));
+    }
+
+    protected function printDeprecated(DeprecationAwareInterface $fieldOrEnumValue): string
+    {
+        if (!$fieldOrEnumValue->isDeprecated()) {
+            return '';
+        }
+
+        $reason = $fieldOrEnumValue->getDeprecationReason();
+
+        if (null === $reason || '' === $reason || DEFAULT_DEPRECATION_REASON === $reason) {
+            return '@deprecated';
+        }
+
+        return "@deprecated(reason: {$reason})";
+    }
+
+    /**
+     * @param mixed  $type
+     * @param string $indentation
+     * @param bool   $isFirstInBlock
+     * @return string
+     */
+    protected function printDescription(
+        $type,
+        string $indentation = '',
+        bool $isFirstInBlock = true
+    ): string {
+        if (!($type instanceof DescriptionAwareInterface)) {
+            return '';
+        }
+
+        $lines      = descriptionLines($type->getDescription(), 120 - \strlen($indentation));
+        $linesCount = \count($lines);
+
+        if (isset($this->options['commentDescriptions'])) {
+            return $this->printDescriptionWithComments($lines, $indentation, $isFirstInBlock);
+        }
+
+        $description = $indentation && !$isFirstInBlock
+            ? "\n" . $indentation . '"""'
+            : $indentation . '"""';
+
+        // In some circumstances, a single line can be used for the description.
+        if (
+            $linesCount === 1 &&
+            ($firstLineLength = \strlen($lines[0])) < 70 &&
+            $lines[0][$firstLineLength - 1] !== '"'
+        ) {
+            return $description . escapeQuote($lines[0]) . '"""' . "\n";
+        }
+
+        // Format a multi-line block quote to account for leading space.
+        $hasLeadingSpace = $lines[0][0] === ' ' || $lines[0][0] === "\t";
+        if (!$hasLeadingSpace) {
+            $description .= "\n";
+        }
+
+        for ($i = 0; $i < $linesCount; $i++) {
+            $description .= $i !== 0 || !$hasLeadingSpace
+                ? $description .= $indentation
+                : escapeQuote($lines[$i]) . "\n";
+        }
+
+        $description .= $indentation . '"""';
+
+        return $description;
+    }
+
+    protected function printDescriptionWithComments(array $lines, string $indentation, bool $isFirstInBlock): string
+    {
+        $description = $indentation && !$isFirstInBlock ? "\n" : '';
+        $linesCount  = \count($lines);
+
+        for ($i = 0; $i < $linesCount; $i++) {
+            $description .= $lines[$i] === ''
+                ? $indentation . '#' . "\n"
+                : $indentation . '# ' . $lines[$i] . "\n";
+        }
+
+        return $description;
+    }
+
+    /**
+     * @param DefinitionInterface $definition
+     * @return string
+     * @throws PrintException
+     */
+    protected function printOne(DefinitionInterface $definition): string
+    {
+        return $this->print($definition);
+    }
+
+    /**
+     * @param DefinitionInterface[] $definitions
+     * @return array
+     */
+    protected function printMany(array $definitions): array
+    {
+        return \array_map(function ($definition) {
+            return $this->print($definition);
+        }, $definitions);
+    }
+}

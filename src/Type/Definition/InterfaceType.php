@@ -26,7 +26,7 @@ use function Digia\GraphQL\Util\invariant;
  *     ]);
  */
 class InterfaceType implements NamedTypeInterface, AbstractTypeInterface, CompositeTypeInterface,
-    OutputTypeInterface, FieldsAwareInterface, ASTNodeAwareInterface
+    OutputTypeInterface, DescriptionAwareInterface, FieldsAwareInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

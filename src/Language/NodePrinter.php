@@ -1,8 +1,10 @@
 <?php
 
+// TODO: Move this file under the Node namespace
+
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\LanguageException;
+use Digia\GraphQL\Error\PrintException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\BooleanValueNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
@@ -30,11 +32,11 @@ use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use function Digia\GraphQL\Util\toString;
 
-class Printer implements PrinterInterface
+class NodePrinter implements NodePrinterInterface
 {
     /**
      * @inheritdoc
-     * @throws LanguageException
+     * @throws PrintException
      */
     public function print(NodeInterface $node): string
     {
@@ -44,7 +46,7 @@ class Printer implements PrinterInterface
             return $this->{$printMethod}($node);
         }
 
-        throw new LanguageException(\sprintf('Invalid AST Node: %s.', toString($node)));
+        throw new PrintException(\sprintf('Invalid AST Node: %s.', toString($node)));
     }
 
     /**
@@ -79,15 +81,15 @@ class Printer implements PrinterInterface
     /**
      * @param OperationDefinitionNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printOperationDefinition(OperationDefinitionNode $node): string
     {
         $operation            = $node->getOperation();
-        $name                 = $this->one($node->getName());
-        $variablesDefinitions = $this->many($node->getVariableDefinitions());
-        $directives           = $this->many($node->getDirectives());
-        $selectionSet         = $this->one($node->getSelectionSet());
+        $name                 = $this->printOne($node->getName());
+        $variablesDefinitions = $this->printMany($node->getVariableDefinitions());
+        $directives           = $this->printMany($node->getDirectives());
+        $selectionSet         = $this->printOne($node->getSelectionSet());
 
         // Anonymous queries with no directives or variable definitions can use
         // the query short form.
@@ -104,13 +106,13 @@ class Printer implements PrinterInterface
     /**
      * @param VariableDefinitionNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printVariableDefinition(VariableDefinitionNode $node): string
     {
-        $variable     = $this->one($node->getVariable());
-        $type         = $this->one($node->getType());
-        $defaultValue = $this->one($node->getDefaultValue());
+        $variable     = $this->printOne($node->getVariable());
+        $type         = $this->printOne($node->getType());
+        $defaultValue = $this->printOne($node->getDefaultValue());
 
         return $variable . ': ' . $type . wrap(' = ', $defaultValue);
     }
@@ -121,21 +123,21 @@ class Printer implements PrinterInterface
      */
     protected function printSelectionSet(SelectionSetNode $node): string
     {
-        return block($this->many($node->getSelections()));
+        return block($this->printMany($node->getSelections()));
     }
 
     /**
      * @param FieldNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printField(FieldNode $node): string
     {
-        $alias        = $this->one($node->getAlias());
-        $name         = $this->one($node->getName());
-        $arguments    = $this->many($node->getArguments());
-        $directives   = $this->many($node->getDirectives());
-        $selectionSet = $this->one($node->getSelectionSet());
+        $alias        = $this->printOne($node->getAlias());
+        $name         = $this->printOne($node->getName());
+        $arguments    = $this->printMany($node->getArguments());
+        $directives   = $this->printMany($node->getDirectives());
+        $selectionSet = $this->printOne($node->getSelectionSet());
 
         return \implode(' ', [
             wrap('', $alias, ': ') . $name . wrap('(', \implode(', ', $arguments), ')'),
@@ -147,12 +149,12 @@ class Printer implements PrinterInterface
     /**
      * @param ArgumentNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printArgument(ArgumentNode $node): string
     {
-        $name  = $this->one($node->getName());
-        $value = $this->one($node->getValue());
+        $name  = $this->printOne($node->getName());
+        $value = $this->printOne($node->getValue());
 
         return $name . ': ' . $value;
     }
@@ -162,12 +164,12 @@ class Printer implements PrinterInterface
     /**
      * @param FragmentSpreadNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printFragmentSpread(FragmentSpreadNode $node): string
     {
-        $name       = $this->one($node->getName());
-        $directives = $this->many($node->getDirectives());
+        $name       = $this->printOne($node->getName());
+        $directives = $this->printMany($node->getDirectives());
 
         return '...' . $name . wrap(' ', \implode(' ', $directives));
     }
@@ -175,13 +177,13 @@ class Printer implements PrinterInterface
     /**
      * @param InlineFragmentNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printInlineFragment(InlineFragmentNode $node): string
     {
-        $typeCondition = $this->one($node->getTypeCondition());
-        $directives    = $this->many($node->getDirectives());
-        $selectionSet  = $this->one($node->getSelectionSet());
+        $typeCondition = $this->printOne($node->getTypeCondition());
+        $directives    = $this->printMany($node->getDirectives());
+        $selectionSet  = $this->printOne($node->getSelectionSet());
 
         return \implode(' ', [
             '...', wrap('on ', $typeCondition),
@@ -193,15 +195,15 @@ class Printer implements PrinterInterface
     /**
      * @param FragmentDefinitionNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printFragmentDefinition(FragmentDefinitionNode $node): string
     {
-        $name                = $this->one($node->getName());
-        $typeCondition       = $this->one($node->getTypeCondition());
-        $variableDefinitions = $this->many($node->getVariableDefinitions());
-        $directives          = $this->many($node->getDirectives());
-        $selectionSet        = $this->one($node->getSelectionSet());
+        $name                = $this->printOne($node->getName());
+        $typeCondition       = $this->printOne($node->getTypeCondition());
+        $variableDefinitions = $this->printMany($node->getVariableDefinitions());
+        $directives          = $this->printMany($node->getDirectives());
+        $selectionSet        = $this->printOne($node->getSelectionSet());
 
         // Note: fragment variable definitions are experimental and may be changed
         // or removed in the future.
@@ -278,7 +280,7 @@ class Printer implements PrinterInterface
      */
     protected function printListValue(ListValueNode $node): string
     {
-        $values = $this->many($node->getValues());
+        $values = $this->printMany($node->getValues());
         return wrap('[', \implode(', ', $values), ']');
     }
 
@@ -288,19 +290,19 @@ class Printer implements PrinterInterface
      */
     protected function printObjectValue(ObjectValueNode $node): string
     {
-        $fields = $this->many($node->getFields());
+        $fields = $this->printMany($node->getFields());
         return wrap('{', \implode(', ', $fields), '}');
     }
 
     /**
      * @param ObjectFieldNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printObjectField(ObjectFieldNode $node): string
     {
-        $name  = $this->one($node->getName());
-        $value = $this->one($node->getValue());
+        $name  = $this->printOne($node->getName());
+        $value = $this->printOne($node->getValue());
 
         return $name . ': ' . $value;
     }
@@ -310,12 +312,12 @@ class Printer implements PrinterInterface
     /**
      * @param DirectiveNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printDirective(DirectiveNode $node): string
     {
-        $name      = $this->one($node->getName());
-        $arguments = $this->many($node->getArguments());
+        $name      = $this->printOne($node->getName());
+        $arguments = $this->printMany($node->getArguments());
 
         return '@' . $name . wrap('(', \implode(', ', $arguments), ')');
     }
@@ -325,39 +327,39 @@ class Printer implements PrinterInterface
     /**
      * @param NamedTypeNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printNamedType(NamedTypeNode $node): string
     {
-        return $this->one($node->getName());
+        return $this->printOne($node->getName());
     }
 
     /**
      * @param ListTypeNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printListType(ListTypeNode $node): string
     {
-        return wrap('[', $this->one($node->getType()), ']');
+        return wrap('[', $this->printOne($node->getType()), ']');
     }
 
     /**
      * @param NonNullTypeNode $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
     protected function printNonNullType(NonNullTypeNode $node): string
     {
-        return $this->one($node->getType()) . '!';
+        return $this->printOne($node->getType()) . '!';
     }
 
     /**
      * @param NodeInterface|null $node
      * @return string
-     * @throws LanguageException
+     * @throws PrintException
      */
-    protected function one(?NodeInterface $node): string
+    protected function printOne(?NodeInterface $node): string
     {
         return null !== $node ? $this->print($node) : '';
     }
@@ -366,7 +368,7 @@ class Printer implements PrinterInterface
      * @param array $nodes
      * @return array
      */
-    protected function many(array $nodes): array
+    protected function printMany(array $nodes): array
     {
         return \array_map(function ($node) {
             return $this->print($node);

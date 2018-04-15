@@ -7,7 +7,8 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\FieldDefinitionNode;
 
-class Field implements ASTNodeAwareInterface, ArgumentsAwareInterface
+class Field implements FieldInterface, ASTNodeAwareInterface, ArgumentsAwareInterface, DescriptionAwareInterface,
+    DeprecationAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

@@ -12,7 +12,7 @@ class LanguageProvider extends AbstractServiceProvider
     protected $provides = [
         NodeBuilderInterface::class,
         ParserInterface::class,
-        PrinterInterface::class,
+        NodePrinterInterface::class,
     ];
 
     /**
@@ -24,6 +24,6 @@ class LanguageProvider extends AbstractServiceProvider
 
         $this->container->add(ParserInterface::class, Parser::class);
 
-        $this->container->add(PrinterInterface::class, Printer::class, true/* $shared */);
+        $this->container->add(NodePrinterInterface::class, NodePrinter::class, true/* $shared */);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+// TODO: Move this file under the Node namespace
+
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\LanguageException;

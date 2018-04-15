@@ -30,7 +30,8 @@ use function Digia\GraphQL\Util\invariant;
  *       ]
  *     ]);
  */
-class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInterface, ASTNodeAwareInterface
+class InputObjectType implements TypeInterface, NamedTypeInterface, InputTypeInterface, DescriptionAwareInterface,
+    ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
