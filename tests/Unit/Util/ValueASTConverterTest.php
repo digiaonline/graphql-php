@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Util;
 
-use Digia\GraphQL\Error\ResolutionException;
+use Digia\GraphQL\Error\ConversionException;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
@@ -13,6 +13,7 @@ use Digia\GraphQL\Language\Node\ObjectValueNode;
 use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Test\TestCase;
+use Digia\GraphQL\Util\ValueASTConverter;
 use Digia\GraphQL\Util\ValueHelper;
 use function Digia\GraphQL\Type\Int;
 use function Digia\GraphQL\Type\newEnumType;
@@ -21,43 +22,43 @@ use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\String;
 
-class ValueHelperTest extends TestCase
+class ValueASTConverterTest extends TestCase
 {
     /**
-     * @var ValueHelper
+     * @var ValueASTConverter
      */
-    protected $helper;
+    protected $converter;
 
     public function setUp()
     {
-        $this->helper = new ValueHelper();
+        $this->converter = new ValueASTConverter();
     }
 
-    public function testResolveNull()
+    public function testConvertNull()
     {
-        $this->expectException(ResolutionException::class);
+        $this->expectException(ConversionException::class);
         $this->expectExceptionMessage('Node is not defined.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->helper->fromAST(null, String());
+        $this->converter->convert(null, String());
     }
 
-    public function testResolveNonNullWithStringValue()
+    public function testConvertNonNullWithStringValue()
     {
         $node = new StringValueNode('foo', false, null);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->helper->fromAST($node, newNonNull(String())));
+        $this->assertEquals('foo', $this->converter->convert($node, newNonNull(String())));
     }
 
-    public function testResolveNonNullWithNullValue()
+    public function testConvertNonNullWithNullValue()
     {
         $node = new NullValueNode(null);
-        $this->expectException(ResolutionException::class);
-        $this->expectExceptionMessage('Cannot resolve non-null values from null value node');
+        $this->expectException(ConversionException::class);
+        $this->expectExceptionMessage('Cannot convert non-null values from null value node');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(null, $this->helper->fromAST($node, newNonNull(String())));
+        $this->assertEquals(null, $this->converter->convert($node, newNonNull(String())));
     }
 
-    public function testResolveValidListOfStrings()
+    public function testConvertValidListOfStrings()
     {
         $node = new ListValueNode(
             [
@@ -68,10 +69,10 @@ class ValueHelperTest extends TestCase
             null
         );
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->helper->fromAST($node, newList(String())));
+        $this->assertEquals(['A', 'B', 'C'], $this->converter->convert($node, newList(String())));
     }
 
-    public function testResolveListWithMissingVariableValue()
+    public function testConvertListWithMissingVariableValue()
     {
         $node = new ListValueNode(
             [
@@ -84,16 +85,17 @@ class ValueHelperTest extends TestCase
         // Null-able inputs in a variable can be omitted
         $variables = ['$a' => 'A', '$c' => 'C'];
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', null, 'C'], $this->helper->fromAST($node, newList(String()), $variables));
+        $this->assertEquals(['A', null, 'C'], $this->converter->convert($node, newList(String()), $variables));
     }
 
-    public function testResolveValidInputObject()
+    public function testConvertValidInputObject()
     {
         $node = new ObjectValueNode(
             [new ObjectFieldNode(new NameNode('a', null), new IntValueNode(1, null), null)],
             null
         );
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $type = newInputObjectType([
             'name'   => 'InputObject',
             'fields' => [
@@ -102,13 +104,14 @@ class ValueHelperTest extends TestCase
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['a' => 1], $this->helper->fromAST($node, $type));
+        $this->assertEquals(['a' => 1], $this->converter->convert($node, $type));
     }
 
-    public function testResolveInputObjectWithNodeOfInvalidType()
+    public function testConvertInputObjectWithNodeOfInvalidType()
     {
         $node = new StringValueNode(null, false, null);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $type = newInputObjectType([
             'name'   => 'InputObject',
             'fields' => [
@@ -116,19 +119,20 @@ class ValueHelperTest extends TestCase
             ],
         ]);
 
-        $this->expectException(ResolutionException::class);
-        $this->expectExceptionMessage('Input object values can only be resolved form object value nodes.');
+        $this->expectException(ConversionException::class);
+        $this->expectExceptionMessage('Input object values can only be convertd form object value nodes.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->helper->fromAST($node, $type));
+        $this->assertEquals(1, $this->converter->convert($node, $type));
     }
 
-    public function testResolveInputObjectWithMissingNonNullField()
+    public function testConvertInputObjectWithMissingNonNullField()
     {
         $node = new ObjectValueNode(
             [new ObjectFieldNode(new NameNode('a', null), new IntValueNode(1, null), null)],
             null
         );
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $type = newInputObjectType([
             'name'   => 'InputObject',
             'fields' => [
@@ -137,15 +141,16 @@ class ValueHelperTest extends TestCase
             ],
         ]);
 
-        $this->expectException(ResolutionException::class);
-        $this->expectExceptionMessage('Cannot resolve input object value for missing non-null field.');
+        $this->expectException(ConversionException::class);
+        $this->expectExceptionMessage('Cannot convert input object value for missing non-null field.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['a' => 1], $this->helper->fromAST($node, $type));
+        $this->assertEquals(['a' => 1], $this->converter->convert($node, $type));
     }
 
-    public function testResolveEnumWithIntValue()
+    public function testConvertEnumWithIntValue()
     {
         $node = new EnumValueNode('FOO', null);
+        /** @noinspection PhpUnhandledExceptionInspection */
         $type = newEnumType([
             'name'   => 'EnumType',
             'values' => [
@@ -153,50 +158,51 @@ class ValueHelperTest extends TestCase
             ],
         ]);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->helper->fromAST($node, $type));
+        $this->assertEquals(1, $this->converter->convert($node, $type));
     }
 
-    public function testResolveEnumWithNodeOfInvalidType()
+    public function testConvertEnumWithNodeOfInvalidType()
     {
         $node = new StringValueNode(null, false, null);
         $type = newEnumType([
             'name' => 'EnumType',
         ]);
 
-        $this->expectException(ResolutionException::class);
-        $this->expectExceptionMessage('Enum values can only be resolved from enum value nodes.');
+        $this->expectException(ConversionException::class);
+        $this->expectExceptionMessage('Enum values can only be convertd from enum value nodes.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->helper->fromAST($node, $type));
+        $this->assertEquals(1, $this->converter->convert($node, $type));
     }
 
-    public function testResolveEnumWithMissingValue()
+    public function testConvertEnumWithMissingValue()
     {
         $node = new EnumValueNode('FOO', null);
+        /** @noinspection PhpUnhandledExceptionInspection */
         $type = newEnumType([
             'name'   => 'EnumType',
             'values' => [
                 'BAR' => ['value' => 'foo'],
             ],
         ]);
-        $this->expectException(ResolutionException::class);
-        $this->expectExceptionMessage('Cannot resolve enum value for missing value "FOO".');
+        $this->expectException(ConversionException::class);
+        $this->expectExceptionMessage('Cannot convert enum value for missing value "FOO".');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->helper->fromAST($node, $type));
+        $this->assertEquals(1, $this->converter->convert($node, $type));
     }
 
-    public function testResolveValidScalar()
+    public function testConvertValidScalar()
     {
         $node = new StringValueNode('foo', false, null);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->helper->fromAST($node, String()));
+        $this->assertEquals('foo', $this->converter->convert($node, String()));
     }
 
-    public function testResolveInvalidScalar()
+    public function testConvertInvalidScalar()
     {
         $node = new StringValueNode(null, false, null);
 
-        $this->expectException(ResolutionException::class);
+        $this->expectException(ConversionException::class);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->helper->fromAST($node, String()));
+        $this->assertEquals('foo', $this->converter->convert($node, String()));
     }
 }
