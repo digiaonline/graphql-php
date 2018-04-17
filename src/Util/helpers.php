@@ -6,8 +6,9 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 
 /**
  * @param string $name
@@ -79,4 +80,14 @@ function typeFromAST(SchemaInterface $schema, TypeNodeInterface $typeNode): ?Typ
 function valueFromAST(?NodeInterface $node, TypeInterface $type, array $variables = [])
 {
     return GraphQL::make(ValueASTConverter::class)->convert($node, $type, $variables);
+}
+
+/**
+ * @param mixed         $value
+ * @param TypeInterface $type
+ * @return ValueNodeInterface|null
+ */
+function astFromValue($value, TypeInterface $type): ?ValueNodeInterface
+{
+    return GraphQL::make(ValueConverter::class)->convert($value, $type);
 }

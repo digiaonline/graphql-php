@@ -9,6 +9,8 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\TypeNodeInterface;
+use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\SchemaInterface;
@@ -63,11 +65,11 @@ function parse($source, array $options = []): NodeInterface
 /**
  * @param string|Source $source
  * @param array         $options
- * @return NodeInterface|SerializationInterface
+ * @return ValueNodeInterface|SerializationInterface
  * @throws InvariantException
  * @throws SyntaxErrorException
  */
-function parseValue($source, array $options = []): NodeInterface
+function parseValue($source, array $options = []): ValueNodeInterface
 {
     return GraphQL::parseValue($source, $options);
 }
@@ -75,11 +77,11 @@ function parseValue($source, array $options = []): NodeInterface
 /**
  * @param string|Source $source
  * @param array         $options
- * @return NodeInterface|SerializationInterface
+ * @return TypeNodeInterface|SerializationInterface
  * @throws InvariantException
  * @throws SyntaxErrorException
  */
-function parseType($source, array $options = []): NodeInterface
+function parseType($source, array $options = []): TypeNodeInterface
 {
     return GraphQL::parseType($source, $options);
 }

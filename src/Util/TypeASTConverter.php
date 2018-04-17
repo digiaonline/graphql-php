@@ -34,12 +34,12 @@ class TypeASTConverter
         $innerType = null;
 
         if ($typeNode instanceof ListTypeNode) {
-            $innerType = $this->fromAST($schema, $typeNode->getType());
+            $innerType = $this->convert($schema, $typeNode->getType());
             return null !== $innerType ? newList($innerType) : null;
         }
 
         if ($typeNode instanceof NonNullTypeNode) {
-            $innerType = $this->fromAST($schema, $typeNode->getType());
+            $innerType = $this->convert($schema, $typeNode->getType());
             return null !== $innerType ? newNonNull($innerType) : null;
         }
 
