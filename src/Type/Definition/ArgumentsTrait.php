@@ -20,9 +20,9 @@ trait ArgumentsTrait
     protected $arguments;
 
     /**
-     * @return null|string
+     * @return string
      */
-    public abstract function getName(): ?string;
+    public abstract function getName(): string;
 
     /**
      * @return array

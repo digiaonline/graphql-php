@@ -4,20 +4,28 @@ namespace Digia\GraphQL\Schema;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\PrintException;
+use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\DeprecationAwareInterface;
 use Digia\GraphQL\Type\Definition\DescriptionAwareInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
+use Digia\GraphQL\Type\Definition\Field;
+use Digia\GraphQL\Type\Definition\InputField;
 use Digia\GraphQL\Type\Definition\InputObjectType;
+use Digia\GraphQL\Type\Definition\InputValueInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
+use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Type\isIntrospectionType;
 use function Digia\GraphQL\Type\isSpecifiedScalarType;
+use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Util\arrayEvery;
+use function Digia\GraphQL\Util\astFromValue;
 use function Digia\GraphQL\Util\toString;
 
 class DefinitionPrinter implements DefinitionPrinterInterface
@@ -30,6 +38,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     /**
      * @inheritdoc
      * @throws PrintException
+     * @throws InvariantException
      */
     public function printSchema(SchemaInterface $schema, array $options = []): string
     {
@@ -49,6 +58,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     /**
      * @inheritdoc
      * @throws PrintException
+     * @throws InvariantException
      */
     public function printIntrospectionSchema(SchemaInterface $schema, array $options = []): string
     {
@@ -69,6 +79,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      * @param mixed $definition
      * @return string
      * @throws PrintException
+     * @throws InvariantException
      */
     public function print(DefinitionInterface $definition): string
     {
@@ -88,6 +99,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      * @param callable        $typeFilter
      * @return string
      * @throws PrintException
+     * @throws InvariantException
      */
     protected function printFilteredSchema(
         SchemaInterface $schema,
@@ -101,7 +113,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             $this->printMany($this->getSchemaTypes($schema, $typeFilter))
         ));
 
-        return printArray($lines, "\n\n") . "\n";
+        return printArray("\n\n", $lines) . "\n";
     }
 
     /**
@@ -253,7 +265,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
                 return $interface->getName();
             }, $type->getInterfaces()))
             : '';
-        $fields      = $this->printMany($type->getFields());
+        $fields      = $this->printFields($type->getFields());
 
         return printLines([
             $description,
@@ -317,17 +329,111 @@ class DefinitionPrinter implements DefinitionPrinterInterface
 
     protected function printEnumValues(array $values): string
     {
-        return printLines(\array_map(function (EnumValue $value, $i) {
+        return printLines(\array_map(function (EnumValue $value, int $i): string {
             $description = $this->printDescription($value, '  ', 0 === $i);
             $name        = $value->getName();
             $deprecated  = $this->printDeprecated($value);
             return printLines([
-                "  {$description}",
+                $description,
                 "  {$name} {$deprecated}"
             ]);
         }, $values));
     }
 
+    /**
+     * @param InputObjectType $type
+     * @return string
+     * @throws InvariantException
+     */
+    protected function printInputObjectType(InputObjectType $type): string
+    {
+        $description = $this->printDescription($type);
+        $fields      = \array_map(function (InputField $field, int $i): string {
+            $description = $this->printDescription($field, '  ', 0 === $i);
+            $inputValue  = $this->printInputValue($field);
+            return printLines([
+                $description,
+                "  {$inputValue}"
+            ]);
+        }, \array_values($type->getFields()));
+
+        return printLines([
+            $description,
+            "input {$type->getName()} {",
+            $fields,
+            '}'
+        ]);
+    }
+
+    /**
+     * @param InputValueInterface $inputValue
+     * @return string
+     */
+    protected function printInputValue(InputValueInterface $inputValue): string
+    {
+        $type         = $inputValue->getType();
+        $name         = $inputValue->getName();
+        $defaultValue = printNode(astFromValue($inputValue->getDefaultValue(), $type));
+
+        return $inputValue->hasDefaultValue()
+            ? "{$name}: {$type} = {$defaultValue}"
+            : "{$name}: {$type}";
+    }
+
+    /**
+     * @param array $fields
+     * @return string
+     */
+    protected function printFields(array $fields): string
+    {
+        return printLines(\array_map(function (Field $field): string {
+            $description = $this->printDescription($field);
+            $name        = $field->getName();
+            $arguments   = $this->printArguments($field->getArguments());
+            $type        = (string)$field->getType();
+            $deprecated  = $this->printDeprecated($field);
+            return printLines([
+                $description,
+                "  {$name}{$arguments}: {$type}{$deprecated}"
+            ]);
+        }, \array_values($fields)));
+    }
+
+    protected function printArguments(array $arguments, string $indentation = ''): string
+    {
+        if (empty($arguments)) {
+            return '';
+        }
+
+        // If every arg does not have a description, print them on one line.
+        if (arrayEvery($arguments, function (Argument $argument): bool {
+            return !$argument->hasDescription();
+        })) {
+            return printInputFields(\array_map(function (Argument $argument) {
+                return $this->printInputValue($argument);
+            }, $arguments));
+        }
+
+        $args = \array_map(function (Argument $argument) use ($indentation) {
+            $description = $this->printDescription($argument);
+            $inputValue  = $this->printInputValue($argument);
+            return printLines([
+                $description,
+                "  {$indentation}{$inputValue}"
+            ]);
+        }, $arguments);
+
+        return printLines([
+            '(',
+            $args,
+            $indentation . ')'
+        ]);
+    }
+
+    /**
+     * @param DeprecationAwareInterface $fieldOrEnumValue
+     * @return string
+     */
     protected function printDeprecated(DeprecationAwareInterface $fieldOrEnumValue): string
     {
         if (!$fieldOrEnumValue->isDeprecated()) {
@@ -340,7 +446,9 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             return '@deprecated';
         }
 
-        return "@deprecated(reason: {$reason})";
+        $reasonValue = printNode(astFromValue($reason, String()));
+
+        return "@deprecated(reason: {$reasonValue})";
     }
 
     /**
@@ -361,7 +469,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
         $lines      = descriptionLines($type->getDescription(), 120 - \strlen($indentation));
         $linesCount = \count($lines);
 
-        if (isset($this->options['commentDescriptions'])) {
+        if (isset($this->options['commentDescriptions']) && true === $this->options['commentDescriptions']) {
             return $this->printDescriptionWithComments($lines, $indentation, $isFirstInBlock);
         }
 
@@ -413,6 +521,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      * @param DefinitionInterface $definition
      * @return string
      * @throws PrintException
+     * @throws InvariantException
      */
     protected function printOne(DefinitionInterface $definition): string
     {

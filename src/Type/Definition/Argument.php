@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Schema\DefinitionInterface;
 
-class Argument implements DefinitionInterface, ASTNodeAwareInterface, DescriptionAwareInterface
+class Argument implements InputValueInterface, ASTNodeAwareInterface, DescriptionAwareInterface
 {
     use NameTrait;
     use TypeTrait;

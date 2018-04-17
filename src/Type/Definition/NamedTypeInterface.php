@@ -7,5 +7,5 @@ interface NamedTypeInterface
     /**
      * @return string|null
      */
-    public function getName(): ?string;
+    public function getName(): string;
 }

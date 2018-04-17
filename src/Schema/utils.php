@@ -77,6 +77,15 @@ function printLines(array $lines): string
 }
 
 /**
+ * @param array $fields
+ * @return string
+ */
+function printInputFields(array $fields): string
+{
+    return '(' . printArray(', ', $fields) . ')';
+}
+
+/**
  * @param string $glue
  * @param array  $items
  * @return string

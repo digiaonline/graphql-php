@@ -7,7 +7,7 @@ interface AbstractTypeInterface extends TypeInterface
     /**
      * @return string|null
      */
-    public function getName(): ?string;
+    public function getName(): string;
 
     /**
      * @param array ...$args

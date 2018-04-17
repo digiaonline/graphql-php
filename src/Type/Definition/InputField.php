@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 
-class InputField implements FieldInterface, ASTNodeAwareInterface, DescriptionAwareInterface
+class InputField implements InputValueInterface, FieldInterface, ASTNodeAwareInterface, DescriptionAwareInterface
 {
     use NameTrait;
     use TypeTrait;

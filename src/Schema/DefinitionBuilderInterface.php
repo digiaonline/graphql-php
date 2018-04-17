@@ -29,6 +29,8 @@ interface DefinitionBuilderInterface
      */
     public function buildDirective(DirectiveDefinitionNode $node): Directive;
 
+    // TODO: Introduce an interface for FieldDefinitionNode and InputValueDefinitionNode
+
     /**
      * @param FieldDefinitionNode|InputValueDefinitionNode $node
      * @param callable|null                                $resolve

@@ -10,6 +10,14 @@ trait DescriptionTrait
     protected $description;
 
     /**
+     * @return bool
+     */
+    public function hasDescription(): bool
+    {
+        return null !== $this->description;
+    }
+
+    /**
      * @return null|string
      */
     public function getDescription(): ?string

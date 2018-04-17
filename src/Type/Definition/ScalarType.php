@@ -59,7 +59,7 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @return mixed|null
      */
     public function serialize($value)
     {

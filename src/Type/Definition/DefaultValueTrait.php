@@ -10,7 +10,15 @@ trait DefaultValueTrait
     protected $defaultValue;
 
     /**
-     * @return mixed
+     * @return bool
+     */
+    public function hasDefaultValue(): bool
+    {
+        return null !== $this->defaultValue;
+    }
+
+    /**
+     * @return mixed|null
      */
     public function getDefaultValue()
     {

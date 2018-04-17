@@ -75,7 +75,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
      * @return null|string
      * @throws InvariantException
      */
-    public function serialize($value): ?string
+    public function serialize($value)
     {
         $enumValue = $this->getValueByValue($value);
 

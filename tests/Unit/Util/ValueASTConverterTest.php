@@ -120,7 +120,7 @@ class ValueASTConverterTest extends TestCase
         ]);
 
         $this->expectException(ConversionException::class);
-        $this->expectExceptionMessage('Input object values can only be convertd form object value nodes.');
+        $this->expectExceptionMessage('Input object values can only be converted form object value nodes.');
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(1, $this->converter->convert($node, $type));
     }
@@ -169,7 +169,7 @@ class ValueASTConverterTest extends TestCase
         ]);
 
         $this->expectException(ConversionException::class);
-        $this->expectExceptionMessage('Enum values can only be convertd from enum value nodes.');
+        $this->expectExceptionMessage('Enum values can only be converted from enum value nodes.');
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(1, $this->converter->convert($node, $type));
     }
