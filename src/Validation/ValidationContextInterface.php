@@ -8,11 +8,11 @@ use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
 
 interface ValidationContextInterface
 {
@@ -52,9 +52,9 @@ interface ValidationContextInterface
     public function getFieldDefinition(): ?Field;
 
     /**
-     * @return SchemaInterface
+     * @return Schema
      */
-    public function getSchema(): SchemaInterface;
+    public function getSchema(): Schema;
 
     /**
      * @return Argument|null

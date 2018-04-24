@@ -5,17 +5,17 @@ namespace Digia\GraphQL\Execution;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\ArgumentsAwareInterface;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Field;
 
 /**
- * @param SchemaInterface          $schema
+ * @param Schema                   $schema
  * @param VariableDefinitionNode[] $nodes
  * @param array                    $inputs
  * @return array
  */
-function coerceVariableValues(SchemaInterface $schema, array $nodes, array $inputs): CoercedValue
+function coerceVariableValues(Schema $schema, array $nodes, array $inputs): CoercedValue
 {
     return GraphQL::make(ValuesHelper::class)->coerceVariableValues($schema, $nodes, $inputs);
 }

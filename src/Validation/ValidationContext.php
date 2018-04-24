@@ -14,17 +14,17 @@ use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\Visitor;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
 use Digia\GraphQL\Util\TypeInfo;
 
 class ValidationContext implements ValidationContextInterface
 {
     /**
-     * @var SchemaInterface
+     * @var Schema
      */
     protected $schema;
 
@@ -70,11 +70,11 @@ class ValidationContext implements ValidationContextInterface
 
     /**
      * ValidationContext constructor.
-     * @param SchemaInterface $schema
-     * @param DocumentNode    $document
-     * @param TypeInfo        $typeInfo
+     * @param Schema       $schema
+     * @param DocumentNode $document
+     * @param TypeInfo     $typeInfo
      */
-    public function __construct(SchemaInterface $schema, DocumentNode $document, TypeInfo $typeInfo)
+    public function __construct(Schema $schema, DocumentNode $document, TypeInfo $typeInfo)
     {
         $this->schema   = $schema;
         $this->document = $document;
@@ -140,7 +140,7 @@ class ValidationContext implements ValidationContextInterface
     /**
      * @inheritdoc
      */
-    public function getSchema(): SchemaInterface
+    public function getSchema(): Schema
     {
         return $this->schema;
     }

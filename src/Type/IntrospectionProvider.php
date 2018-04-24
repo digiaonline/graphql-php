@@ -6,7 +6,7 @@ use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\ArgumentsAwareInterface;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -70,14 +70,14 @@ class IntrospectionProvider extends AbstractServiceProvider
                         'types'            => [
                             'description' => 'A list of all types supported by this server.',
                             'type'        => newNonNull(newList(newNonNull(__Type()))),
-                            'resolve'     => function (SchemaInterface $schema): array {
+                            'resolve'     => function (Schema $schema): array {
                                 return array_values($schema->getTypeMap());
                             },
                         ],
                         'queryType'        => [
                             'description' => 'The type that query operations will be rooted at.',
                             'type'        => newNonNull(__Type()),
-                            'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
+                            'resolve'     => function (Schema $schema): ?TypeInterface {
                                 return $schema->getQueryType();
                             },
                         ],
@@ -86,7 +86,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                                 'If this server supports mutation, the type that ' .
                                 'mutation operations will be rooted at.',
                             'type'        => __Type(),
-                            'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
+                            'resolve'     => function (Schema $schema): ?TypeInterface {
                                 return $schema->getMutationType();
                             },
                         ],
@@ -95,14 +95,14 @@ class IntrospectionProvider extends AbstractServiceProvider
                                 'If this server support subscription, the type that ' .
                                 'subscription operations will be rooted at.',
                             'type'        => __Type(),
-                            'resolve'     => function (SchemaInterface $schema): ?TypeInterface {
+                            'resolve'     => function (Schema $schema): ?TypeInterface {
                                 return $schema->getSubscriptionType();
                             },
                         ],
                         'directives'       => [
                             'description' => 'A list of all directives supported by this server.',
                             'type'        => newNonNull(newList(newNonNull(__Directive()))),
-                            'resolve'     => function (SchemaInterface $schema): array {
+                            'resolve'     => function (Schema $schema): array {
                                 return $schema->getDirectives();
                             },
                         ],
@@ -293,7 +293,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                                 ResolveInfo $info
                             ):
                             ?array {
-                                /** @var SchemaInterface $schema */
+                                /** @var Schema $schema */
                                 $schema = $info->getSchema();
                                 /** @noinspection PhpParamsInspection */
                                 return $type instanceof AbstractTypeInterface ? $schema->getPossibleTypes($type) : null;
@@ -451,7 +451,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                 'name'        => '__schema',
                 'description' => 'Access the current type schema of this server.',
                 'type'        => newNonNull($__Schema),
-                'resolve'     => function ($source, $args, $context, ResolveInfo $info): SchemaInterface {
+                'resolve'     => function ($source, $args, $context, ResolveInfo $info): Schema {
                     return $info->getSchema();
                 },
             ]);

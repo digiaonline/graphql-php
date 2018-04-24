@@ -2,10 +2,12 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\InterfacesTrait;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\FieldsTrait;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -13,7 +15,6 @@ use Digia\GraphQL\Type\Definition\NameTrait;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Util\suggestionList;
 use function Digia\GraphQL\Validation\undefinedFieldMessage;
 
@@ -66,12 +67,13 @@ class FieldOnCorrectTypeRule extends AbstractRule
      * suggest them, sorted by how often the type is referenced,  starting
      * with Interfaces.
      *
-     * @param SchemaInterface $schema
-     * @param TypeInterface   $type
-     * @param string          $fieldName
+     * @param Schema        $schema
+     * @param TypeInterface $type
+     * @param string        $fieldName
      * @return array
+     * @throws InvariantException
      */
-    protected function getSuggestedTypeNames(SchemaInterface $schema, TypeInterface $type, string $fieldName): array
+    protected function getSuggestedTypeNames(Schema $schema, TypeInterface $type, string $fieldName): array
     {
         if (!$type instanceof AbstractTypeInterface) {
             // Otherwise, must be an Object type, which does not have possible fields.

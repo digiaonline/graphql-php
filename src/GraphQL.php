@@ -20,7 +20,7 @@ use Digia\GraphQL\Schema\Extension\SchemaExtenderInterface;
 use Digia\GraphQL\Schema\Extension\SchemaExtensionProvider;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistry;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Schema\Validation\SchemaValidationProvider;
 use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use Digia\GraphQL\Type\CoercerProvider;
@@ -129,9 +129,9 @@ class GraphQL
      * @param string|Source                   $source
      * @param array|ResolverRegistryInterface $resolverRegistry
      * @param array                           $options
-     * @return SchemaInterface
+     * @return Schema
      */
-    public static function buildSchema($source, $resolverRegistry, array $options = []): SchemaInterface
+    public static function buildSchema($source, $resolverRegistry, array $options = []): Schema
     {
         return static::make(SchemaBuilderInterface::class)
             ->build(
@@ -144,18 +144,18 @@ class GraphQL
     }
 
     /**
-     * @param SchemaInterface                 $schema
+     * @param Schema                 $schema
      * @param string|Source                   $source
      * @param array|ResolverRegistryInterface $resolverRegistry
      * @param array                           $options
-     * @return SchemaInterface
+     * @return Schema
      */
     public static function extendSchema(
-        SchemaInterface $schema,
+        Schema $schema,
         $source,
         $resolverRegistry,
         array $options = []
-    ): SchemaInterface {
+    ): Schema {
         return static::make(SchemaExtenderInterface::class)
             ->extend(
                 $schema,
@@ -168,10 +168,10 @@ class GraphQL
     }
 
     /**
-     * @param SchemaInterface $schema
+     * @param Schema $schema
      * @return array
      */
-    public static function validateSchema(SchemaInterface $schema): array
+    public static function validateSchema(Schema $schema): array
     {
         return static::make(SchemaValidatorInterface::class)->validate($schema);
     }
@@ -208,17 +208,17 @@ class GraphQL
     }
 
     /**
-     * @param SchemaInterface $schema
+     * @param Schema $schema
      * @param DocumentNode    $document
      * @return array
      */
-    public static function validate(SchemaInterface $schema, DocumentNode $document): array
+    public static function validate(Schema $schema, DocumentNode $document): array
     {
         return static::make(ValidatorInterface::class)->validate($schema, $document);
     }
 
     /**
-     * @param SchemaInterface $schema
+     * @param Schema $schema
      * @param DocumentNode    $document
      * @param null            $rootValue
      * @param null            $contextValue
@@ -228,7 +228,7 @@ class GraphQL
      * @return ExecutionResult
      */
     public static function execute(
-        SchemaInterface $schema,
+        Schema $schema,
         DocumentNode $document,
         $rootValue = null,
         $contextValue = null,

@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Schema\Validation;
 
 use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Error\ValidationExceptionInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 
 interface ValidationContextInterface
 {
@@ -19,7 +19,7 @@ interface ValidationContextInterface
     public function getErrors(): array;
 
     /**
-     * @return SchemaInterface
+     * @return Schema
      */
-    public function getSchema(): SchemaInterface;
+    public function getSchema(): Schema;
 }

@@ -15,7 +15,7 @@ use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeExtensionNode;
 use Digia\GraphQL\Schema\DefinitionBuilder;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
@@ -43,11 +43,11 @@ class SchemaExtender implements SchemaExtenderInterface
      * @inheritdoc
      */
     public function extend(
-        SchemaInterface $schema,
+        Schema $schema,
         DocumentNode $document,
         ?ResolverRegistryInterface $resolverRegistry = null,
         array $options = []
-    ): SchemaInterface {
+    ): Schema {
         $context = $this->createContext($schema, $document, $resolverRegistry);
 
         // If this document contains no new types, extensions, or directives then
@@ -70,7 +70,7 @@ class SchemaExtender implements SchemaExtenderInterface
      * @inheritdoc
      */
     public function createContext(
-        SchemaInterface $schema,
+        Schema $schema,
         DocumentNode $document,
         ?ResolverRegistryInterface $resolverRegistry
     ): ExtensionContextInterface {
@@ -91,12 +91,12 @@ class SchemaExtender implements SchemaExtenderInterface
     }
 
     /**
-     * @param SchemaInterface $schema
-     * @param DocumentNode    $document
+     * @param Schema       $schema
+     * @param DocumentNode $document
      * @return ExtendInfo
      * @throws ExtensionException
      */
-    protected function createInfo(SchemaInterface $schema, DocumentNode $document): ExtendInfo
+    protected function createInfo(Schema $schema, DocumentNode $document): ExtendInfo
     {
         $typeDefinitionMap    = [];
         $typeExtensionsMap    = [];

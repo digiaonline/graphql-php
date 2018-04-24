@@ -6,10 +6,9 @@ use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use Digia\GraphQL\Schema\Validation\ValidationContext;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Util\find;
 
 class RootTypesRule extends AbstractRule
@@ -70,13 +69,13 @@ class RootTypesRule extends AbstractRule
     }
 
     /**
-     * @param SchemaInterface          $schema
+     * @param Schema                   $schema
      * @param TypeInterface|ObjectType $type
      * @param string                   $operation
      * @return NodeInterface|null
      */
     protected function getOperationTypeNode(
-        SchemaInterface $schema,
+        Schema $schema,
         TypeInterface $type,
         string $operation
     ): ?NodeInterface {

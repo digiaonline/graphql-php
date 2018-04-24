@@ -7,7 +7,7 @@ use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
 /**
@@ -40,33 +40,33 @@ function isEqualType(TypeInterface $typeA, TypeInterface $typeB): bool
 }
 
 /**
- * @param SchemaInterface $schema
- * @param TypeInterface   $maybeSubtype
- * @param TypeInterface   $superType
+ * @param Schema        $schema
+ * @param TypeInterface $maybeSubtype
+ * @param TypeInterface $superType
  * @return bool
  */
-function isTypeSubtypeOf(SchemaInterface $schema, TypeInterface $maybeSubtype, TypeInterface $superType): bool
+function isTypeSubtypeOf(Schema $schema, TypeInterface $maybeSubtype, TypeInterface $superType): bool
 {
     return GraphQL::make(TypeHelper::class)->isTypeSubtypeOf($schema, $maybeSubtype, $superType);
 }
 
 /**
- * @param SchemaInterface $schema
- * @param TypeInterface   $typeA
- * @param TypeInterface   $typeB
+ * @param Schema        $schema
+ * @param TypeInterface $typeA
+ * @param TypeInterface $typeB
  * @return bool
  */
-function doTypesOverlap(SchemaInterface $schema, TypeInterface $typeA, TypeInterface $typeB): bool
+function doTypesOverlap(Schema $schema, TypeInterface $typeA, TypeInterface $typeB): bool
 {
     return GraphQL::make(TypeHelper::class)->doTypesOverlap($schema, $typeA, $typeB);
 }
 
 /**
- * @param SchemaInterface   $schema
+ * @param Schema            $schema
  * @param TypeNodeInterface $typeNode
  * @return TypeInterface|null
  */
-function typeFromAST(SchemaInterface $schema, TypeNodeInterface $typeNode): ?TypeInterface
+function typeFromAST(Schema $schema, TypeNodeInterface $typeNode): ?TypeInterface
 {
     return GraphQL::make(TypeASTConverter::class)->convert($schema, $typeNode);
 }

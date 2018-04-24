@@ -13,39 +13,39 @@ use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Util\SerializationInterface;
 
 /**
  * @param string|Source                   $source
  * @param array|ResolverRegistryInterface $resolverRegistry
  * @param array                           $options
- * @return SchemaInterface
+ * @return Schema
  * @throws InvariantException
  */
-function buildSchema($source, $resolverRegistry = [], array $options = []): SchemaInterface
+function buildSchema($source, $resolverRegistry = [], array $options = []): Schema
 {
     return GraphQL::buildSchema($source, $resolverRegistry, $options);
 }
 
 /**
- * @param SchemaInterface                 $schema
+ * @param Schema                 $schema
  * @param string|Source                   $source
  * @param array|ResolverRegistryInterface $resolverRegistry
  * @param array                           $options
- * @return SchemaInterface
+ * @return Schema
  * @throws InvariantException
  */
-function extendSchema(SchemaInterface $schema, $source, $resolverRegistry = [], array $options = []): SchemaInterface
+function extendSchema(Schema $schema, $source, $resolverRegistry = [], array $options = []): Schema
 {
     return GraphQL::extendSchema($schema, $source, $resolverRegistry, $options);
 }
 
 /**
- * @param SchemaInterface $schema
+ * @param Schema $schema
  * @return SchemaValidationException[]
  */
-function validateSchema(SchemaInterface $schema): array
+function validateSchema(Schema $schema): array
 {
     return GraphQL::validateSchema($schema);
 }
@@ -87,17 +87,17 @@ function parseType($source, array $options = []): TypeNodeInterface
 }
 
 /**
- * @param SchemaInterface $schema
+ * @param Schema $schema
  * @param DocumentNode    $document
  * @return array|ValidationException[]
  */
-function validate(SchemaInterface $schema, DocumentNode $document): array
+function validate(Schema $schema, DocumentNode $document): array
 {
     return GraphQL::validate($schema, $document);
 }
 
 /**
- * @param SchemaInterface $schema
+ * @param Schema $schema
  * @param DocumentNode    $document
  * @param mixed|null      $rootValue
  * @param mixed|null      $contextValue
@@ -107,7 +107,7 @@ function validate(SchemaInterface $schema, DocumentNode $document): array
  * @return ExecutionResult
  */
 function execute(
-    SchemaInterface $schema,
+    Schema $schema,
     DocumentNode $document,
     $rootValue = null,
     $contextValue = null,
@@ -136,7 +136,7 @@ function printNode(NodeInterface $node): string
 }
 
 /**
- * @param SchemaInterface $schema
+ * @param Schema $schema
  * @param string          $source
  * @param mixed|null      $rootValue
  * @param mixed|null      $contextValue
@@ -147,7 +147,7 @@ function printNode(NodeInterface $node): string
  * @throws InvariantException
  */
 function graphql(
-    SchemaInterface $schema,
+    Schema $schema,
     string $source,
     $rootValue = null,
     $contextValue = null,
