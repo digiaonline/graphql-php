@@ -114,13 +114,13 @@ In practice this means that the query AST is visited by the each rule. Every rul
 
 ### Installation
 
-This library cannot yet be installed through [Composer](https://getcomposer.org/) because it is still being developed. 
-As soon we have the first working version we will list it on [Packagist](https://packagist.org/). In the meanwhile you 
-can clone the project and try it out yourself. 
+Run the following command to install the package through Composer:
+
+```sh
+composer require digiaonline/graphql
+```
 
 ### Example
-
-Please note that the following example cannot be executed yet. However, we plan to include it as soon as it works.
 
 This script demonstrates the public API:
 
@@ -158,8 +158,10 @@ Array
         [hero] => Array
         (
             [name] => "R2-D2"
-        )  
+        )
+        
     )
+    
 )
 ```
 
@@ -200,7 +202,6 @@ type Droid implements Character {
 }
 
 enum Episode { NEWHOPE, EMPIRE, JEDI }
-
 ```
 
 The public API consists of many more functions that can also be used directly. Developers can also choose to not 
@@ -208,7 +209,7 @@ use the functions at all and wire everything together themselves if they prefer.
 
 ## Contributing
 
-TODO
+Please read our [guidelines](.github/CONTRIBUTING.md).
 
 ## License
 
