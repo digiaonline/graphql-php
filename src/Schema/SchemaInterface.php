@@ -9,22 +9,24 @@ use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
+// TODO: Consider removing this interface.
+
 interface SchemaInterface
 {
     /**
-     * @return TypeInterface|ObjectType|null
+     * @return NamedTypeInterface|ObjectType|null
      */
-    public function getQueryType(): ?TypeInterface;
+    public function getQueryType(): ?NamedTypeInterface;
 
     /**
-     * @return TypeInterface|ObjectType|null
+     * @return NamedTypeInterface|ObjectType|null
      */
-    public function getMutationType(): ?TypeInterface;
+    public function getMutationType(): ?NamedTypeInterface;
 
     /**
-     * @return TypeInterface|ObjectType|null
+     * @return NamedTypeInterface|ObjectType|null
      */
-    public function getSubscriptionType(): ?TypeInterface;
+    public function getSubscriptionType(): ?NamedTypeInterface;
 
     /**
      * @param string $name

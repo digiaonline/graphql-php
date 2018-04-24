@@ -11,6 +11,7 @@ use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
@@ -44,29 +45,22 @@ use function Digia\GraphQL\Util\invariant;
  *       'directives' => \array_merge(specifiedDirectives(), [$myCustomDirective]),
  *     ])
  */
-
-/**
- * Class Schema
- *
- * @package Digia\GraphQL\Type
- * @property SchemaDefinitionNode $astNode
- */
-class Schema implements SchemaInterface
+class Schema implements SchemaInterface, DefinitionInterface
 {
     use ASTNodeTrait;
 
     /**
-     * @var TypeInterface|null
+     * @var NamedTypeInterface|null
      */
     protected $queryType;
 
     /**
-     * @var TypeInterface|null
+     * @var NamedTypeInterface|null
      */
     protected $mutationType;
 
     /**
-     * @var TypeInterface|null
+     * @var NamedTypeInterface|null
      */
     protected $subscriptionType;
 
@@ -139,7 +133,7 @@ class Schema implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getQueryType(): ?TypeInterface
+    public function getQueryType(): ?NamedTypeInterface
     {
         return $this->queryType;
     }
@@ -147,7 +141,7 @@ class Schema implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getMutationType(): ?TypeInterface
+    public function getMutationType(): ?NamedTypeInterface
     {
         return $this->mutationType;
     }
@@ -155,7 +149,7 @@ class Schema implements SchemaInterface
     /**
      * @inheritdoc
      */
-    public function getSubscriptionType(): ?TypeInterface
+    public function getSubscriptionType(): ?NamedTypeInterface
     {
         return $this->subscriptionType;
     }

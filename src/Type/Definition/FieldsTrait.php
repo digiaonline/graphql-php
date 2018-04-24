@@ -29,7 +29,7 @@ trait FieldsTrait
     /**
      * @return null|string
      */
-    abstract public function getName(): ?string;
+    abstract public function getName(): string;
 
     /**
      * @param string $fieldName

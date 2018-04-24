@@ -30,6 +30,7 @@
             "./src/Execution/values.php",
             "./src/Language/blockStringValue.php",
             "./src/Language/utils.php",
+            "./src/Schema/utils.php",
             "./src/Type/definition.php",
             "./src/Type/directives.php",
             "./src/Type/introspection.php",

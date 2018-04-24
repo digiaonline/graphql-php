@@ -6,8 +6,10 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
+use Digia\GraphQL\Schema\DefinitionInterface;
 
-class Directive implements ASTNodeAwareInterface, ArgumentsAwareInterface
+class Directive implements DefinitionInterface, ASTNodeAwareInterface, ArgumentsAwareInterface,
+    DescriptionAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

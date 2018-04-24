@@ -12,7 +12,10 @@ class UtilityProvider extends AbstractServiceProvider
     protected $provides = [
         NameHelper::class,
         TypeHelper::class,
+        TypeASTConverter::class,
         ValueHelper::class,
+        ValueASTConverter::class,
+        ValueConverter::class,
     ];
 
     /**
@@ -22,6 +25,9 @@ class UtilityProvider extends AbstractServiceProvider
     {
         $this->container->add(NameHelper::class, NameHelper::class, true/* $shared */);
         $this->container->add(TypeHelper::class, TypeHelper::class, true/* $shared */);
+        $this->container->add(TypeASTConverter::class, TypeASTConverter::class, true/* $shared */);
         $this->container->add(ValueHelper::class, ValueHelper::class, true/* $shared */);
+        $this->container->add(ValueASTConverter::class, ValueASTConverter::class, true/* $shared */);
+        $this->container->add(ValueConverter::class, ValueConverter::class, true/* $shared */);
     }
 }

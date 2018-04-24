@@ -408,7 +408,7 @@ class TypesRule extends AbstractRule
         $includedTypeNames = [];
 
         foreach ($memberTypes as $memberType) {
-            $memberTypeName = $memberType->getName();
+            $memberTypeName = (string)$memberType;
             if (isset($includedTypeNames[$memberTypeName])) {
                 $this->context->reportError(
                     new SchemaValidationException(

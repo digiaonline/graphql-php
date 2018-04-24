@@ -5,8 +5,10 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\EnumValueDefinitionNode;
+use Digia\GraphQL\Schema\DefinitionInterface;
 
-class EnumValue implements ASTNodeAwareInterface
+class EnumValue implements DefinitionInterface, ASTNodeAwareInterface, DescriptionAwareInterface,
+    DeprecationAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

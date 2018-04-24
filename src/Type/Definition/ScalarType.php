@@ -9,7 +9,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 
 class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface, InputTypeInterface,
-    OutputTypeInterface, ASTNodeAwareInterface
+    OutputTypeInterface, ASTNodeAwareInterface, DescriptionAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -59,7 +59,7 @@ class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @return mixed|null
      */
     public function serialize($value)
     {

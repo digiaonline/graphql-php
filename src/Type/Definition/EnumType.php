@@ -35,7 +35,7 @@ use function Digia\GraphQL\Util\toString;
  * will be used as its internal value.
  */
 class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface, LeafTypeInterface,
-    OutputTypeInterface, ASTNodeAwareInterface
+    OutputTypeInterface, DescriptionAwareInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -75,7 +75,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
      * @return null|string
      * @throws InvariantException
      */
-    public function serialize($value): ?string
+    public function serialize($value)
     {
         $enumValue = $this->getValueByValue($value);
 

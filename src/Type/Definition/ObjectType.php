@@ -50,7 +50,7 @@ use function Digia\GraphQL\Util\invariant;
  *     ]);
  */
 class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
-    FieldsAwareInterface, ASTNodeAwareInterface
+    ASTNodeAwareInterface, DescriptionAwareInterface, FieldsAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -120,6 +120,15 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
         return isset($this->isTypeOfCallback)
             ? \call_user_func($this->isTypeOfCallback, $value, $context, $info)
             : false;
+    }
+
+    /**
+     * @return bool
+     * @throws InvariantException
+     */
+    public function hasInterfaces(): bool
+    {
+        return !empty($this->getInterfaces());
     }
 
     /**
