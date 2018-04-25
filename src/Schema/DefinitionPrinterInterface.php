@@ -12,11 +12,11 @@ interface DefinitionPrinterInterface
      *    - commentDescriptions:
      *        Provide true to use preceding comments as the description.
      *
-     * @param SchemaInterface $schema
-     * @param array           $options
+     * @param Schema $schema
+     * @param array  $options
      * @return string
      */
-    public function printSchema(SchemaInterface $schema, array $options = []): string;
+    public function printSchema(Schema $schema, array $options = []): string;
 
     /**
      * Prints an introspection schema.
@@ -26,11 +26,11 @@ interface DefinitionPrinterInterface
      *    - commentDescriptions:
      *        Provide true to use preceding comments as the description.
      *
-     * @param SchemaInterface $schema
-     * @param array           $options
+     * @param Schema $schema
+     * @param array  $options
      * @return string
      */
-    public function printIntrospectionSchema(SchemaInterface $schema, array $options = []): string;
+    public function printIntrospectionSchema(Schema $schema, array $options = []): string;
 
     /**
      * Prints a GraphQL definition.

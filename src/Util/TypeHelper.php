@@ -2,20 +2,13 @@
 
 namespace Digia\GraphQL\Util;
 
-use Digia\GraphQL\Error\InvalidTypeException;
-use Digia\GraphQL\Language\Node\ListTypeNode;
-use Digia\GraphQL\Language\Node\NamedTypeNode;
-use Digia\GraphQL\Language\Node\NonNullTypeNode;
-use Digia\GraphQL\Language\Node\TypeNodeInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use function Digia\GraphQL\Type\newList;
-use function Digia\GraphQL\Type\newNonNull;
-use Digia\GraphQL\Schema\SchemaInterface;
 
 class TypeHelper
 {
@@ -51,13 +44,13 @@ class TypeHelper
      * Provided a type and a super type, return true if the first type is either
      * equal or a subset of the second super type (covariant).
      *
-     * @param SchemaInterface $schema
-     * @param TypeInterface   $maybeSubtype
-     * @param TypeInterface   $superType
+     * @param Schema        $schema
+     * @param TypeInterface $maybeSubtype
+     * @param TypeInterface $superType
      * @return bool
      */
     public function isTypeSubtypeOf(
-        SchemaInterface $schema,
+        Schema $schema,
         TypeInterface $maybeSubtype,
         TypeInterface $superType
     ): bool {
@@ -111,12 +104,12 @@ class TypeHelper
      * This is often used to determine if a fragment of a given type could possibly
      * be visited in a context of another type.
      *
-     * @param SchemaInterface $schema
-     * @param TypeInterface   $typeA
-     * @param TypeInterface   $typeB
+     * @param Schema        $schema
+     * @param TypeInterface $typeA
+     * @param TypeInterface $typeB
      * @return bool
      */
-    public function doTypesOverlap(SchemaInterface $schema, TypeInterface $typeA, TypeInterface $typeB): bool
+    public function doTypesOverlap(Schema $schema, TypeInterface $typeA, TypeInterface $typeB): bool
     {
         // Equivalent types overlap
         if ($typeA === $typeB) {

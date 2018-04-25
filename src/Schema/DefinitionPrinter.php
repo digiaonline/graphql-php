@@ -40,7 +40,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      * @throws PrintException
      * @throws InvariantException
      */
-    public function printSchema(SchemaInterface $schema, array $options = []): string
+    public function printSchema(Schema $schema, array $options = []): string
     {
         $this->options = $options;
 
@@ -60,7 +60,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      * @throws PrintException
      * @throws InvariantException
      */
-    public function printIntrospectionSchema(SchemaInterface $schema, array $options = []): string
+    public function printIntrospectionSchema(Schema $schema, array $options = []): string
     {
         $this->options = $options;
 
@@ -94,7 +94,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     }
 
     /**
-     * @param SchemaInterface $schema
+     * @param Schema $schema
      * @param callable        $directiveFilter
      * @param callable        $typeFilter
      * @return string
@@ -102,7 +102,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      * @throws InvariantException
      */
     protected function printFilteredSchema(
-        SchemaInterface $schema,
+        Schema $schema,
         callable $directiveFilter,
         callable $typeFilter
     ): string {
@@ -117,21 +117,21 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     }
 
     /**
-     * @param SchemaInterface $schema
+     * @param Schema $schema
      * @param callable        $filter
      * @return array
      */
-    protected function getSchemaDirectives(SchemaInterface $schema, callable $filter): array
+    protected function getSchemaDirectives(Schema $schema, callable $filter): array
     {
         return \array_filter($schema->getDirectives(), $filter);
     }
 
     /**
-     * @param SchemaInterface $schema
+     * @param Schema $schema
      * @param callable        $filter
      * @return array
      */
-    protected function getSchemaTypes(SchemaInterface $schema, callable $filter): array
+    protected function getSchemaTypes(Schema $schema, callable $filter): array
     {
         $types = \array_filter(\array_values($schema->getTypeMap()), $filter);
 
@@ -186,10 +186,10 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      *
      * When using this naming convention, the schema description can be omitted.
      *
-     * @param SchemaInterface $schema
+     * @param Schema $schema
      * @return bool
      */
-    protected function isSchemaOfCommonNames(SchemaInterface $schema): bool
+    protected function isSchemaOfCommonNames(Schema $schema): bool
     {
         if (null !== ($queryType = $schema->getQueryType()) &&
             $queryType->getName() !== 'Query') {

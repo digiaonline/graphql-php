@@ -4,10 +4,10 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
 
 class ResolveInfo
 {
@@ -37,7 +37,7 @@ class ResolveInfo
     protected $path;
 
     /**
-     * @var SchemaInterface
+     * @var Schema
      */
     protected $schema;
 
@@ -68,7 +68,7 @@ class ResolveInfo
      * @param TypeInterface           $returnType
      * @param ObjectType              $parentType
      * @param array|null              $path
-     * @param SchemaInterface         $schema
+     * @param Schema         $schema
      * @param array                   $fragments
      * @param mixed                   $rootValue
      * @param OperationDefinitionNode $operation
@@ -80,7 +80,7 @@ class ResolveInfo
         TypeInterface $returnType,
         ObjectType $parentType,
         ?array $path,
-        SchemaInterface $schema,
+        Schema $schema,
         array $fragments,
         $rootValue,
         OperationDefinitionNode $operation,
@@ -140,9 +140,9 @@ class ResolveInfo
     }
 
     /**
-     * @return SchemaInterface
+     * @return Schema
      */
-    public function getSchema(): SchemaInterface
+    public function getSchema(): Schema
     {
         return $this->schema;
     }

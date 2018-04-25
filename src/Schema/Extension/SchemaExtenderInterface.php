@@ -4,32 +4,32 @@ namespace Digia\GraphQL\Schema\Extension;
 
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 
 interface SchemaExtenderInterface
 {
     /**
-     * @param SchemaInterface                $schema
+     * @param Schema                         $schema
      * @param DocumentNode                   $document
      * @param ResolverRegistryInterface|null $resolverRegistry
      * @param array                          $options
-     * @return SchemaInterface
+     * @return Schema
      */
     public function extend(
-        SchemaInterface $schema,
+        Schema $schema,
         DocumentNode $document,
         ?ResolverRegistryInterface $resolverRegistry = null,
         array $options = []
-    ): SchemaInterface;
+    ): Schema;
 
     /**
-     * @param SchemaInterface                $schema
+     * @param Schema                         $schema
      * @param DocumentNode                   $document
      * @param ResolverRegistryInterface|null $resolverRegistry
      * @return ExtensionContextInterface
      */
     public function createContext(
-        SchemaInterface $schema,
+        Schema $schema,
         DocumentNode $document,
         ?ResolverRegistryInterface $resolverRegistry
     ): ExtensionContextInterface;

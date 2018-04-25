@@ -45,7 +45,7 @@ use function Digia\GraphQL\Util\invariant;
  *       'directives' => \array_merge(specifiedDirectives(), [$myCustomDirective]),
  *     ])
  */
-class Schema implements SchemaInterface, DefinitionInterface
+class Schema implements DefinitionInterface
 {
     use ASTNodeTrait;
 

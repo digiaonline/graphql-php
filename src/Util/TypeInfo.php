@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Util;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Language\Node\FieldNode;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -14,7 +15,6 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
@@ -22,7 +22,7 @@ use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
 class TypeInfo
 {
     /**
-     * @var SchemaInterface
+     * @var Schema
      */
     protected $schema;
 
@@ -68,18 +68,18 @@ class TypeInfo
 
     /**
      * TypeInfo constructor.
-     * @param SchemaInterface $schema
-     * @param callable|null   $getFieldDefinitionFunction
+     * @param Schema        $schema
+     * @param callable|null $getFieldDefinitionFunction
      */
     public function __construct(
-        SchemaInterface $schema,
+        Schema $schema,
         ?callable $getFieldDefinitionFunction = null,
         ?TypeInterface $initialType = null
     ) {
         $this->schema                     = $schema;
         $this->getFieldDefinitionFunction = null !== $getFieldDefinitionFunction
             ? $getFieldDefinitionFunction
-            : function (SchemaInterface $schema, TypeInterface $parentType, FieldNode $fieldNode) {
+            : function (Schema $schema, TypeInterface $parentType, FieldNode $fieldNode) {
                 return getFieldDefinition($schema, $parentType, $fieldNode);
             };
 
@@ -93,13 +93,13 @@ class TypeInfo
     }
 
     /**
-     * @param SchemaInterface $schema
-     * @param TypeInterface   $parentType
-     * @param FieldNode       $fieldNode
+     * @param Schema        $schema
+     * @param TypeInterface $parentType
+     * @param FieldNode     $fieldNode
      * @return Field|null
      */
     public function resolveFieldDefinition(
-        SchemaInterface $schema,
+        Schema $schema,
         TypeInterface $parentType,
         FieldNode $fieldNode
     ): ?Field {
@@ -211,9 +211,9 @@ class TypeInfo
     }
 
     /**
-     * @return SchemaInterface
+     * @return Schema
      */
-    public function getSchema(): SchemaInterface
+    public function getSchema(): Schema
     {
         return $this->schema;
     }
@@ -279,13 +279,13 @@ class TypeInfo
 }
 
 /**
- * @param SchemaInterface $schema
- * @param TypeInterface   $parentType
- * @param FieldNode       $fieldNode
+ * @param Schema        $schema
+ * @param TypeInterface $parentType
+ * @param FieldNode     $fieldNode
  * @return Field|null
  * @throws InvalidTypeException
  */
-function getFieldDefinition(SchemaInterface $schema, TypeInterface $parentType, FieldNode $fieldNode): ?Field
+function getFieldDefinition(Schema $schema, TypeInterface $parentType, FieldNode $fieldNode): ?Field
 {
     $name = $fieldNode->getNameValue();
 

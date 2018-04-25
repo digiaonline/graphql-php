@@ -2,13 +2,13 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation;
 
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Schema\SchemaInterface;
 use function Digia\GraphQL\Type\Boolean;
 use function Digia\GraphQL\Type\newDirective;
 use function Digia\GraphQL\Type\newEnumType;
@@ -417,9 +417,9 @@ function QueryRoot(): ObjectType
 }
 
 /**
- * @return SchemaInterface
+ * @return Schema
  */
-function testSchema(): SchemaInterface
+function testSchema(): Schema
 {
     return newSchema([
         'query'      => QueryRoot(),

@@ -7,12 +7,12 @@ use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 
 class ExtendInfo
 {
     /**
-     * @var SchemaInterface
+     * @var Schema
      */
     protected $schema;
 
@@ -38,14 +38,14 @@ class ExtendInfo
 
     /**
      * ExtensionInfo constructor.
-     * @param SchemaInterface                                            $schema
+     * @param Schema                                                     $schema
      * @param DocumentNode                                               $document
      * @param TypeDefinitionNodeInterface[]                              $typeDefinitionMap
      * @param InterfaceTypeExtensionNode[][]|ObjectTypeExtensionNode[][] $typeExtensionsMap
      * @param DirectiveDefinitionNode[]                                  $directiveDefinitions
      */
     public function __construct(
-        SchemaInterface $schema,
+        Schema $schema,
         DocumentNode $document,
         array $typeDefinitionMap,
         array $typeExtensionsMap,
@@ -77,9 +77,9 @@ class ExtendInfo
     }
 
     /**
-     * @return SchemaInterface
+     * @return Schema
      */
-    public function getSchema(): SchemaInterface
+    public function getSchema(): Schema
     {
         return $this->schema;
     }

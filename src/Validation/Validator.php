@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Validation;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
-use Digia\GraphQL\Schema\SchemaInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use Digia\GraphQL\Validation\Rule\RuleInterface;
@@ -32,7 +32,7 @@ class Validator implements ValidatorInterface
      * @inheritdoc
      */
     public function validate(
-        SchemaInterface $schema,
+        Schema $schema,
         DocumentNode $document,
         ?array $rules = null,
         ?TypeInfo $typeInfo = null
@@ -59,13 +59,13 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param SchemaInterface $schema
-     * @param DocumentNode    $document
-     * @param TypeInfo        $typeInfo
+     * @param Schema       $schema
+     * @param DocumentNode $document
+     * @param TypeInfo     $typeInfo
      * @return ValidationContextInterface
      */
     public function createContext(
-        SchemaInterface $schema,
+        Schema $schema,
         DocumentNode $document,
         TypeInfo $typeInfo
     ): ValidationContextInterface {
