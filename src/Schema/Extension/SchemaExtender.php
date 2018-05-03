@@ -48,7 +48,7 @@ class SchemaExtender implements SchemaExtenderInterface
         ?ResolverRegistryInterface $resolverRegistry = null,
         array $options = []
     ): Schema {
-        $context = $this->createContext($schema, $document, $resolverRegistry);
+        $context = $this->createContext($schema, $document, $resolverRegistry, $options);
 
         // If this document contains no new types, extensions, or directives then
         // return the same unmodified GraphQLSchema instance.
@@ -69,10 +69,11 @@ class SchemaExtender implements SchemaExtenderInterface
     /**
      * @inheritdoc
      */
-    public function createContext(
+    protected function createContext(
         Schema $schema,
         DocumentNode $document,
-        ?ResolverRegistryInterface $resolverRegistry
+        ?ResolverRegistryInterface $resolverRegistry,
+        array $options
     ): ExtensionContextInterface {
         $info = $this->createInfo($schema, $document);
 
@@ -83,6 +84,8 @@ class SchemaExtender implements SchemaExtenderInterface
         $definitionBuilder = new DefinitionBuilder(
             $info->getTypeDefinitionMap(),
             $resolverRegistry,
+            $options['types'] ?? [],
+            $options['directives'] ?? [],
             [$context, 'resolveType'],
             $this->cache
         );

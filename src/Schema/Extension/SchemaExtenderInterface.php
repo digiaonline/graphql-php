@@ -21,16 +21,4 @@ interface SchemaExtenderInterface
         ?ResolverRegistryInterface $resolverRegistry = null,
         array $options = []
     ): Schema;
-
-    /**
-     * @param Schema                         $schema
-     * @param DocumentNode                   $document
-     * @param ResolverRegistryInterface|null $resolverRegistry
-     * @return ExtensionContextInterface
-     */
-    public function createContext(
-        Schema $schema,
-        DocumentNode $document,
-        ?ResolverRegistryInterface $resolverRegistry
-    ): ExtensionContextInterface;
 }

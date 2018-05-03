@@ -19,14 +19,4 @@ interface SchemaBuilderInterface
         ResolverRegistryInterface $resolverRegistry,
         array $options = []
     ): Schema;
-
-    /**
-     * @param DocumentNode              $document
-     * @param ResolverRegistryInterface $resolverRegistry
-     * @return BuildingContextInterface
-     */
-    public function createContext(
-        DocumentNode $document,
-        ResolverRegistryInterface $resolverRegistry
-    ): BuildingContextInterface;
 }

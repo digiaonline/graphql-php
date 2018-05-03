@@ -60,6 +60,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     private const CACHE_PREFIX = 'GraphQL_DefinitionBuilder_';
 
+    private const TYPE_CACHE_SUFFIX      = '_Type';
+    private const DIRECTIVE_CACHE_SUFFIX = '_Directive';
+
     /**
      * @var array
      */
@@ -86,6 +89,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     public function __construct(
         array $typeDefinitionsMap,
         ?ResolverRegistryInterface $resolverRegistry = null,
+        array $customTypes = [],
+        array $customDirectives = [],
         ?callable $resolveTypeFunction = null,
         CacheInterface $cache
     ) {
@@ -94,16 +99,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
         $this->cache               = $cache;
 
-        $builtInTypes = keyMap(
-            \array_merge(specifiedScalarTypes(), introspectionTypes()),
-            function (NamedTypeInterface $type) {
-                return $type->getName();
-            }
-        );
-
-        foreach ($builtInTypes as $name => $type) {
-            $this->setInCache($name, $type);
-        }
+        $this->registerTypes($customTypes);
+        $this->registerDirectives($customDirectives);
     }
 
     /**
@@ -120,23 +117,25 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @inheritdoc
      * @param NamedTypeNode|TypeDefinitionNodeInterface $node
      */
-    public function buildType(NodeInterface $node): TypeInterface
+    public function buildType(NodeInterface $node): NamedTypeInterface
     {
         $typeName = $node->getNameValue();
 
-        if (!$this->isInCache($typeName)) {
+        if (!$this->isTypeInCache($typeName)) {
             if ($node instanceof NamedTypeNode) {
                 $definition = $this->getTypeDefinition($typeName);
 
-                $type = null !== $definition ? $this->buildNamedType($definition) : $this->resolveType($node);
+                $type = null !== $definition
+                    ? $this->buildNamedType($definition)
+                    : $this->resolveType($node);
 
-                $this->setInCache($typeName, $type);
+                $this->setTypeInCache($typeName, $type);
             } else {
-                $this->setInCache($typeName, $this->buildNamedType($node));
+                $this->setTypeInCache($typeName, $this->buildNamedType($node));
             }
         }
 
-        return $this->getFromCache($typeName);
+        return $this->getTypeFromCache($typeName);
     }
 
     /**
@@ -144,15 +143,23 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     public function buildDirective(DirectiveDefinitionNode $node): Directive
     {
-        return newDirective([
-            'name'        => $node->getNameValue(),
-            'description' => $node->getDescriptionValue(),
-            'locations'   => \array_map(function (NameNode $node) {
-                return $node->getValue();
-            }, $node->getLocations()),
-            'args'        => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
-            'astNode'     => $node,
-        ]);
+        $directiveName = $node->getNameValue();
+
+        if (!$this->isDirectiveInCache($directiveName)) {
+            $directive = newDirective([
+                'name'        => $node->getNameValue(),
+                'description' => $node->getDescriptionValue(),
+                'locations'   => \array_map(function (NameNode $node) {
+                    return $node->getValue();
+                }, $node->getLocations()),
+                'args'        => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
+                'astNode'     => $node,
+            ]);
+
+            $this->setDirectiveInCache($directiveName, $directive);
+        }
+
+        return $this->getDirectiveFromCache($directiveName);
     }
 
     /**
@@ -179,7 +186,66 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected function buildWrappedType(TypeNodeInterface $typeNode): TypeInterface
     {
         $typeDefinition = $this->buildType($this->getNamedTypeNode($typeNode));
-        return buildWrappedType($typeDefinition, $typeNode);
+        return $this->buildWrappedTypeRecursive($typeDefinition, $typeNode);
+    }
+
+    /**
+     * @param TypeInterface      $innerType
+     * @param NamedTypeInterface $inputTypeNode
+     * @return TypeInterface
+     * @throws InvariantException
+     * @throws InvalidTypeException
+     */
+    protected function buildWrappedTypeRecursive(
+        NamedTypeInterface $innerType,
+        TypeNodeInterface $inputTypeNode
+    ): TypeInterface {
+        if ($inputTypeNode instanceof ListTypeNode) {
+            return newList($this->buildWrappedTypeRecursive($innerType, $inputTypeNode->getType()));
+        }
+
+        if ($inputTypeNode instanceof NonNullTypeNode) {
+            $wrappedType = $this->buildWrappedTypeRecursive($innerType, $inputTypeNode->getType());
+            return newNonNull(assertNullableType($wrappedType));
+        }
+
+        return $innerType;
+    }
+
+    /**
+     * @param array $types
+     * @throws InvalidArgumentException
+     */
+    protected function registerTypes(array $customDirectives)
+    {
+        $typesMap = keyMap(
+            \array_merge($customDirectives, specifiedScalarTypes(), introspectionTypes()),
+            function (NamedTypeInterface $type) {
+                return $type->getName();
+            }
+        );
+
+        foreach ($typesMap as $typeName => $type) {
+            $this->setTypeInCache($typeName, $type);
+        }
+    }
+
+    /**
+     * @param array $directives
+     * @throws InvalidArgumentException
+     */
+    protected function registerDirectives(array $customDirectives)
+    {
+        $directivesMap = keyMap(
+            \array_merge($customDirectives, specifiedDirectives()),
+            function (Directive $directive) {
+                return $directive->getName();
+            }
+        );
+
+        foreach ($directivesMap as $directiveName => $directive) {
+            $this->setDirectiveInCache($directiveName, $directive);
+        }
     }
 
     /**
@@ -275,7 +341,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             },
             function ($value) use ($node) {
                 /** @var FieldDefinitionNode|InputValueDefinitionNode $value */
-                return $this->buildField($value, $this->getFieldResolver($node->getNameValue(), $value->getNameValue()));
+                return $this->buildField($value,
+                    $this->getFieldResolver($node->getNameValue(), $value->getNameValue()));
             }
         );
     }
@@ -413,9 +480,10 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @inheritdoc
+     * @param NamedTypeNode $node
+     * @return NamedTypeInterface
      */
-    protected function resolveType(NamedTypeNode $node): ?NamedTypeInterface
+    protected function resolveType(NamedTypeNode $node): NamedTypeInterface
     {
         return \call_user_func($this->resolveTypeFunction, $node);
     }
@@ -423,7 +491,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param NamedTypeNode $node
      * @return NamedTypeInterface|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function defaultTypeResolver(NamedTypeNode $node): ?NamedTypeInterface
     {
@@ -468,31 +536,90 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
+     * @param string $typeName
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    protected function isTypeInCache(string $typeName): bool
+    {
+        return $this->isInCache($this->createTypeCacheKey($typeName));
+    }
+
+    /**
+     * @param string $typeName
+     * @return NamedTypeInterface
+     * @throws InvalidArgumentException
+     */
+    protected function getTypeFromCache(string $typeName): NamedTypeInterface
+    {
+        return $this->getFromCache($this->createTypeCacheKey($typeName));
+    }
+
+    /**
+     * @param string             $typeName
+     * @param NamedTypeInterface $type
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    protected function setTypeInCache(string $typeName, NamedTypeInterface $type): bool
+    {
+        return $this->setInCache($this->createTypeCacheKey($typeName), $type);
+    }
+
+    /**
+     * @param string $typeName
+     * @return string
+     */
+    protected function createTypeCacheKey(string $typeName): string
+    {
+        return $typeName . self::TYPE_CACHE_SUFFIX;
+    }
+
+    /**
+     * @param string $directiveName
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    protected function isDirectiveInCache(string $directiveName): bool
+    {
+        return $this->isInCache($this->createDirectiveCacheKey($directiveName));
+    }
+
+    /**
+     * @param string $directiveName
+     * @return Directive
+     * @throws InvalidArgumentException
+     */
+    protected function getDirectiveFromCache(string $directiveName): Directive
+    {
+        return $this->getFromCache($this->createDirectiveCacheKey($directiveName));
+    }
+
+    /**
+     * @param string    $directiveName
+     * @param Directive $directive
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    protected function setDirectiveInCache(string $directiveName, Directive $directive): bool
+    {
+        return $this->setInCache($this->createDirectiveCacheKey($directiveName), $directive);
+    }
+
+    /**
+     * @param string $directiveName
+     * @return string
+     */
+    protected function createDirectiveCacheKey(string $directiveName): string
+    {
+        return $directiveName . self::DIRECTIVE_CACHE_SUFFIX;
+    }
+
+    /**
      * @return string
      */
     protected function getCachePrefix(): string
     {
         return self::CACHE_PREFIX;
     }
-}
-
-/**
- * @param TypeInterface                        $innerType
- * @param NamedTypeInterface|TypeNodeInterface $inputTypeNode
- * @return TypeInterface
- * @throws InvariantException
- * @throws InvalidTypeException
- */
-function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputTypeNode): TypeInterface
-{
-    if ($inputTypeNode instanceof ListTypeNode) {
-        return newList(buildWrappedType($innerType, $inputTypeNode->getType()));
-    }
-
-    if ($inputTypeNode instanceof NonNullTypeNode) {
-        $wrappedType = buildWrappedType($innerType, $inputTypeNode->getType());
-        return newNonNull(assertNullableType($wrappedType));
-    }
-
-    return $innerType;
 }
