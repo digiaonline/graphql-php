@@ -56,13 +56,6 @@ use function Digia\GraphQL\Util\valueFromAST;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
-    use CacheAwareTrait;
-
-    private const CACHE_PREFIX = 'GraphQL_DefinitionBuilder_';
-
-    private const TYPE_CACHE_SUFFIX      = '_Type';
-    private const DIRECTIVE_CACHE_SUFFIX = '_Directive';
-
     /**
      * @var array
      */
@@ -79,6 +72,16 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected $resolveTypeFunction;
 
     /**
+     * @var NamedTypeInterface[]
+     */
+    protected $types;
+
+    /**
+     * @var Directive[]
+     */
+    protected $directives;
+
+    /**
      * DefinitionBuilder constructor.
      * @param array                          $typeDefinitionsMap
      * @param ResolverRegistryInterface|null $resolverRegistry
@@ -89,18 +92,16 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     public function __construct(
         array $typeDefinitionsMap,
         ?ResolverRegistryInterface $resolverRegistry = null,
-        array $customTypes = [],
-        array $customDirectives = [],
-        ?callable $resolveTypeFunction = null,
-        CacheInterface $cache
+        array $types = [],
+        array $directives = [],
+        ?callable $resolveTypeFunction = null
     ) {
         $this->typeDefinitionsMap  = $typeDefinitionsMap;
         $this->resolverRegistry    = $resolverRegistry;
         $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
-        $this->cache               = $cache;
 
-        $this->registerTypes($customTypes);
-        $this->registerDirectives($customDirectives);
+        $this->registerTypes($types);
+        $this->registerDirectives($directives);
     }
 
     /**
@@ -121,21 +122,21 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     {
         $typeName = $node->getNameValue();
 
-        if (!$this->isTypeInCache($typeName)) {
-            if ($node instanceof NamedTypeNode) {
-                $definition = $this->getTypeDefinition($typeName);
-
-                $type = null !== $definition
-                    ? $this->buildNamedType($definition)
-                    : $this->resolveType($node);
-
-                $this->setTypeInCache($typeName, $type);
-            } else {
-                $this->setTypeInCache($typeName, $this->buildNamedType($node));
-            }
+        if (isset($this->types[$typeName])) {
+            return $this->types[$typeName];
         }
 
-        return $this->getTypeFromCache($typeName);
+        if ($node instanceof NamedTypeNode) {
+            $definition = $this->getTypeDefinition($typeName);
+
+            $type = null !== $definition
+                ? $this->buildNamedType($definition)
+                : $this->resolveType($node);
+        } else {
+            $type = $this->buildNamedType($node);
+        }
+
+        return $this->types[$typeName] = $type;
     }
 
     /**
@@ -145,21 +146,21 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     {
         $directiveName = $node->getNameValue();
 
-        if (!$this->isDirectiveInCache($directiveName)) {
-            $directive = newDirective([
-                'name'        => $node->getNameValue(),
-                'description' => $node->getDescriptionValue(),
-                'locations'   => \array_map(function (NameNode $node) {
-                    return $node->getValue();
-                }, $node->getLocations()),
-                'args'        => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
-                'astNode'     => $node,
-            ]);
-
-            $this->setDirectiveInCache($directiveName, $directive);
+        if (isset($this->directives[$directiveName])) {
+            return $this->directives[$directiveName];
         }
 
-        return $this->getDirectiveFromCache($directiveName);
+        $directive = newDirective([
+            'name'        => $node->getNameValue(),
+            'description' => $node->getDescriptionValue(),
+            'locations'   => \array_map(function (NameNode $node) {
+                return $node->getValue();
+            }, $node->getLocations()),
+            'args'        => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
+            'astNode'     => $node,
+        ]);
+
+        return $this->directives[$directiveName] = $directive;
     }
 
     /**
@@ -216,17 +217,17 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @param array $types
      * @throws InvalidArgumentException
      */
-    protected function registerTypes(array $customDirectives)
+    protected function registerTypes(array $customTypes)
     {
         $typesMap = keyMap(
-            \array_merge($customDirectives, specifiedScalarTypes(), introspectionTypes()),
+            \array_merge($customTypes, specifiedScalarTypes(), introspectionTypes()),
             function (NamedTypeInterface $type) {
                 return $type->getName();
             }
         );
 
         foreach ($typesMap as $typeName => $type) {
-            $this->setTypeInCache($typeName, $type);
+            $this->types[$typeName] = $type;
         }
     }
 
@@ -244,7 +245,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         );
 
         foreach ($directivesMap as $directiveName => $directive) {
-            $this->setDirectiveInCache($directiveName, $directive);
+            $this->directives[$directiveName] = $directive;
         }
     }
 
@@ -495,7 +496,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     public function defaultTypeResolver(NamedTypeNode $node): ?NamedTypeInterface
     {
-        return $this->getFromCache($node->getNameValue()) ?? null;
+        return $this->types[$node->getNameValue()] ?? null;
     }
 
     /**
@@ -533,93 +534,5 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     {
         $deprecated = coerceDirectiveValues(DeprecatedDirective(), $node);
         return $deprecated['reason'] ?? null;
-    }
-
-    /**
-     * @param string $typeName
-     * @return bool
-     * @throws InvalidArgumentException
-     */
-    protected function isTypeInCache(string $typeName): bool
-    {
-        return $this->isInCache($this->createTypeCacheKey($typeName));
-    }
-
-    /**
-     * @param string $typeName
-     * @return NamedTypeInterface
-     * @throws InvalidArgumentException
-     */
-    protected function getTypeFromCache(string $typeName): NamedTypeInterface
-    {
-        return $this->getFromCache($this->createTypeCacheKey($typeName));
-    }
-
-    /**
-     * @param string             $typeName
-     * @param NamedTypeInterface $type
-     * @return bool
-     * @throws InvalidArgumentException
-     */
-    protected function setTypeInCache(string $typeName, NamedTypeInterface $type): bool
-    {
-        return $this->setInCache($this->createTypeCacheKey($typeName), $type);
-    }
-
-    /**
-     * @param string $typeName
-     * @return string
-     */
-    protected function createTypeCacheKey(string $typeName): string
-    {
-        return $typeName . self::TYPE_CACHE_SUFFIX;
-    }
-
-    /**
-     * @param string $directiveName
-     * @return bool
-     * @throws InvalidArgumentException
-     */
-    protected function isDirectiveInCache(string $directiveName): bool
-    {
-        return $this->isInCache($this->createDirectiveCacheKey($directiveName));
-    }
-
-    /**
-     * @param string $directiveName
-     * @return Directive
-     * @throws InvalidArgumentException
-     */
-    protected function getDirectiveFromCache(string $directiveName): Directive
-    {
-        return $this->getFromCache($this->createDirectiveCacheKey($directiveName));
-    }
-
-    /**
-     * @param string    $directiveName
-     * @param Directive $directive
-     * @return bool
-     * @throws InvalidArgumentException
-     */
-    protected function setDirectiveInCache(string $directiveName, Directive $directive): bool
-    {
-        return $this->setInCache($this->createDirectiveCacheKey($directiveName), $directive);
-    }
-
-    /**
-     * @param string $directiveName
-     * @return string
-     */
-    protected function createDirectiveCacheKey(string $directiveName): string
-    {
-        return $directiveName . self::DIRECTIVE_CACHE_SUFFIX;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getCachePrefix(): string
-    {
-        return self::CACHE_PREFIX;
     }
 }

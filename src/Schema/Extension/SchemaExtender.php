@@ -26,20 +26,6 @@ use function Digia\GraphQL\Util\toString;
 class SchemaExtender implements SchemaExtenderInterface
 {
     /**
-     * @var CacheInterface
-     */
-    protected $cache;
-
-    /**
-     * BuilderContextCreator constructor.
-     * @param CacheInterface $cache
-     */
-    public function __construct(CacheInterface $cache)
-    {
-        $this->cache = $cache;
-    }
-
-    /**
      * @inheritdoc
      */
     public function extend(
@@ -86,8 +72,7 @@ class SchemaExtender implements SchemaExtenderInterface
             $resolverRegistry,
             $options['types'] ?? [],
             $options['directives'] ?? [],
-            [$context, 'resolveType'],
-            $this->cache
+            [$context, 'resolveType']
         );
 
         return $context->setDefinitionBuilder($definitionBuilder);

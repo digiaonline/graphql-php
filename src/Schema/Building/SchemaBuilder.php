@@ -19,20 +19,6 @@ use Psr\SimpleCache\InvalidArgumentException;
 class SchemaBuilder implements SchemaBuilderInterface
 {
     /**
-     * @var CacheInterface
-     */
-    protected $cache;
-
-    /**
-     * BuilderContextCreator constructor.
-     * @param CacheInterface $cache
-     */
-    public function __construct(CacheInterface $cache)
-    {
-        $this->cache = $cache;
-    }
-
-    /**
      * @inheritdoc
      */
     public function build(
@@ -73,8 +59,7 @@ class SchemaBuilder implements SchemaBuilderInterface
             $resolverRegistry,
             $options['types'] ?? [],
             $options['directives'] ?? [],
-            null, // use the default resolveType-function
-            $this->cache
+            null // use the default resolveType-function
         );
 
         return new BuildingContext($resolverRegistry, $definitionBuilder, $info);
