@@ -4,28 +4,13 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\FragmentSpreadNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
 
-/**
- * Class Execution
- * @package Digia\GraphQL\Execution
- */
 class Execution implements ExecutionInterface
 {
-    /**
-     * @var ExecutionContextBuilder
-     */
-    protected $contextBuilder;
-
-    /**
-     * Execution constructor.
-     * @param $contextBuilder
-     */
-    public function __construct(ExecutionContextBuilder $contextBuilder)
-    {
-        $this->contextBuilder = $contextBuilder;
-    }
-
     /**
      * @param Schema        $schema
      * @param DocumentNode  $documentNode
@@ -47,7 +32,7 @@ class Execution implements ExecutionInterface
         callable $fieldResolver = null
     ): ExecutionResult {
         try {
-            $context = $this->contextBuilder->buildContext(
+            $context = $this->createContext(
                 $schema,
                 $documentNode,
                 $rootValue,
@@ -65,8 +50,93 @@ class Execution implements ExecutionInterface
             return new ExecutionResult(null, [$error]);
         }
 
-        $data = $context->createExecutor()->execute();
+        $data   = $context->createExecutor()->execute();
+        $errors = $context->getErrors();
 
-        return new ExecutionResult($data, $context->getErrors());
+        return new ExecutionResult($data, $errors);
+    }
+
+    /**
+     * @param Schema        $schema
+     * @param DocumentNode  $documentNode
+     * @param               $rootValue
+     * @param               $contextValue
+     * @param               $rawVariableValues
+     * @param null          $operationName
+     * @param callable|null $fieldResolver
+     * @return ExecutionContext
+     * @throws ExecutionException
+     * @throws \Exception
+     */
+    protected function createContext(
+        Schema $schema,
+        DocumentNode $documentNode,
+        $rootValue,
+        $contextValue,
+        $rawVariableValues,
+        $operationName = null,
+        callable $fieldResolver = null
+    ): ExecutionContext {
+        $errors    = [];
+        $fragments = [];
+        $operation = null;
+
+        foreach ($documentNode->getDefinitions() as $definition) {
+            if ($definition instanceof OperationDefinitionNode) {
+                if (!$operationName && $operation) {
+                    throw new ExecutionException(
+                        'Must provide operation name if query contains multiple operations.'
+                    );
+                }
+
+                if (!$operationName || $definition->getNameValue() === $operationName) {
+                    $operation = $definition;
+                }
+
+                continue;
+            }
+
+            if ($definition instanceof FragmentDefinitionNode || $definition instanceof FragmentSpreadNode) {
+                $fragments[$definition->getNameValue()] = $definition;
+
+                continue;
+            }
+        }
+
+        if (null === $operation) {
+            if (null !== $operationName) {
+                throw new ExecutionException(sprintf('Unknown operation named "%s".', $operationName));
+            }
+
+            throw new ExecutionException('Must provide an operation.');
+        }
+
+        $variableValues = [];
+
+        /** @var OperationDefinitionNode $operation */
+        if (null !== $operation) {
+            $coercedVariableValues = coerceVariableValues(
+                $schema,
+                $operation->getVariableDefinitions(),
+                $rawVariableValues
+            );
+
+            $variableValues = $coercedVariableValues->getValue();
+
+            if ($coercedVariableValues->hasErrors()) {
+                $errors = $coercedVariableValues->getErrors();
+            }
+        }
+
+        return new ExecutionContext(
+            $schema,
+            $fragments,
+            $rootValue,
+            $contextValue,
+            $variableValues,
+            $fieldResolver,
+            $operation,
+            $errors
+        );
     }
 }
