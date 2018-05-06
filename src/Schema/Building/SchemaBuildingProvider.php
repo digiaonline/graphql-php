@@ -19,7 +19,6 @@ class SchemaBuildingProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class)
-            ->withArgument(CacheInterface::class);
+        $this->container->add(SchemaBuilderInterface::class, SchemaBuilder::class);
     }
 }

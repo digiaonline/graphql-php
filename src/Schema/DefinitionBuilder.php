@@ -56,10 +56,6 @@ use function Digia\GraphQL\Util\valueFromAST;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
-    use CacheAwareTrait;
-
-    private const CACHE_PREFIX = 'GraphQL_DefinitionBuilder_';
-
     /**
      * @var array
      */
@@ -76,6 +72,16 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected $resolveTypeFunction;
 
     /**
+     * @var NamedTypeInterface[]
+     */
+    protected $types;
+
+    /**
+     * @var Directive[]
+     */
+    protected $directives;
+
+    /**
      * DefinitionBuilder constructor.
      * @param array                          $typeDefinitionsMap
      * @param ResolverRegistryInterface|null $resolverRegistry
@@ -86,24 +92,16 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     public function __construct(
         array $typeDefinitionsMap,
         ?ResolverRegistryInterface $resolverRegistry = null,
-        ?callable $resolveTypeFunction = null,
-        CacheInterface $cache
+        array $types = [],
+        array $directives = [],
+        ?callable $resolveTypeFunction = null
     ) {
         $this->typeDefinitionsMap  = $typeDefinitionsMap;
         $this->resolverRegistry    = $resolverRegistry;
         $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
-        $this->cache               = $cache;
 
-        $builtInTypes = keyMap(
-            \array_merge(specifiedScalarTypes(), introspectionTypes()),
-            function (NamedTypeInterface $type) {
-                return $type->getName();
-            }
-        );
-
-        foreach ($builtInTypes as $name => $type) {
-            $this->setInCache($name, $type);
-        }
+        $this->registerTypes($types);
+        $this->registerDirectives($directives);
     }
 
     /**
@@ -120,23 +118,25 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @inheritdoc
      * @param NamedTypeNode|TypeDefinitionNodeInterface $node
      */
-    public function buildType(NodeInterface $node): TypeInterface
+    public function buildType(NodeInterface $node): NamedTypeInterface
     {
         $typeName = $node->getNameValue();
 
-        if (!$this->isInCache($typeName)) {
-            if ($node instanceof NamedTypeNode) {
-                $definition = $this->getTypeDefinition($typeName);
-
-                $type = null !== $definition ? $this->buildNamedType($definition) : $this->resolveType($node);
-
-                $this->setInCache($typeName, $type);
-            } else {
-                $this->setInCache($typeName, $this->buildNamedType($node));
-            }
+        if (isset($this->types[$typeName])) {
+            return $this->types[$typeName];
         }
 
-        return $this->getFromCache($typeName);
+        if ($node instanceof NamedTypeNode) {
+            $definition = $this->getTypeDefinition($typeName);
+
+            $type = null !== $definition
+                ? $this->buildNamedType($definition)
+                : $this->resolveType($node);
+        } else {
+            $type = $this->buildNamedType($node);
+        }
+
+        return $this->types[$typeName] = $type;
     }
 
     /**
@@ -144,7 +144,13 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     public function buildDirective(DirectiveDefinitionNode $node): Directive
     {
-        return newDirective([
+        $directiveName = $node->getNameValue();
+
+        if (isset($this->directives[$directiveName])) {
+            return $this->directives[$directiveName];
+        }
+
+        $directive = newDirective([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'locations'   => \array_map(function (NameNode $node) {
@@ -153,6 +159,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             'args'        => $node->hasArguments() ? $this->buildArguments($node->getArguments()) : [],
             'astNode'     => $node,
         ]);
+
+        return $this->directives[$directiveName] = $directive;
     }
 
     /**
@@ -179,7 +187,66 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected function buildWrappedType(TypeNodeInterface $typeNode): TypeInterface
     {
         $typeDefinition = $this->buildType($this->getNamedTypeNode($typeNode));
-        return buildWrappedType($typeDefinition, $typeNode);
+        return $this->buildWrappedTypeRecursive($typeDefinition, $typeNode);
+    }
+
+    /**
+     * @param TypeInterface      $innerType
+     * @param NamedTypeInterface $inputTypeNode
+     * @return TypeInterface
+     * @throws InvariantException
+     * @throws InvalidTypeException
+     */
+    protected function buildWrappedTypeRecursive(
+        NamedTypeInterface $innerType,
+        TypeNodeInterface $inputTypeNode
+    ): TypeInterface {
+        if ($inputTypeNode instanceof ListTypeNode) {
+            return newList($this->buildWrappedTypeRecursive($innerType, $inputTypeNode->getType()));
+        }
+
+        if ($inputTypeNode instanceof NonNullTypeNode) {
+            $wrappedType = $this->buildWrappedTypeRecursive($innerType, $inputTypeNode->getType());
+            return newNonNull(assertNullableType($wrappedType));
+        }
+
+        return $innerType;
+    }
+
+    /**
+     * @param array $types
+     * @throws InvalidArgumentException
+     */
+    protected function registerTypes(array $customTypes)
+    {
+        $typesMap = keyMap(
+            \array_merge($customTypes, specifiedScalarTypes(), introspectionTypes()),
+            function (NamedTypeInterface $type) {
+                return $type->getName();
+            }
+        );
+
+        foreach ($typesMap as $typeName => $type) {
+            $this->types[$typeName] = $type;
+        }
+    }
+
+    /**
+     * @param array $directives
+     * @throws InvalidArgumentException
+     */
+    protected function registerDirectives(array $customDirectives)
+    {
+        $directivesMap = keyMap(
+            \array_merge($customDirectives, specifiedDirectives()),
+            function (Directive $directive) {
+                return $directive->getName();
+            }
+        );
+
+        foreach ($directivesMap as $directiveName => $directive) {
+            $this->directives[$directiveName] = $directive;
+        }
     }
 
     /**
@@ -275,7 +342,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             },
             function ($value) use ($node) {
                 /** @var FieldDefinitionNode|InputValueDefinitionNode $value */
-                return $this->buildField($value, $this->getFieldResolver($node->getNameValue(), $value->getNameValue()));
+                return $this->buildField($value,
+                    $this->getFieldResolver($node->getNameValue(), $value->getNameValue()));
             }
         );
     }
@@ -413,9 +481,10 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @inheritdoc
+     * @param NamedTypeNode $node
+     * @return NamedTypeInterface
      */
-    protected function resolveType(NamedTypeNode $node): ?NamedTypeInterface
+    protected function resolveType(NamedTypeNode $node): NamedTypeInterface
     {
         return \call_user_func($this->resolveTypeFunction, $node);
     }
@@ -423,11 +492,11 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param NamedTypeNode $node
      * @return NamedTypeInterface|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function defaultTypeResolver(NamedTypeNode $node): ?NamedTypeInterface
     {
-        return $this->getFromCache($node->getNameValue()) ?? null;
+        return $this->types[$node->getNameValue()] ?? null;
     }
 
     /**
@@ -466,33 +535,4 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         $deprecated = coerceDirectiveValues(DeprecatedDirective(), $node);
         return $deprecated['reason'] ?? null;
     }
-
-    /**
-     * @return string
-     */
-    protected function getCachePrefix(): string
-    {
-        return self::CACHE_PREFIX;
-    }
-}
-
-/**
- * @param TypeInterface                        $innerType
- * @param NamedTypeInterface|TypeNodeInterface $inputTypeNode
- * @return TypeInterface
- * @throws InvariantException
- * @throws InvalidTypeException
- */
-function buildWrappedType(TypeInterface $innerType, TypeNodeInterface $inputTypeNode): TypeInterface
-{
-    if ($inputTypeNode instanceof ListTypeNode) {
-        return newList(buildWrappedType($innerType, $inputTypeNode->getType()));
-    }
-
-    if ($inputTypeNode instanceof NonNullTypeNode) {
-        $wrappedType = buildWrappedType($innerType, $inputTypeNode->getType());
-        return newNonNull(assertNullableType($wrappedType));
-    }
-
-    return $innerType;
 }

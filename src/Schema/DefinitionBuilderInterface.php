@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\FieldDefinitionNode;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
 interface DefinitionBuilderInterface
@@ -19,9 +20,9 @@ interface DefinitionBuilderInterface
 
     /**
      * @param NodeInterface $node
-     * @return TypeInterface
+     * @return NamedTypeInterface
      */
-    public function buildType(NodeInterface $node): TypeInterface;
+    public function buildType(NodeInterface $node): NamedTypeInterface;
 
     /**
      * @param DirectiveDefinitionNode $node

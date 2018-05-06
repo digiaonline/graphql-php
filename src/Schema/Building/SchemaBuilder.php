@@ -14,23 +14,10 @@ use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\Schema;
 use Psr\SimpleCache\CacheInterface;
 use function Digia\GraphQL\Type\newSchema;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class SchemaBuilder implements SchemaBuilderInterface
 {
-    /**
-     * @var CacheInterface
-     */
-    protected $cache;
-
-    /**
-     * BuilderContextCreator constructor.
-     * @param CacheInterface $cache
-     */
-    public function __construct(CacheInterface $cache)
-    {
-        $this->cache = $cache;
-    }
-
     /**
      * @inheritdoc
      */
@@ -39,7 +26,7 @@ class SchemaBuilder implements SchemaBuilderInterface
         ResolverRegistryInterface $resolverRegistry,
         array $options = []
     ): Schema {
-        $context = $this->createContext($document, $resolverRegistry);
+        $context = $this->createContext($document, $resolverRegistry, $options);
 
         return newSchema([
             'query'        => $context->buildQueryType(),
@@ -53,26 +40,34 @@ class SchemaBuilder implements SchemaBuilderInterface
     }
 
     /**
-     * @inheritdoc
+     * @param DocumentNode              $document
+     * @param ResolverRegistryInterface $resolverRegistry
+     * @param array $options
+     * @return BuildingContextInterface
+     * @throws BuildingException
+     * @throws InvalidArgumentException
      */
-    public function createContext(
+    protected function createContext(
         DocumentNode $document,
-        ResolverRegistryInterface $resolverRegistry
+        ResolverRegistryInterface $resolverRegistry,
+        array $options
     ): BuildingContextInterface {
         $info = $this->createInfo($document);
 
         $definitionBuilder = new DefinitionBuilder(
             $info->getTypeDefinitionMap(),
             $resolverRegistry,
-            null, // use the default resolveType-function
-            $this->cache
+            $options['types'] ?? [],
+            $options['directives'] ?? [],
+            null // use the default resolveType-function
         );
 
         return new BuildingContext($resolverRegistry, $definitionBuilder, $info);
     }
 
     /**
-     * @inheritdoc
+     * @param DocumentNode $document
+     * @return BuildInfo
      * @throws BuildingException
      */
     protected function createInfo(DocumentNode $document): BuildInfo

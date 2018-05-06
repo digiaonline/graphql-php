@@ -19,7 +19,6 @@ class SchemaExtensionProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(SchemaExtenderInterface::class, SchemaExtender::class)
-            ->withArgument(CacheInterface::class);
+        $this->container->add(SchemaExtenderInterface::class, SchemaExtender::class);
     }
 }
