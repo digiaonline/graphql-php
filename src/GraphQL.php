@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL;
 
-use Digia\GraphQL\Cache\CacheProvider;
 use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionProvider;
 use Digia\GraphQL\Execution\ExecutionResult;
@@ -63,7 +62,6 @@ class GraphQL
      * @var array
      */
     private static $providers = [
-        CacheProvider::class,
         LanguageProvider::class,
         SchemaBuildingProvider::class,
         SchemaExtensionProvider::class,

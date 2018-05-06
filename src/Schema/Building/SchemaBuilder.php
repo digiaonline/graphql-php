@@ -12,9 +12,8 @@ use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Schema\DefinitionBuilder;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\Schema;
-use Psr\SimpleCache\CacheInterface;
-use function Digia\GraphQL\Type\newSchema;
 use Psr\SimpleCache\InvalidArgumentException;
+use function Digia\GraphQL\Type\newSchema;
 
 class SchemaBuilder implements SchemaBuilderInterface
 {
@@ -42,7 +41,7 @@ class SchemaBuilder implements SchemaBuilderInterface
     /**
      * @param DocumentNode              $document
      * @param ResolverRegistryInterface $resolverRegistry
-     * @param array $options
+     * @param array                     $options
      * @return BuildingContextInterface
      * @throws BuildingException
      * @throws InvalidArgumentException

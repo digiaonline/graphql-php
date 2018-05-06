@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Schema;
 
-use Digia\GraphQL\Cache\CacheAwareTrait;
 use Digia\GraphQL\Error\CoercingException;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
