@@ -13,10 +13,6 @@ use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use function Digia\GraphQL\Util\typeFromAST;
 
-/**
- * Class FieldCollector
- * @package Digia\GraphQL\Execution
- */
 class FieldCollector
 {
     /**
@@ -54,6 +50,7 @@ class FieldCollector
             if (!$this->shouldIncludeNode($selection)) {
                 continue;
             }
+
             // Collect fields
             if ($selection instanceof FieldNode) {
                 $fieldName = $selection->getAliasOrNameValue();
@@ -63,13 +60,21 @@ class FieldCollector
                 }
 
                 $fields[$fieldName][] = $selection;
-            } elseif ($selection instanceof InlineFragmentNode) {
+
+                continue;
+            }
+
+            if ($selection instanceof InlineFragmentNode) {
                 if (!$this->doesFragmentConditionMatch($selection, $runtimeType)) {
                     continue;
                 }
 
                 $this->collectFields($runtimeType, $selection->getSelectionSet(), $fields, $visitedFragmentNames);
-            } elseif ($selection instanceof FragmentSpreadNode) {
+
+                continue;
+            }
+
+            if ($selection instanceof FragmentSpreadNode) {
                 $fragmentName = $selection->getNameValue();
 
                 if (!empty($visitedFragmentNames[$fragmentName])) {
@@ -80,6 +85,8 @@ class FieldCollector
                 /** @var FragmentDefinitionNode $fragment */
                 $fragment = $this->context->getFragments()[$fragmentName];
                 $this->collectFields($runtimeType, $fragment->getSelectionSet(), $fields, $visitedFragmentNames);
+
+                continue;
             }
         }
 
@@ -102,6 +109,7 @@ class FieldCollector
 
         $include = coerceDirectiveValues(IncludeDirective(), $node, $contextVariables);
 
+        /** @noinspection IfReturnReturnSimplificationInspection */
         if ($include && $include['if'] === false) {
             return false;
         }
@@ -110,24 +118,21 @@ class FieldCollector
     }
 
     /**
-     * @param FragmentDefinitionNode|InlineFragmentNode $fragment
-     * @param ObjectType                                $type
+     * @param FragmentDefinitionNode|InlineFragmentNode|NodeInterface $fragment
+     * @param ObjectType                                              $type
      * @return bool
-     * @throws InvalidTypeException
      */
-    protected function doesFragmentConditionMatch(
-        NodeInterface $fragment,
-        ObjectType $type
-    ): bool {
+    protected function doesFragmentConditionMatch(NodeInterface $fragment, ObjectType $type): bool
+    {
         $typeConditionNode = $fragment->getTypeCondition();
 
-        if (!$typeConditionNode) {
+        if (null === $typeConditionNode) {
             return true;
         }
 
         $conditionalType = typeFromAST($this->context->getSchema(), $typeConditionNode);
 
-        if ($conditionalType === $type) {
+        if ($type === $conditionalType) {
             return true;
         }
 
