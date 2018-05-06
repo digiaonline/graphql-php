@@ -2,7 +2,9 @@
 
 namespace Digia\GraphQL\Execution;
 
+use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
@@ -36,8 +38,8 @@ class FieldCollector
      * @param array            $visitedFragmentNames
      * @return array
      * @throws InvalidTypeException
-     * @throws \Digia\GraphQL\Error\ExecutionException
-     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws ExecutionException
+     * @throws InvariantException
      */
     public function collectFields(
         ObjectType $runtimeType,

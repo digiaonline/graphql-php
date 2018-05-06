@@ -17,7 +17,7 @@ class Execution implements ExecutionInterface
      * @param object|array  $rootValue
      * @param null          $contextValue
      * @param array         $variableValues
-     * @param null          $operationName
+     * @param null|string   $operationName
      * @param callable|null $fieldResolver
      * @return ExecutionResult
      * @throws \Throwable
@@ -50,7 +50,7 @@ class Execution implements ExecutionInterface
             return new ExecutionResult(null, [$error]);
         }
 
-        $data   = $context->createExecutor()->execute();
+        $data   = $this->createExecutor($context)->execute();
         $errors = $context->getErrors();
 
         return new ExecutionResult($data, $errors);
@@ -138,5 +138,14 @@ class Execution implements ExecutionInterface
             $operation,
             $errors
         );
+    }
+
+    /**
+     * @param ExecutionContext $context
+     * @return Executor
+     */
+    protected function createExecutor(ExecutionContext $context): Executor
+    {
+        return new Executor($context, new FieldCollector($context));
     }
 }

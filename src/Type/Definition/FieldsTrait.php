@@ -34,7 +34,6 @@ trait FieldsTrait
     /**
      * @param string $fieldName
      * @return Field|null
-     * @throws InvariantException
      */
     public function getField(string $fieldName): ?Field
     {
@@ -43,7 +42,6 @@ trait FieldsTrait
 
     /**
      * @return Field[]
-     * @throws InvariantException
      */
     public function getFields(): array
     {

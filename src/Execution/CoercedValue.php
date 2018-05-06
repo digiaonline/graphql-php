@@ -4,10 +4,6 @@ namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\GraphQLException;
 
-/**
- * Class CoercedValue
- * @package Digia\GraphQL\Execution
- */
 class CoercedValue
 {
     /**

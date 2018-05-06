@@ -131,7 +131,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return NamedTypeInterface|null
      */
     public function getQueryType(): ?NamedTypeInterface
     {
@@ -139,7 +139,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return NamedTypeInterface|null
      */
     public function getMutationType(): ?NamedTypeInterface
     {
@@ -147,7 +147,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return NamedTypeInterface|null
      */
     public function getSubscriptionType(): ?NamedTypeInterface
     {
@@ -155,7 +155,8 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $name
+     * @return Directive|null
      */
     public function getDirective(string $name): ?Directive
     {
@@ -165,7 +166,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return array
      */
     public function getDirectives(): array
     {
@@ -173,7 +174,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return array
      */
     public function getTypeMap(): array
     {
@@ -181,7 +182,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return bool
      */
     public function getAssumeValid(): bool
     {
@@ -189,7 +190,9 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @param AbstractTypeInterface $abstractType
+     * @param TypeInterface         $possibleType
+     * @return bool
      * @throws InvariantException
      */
     public function isPossibleType(AbstractTypeInterface $abstractType, TypeInterface $possibleType): bool
@@ -227,7 +230,8 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @param AbstractTypeInterface $abstractType
+     * @return NamedTypeInterface[]|null
      * @throws InvariantException
      */
     public function getPossibleTypes(AbstractTypeInterface $abstractType): ?array
@@ -240,7 +244,8 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $name
+     * @return TypeInterface|null
      */
     public function getType(string $name): ?TypeInterface
     {
