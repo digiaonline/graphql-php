@@ -12,36 +12,36 @@ class ExecutionResult implements SerializationInterface
     use ArrayToJsonTrait;
 
     /**
+     * @var array|null
+     */
+    protected $data;
+
+    /**
      * @var ExecutionException[]
      */
     protected $errors;
 
     /**
-     * @var mixed[]|null
-     */
-    protected $data;
-
-    /**
      * ExecutionResult constructor.
-     * @param mixed[]              $data
+     * @param array|null           $data
      * @param ExecutionException[] $errors
      */
     public function __construct(?array $data, array $errors)
     {
-        $this->errors = $errors;
         $this->data   = $data;
+        $this->errors = $errors;
     }
 
     /**
-     * @return array|mixed[]
+     * @return array|null
      */
-    public function getData()
+    public function getData(): ?array
     {
         return $this->data;
     }
 
     /**
-     * @return array|ExecutionException[]
+     * @return ExecutionException[]
      */
     public function getErrors(): array
     {
@@ -66,7 +66,7 @@ class ExecutionResult implements SerializationInterface
         $array = ['data' => $this->data];
 
         if (!empty($this->errors)) {
-            $array['errors'] = array_map(function (GraphQLException $error) {
+            $array['errors'] = \array_map(function (GraphQLException $error) {
                 return $error->toArray();
             }, $this->errors);
         }
