@@ -1,10 +1,10 @@
 <?php
 
-namespace Digia\GraphQL\Test;
+namespace Digia\GraphQL\Test\Functional;
 
+use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Test\Functional\starWarsSchema;
 
 class QueryTest extends TestCase
 {
