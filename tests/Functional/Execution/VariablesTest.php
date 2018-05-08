@@ -26,13 +26,11 @@ class VariablesTest extends TestCase
     private $schema;
 
 
-    /**
-     * @throws \Digia\GraphQL\Error\InvalidTypeException
-     */
     protected function setUp()
     {
         parent::setUp();
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestComplexScalar = newScalarType([
             'name'         => 'ComplexScalar',
             'serialize'    => function ($value) {
@@ -55,6 +53,7 @@ class VariablesTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestInputObject = newInputObjectType([
             'name'   => 'TestInputObject',
             'fields' => [
@@ -65,6 +64,7 @@ class VariablesTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestNestedInputObject = newInputObjectType([
             'name'   => 'TestNestedInputObject',
             'fields' => [
@@ -73,6 +73,7 @@ class VariablesTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestType = newObjectType([
             'name'   => 'TestType',
             'fields' => [
@@ -104,6 +105,7 @@ class VariablesTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->schema = newSchema([
             'query' => $TestType
         ]);
@@ -1226,6 +1228,63 @@ class VariablesTest extends TestCase
                     'path'      => ['fieldWithDefaultArgumentValue']
                 ]
             ],
+        ], $result->toArray());
+    }
+
+    public function testCustomDateTimeScalarType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $dateType = newScalarType([
+            'name'         => 'Date',
+            'serialize'    => function (\DateTime $value) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                return $value->format('Y-m-d');
+            },
+            'parseValue' => function ($node) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                return new \DateTime($node->getValue(), new \DateTimeZone('Europe/Helsinki'));
+            },
+            'parseLiteral' => function ($node) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                return new \DateTime($node->getValue(), new \DateTimeZone('Europe/Helsinki'));
+            },
+        ]);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $TestInputObject = newInputObjectType([
+            'name'   => 'TestInputObject',
+            'fields' => [
+                'a' => ['type' => String()],
+                'b' => ['type' => newList(String())],
+                'c' => ['type' => newNonNull(String())],
+                'd' => ['type' => $dateType]
+            ]
+        ]);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $TestType = newObjectType([
+            'name'   => 'TestType',
+            'fields' => [
+                'fieldWithObjectInput' => $this->fieldWithInputArg(['type' => $TestInputObject]),
+            ]
+        ]);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = newSchema([
+            'query' => $TestType
+        ]);
+
+        $query = '{
+            fieldWithObjectInput(input: {c: "foo", d: "2018-01-01"})
+        }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $result = execute($schema, parse($query));
+
+        $this->assertEquals([
+            'data' => [
+                'fieldWithObjectInput' => '{"c":"foo","d":{"date":"2018-01-01 00:00:00.000000","timezone_type":3,"timezone":"Europe\/Helsinki"}}'
+            ]
         ], $result->toArray());
     }
 }

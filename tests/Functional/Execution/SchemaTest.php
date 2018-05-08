@@ -8,9 +8,11 @@ use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\Boolean;
 use function Digia\GraphQL\Type\ID;
 use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\newInputObjectType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
+use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newSchema;
 use function Digia\GraphQL\Type\String;
 
@@ -26,7 +28,7 @@ class SchemaTest extends TestCase
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
-    public function testExecutesUsingAschema()
+    public function testExecutesUsingASchema()
     {
         $BlogImage = newObjectType([
             'name'   => 'Image',
@@ -84,7 +86,7 @@ class SchemaTest extends TestCase
                         return $article($args['id']);
                     }
                 ],
-                'feed'   => [
+                'feed'    => [
                     'type'    => newList($BlogArticle),
                     'resolve' => function ($root, $args) use (&$article) {
                         return [
@@ -240,6 +242,107 @@ class SchemaTest extends TestCase
                             'keywords'    => ['foo', 'bar', '1', 'true', null],
                         ],
                     ]
+                ]
+            ]
+        ], $result->toArray());
+    }
+
+
+    public function testExecuteUsingASchemaWithCustomScalarType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $dateType = newScalarType([
+            'name'         => 'Date',
+            'serialize'    => function (\DateTime $value) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                return $value->format('d.m.Y');
+            },
+            'parseValue'   => function ($value) {
+                return new \DateTime($value);
+            },
+            'parseLiteral' => function ($node) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                return new \DateTime($node->getValue(), new \DateTimeZone('Europe/Helsinki'));
+            },
+        ]);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $TestInputObject = newInputObjectType([
+            'name'   => 'TestInputObject',
+            'fields' => [
+                'c' => ['type' => newNonNull(String())],
+                'd' => ['type' => $dateType]
+            ]
+        ]);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $blogArticle = newObjectType([
+            'name'   => 'Article',
+            'fields' => [
+                'id'        => ['type' => newNonNull(String())],
+                'title'     => ['type' => String()],
+                'body'      => ['type' => String()],
+                'createdAt' => ['type' => $dateType],
+            ]
+        ]);
+
+        $article = function ($id, $date) {
+            return [
+                'id'        => $id,
+                'title'     => 'My Article ' . $id,
+                'body'      => 'This is a post',
+                'createdAt' => $date,
+            ];
+        };
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $TestType = newObjectType([
+            'name'   => 'TestType',
+            'fields' => [
+                'articles' => [
+                    'type'    => newList($blogArticle),
+                    'args'    => [
+                        'input' => ['type' => $TestInputObject]
+                    ],
+                    'resolve' => function ($root, $args) use (&$article) {
+                        return [
+                            $article(1, new \DateTime('2018-04-30')),
+                            $article(2, new \DateTime('2018-05-01'))
+                        ];
+                    }
+                ]
+            ]
+        ]);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = newSchema([
+            'query' => $TestType
+        ]);
+
+        $query = '{
+            articles(input: {c:"foo",d: "2018-01-01"}) {
+                id
+                title
+                createdAt
+            }
+        }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $result = execute($schema, parse($query));
+
+        $this->assertEquals([
+            'data' => [
+                'articles' => [
+                    [
+                        'id'        => '1',
+                        'title'     => 'My Article 1',
+                        'createdAt' => "30.04.2018"
+                    ],
+                    [
+                        'id'        => '2',
+                        'title'     => 'My Article 2',
+                        'createdAt' => "01.05.2018"
+                    ],
                 ]
             ]
         ], $result->toArray());

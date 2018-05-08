@@ -14,6 +14,7 @@ class ResolveTest extends TestCase
 
     protected function createTestSchema($testField)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
