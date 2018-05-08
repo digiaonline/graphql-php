@@ -11,8 +11,8 @@ class ListTypeNode extends AbstractNode implements TypeNodeInterface
     /**
      * FloatValueNode constructor.
      *
-     * @param mixed         $value
-     * @param Location|null $location
+     * @param TypeNodeInterface $type
+     * @param Location|null     $location
      */
     public function __construct(TypeNodeInterface $type, ?Location $location)
     {

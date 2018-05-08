@@ -14,14 +14,14 @@ class Path
     protected $previous;
 
     /**
-     * @var string|mixed
+     * @var mixed
      */
     protected $key;
 
     /**
      * Path constructor.
      * @param Path|null $previous
-     * @param           $key
+     * @param mixed     $key
      */
     public function __construct(?Path $previous, $key)
     {
@@ -38,7 +38,7 @@ class Path
     }
 
     /**
-     * @return mixed|string
+     * @return mixed
      */
     public function getKey()
     {

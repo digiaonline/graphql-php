@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Type;
 
-use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
@@ -30,8 +29,8 @@ use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
 /**
- * @param $maybeThunk
- * @return mixed
+ * @param callable|array|null $maybeThunk
+ * @return null|array
  */
 function resolveThunk($maybeThunk)
 {
@@ -55,7 +54,7 @@ function isAssocArray($value): bool
 }
 
 /**
- * @param $type
+ * @param mixed $type
  * @throws InvariantException
  */
 function assertType($type)

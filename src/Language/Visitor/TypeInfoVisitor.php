@@ -42,9 +42,8 @@ class TypeInfoVisitor implements VisitorInterface
 
     /**
      * TypeInfoVisitor constructor.
-     * @param TypeInfo      $typeInfo
-     * @param callable|null $enterFunction
-     * @param callable|null $leaveFunction
+     * @param TypeInfo         $typeInfo
+     * @param VisitorInterface $visitor
      */
     public function __construct(TypeInfo $typeInfo, VisitorInterface $visitor)
     {

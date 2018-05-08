@@ -28,8 +28,8 @@ class Map
 
 
     /**
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param mixed  $value
      */
     public function set($key, $value): void
     {
@@ -38,7 +38,7 @@ class Map
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return mixed|null
      */
     public function get($key)
@@ -53,7 +53,7 @@ class Map
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return bool
      */
     public function has($key): bool
@@ -62,7 +62,7 @@ class Map
     }
 
     /**
-     * @param $key
+     * @param string $key
      */
     public function delete($key): void
     {

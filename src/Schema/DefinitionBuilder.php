@@ -34,7 +34,6 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Execution\coerceDirectiveValues;
 use function Digia\GraphQL\Type\assertNullableType;
@@ -84,8 +83,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * DefinitionBuilder constructor.
      * @param array                          $typeDefinitionsMap
      * @param ResolverRegistryInterface|null $resolverRegistry
+     * @param array                          $types
+     * @param array                          $directives
      * @param callable|null                  $resolveTypeFunction
-     * @param CacheInterface                 $cache
      * @throws InvalidArgumentException
      */
     public function __construct(
@@ -213,8 +213,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @param array $types
-     * @throws InvalidArgumentException
+     * @param array $customTypes
      */
     protected function registerTypes(array $customTypes)
     {
@@ -231,8 +230,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @param array $directives
-     * @throws InvalidArgumentException
+     * @param array $customDirectives
      */
     protected function registerDirectives(array $customDirectives)
     {

@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Util;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use function Digia\GraphQL\printNode;
 use Digia\GraphQL\Type\Definition\TypeInterface;
+use function Digia\GraphQL\printNode;
 
 /**
  * @param bool   $condition
@@ -159,7 +159,7 @@ function keyValueMap(array $array, callable $keyFn, callable $valFn): array
 }
 
 /**
- * @param $value
+ * @param mixed $value
  * @return string
  */
 function toString($value): string

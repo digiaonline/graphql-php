@@ -143,7 +143,7 @@ function printNode(NodeInterface $node): string
  * @param array           $variableValues
  * @param mixed|null      $operationName
  * @param callable|null   $fieldResolver
- * @return ExecutionResult
+ * @return array
  * @throws InvariantException
  */
 function graphql(

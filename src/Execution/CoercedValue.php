@@ -16,13 +16,13 @@ class CoercedValue
     private $errors;
 
     /**
-     * @var mixed|null
+     * @var mixed
      */
     private $value;
 
     /**
      * CoercedValue constructor.
-     * @param            $value
+     * @param mixed      $value
      * @param array|null $errors
      */
     public function __construct($value, ?array $errors)

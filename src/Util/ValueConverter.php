@@ -144,7 +144,7 @@ class ValueConverter
     }
 
     /**
-     * @param                                   $value
+     * @param mixed                             $value
      * @param TypeInterface|ScalarType|EnumType $type
      * @return ValueNodeInterface|null
      * @throws ConversionException

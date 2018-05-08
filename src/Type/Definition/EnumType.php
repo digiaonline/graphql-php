@@ -71,7 +71,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @return null|string
      * @throws InvariantException
      */
@@ -87,7 +87,7 @@ class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface,
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @return mixed|null
      * @throws InvariantException
      */

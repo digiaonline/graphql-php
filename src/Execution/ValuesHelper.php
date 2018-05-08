@@ -149,9 +149,10 @@ class ValuesHelper
      *
      * @param Schema                         $schema
      * @param array|VariableDefinitionNode[] $variableDefinitionNodes
-     * @param                                $input
+     * @param array                          $inputs
      * @return CoercedValue
-     * @throws \Exception
+     * @throws GraphQLException
+     * @throws InvariantException
      */
     public function coerceVariableValues(Schema $schema, array $variableDefinitionNodes, array $inputs): CoercedValue
     {
@@ -240,13 +241,13 @@ class ValuesHelper
      * Returns either a value which is valid for the provided type or a list of
      * encountered coercion errors.
      *
-     * @param  mixed|array $value
-     * @param              $type
-     * @param              $blameNode
-     * @param array        $path
+     * @param mixed|array   $value
+     * @param mixed         $type
+     * @param NodeInterface $blameNode
+     * @param Path|null     $path
      * @return CoercedValue
-     * @throws InvariantException
      * @throws GraphQLException
+     * @throws InvariantException
      */
     private function coerceValue($value, $type, $blameNode, ?Path $path = null): CoercedValue
     {
@@ -278,10 +279,10 @@ class ValuesHelper
     }
 
     /**
-     * @param               $value
+     * @param mixed         $value
      * @param NonNullType   $type
      * @param NodeInterface $blameNode
-     * @param array|null    $path
+     * @param Path|null     $path
      * @return CoercedValue
      * @throws GraphQLException
      * @throws InvariantException
@@ -309,10 +310,10 @@ class ValuesHelper
      * throw to indicate failure. If it throws, maintain a reference to
      * the original error.
      *
-     * @param               $value
+     * @param mixed         $value
      * @param ScalarType    $type
      * @param NodeInterface $blameNode
-     * @param array|null    $path
+     * @param Path|null     $path
      * @return CoercedValue
      */
     protected function coerceValueForScalarType(
@@ -343,10 +344,10 @@ class ValuesHelper
     }
 
     /**
-     * @param               $value
+     * @param mixed         $value
      * @param EnumType      $type
      * @param NodeInterface $blameNode
-     * @param array|null    $path
+     * @param Path|null     $path
      * @return CoercedValue
      * @throws InvariantException
      */
@@ -377,10 +378,10 @@ class ValuesHelper
     }
 
     /**
-     * @param               $value
-     * @param ListType      $type
-     * @param NodeInterface $blameNode
-     * @param array|null    $path
+     * @param mixed           $value
+     * @param InputObjectType $type
+     * @param NodeInterface   $blameNode
+     * @param Path|null       $path
      * @return CoercedValue
      * @throws GraphQLException
      * @throws InvariantException
@@ -447,8 +448,10 @@ class ValuesHelper
     }
 
     /**
-     * @param $value
-     * @param $type
+     * @param mixed         $value
+     * @param ListType      $type
+     * @param NodeInterface $blameNode
+     * @param Path|null     $path
      * @return CoercedValue
      * @throws GraphQLException
      * @throws InvariantException
@@ -486,9 +489,9 @@ class ValuesHelper
     /**
      * @param string                $message
      * @param NodeInterface         $blameNode
-     * @param array|null            $path
+     * @param Path|null             $path
      * @param null|string           $subMessage
-     * @param GraphQLException|null $origin $originalException
+     * @param GraphQLException|null $originalException
      * @return GraphQLException
      */
     protected function buildCoerceException(
@@ -513,7 +516,7 @@ class ValuesHelper
     }
 
     /**
-     * @param array|null $path
+     * @param Path|null $path
      * @return string
      */
     protected function printPath(?Path $path)
@@ -521,7 +524,7 @@ class ValuesHelper
         $stringPath  = '';
         $currentPath = $path;
 
-        while ($currentPath) {
+        while ($currentPath !== null) {
             if (is_string($currentPath->getKey())) {
                 $stringPath = '.' . $currentPath->getKey() . $stringPath;
             } else {

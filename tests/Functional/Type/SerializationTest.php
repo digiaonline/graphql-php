@@ -12,8 +12,8 @@ class SerializationTest extends TestCase
 {
 
     /**
-     * @param $value
-     * @param $answer
+     * @param mixed $value
+     * @param mixed $answer
      * @dataProvider valuesIntCanRepresentDataProvider
      */
     public function testValuesIntCanRepresent($value, $answer)
@@ -36,7 +36,7 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @dataProvider valuesIntCannotRepresentDataProvider
      * @expectedException \@expectedException \Digia\GraphQL\Error\InvalidTypeException
      */
@@ -80,8 +80,8 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @param $value
-     * @param $answer
+     * @param mixed $value
+     * @param mixed $answer
      * @dataProvider valuesFloatCanRepresentDataProvider
      */
     public function testValuesFloatCanRepresent($value, $answer)
@@ -109,7 +109,7 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @dataProvider valuesFloatCannotRepresentDataProvider
      * @expectedException \Digia\GraphQL\Error\InvalidTypeException
      */
@@ -128,8 +128,8 @@ class SerializationTest extends TestCase
     }
 
     /**
-     * @param $value
-     * @param $answer
+     * @param mixed $value
+     * @param mixed $answer
      * @dataProvider valuesStringCanRepresentDataProvider
      */
     public function testValuesStringCanRepresent($value, $answer)

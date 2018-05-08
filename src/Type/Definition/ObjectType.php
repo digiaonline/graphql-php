@@ -111,7 +111,7 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
 
     /**
      * @param mixed $value
-     * @param mixed context
+     * @param mixed $context
      * @param mixed $info
      * @return bool|PromiseInterface
      */

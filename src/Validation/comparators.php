@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\GraphQL;
+use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Util\TypeHelper;
 use Digia\GraphQL\Util\ValueHelper;
@@ -18,8 +19,8 @@ function compareArguments(array $argumentsA, array $argumentsB): bool
 }
 
 /**
- * @param $valueA
- * @param $valueB
+ * @param ValueNodeInterface $valueA
+ * @param ValueNodeInterface $valueB
  * @return bool
  */
 function compareValues($valueA, $valueB): bool

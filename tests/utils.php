@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test;
 
 /**
- * @param $value
+ * @param mixed $value
  * @return string
  */
 function jsonEncode($value): string

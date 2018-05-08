@@ -87,15 +87,11 @@ class FieldCollector
     }
 
     /**
-     * @param $node
+     * @param NodeInterface $node
      * @return bool
-     * @throws InvalidTypeException
-     * @throws \Digia\GraphQL\Error\ExecutionException
-     * @throws \Digia\GraphQL\Error\InvariantException
      */
     protected function shouldIncludeNode(NodeInterface $node): bool
     {
-
         $contextVariables = $this->context->getVariableValues();
 
         $skip = coerceDirectiveValues(SkipDirective(), $node, $contextVariables);
