@@ -14,8 +14,8 @@ class Execution implements ExecutionInterface
     /**
      * @param Schema        $schema
      * @param DocumentNode  $documentNode
-     * @param object|array  $rootValue
-     * @param null          $contextValue
+     * @param mixed|null    $rootValue
+     * @param mixed|null    $contextValue
      * @param array         $variableValues
      * @param null|string   $operationName
      * @param callable|null $fieldResolver
