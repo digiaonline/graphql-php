@@ -1233,13 +1233,16 @@ class VariablesTest extends TestCase
 
     public function testCustomDateTimeScalarType()
     {
-
         /** @noinspection PhpUnhandledExceptionInspection */
         $dateType = newScalarType([
             'name'         => 'Date',
             'serialize'    => function (\DateTime $value) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 return $value->format('Y-m-d');
+            },
+            'parseValue' => function ($node) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                return new \DateTime($node->getValue(), new \DateTimeZone('Europe/Helsinki'));
             },
             'parseLiteral' => function ($node) {
                 /** @noinspection PhpUndefinedMethodInspection */
