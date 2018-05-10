@@ -7,8 +7,8 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\find;
 
 class RootTypesRule extends AbstractRule
@@ -32,10 +32,10 @@ class RootTypesRule extends AbstractRule
     }
 
     /**
-     * @param TypeInterface|null $rootType
-     * @param string             $operation
+     * @param NamedTypeInterface|ObjectType|null $rootType
+     * @param string                             $operation
      */
-    protected function validateRootType(?TypeInterface $rootType, string $operation): void
+    protected function validateRootType(?NamedTypeInterface $rootType, string $operation): void
     {
         $schema = $this->context->getSchema();
 
@@ -69,14 +69,14 @@ class RootTypesRule extends AbstractRule
     }
 
     /**
-     * @param Schema                   $schema
-     * @param TypeInterface|ObjectType $type
-     * @param string                   $operation
+     * @param Schema                        $schema
+     * @param NamedTypeInterface|ObjectType $type
+     * @param string                        $operation
      * @return NodeInterface|null
      */
     protected function getOperationTypeNode(
         Schema $schema,
-        TypeInterface $type,
+        NamedTypeInterface $type,
         string $operation
     ): ?NodeInterface {
         /** @var SchemaDefinitionNode $node */

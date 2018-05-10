@@ -13,6 +13,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\typeFromAST;
 
 class FieldCollector
@@ -123,6 +124,7 @@ class FieldCollector
      * @param FragmentDefinitionNode|InlineFragmentNode|NodeInterface $fragment
      * @param ObjectType                                              $type
      * @return bool
+     * @throws InvariantException
      */
     protected function doesFragmentConditionMatch(NodeInterface $fragment, ObjectType $type): bool
     {
@@ -132,6 +134,7 @@ class FieldCollector
             return true;
         }
 
+        /** @var ObjectType|TypeInterface $conditionalType */
         $conditionalType = typeFromAST($this->context->getSchema(), $typeConditionNode);
 
         if ($type === $conditionalType) {

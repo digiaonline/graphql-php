@@ -14,8 +14,8 @@ class Execution implements ExecutionInterface
     /**
      * @param Schema        $schema
      * @param DocumentNode  $documentNode
-     * @param mixed|null    $rootValue
-     * @param mixed|null    $contextValue
+     * @param mixed         $rootValue
+     * @param mixed         $contextValue
      * @param array         $variableValues
      * @param null|string   $operationName
      * @param callable|null $fieldResolver
@@ -28,8 +28,8 @@ class Execution implements ExecutionInterface
         $rootValue = null,
         $contextValue = null,
         array $variableValues = [],
-        string $operationName = null,
-        callable $fieldResolver = null
+        ?string $operationName = null,
+        ?callable $fieldResolver = null
     ): ExecutionResult {
         try {
             $context = $this->createContext(
@@ -62,7 +62,7 @@ class Execution implements ExecutionInterface
      * @param mixed         $rootValue
      * @param mixed         $contextValue
      * @param mixed         $rawVariableValues
-     * @param null          $operationName
+     * @param null|string   $operationName
      * @param callable|null $fieldResolver
      * @return ExecutionContext
      * @throws ExecutionException
@@ -74,8 +74,8 @@ class Execution implements ExecutionInterface
         $rootValue,
         $contextValue,
         $rawVariableValues,
-        $operationName = null,
-        callable $fieldResolver = null
+        ?string $operationName = null,
+        ?callable $fieldResolver = null
     ): ExecutionContext {
         $errors    = [];
         $fragments = [];
@@ -83,13 +83,13 @@ class Execution implements ExecutionInterface
 
         foreach ($documentNode->getDefinitions() as $definition) {
             if ($definition instanceof OperationDefinitionNode) {
-                if (!$operationName && $operation) {
+                if (null === $operationName && $operation) {
                     throw new ExecutionException(
                         'Must provide operation name if query contains multiple operations.'
                     );
                 }
 
-                if (!$operationName || $definition->getNameValue() === $operationName) {
+                if (null === $operationName || $definition->getNameValue() === $operationName) {
                     $operation = $definition;
                 }
 

@@ -26,11 +26,11 @@ use React\Promise\ExtendedPromiseInterface;
 use React\Promise\FulfilledPromise;
 use React\Promise\PromiseInterface;
 use Throwable;
-use function React\Promise\all as promiseAll;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
 use function Digia\GraphQL\Util\toString;
+use function React\Promise\all as promiseAll;
 
 class Executor
 {
@@ -115,10 +115,10 @@ class Executor
     /**
      * @param Schema                  $schema
      * @param OperationDefinitionNode $operation
-     * @return NamedTypeInterface|ObjectType
+     * @return ObjectType|null
      * @throws ExecutionException
      */
-    public function getOperationType(Schema $schema, OperationDefinitionNode $operation): NamedTypeInterface
+    public function getOperationType(Schema $schema, OperationDefinitionNode $operation): ?ObjectType
     {
         switch ($operation->getOperation()) {
             case 'query':
@@ -589,7 +589,7 @@ class Executor
 
     /**
      * @param NamedTypeInterface|string $runtimeTypeOrName
-     * @param AbstractTypeInterface     $returnType
+     * @param NamedTypeInterface        $returnType
      * @param ResolveInfo               $info
      * @param mixed                     $result
      * @return TypeInterface|ObjectType|null
@@ -598,11 +598,11 @@ class Executor
      */
     protected function ensureValidRuntimeType(
         $runtimeTypeOrName,
-        AbstractTypeInterface $returnType,
+        NamedTypeInterface $returnType,
         ResolveInfo $info,
         &$result
     ) {
-        /** @var NamedTypeInterface $runtimeType */
+        /** @var NamedTypeInterface|TypeInterface $runtimeType */
         $runtimeType = \is_string($runtimeTypeOrName)
             ? $this->context->getSchema()->getType($runtimeTypeOrName)
             : $runtimeTypeOrName;
