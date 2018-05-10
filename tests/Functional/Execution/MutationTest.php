@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Execution\ExecutionResult;
-use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Schema\Schema;
+use Digia\GraphQL\Test\TestCase;
 use React\Promise\Promise;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
@@ -177,9 +177,16 @@ class MutationTest extends TestCase
 
 class NumberHolder
 {
+    /**
+     * @var int
+     */
     public $theNumber;
 
-    public function __construct($originalNumber)
+    /**
+     * NumberHolder constructor.
+     * @param int $originalNumber
+     */
+    public function __construct(int $originalNumber)
     {
         $this->theNumber = $originalNumber;
     }
@@ -189,27 +196,31 @@ class Root
 {
     public $numberHolder;
 
-    public function __construct($originalNumber)
+    /**
+     * Root constructor.
+     * @param int $originalNumber
+     */
+    public function __construct(int $originalNumber)
     {
         $this->numberHolder = new NumberHolder($originalNumber);
     }
 
     /**
-     * @param $newNumber
+     * @param int $newNumber
      * @return NumberHolder
      */
-    public function immediatelyChangeTheNumber($newNumber)
+    public function immediatelyChangeTheNumber(int $newNumber)
     {
         $this->numberHolder->theNumber = $newNumber;
         return $this->numberHolder;
     }
 
     /**
-     * @param $newNumber
+     * @param int $newNumber
      *
      * @return Promise
      */
-    public function promiseToChangeTheNumber($newNumber)
+    public function promiseToChangeTheNumber(int $newNumber)
     {
         return new Promise(function (callable $resolve) use ($newNumber) {
             return $resolve($this->immediatelyChangeTheNumber($newNumber));
@@ -270,15 +281,15 @@ function rootSchema(): Schema
                 'failToChangeTheNumber'           => [
                     'type'    => $numberHolderType,
                     'args'    => ['newNumber' => ['type' => Int()]],
-                    'resolve' => function (Root $obj, $args) {
-                        return $obj->failToChangeTheNumber($args['newNumber']);
+                    'resolve' => function (Root $obj) {
+                        return $obj->failToChangeTheNumber();
                     }
                 ],
                 'promiseAndFailToChangeTheNumber' => [
                     'type'    => $numberHolderType,
                     'args'    => ['newNumber' => ['type' => Int()]],
-                    'resolve' => function (Root $obj, $args) {
-                        return $obj->promiseAndFailToChangeTheNumber($args['newNumber']);
+                    'resolve' => function (Root $obj) {
+                        return $obj->promiseAndFailToChangeTheNumber();
                     }
                 ]
             ],

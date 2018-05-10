@@ -50,8 +50,8 @@ class ValueHelper
     }
 
     /**
-     * @param $valueA
-     * @param $valueB
+     * @param ValueNodeInterface $valueA
+     * @param ValueNodeInterface $valueB
      * @return bool
      */
     public function compareValues($valueA, $valueB): bool

@@ -108,8 +108,8 @@ class Lexer implements LexerInterface
 
     /**
      * Lexer constructor.
-     * @param Source|null $source
-     * @param array       $options
+     * @param Source $source
+     * @param array  $options
      */
     public function __construct(Source $source, array $options)
     {

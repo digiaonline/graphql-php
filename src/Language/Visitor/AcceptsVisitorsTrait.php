@@ -165,8 +165,8 @@ trait AcceptsVisitorsTrait
     }
 
     /**
-     * @param            $nodeOrNodes
-     * @param string|int $key
+     * @param NodeInterface|NodeInterface[] $nodeOrNodes
+     * @param string|int                    $key
      * @return array|NodeInterface|NodeInterface[]|null
      */
     protected function visitNodeOrNodes($nodeOrNodes, $key)

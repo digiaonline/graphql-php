@@ -1,10 +1,10 @@
 <?php
 
-namespace Digia\GraphQL\Test;
+namespace Digia\GraphQL\Test\Functional;
 
+use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\Language\locationShorthandToArray;
-use function Digia\GraphQL\Test\Functional\starWarsSchema;
 
 class QueryTest extends TestCase
 {
@@ -33,7 +33,7 @@ class QueryTest extends TestCase
                     'name' => 'R2-D2',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Skip: "Accepts an object with named properties to graphql()"
@@ -69,7 +69,7 @@ class QueryTest extends TestCase
                     ],
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Nested Queries
@@ -133,7 +133,7 @@ class QueryTest extends TestCase
                     ],
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Using IDs and query parameters to refetch objects
@@ -159,7 +159,7 @@ class QueryTest extends TestCase
                     'name' => 'Luke Skywalker',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows us to create a generic query, then use it to fetch Luke Skywalker using his ID
@@ -183,7 +183,7 @@ class QueryTest extends TestCase
                     'name' => 'Luke Skywalker',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows us to create a generic query, then use it to fetch Han Solo using his ID
@@ -207,7 +207,7 @@ class QueryTest extends TestCase
                     'name' => 'Han Solo',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows us to create a generic query, then pass an invalid ID to get null back
@@ -229,7 +229,7 @@ class QueryTest extends TestCase
             'data' => [
                 'human' => null,
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Using aliases to change the key in the response
@@ -255,7 +255,7 @@ class QueryTest extends TestCase
                     'name' => 'Luke Skywalker',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows us to query for both Luke and Leia, using two root fields and an alias
@@ -285,7 +285,7 @@ class QueryTest extends TestCase
                     'name' => 'Leia Organa',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Uses fragments to express more complex queries
@@ -321,7 +321,7 @@ class QueryTest extends TestCase
                     'homePlanet' => 'Alderaan',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows us to use a fragment to avoid duplicating content
@@ -358,7 +358,7 @@ class QueryTest extends TestCase
                     'homePlanet' => 'Alderaan',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Using __typename to find the type of an object
@@ -386,7 +386,7 @@ class QueryTest extends TestCase
                     'name'       => 'R2-D2',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Allows us to verify that Luke is a human
@@ -412,7 +412,7 @@ class QueryTest extends TestCase
                     'name'       => 'Luke Skywalker',
                 ],
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Reporting errors raised in resolvers
@@ -447,7 +447,7 @@ class QueryTest extends TestCase
                     'path'      => ['hero', 'secretBackstory'],
                 ]
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Correctly reports error on accessing secretBackstory in a list
@@ -506,7 +506,7 @@ class QueryTest extends TestCase
                     'path'      => ['hero', 'friends', 2, 'secretBackstory'],
                 ]
             ],
-        ], $result->toArray());
+        ], $result);
     }
 
     // Correctly reports error on accessing through an alias
@@ -539,6 +539,6 @@ class QueryTest extends TestCase
                     'path'      => ['mainHero', 'story'],
                 ]
             ],
-        ], $result->toArray());
+        ], $result);
     }
 }

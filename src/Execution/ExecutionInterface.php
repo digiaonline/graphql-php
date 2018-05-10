@@ -15,7 +15,7 @@ interface ExecutionInterface
      * @param array         $variableValues
      * @param null          $operationName
      * @param callable|null $fieldResolver
-     * @return mixed
+     * @return ExecutionResult
      */
     public function execute(
         Schema $schema,

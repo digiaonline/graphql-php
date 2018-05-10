@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Test\Functional\Type;
 
-use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Test\TestCase;
@@ -214,7 +213,7 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * @param $resolveValue
+     * @param mixed $resolveValue
      * @return Schema
      * @throws InvariantException
      */
@@ -532,9 +531,12 @@ class DefinitionTest extends TestCase
     // identifies input types
 
     /**
+     * @param TypeInterface|null $type
+     * @param mixed              $answer
      * @dataProvider identifiesInputTypesDataProvider
+     * @throws \Digia\GraphQL\Error\InvalidTypeException
      */
-    public function testIdentifiesInputTypes($type, $answer)
+    public function testIdentifiesInputTypes(?TypeInterface $type, $answer)
     {
         $this->assertEquals($answer, isOutputType($type));
         $this->assertEquals($answer, isOutputType(newList($type)));

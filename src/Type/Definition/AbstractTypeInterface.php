@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Type\Definition;
 interface AbstractTypeInterface extends TypeInterface
 {
     /**
-     * @return string|null
+     * @return string
      */
     public function getName(): string;
 

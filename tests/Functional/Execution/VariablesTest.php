@@ -26,11 +26,15 @@ class VariablesTest extends TestCase
     private $schema;
 
 
+    /**
+     * @throws \Digia\GraphQL\Error\InvalidTypeException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
     protected function setUp()
     {
         parent::setUp();
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $TestComplexScalar = newScalarType([
             'name'         => 'ComplexScalar',
             'serialize'    => function ($value) {
@@ -53,7 +57,6 @@ class VariablesTest extends TestCase
             }
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $TestInputObject = newInputObjectType([
             'name'   => 'TestInputObject',
             'fields' => [
@@ -64,7 +67,6 @@ class VariablesTest extends TestCase
             ]
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $TestNestedInputObject = newInputObjectType([
             'name'   => 'TestNestedInputObject',
             'fields' => [
@@ -73,7 +75,6 @@ class VariablesTest extends TestCase
             ]
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $TestType = newObjectType([
             'name'   => 'TestType',
             'fields' => [
@@ -105,17 +106,16 @@ class VariablesTest extends TestCase
             ]
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $this->schema = newSchema([
             'query' => $TestType
         ]);
     }
 
     /**
-     * @param $inputArg
+     * @param array $inputArg
      * @return array
      */
-    function fieldWithInputArg($inputArg): array
+    function fieldWithInputArg(array $inputArg): array
     {
         return [
             'type'    => String(),
@@ -1231,6 +1231,12 @@ class VariablesTest extends TestCase
         ], $result->toArray());
     }
 
+    /**
+     * Custom DateTime scalar type.
+     *
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     */
     public function testCustomDateTimeScalarType()
     {
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -1250,7 +1256,6 @@ class VariablesTest extends TestCase
             },
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $TestInputObject = newInputObjectType([
             'name'   => 'TestInputObject',
             'fields' => [
@@ -1261,7 +1266,6 @@ class VariablesTest extends TestCase
             ]
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $TestType = newObjectType([
             'name'   => 'TestType',
             'fields' => [
@@ -1269,7 +1273,6 @@ class VariablesTest extends TestCase
             ]
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => $TestType
         ]);
@@ -1278,7 +1281,6 @@ class VariablesTest extends TestCase
             fieldWithObjectInput(input: {c: "foo", d: "2018-01-01"})
         }';
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query));
 
         $this->assertEquals([

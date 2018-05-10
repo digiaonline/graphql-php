@@ -451,7 +451,6 @@ SRC;
      */
     public function testProvidesInfoAboutCurrentExecutionState()
     {
-        $info   = null;
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Test',

@@ -515,8 +515,7 @@ EOD;
     /**
      * @param string $source
      * @param string $expectedExceptionMessage
-     * @param int    $line
-     * @param int    $column
+     * @param array  $position
      */
     private function assertSyntaxError(string $source, string $expectedExceptionMessage, array $position): void
     {

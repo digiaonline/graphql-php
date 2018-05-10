@@ -874,7 +874,7 @@ class Parser implements ParserInterface
     /**
      * Description : StringValue
      *
-     * @return NodeInterface|null
+     * @return StringValueNode|null
      */
     public function parseDescription(): ?StringValueNode
     {

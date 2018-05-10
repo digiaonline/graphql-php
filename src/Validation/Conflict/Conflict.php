@@ -26,10 +26,10 @@ class Conflict
 
     /**
      * Conflict constructor.
-     * @param string     $responseName
-     * @param mixed      $reason
-     * @param array|null $fieldsA
-     * @param array|null $fieldsB
+     * @param string $responseName
+     * @param mixed  $reason
+     * @param array  $fieldsA
+     * @param array  $fieldsB
      */
     public function __construct(string $responseName, $reason, array $fieldsA, array $fieldsB)
     {

@@ -13,7 +13,7 @@ use Digia\GraphQL\Type\Definition\Field;
  * @param Schema                   $schema
  * @param VariableDefinitionNode[] $nodes
  * @param array                    $inputs
- * @return array
+ * @return CoercedValue
  */
 function coerceVariableValues(Schema $schema, array $nodes, array $inputs): CoercedValue
 {

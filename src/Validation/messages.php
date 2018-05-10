@@ -40,7 +40,7 @@ function undefinedFieldMessage(
 }
 
 /**
- * @param string $type
+ * @param string $typeName
  * @return string
  */
 function inlineFragmentOnNonCompositeMessage(string $typeName): string
@@ -190,7 +190,7 @@ function unusedVariableMessage(string $variableName, ?string $operationName = nu
 }
 
 /**
- * @param string $reasonName
+ * @param string $responseName
  * @param mixed  $reason
  * @return string
  */

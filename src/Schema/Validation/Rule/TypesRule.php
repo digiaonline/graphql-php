@@ -4,18 +4,17 @@ namespace Digia\GraphQL\Schema\Validation\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\SchemaValidationException;
+use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\FieldDefinitionNode;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
-use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
-use Digia\GraphQL\Schema\Validation\ValidationContext;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -388,8 +387,7 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param ValidationContext $this ->context
-     * @param UnionType         $unionType
+     * @param UnionType $unionType
      * @throws InvariantException
      */
     protected function validateUnionMembers(UnionType $unionType): void
@@ -444,8 +442,7 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param ValidationContext $this ->context
-     * @param EnumType          $enumType
+     * @param EnumType $enumType
      * @throws InvariantException
      */
     protected function validateEnumValues(EnumType $enumType): void
@@ -495,8 +492,7 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param ValidationContext $this ->context
-     * @param InputObjectType   $inputObjectType
+     * @param InputObjectType $inputObjectType
      * @throws InvariantException
      */
     protected function validateInputFields(InputObjectType $inputObjectType): void

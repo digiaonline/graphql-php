@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Test\TestCase;
+use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\Int;
@@ -17,13 +18,13 @@ class ListTest extends TestCase
     // EXECUTE: ACCEPTS ANY ITERABLE AS LIST VALUE
 
     /**
-     * @param $testType
-     * @param $testData
-     * @param $expected
+     * @param TypeInterface $testType
+     * @param mixed         $testData
+     * @param mixed         $expected
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
-    public function makeTest($testType, $testData, $expected)
+    public function makeTest(TypeInterface $testType, $testData, $expected)
     {
         $dataType = newObjectType([
             'name'   => 'DataType',
