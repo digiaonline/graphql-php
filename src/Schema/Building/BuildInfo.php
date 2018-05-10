@@ -74,7 +74,11 @@ class BuildInfo
      */
     public function getOperationTypeDefinition(string $operation): ?NodeInterface
     {
-        return $this->operationTypeDefinitions[$operation] ?? $this->typeDefinitionMap[\ucfirst($operation)] ?? null;
+        // If we have a schema definition, see if it defines a type, if not we should return null.
+        // Otherwise, see if we there is a suitable type available in the type definition map.
+        return null !== $this->schemaDefinition
+            ? $this->operationTypeDefinitions[$operation] ?? null
+            : $this->typeDefinitionMap[\ucfirst($operation)] ?? null;
     }
 
     /**
