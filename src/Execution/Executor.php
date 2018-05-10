@@ -26,6 +26,7 @@ use React\Promise\ExtendedPromiseInterface;
 use React\Promise\FulfilledPromise;
 use React\Promise\PromiseInterface;
 use Throwable;
+use function React\Promise\all as promiseAll;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
@@ -81,26 +82,24 @@ class Executor
      */
     public function execute(): ?array
     {
-        $operation = $this->context->getOperation();
         $schema    = $this->context->getSchema();
-
-        $path = [];
+        $operation = $this->context->getOperation();
+        $rootValue = $this->context->getRootValue();
 
         $objectType = $this->getOperationType($schema, $operation);
 
         $fields               = [];
         $visitedFragmentNames = [];
+        $path                 = [];
+
+        $fields = $this->fieldCollector->collectFields(
+            $objectType,
+            $operation->getSelectionSet(),
+            $fields,
+            $visitedFragmentNames
+        );
 
         try {
-            $fields = $this->fieldCollector->collectFields(
-                $objectType,
-                $this->context->getOperation()->getSelectionSet(),
-                $fields,
-                $visitedFragmentNames
-            );
-
-            $rootValue = $this->context->getRootValue();
-
             $result = $operation->getOperation() === 'mutation'
                 ? $this->executeFieldsSerially($objectType, $rootValue, $path, $fields)
                 : $this->executeFields($objectType, $rootValue, $path, $fields);
@@ -374,8 +373,8 @@ class Executor
         }
 
         if ($doesContainPromise) {
-            $keys    = array_keys($finalResults);
-            $promise = \React\Promise\all(array_values($finalResults));
+            $keys    = \array_keys($finalResults);
+            $promise = promiseAll(\array_values($finalResults));
             $promise->then(function ($values) use ($keys, &$finalResults) {
                 /** @noinspection ForeachSourceInspection */
                 foreach ($values as $i => $value) {
@@ -690,7 +689,7 @@ class Executor
         }
 
         if (!empty($promisedIsTypeOfResults)) {
-            return \React\Promise\all($promisedIsTypeOfResults)
+            return promiseAll($promisedIsTypeOfResults)
                 ->then(function ($isTypeOfResults) use ($possibleTypes) {
                     /** @noinspection ForeachSourceInspection */
                     foreach ($isTypeOfResults as $index => $result) {
@@ -746,7 +745,7 @@ class Executor
         }
 
         return $doesContainPromise
-            ? \React\Promise\all($completedItems)
+            ? promiseAll($completedItems)
             : $completedItems;
     }
 
