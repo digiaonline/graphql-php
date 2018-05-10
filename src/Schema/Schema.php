@@ -6,8 +6,8 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
+use Digia\GraphQL\Type\Definition\ArgumentsAwareInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -80,7 +80,7 @@ class Schema implements DefinitionInterface
     protected $assumeValid = false;
 
     /**
-     * @var array
+     * @var TypeInterface[]
      */
     protected $typeMap = [];
 
@@ -90,27 +90,26 @@ class Schema implements DefinitionInterface
     protected $implementations = [];
 
     /**
-     * @var array
+     * @var NamedTypeInterface[]
      */
     protected $possibleTypesMap = [];
 
     /**
      * Schema constructor.
      *
-     * @param SchemaDefinitionNode   $astNode
-     * @param TypeInterface|null     $queryType
-     * @param TypeInterface|null     $mutationType
-     * @param TypeInterface|null     $subscriptionType
-     * @param TypeInterface[]        $types
-     * @param Directive[]            $directives
-     * @param bool                   $assumeValid
-     * @param SchemaDefinitionNode[] $astNode
+     * @param NamedTypeInterface|null   $queryType
+     * @param NamedTypeInterface|null   $mutationType
+     * @param NamedTypeInterface|null   $subscriptionType
+     * @param TypeInterface[]           $types
+     * @param Directive[]               $directives
+     * @param bool                      $assumeValid
+     * @param SchemaDefinitionNode|null $astNode
      * @throws InvariantException
      */
     public function __construct(
-        ?TypeInterface $queryType,
-        ?TypeInterface $mutationType,
-        ?TypeInterface $subscriptionType,
+        ?NamedTypeInterface $queryType,
+        ?NamedTypeInterface $mutationType,
+        ?NamedTypeInterface $subscriptionType,
         array $types,
         array $directives,
         bool $assumeValid,
@@ -131,7 +130,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return NamedTypeInterface|null
      */
     public function getQueryType(): ?NamedTypeInterface
     {
@@ -139,7 +138,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return NamedTypeInterface|null
      */
     public function getMutationType(): ?NamedTypeInterface
     {
@@ -147,7 +146,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return NamedTypeInterface|null
      */
     public function getSubscriptionType(): ?NamedTypeInterface
     {
@@ -155,7 +154,8 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $name
+     * @return Directive|null
      */
     public function getDirective(string $name): ?Directive
     {
@@ -165,7 +165,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return array
      */
     public function getDirectives(): array
     {
@@ -173,7 +173,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return array
      */
     public function getTypeMap(): array
     {
@@ -181,7 +181,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @return bool
      */
     public function getAssumeValid(): bool
     {
@@ -189,14 +189,14 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @param NamedTypeInterface $abstractType
+     * @param NamedTypeInterface $possibleType
+     * @return bool
      * @throws InvariantException
      */
-    public function isPossibleType(AbstractTypeInterface $abstractType, TypeInterface $possibleType): bool
+    public function isPossibleType(NamedTypeInterface $abstractType, NamedTypeInterface $possibleType): bool
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $abstractTypeName = $abstractType->getName();
-        /** @noinspection PhpUndefinedMethodInspection */
         $possibleTypeName = $possibleType->getName();
 
         if (!isset($this->possibleTypesMap[$abstractTypeName])) {
@@ -227,10 +227,11 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @param NamedTypeInterface $abstractType
+     * @return NamedTypeInterface[]|null
      * @throws InvariantException
      */
-    public function getPossibleTypes(AbstractTypeInterface $abstractType): ?array
+    public function getPossibleTypes(NamedTypeInterface $abstractType): ?array
     {
         if ($abstractType instanceof UnionType) {
             return $abstractType->getTypes();
@@ -240,7 +241,8 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $name
+     * @return TypeInterface|null
      */
     public function getType(string $name): ?TypeInterface
     {
@@ -373,8 +375,8 @@ class Schema implements DefinitionInterface
     /**
      * Note: We do not type-hint the `$directive`, because we want the `SchemaValidator` to catch these errors.
      *
-     * @param array      $map
-     * @param mixed|null $directive
+     * @param array                        $map
+     * @param ArgumentsAwareInterface|null $directive
      * @return array
      */
     protected function typeMapDirectiveReducer(array $map, $directive): array

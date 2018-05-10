@@ -68,7 +68,7 @@ class ResolveInfo
      * @param TypeInterface           $returnType
      * @param ObjectType              $parentType
      * @param array|null              $path
-     * @param Schema         $schema
+     * @param Schema                  $schema
      * @param array                   $fragments
      * @param mixed                   $rootValue
      * @param OperationDefinitionNode $operation

@@ -30,7 +30,7 @@ class ExecutionContext
     protected $contextValue;
 
     /**
-     * @var []
+     * @var mixed
      */
     protected $variableValues;
 
@@ -53,10 +53,10 @@ class ExecutionContext
      * ExecutionContext constructor.
      * @param Schema                  $schema
      * @param array                   $fragments
-     * @param                         $rootValue
-     * @param                         $contextValue
-     * @param                         $variableValues
-     * @param                         $fieldResolver
+     * @param mixed                   $rootValue
+     * @param mixed                   $contextValue
+     * @param mixed                   $variableValues
+     * @param mixed                   $fieldResolver
      * @param OperationDefinitionNode $operation
      * @param array                   $errors
      */
@@ -92,7 +92,7 @@ class ExecutionContext
      * @param mixed $rootValue
      * @return ExecutionContext
      */
-    public function setRootValue($rootValue)
+    public function setRootValue($rootValue): ExecutionContext
     {
         $this->rootValue = $rootValue;
         return $this;
@@ -110,7 +110,7 @@ class ExecutionContext
      * @param mixed $contextValue
      * @return ExecutionContext
      */
-    public function setContextValue($contextValue)
+    public function setContextValue($contextValue): ExecutionContext
     {
         $this->contextValue = $contextValue;
         return $this;
@@ -128,7 +128,7 @@ class ExecutionContext
      * @param mixed $variableValues
      * @return ExecutionContext
      */
-    public function setVariableValues($variableValues)
+    public function setVariableValues($variableValues): ExecutionContext
     {
         $this->variableValues = $variableValues;
         return $this;
@@ -146,7 +146,7 @@ class ExecutionContext
      * @param mixed $fieldResolver
      * @return ExecutionContext
      */
-    public function setFieldResolver($fieldResolver)
+    public function setFieldResolver($fieldResolver): ExecutionContext
     {
         $this->fieldResolver = $fieldResolver;
         return $this;
@@ -170,35 +170,27 @@ class ExecutionContext
     }
 
     /**
-     * @return array|FragmentDefinitionNode[]
+     * @return FragmentDefinitionNode[]
      */
-    public function getFragments()
+    public function getFragments(): array
     {
         return $this->fragments;
-    }
-
-    /**
-     * @return Executor
-     */
-    public function createExecutor(): Executor
-    {
-        return new Executor($this, $this->operation, new FieldCollector($this), $this->rootValue);
     }
 
     /**
      * @param ExecutionException $error
      * @return ExecutionContext
      */
-    public function addError(ExecutionException $error)
+    public function addError(ExecutionException $error): ExecutionContext
     {
         $this->errors[] = $error;
         return $this;
     }
 
     /**
-     * @return array|ExecutionException[]
+     * @return ExecutionException[]
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }
