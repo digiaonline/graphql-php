@@ -12,7 +12,7 @@ use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Validation\ValidationContextInterface;
+use Digia\GraphQL\Validation\ValidationContextAwareTrait;
 use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Util\typeFromAST;
 use function Digia\GraphQL\Validation\compareArguments;
@@ -71,9 +71,13 @@ use function Digia\GraphQL\Validation\compareTypes;
  * J) Also, if two fragments are referenced in both selection sets, then a
  * comparison is made "between" the two fragments.
  *
+ * Class ConflictFinder
+ * @package Digia\GraphQL\Validation\Conflict
  */
-trait FindsConflictsTrait
+class ConflictFinder
 {
+    use ValidationContextAwareTrait;
+
     /**
      * A cache for the "field map" and list of fragment names found in any given
      * selection set. Selection sets may be asked for this information multiple
@@ -93,28 +97,25 @@ trait FindsConflictsTrait
     protected $comparedFragmentPairs;
 
     /**
-     * @return ValidationContextInterface
+     * ConflictFinder constructor.
      */
-    abstract public function getValidationContext(): ValidationContextInterface;
+    public function __construct()
+    {
+        $this->cachedFieldsAndFragmentNames = new Map();
+        $this->comparedFragmentPairs        = new PairSet();
+    }
 
     /**
-     * @param Map                     $cachedFieldsAndFragmentNames
-     * @param PairSet                 $comparedFragmentPairs
      * @param SelectionSetNode        $selectionSet
      * @param NamedTypeInterface|null $parentType
      * @return array|Conflict[]
      * @throws InvalidTypeException
      * @throws InvariantException
      */
-    protected function findConflictsWithinSelectionSet(
-        Map $cachedFieldsAndFragmentNames,
-        PairSet $comparedFragmentPairs,
+    public function findConflictsWithinSelectionSet(
         SelectionSetNode $selectionSet,
         ?NamedTypeInterface $parentType = null
     ): array {
-        $this->cachedFieldsAndFragmentNames = $cachedFieldsAndFragmentNames;
-        $this->comparedFragmentPairs        = $comparedFragmentPairs;
-
         $context = $this->getFieldsAndFragmentNames($selectionSet, $parentType);
 
         // (A) Find find all conflicts "within" the fields of this selection set.
@@ -183,7 +184,7 @@ trait FindsConflictsTrait
 
         $comparedFragments[$fragmentName] = true;
 
-        $fragment = $this->getValidationContext()->getFragment($fragmentName);
+        $fragment = $this->getContext()->getFragment($fragmentName);
 
         if (null === $fragment) {
             return;
@@ -255,8 +256,8 @@ trait FindsConflictsTrait
 
         $this->comparedFragmentPairs->add($fragmentNameA, $fragmentNameB, $areMutuallyExclusive);
 
-        $fragmentA = $this->getValidationContext()->getFragment($fragmentNameA);
-        $fragmentB = $this->getValidationContext()->getFragment($fragmentNameB);
+        $fragmentA = $this->getContext()->getFragment($fragmentNameA);
+        $fragmentB = $this->getContext()->getFragment($fragmentNameB);
 
         if (null === $fragmentA || null === $fragmentB) {
             return;
@@ -635,7 +636,7 @@ trait FindsConflictsTrait
         }
 
         /** @var NamedTypeInterface $fragmentType */
-        $fragmentType = typeFromAST($this->getValidationContext()->getSchema(), $fragment->getTypeCondition());
+        $fragmentType = typeFromAST($this->getContext()->getSchema(), $fragment->getTypeCondition());
 
         return $this->getFieldsAndFragmentNames($fragment->getSelectionSet(), $fragmentType);
     }
@@ -665,7 +666,7 @@ trait FindsConflictsTrait
                 $typeCondition = $selection->getTypeCondition();
 
                 $inlineFragmentType = null !== $typeCondition
-                    ? typeFromAST($this->getValidationContext()->getSchema(), $typeCondition)
+                    ? typeFromAST($this->getContext()->getSchema(), $typeCondition)
                     : $parentType;
 
                 $this->collectFieldsAndFragmentNames($context, $selection->getSelectionSet(), $inlineFragmentType);
