@@ -10,10 +10,10 @@ interface ExecutionInterface
     /**
      * @param Schema        $schema
      * @param DocumentNode  $documentNode
-     * @param object|array  $rootValue
-     * @param null          $contextValue
+     * @param mixed         $rootValue
+     * @param mixed         $contextValue
      * @param array         $variableValues
-     * @param null          $operationName
+     * @param string|null   $operationName
      * @param callable|null $fieldResolver
      * @return ExecutionResult
      */

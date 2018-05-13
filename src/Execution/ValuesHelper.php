@@ -86,10 +86,9 @@ class ValuesHelper
                     $defaultValue
                 );
             } else {
-                $coercedValue = null;
-
                 try {
-                    $coercedValue = valueFromAST($argumentNode->getValue(), $argumentType, $variableValues);
+                    $coercedValues[$argumentName] = valueFromAST($argumentNode->getValue(), $argumentType,
+                        $variableValues);
                 } catch (\Exception $ex) {
                     // Value nodes that cannot be resolved should be treated as invalid values
                     // because there is no undefined value in PHP so that we throw an exception
@@ -102,8 +101,6 @@ class ValuesHelper
                         null, null, null, $ex
                     );
                 }
-
-                $coercedValues[$argumentName] = $coercedValue;
             }
         }
 

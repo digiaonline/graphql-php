@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Schema\Resolver;
 
-use Digia\GraphQL\Error\ResolutionException;
-
 class ResolverRegistry implements ResolverRegistryInterface
 {
     /**
@@ -39,11 +37,7 @@ class ResolverRegistry implements ResolverRegistryInterface
             return null;
         }
 
-        if ($resolver instanceof ResolverInterface) {
-            return $resolver->getResolveMethod($fieldName);
-        }
-
-        throw new ResolutionException(\sprintf('Failed to resolve field "%s" for type "%s".', $fieldName, $typeName));
+        return $resolver->getResolveMethod($fieldName);
     }
 
     /**
@@ -57,11 +51,7 @@ class ResolverRegistry implements ResolverRegistryInterface
             return null;
         }
 
-        if ($resolver instanceof ResolverInterface) {
-            return $resolver->getTypeResolver();
-        }
-
-        throw new ResolutionException(\sprintf('Failed to resolve type for "%s".', $typeName));
+        return $resolver->getTypeResolver();
     }
 
     /**

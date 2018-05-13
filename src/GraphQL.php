@@ -10,8 +10,8 @@ use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
-use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\NodePrinterInterface;
+use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
 use Digia\GraphQL\Schema\Building\SchemaBuildingProvider;
@@ -103,11 +103,11 @@ class GraphQL
      */
     public static function getInstance(): self
     {
-        if (null === static::$instance) {
-            static::$instance = new static();
+        if (null === self::$instance) {
+            self::$instance = new self();
         }
 
-        return static::$instance;
+        return self::$instance;
     }
 
     /**
@@ -142,7 +142,7 @@ class GraphQL
     }
 
     /**
-     * @param Schema                 $schema
+     * @param Schema                          $schema
      * @param string|Source                   $source
      * @param array|ResolverRegistryInterface $resolverRegistry
      * @param array                           $options
@@ -206,8 +206,8 @@ class GraphQL
     }
 
     /**
-     * @param Schema $schema
-     * @param DocumentNode    $document
+     * @param Schema       $schema
+     * @param DocumentNode $document
      * @return array
      */
     public static function validate(Schema $schema, DocumentNode $document): array
@@ -216,13 +216,13 @@ class GraphQL
     }
 
     /**
-     * @param Schema $schema
-     * @param DocumentNode    $document
-     * @param null            $rootValue
-     * @param null            $contextValue
-     * @param array           $variableValues
-     * @param null            $operationName
-     * @param callable|null   $fieldResolver
+     * @param Schema        $schema
+     * @param DocumentNode  $document
+     * @param mixed         $rootValue
+     * @param mixed         $contextValue
+     * @param array         $variableValues
+     * @param string|null   $operationName
+     * @param callable|null $fieldResolver
      * @return ExecutionResult
      */
     public static function execute(
@@ -270,7 +270,7 @@ class GraphQL
      */
     protected function registerProviders(ContainerInterface $container): void
     {
-        foreach (static::$providers as $className) {
+        foreach (self::$providers as $className) {
             $container->addServiceProvider($className);
         }
     }

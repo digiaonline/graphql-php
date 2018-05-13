@@ -12,9 +12,9 @@ trait TypeTrait
     protected $type;
 
     /**
-     * @return TypeNodeInterface
+     * @return TypeNodeInterface|SerializationInterface
      */
-    public function getType(): TypeNodeInterface
+    public function getType()
     {
         return $this->type;
     }
@@ -28,10 +28,10 @@ trait TypeTrait
     }
 
     /**
-     * @param TypeNodeInterface $type
+     * @param TypeNodeInterface|SerializationInterface $type
      * @return $this
      */
-    public function setType(TypeNodeInterface $type)
+    public function setType($type)
     {
         $this->type = $type;
         return $this;

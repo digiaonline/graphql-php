@@ -13,9 +13,9 @@ trait ValueLiteralTrait
     protected $value;
 
     /**
-     * @return ValueNodeInterface|null
+     * @return ValueNodeInterface|SerializationInterface|null
      */
-    public function getValue(): ?ValueNodeInterface
+    public function getValue()
     {
         return $this->value;
     }
@@ -29,10 +29,10 @@ trait ValueLiteralTrait
     }
 
     /**
-     * @param ValueNodeInterface|null $value
+     * @param ValueNodeInterface|SerializationInterface|null $value
      * @return $this
      */
-    public function setValue(?ValueNodeInterface $value)
+    public function setValue($value)
     {
         $this->value = $value;
         return $this;

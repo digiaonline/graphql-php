@@ -137,7 +137,7 @@ class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInte
      */
     public function getInterfaces(): array
     {
-        if (!isset($this->interfaces)) {
+        if ($this->interfaces === null) {
             $this->interfaces = $this->buildInterfaces($this->interfacesOrThunk);
         }
         return $this->interfaces;

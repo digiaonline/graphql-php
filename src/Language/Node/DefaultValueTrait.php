@@ -22,7 +22,7 @@ trait DefaultValueTrait
     /**
      * @return ValueNodeInterface|SerializationInterface|null
      */
-    public function getDefaultValue(): ?ValueNodeInterface
+    public function getDefaultValue()
     {
         return $this->defaultValue;
     }

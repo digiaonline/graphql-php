@@ -778,7 +778,7 @@ class NodeBuilder implements NodeBuilderInterface
      *
      * @param array  $ast
      * @param string $propertyName
-     * @param null   $defaultValue
+     * @param mixed  $defaultValue
      * @return mixed|null
      */
     protected function getValue(array $ast, string $propertyName, $defaultValue = null)
