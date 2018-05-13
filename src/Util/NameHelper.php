@@ -16,7 +16,7 @@ class NameHelper
      * @throws InvariantException
      * @throws ValidationException
      */
-    function assertInvalid(string $name): string
+    public function assertInvalid(string $name): string
     {
         $error = $this->isValidError($name);
 
@@ -35,7 +35,7 @@ class NameHelper
      * @return ValidationException
      * @throws InvariantException
      */
-    function isValidError(string $name, $node = null): ?ValidationException
+    public function isValidError(string $name, $node = null): ?ValidationException
     {
         invariant(\is_string($name), 'Expected string');
 
