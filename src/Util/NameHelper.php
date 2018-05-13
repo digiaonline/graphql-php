@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Util;
 
-use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 
@@ -13,10 +12,9 @@ class NameHelper
      *
      * @param string $name
      * @return string
-     * @throws InvariantException
      * @throws ValidationException
      */
-    function assertInvalid(string $name): string
+    public function assertInvalid(string $name): string
     {
         $error = $this->isValidError($name);
 
@@ -33,12 +31,9 @@ class NameHelper
      * @param string     $name
      * @param mixed|null $node
      * @return ValidationException
-     * @throws InvariantException
      */
-    function isValidError(string $name, $node = null): ?ValidationException
+    public function isValidError(string $name, $node = null): ?ValidationException
     {
-        invariant(\is_string($name), 'Expected string');
-
         if (\strlen($name) > 1 && $name{0} === '_' && $name{1} === '_') {
             return new ValidationException(
                 sprintf('Name "%s" must not begin with "__", which is reserved by GraphQL introspection.', $name),

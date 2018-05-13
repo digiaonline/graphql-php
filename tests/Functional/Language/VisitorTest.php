@@ -57,65 +57,6 @@ class VisitorTest extends TestCase
         ], $visited);
     }
 
-    public function testAllowsEditingANodeBothOnEnterAndOnLeave()
-    {
-        $this->markTestIncomplete('NOT SUPPORTED: We do not support node configuration anymore.');
-
-//        $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
-//
-//        $visitor = new Visitor(
-//            function (NodeInterface $node): ?NodeInterface {
-//                if ($node instanceof OperationDefinitionNode) {
-//                    return $node->setConfigValue('didEnter', true);
-//                }
-//                return $node;
-//            },
-//            function (NodeInterface $node): ?NodeInterface {
-//                if ($node instanceof OperationDefinitionNode) {
-//                    return $node->setConfigValue('didLeave', true);
-//                }
-//                return $node;
-//            }
-//        );
-//
-//        /** @var DocumentNode $editedAst */
-//        $editedAst = $ast->acceptVisitor($visitor);
-//
-//        /** @var ConfigAwareInterface $editedNode */
-//        $editedNode = $editedAst->getDefinitions()[0];
-//
-//        $this->assertTrue($editedNode->getConfigValue('didEnter'));
-//        $this->assertTrue($editedNode->getConfigValue('didLeave'));
-    }
-
-    public function testAllowsEditingTheRootNodeOnEnterAndOnLeave()
-    {
-        $this->markTestIncomplete('NOT SUPPORTED: We do not support node configuration anymore.');
-
-//        $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
-//
-//        $visitor = new Visitor(
-//            function (NodeInterface $node): ?NodeInterface {
-//                if ($node instanceof DocumentNode) {
-//                    return $node->setConfigValue('didEnter', true);
-//                }
-//                return $node;
-//            },
-//            function (NodeInterface $node): ?NodeInterface {
-//                if ($node instanceof DocumentNode) {
-//                    return $node->setConfigValue('didLeave', true);
-//                }
-//                return $node;
-//            }
-//        );
-//
-//        /** @var ConfigAwareTrait $editedAst */
-//        $editedAst = $ast->acceptVisitor($visitor);
-//
-//        $this->assertTrue($editedAst->getConfigValue('didEnter'));
-//        $this->assertTrue($editedAst->getConfigValue('didLeave'));
-    }
-
     public function testAllowsForEditingOnEnter()
     {
         /** @noinspection PhpUnhandledExceptionInspection */
