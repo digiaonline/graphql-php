@@ -83,7 +83,7 @@ class ConflictFinder
      * selection set. Selection sets may be asked for this information multiple
      * times, so this improves the performance of this validator.
      *
-     * @var Map
+     * @var \SplObjectStorage
      */
     protected $cachedFieldsAndFragmentNames;
 
@@ -101,7 +101,7 @@ class ConflictFinder
      */
     public function __construct()
     {
-        $this->cachedFieldsAndFragmentNames = new Map();
+        $this->cachedFieldsAndFragmentNames = new \SplObjectStorage();
         $this->comparedFragmentPairs        = new PairSet();
     }
 
@@ -606,17 +606,15 @@ class ConflictFinder
         SelectionSetNode $selectionSet,
         ?NamedTypeInterface $parentType
     ): ComparisonContext {
-        $cached = $this->cachedFieldsAndFragmentNames->get($selectionSet);
-
-        if (null === $cached) {
+        if (!$this->cachedFieldsAndFragmentNames->offsetExists($selectionSet)) {
             $cached = new ComparisonContext();
 
             $this->collectFieldsAndFragmentNames($cached, $selectionSet, $parentType);
 
-            $this->cachedFieldsAndFragmentNames->set($selectionSet, $cached);
+            $this->cachedFieldsAndFragmentNames->offsetSet($selectionSet, $cached);
         }
 
-        return $cached;
+        return $this->cachedFieldsAndFragmentNames->offsetGet($selectionSet);
     }
 
     /**
@@ -629,10 +627,8 @@ class ConflictFinder
      */
     protected function getReferencedFieldsAndFragmentNames(FragmentDefinitionNode $fragment): ComparisonContext
     {
-        $cached = $this->cachedFieldsAndFragmentNames->get($fragment);
-
-        if (null !== $cached) {
-            return $cached;
+        if ($this->cachedFieldsAndFragmentNames->offsetExists($fragment)) {
+            return $this->cachedFieldsAndFragmentNames->offsetGet($fragment);
         }
 
         /** @var NamedTypeInterface $fragmentType */
