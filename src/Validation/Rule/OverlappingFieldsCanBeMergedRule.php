@@ -5,11 +5,8 @@ namespace Digia\GraphQL\Validation\Rule;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
-use Digia\GraphQL\Validation\Conflict\FindsConflictsTrait;
-use Digia\GraphQL\Validation\Conflict\Map;
-use Digia\GraphQL\Validation\Conflict\PairSet;
+use Digia\GraphQL\Validation\Conflict\ConflictFinder;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
-use Digia\GraphQL\Validation\ValidationContextInterface;
 
 /**
  * Overlapping fields can be merged
@@ -20,23 +17,17 @@ use Digia\GraphQL\Validation\ValidationContextInterface;
  */
 class OverlappingFieldsCanBeMergedRule extends AbstractRule
 {
-    use FindsConflictsTrait;
+    /**
+     * @var ConflictFinder
+     */
+    protected $conflictFinder;
 
     /**
      * OverlappingFieldsCanBeMergedRule constructor.
      */
     public function __construct()
     {
-        $this->cachedFieldsAndFragmentNames = new Map();
-        $this->comparedFragmentPairs        = new PairSet();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getValidationContext(): ValidationContextInterface
-    {
-        return $this->context;
+        $this->conflictFinder = new ConflictFinder();
     }
 
     /**
@@ -44,13 +35,10 @@ class OverlappingFieldsCanBeMergedRule extends AbstractRule
      */
     protected function enterSelectionSet(SelectionSetNode $node): ?NodeInterface
     {
+        $this->conflictFinder->setContext($this->context);
+
         $parentType = $this->context->getParentType();
-        $conflicts  = $this->findConflictsWithinSelectionSet(
-            $this->cachedFieldsAndFragmentNames,
-            $this->comparedFragmentPairs,
-            $node,
-            $parentType
-        );
+        $conflicts  = $this->conflictFinder->findConflictsWithinSelectionSet($node, $parentType);
 
         foreach ($conflicts as $conflict) {
             $this->context->reportError(
