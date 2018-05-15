@@ -5,7 +5,6 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
-use Digia\GraphQL\Schema\DefinitionInterface;
 
 class Argument implements InputValueInterface, ASTNodeAwareInterface, DescriptionAwareInterface
 {
@@ -18,11 +17,11 @@ class Argument implements InputValueInterface, ASTNodeAwareInterface, Descriptio
     /**
      * Argument constructor.
      *
-     * @param string                                                      $name
-     * @param null|string                                                 $description
-     * @param TypeInterface|InputTypeInterface|WrappingTypeInterface|null $type
-     * @param mixed|null                                                  $defaultValue
-     * @param InputValueDefinitionNode|null                               $astNode
+     * @param string                        $name
+     * @param null|string                   $description
+     * @param TypeInterface|null            $type
+     * @param mixed|null                    $defaultValue
+     * @param InputValueDefinitionNode|null $astNode
      */
     public function __construct(
         string $name,

@@ -17,6 +17,8 @@ use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\EnumType;
+use Digia\GraphQL\Type\Definition\ExtensionASTNodesTrait;
+use Digia\GraphQL\Type\Definition\FieldsAwareInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
@@ -94,10 +96,10 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param NamedTypeInterface|ObjectType|InterfaceType $type
+     * @param NamedTypeInterface|FieldsAwareInterface $type
      * @throws InvariantException
      */
-    protected function validateFields(NamedTypeInterface $type): void
+    protected function validateFields($type): void
     {
         $fields = $type->getFields();
 
@@ -533,11 +535,11 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param NamedTypeInterface|ObjectType|InterfaceType $type
+     * @param ObjectType|InterfaceType $type
      * @return ObjectTypeDefinitionNode[]|ObjectTypeExtensionNode[]|InterfaceTypeDefinitionNode[]
      * |InterfaceTypeExtensionNode[]
      */
-    protected function getAllObjectOrInterfaceNodes(NamedTypeInterface $type): array
+    protected function getAllObjectOrInterfaceNodes($type): array
     {
         $node              = $type->getAstNode();
         $extensionASTNodes = $type->getExtensionAstNodes();

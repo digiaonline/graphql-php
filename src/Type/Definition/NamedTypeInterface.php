@@ -2,7 +2,10 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-interface NamedTypeInterface
+/**
+ * Interface for all named types (everything except List and NonNull).
+ */
+interface NamedTypeInterface extends TypeInterface
 {
     /**
      * @return string

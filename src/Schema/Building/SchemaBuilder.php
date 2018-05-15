@@ -90,7 +90,7 @@ class SchemaBuilder implements SchemaBuilderInterface
                 $typeName = $definition->getNameValue();
 
                 if (isset($typeDefinitionMap[$typeName])) {
-                    throw new BuildingException(sprintf('Type "%s" was defined more than once.', $typeName));
+                    throw new BuildingException(\sprintf('Type "%s" was defined more than once.', $typeName));
                 }
 
                 $typeDefinitionMap[$typeName] = $definition;
@@ -124,8 +124,12 @@ class SchemaBuilder implements SchemaBuilderInterface
         $definitions = [];
 
         foreach ($node->getOperationTypes() as $operationTypeDefinition) {
-            /** @var TypeNodeInterface|NamedTypeNode $operationType */
             $operationType = $operationTypeDefinition->getType();
+
+            if (!$operationType instanceof NamedTypeNode) {
+                continue; // TODO: Throw exception?
+            }
+
             $typeName      = $operationType->getNameValue();
             $operation     = $operationTypeDefinition->getOperation();
 
@@ -142,6 +146,7 @@ class SchemaBuilder implements SchemaBuilderInterface
             }
 
             $definitions[$operation] = $operationType;
+
         }
 
         return $definitions;

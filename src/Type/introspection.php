@@ -5,8 +5,8 @@ namespace Digia\GraphQL\Type;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\arraySome;
 
 /**
@@ -117,14 +117,14 @@ function introspectionTypes(): array
 }
 
 /**
- * @param TypeInterface $type
+ * @param NamedTypeInterface $type
  * @return bool
  */
-function isIntrospectionType(TypeInterface $type): bool
+function isIntrospectionType(NamedTypeInterface $type): bool
 {
     return arraySome(
         introspectionTypes(),
-        function (TypeInterface $introspectionType) use ($type) {
+        function (NamedTypeInterface $introspectionType) use ($type) {
             /** @noinspection PhpUndefinedMethodInspection */
             return $type->getName() === $introspectionType->getName();
         }

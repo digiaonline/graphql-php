@@ -8,8 +8,8 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 
-class ScalarType implements TypeInterface, NamedTypeInterface, LeafTypeInterface, InputTypeInterface,
-    OutputTypeInterface, ASTNodeAwareInterface, DescriptionAwareInterface
+class ScalarType implements NamedTypeInterface, LeafTypeInterface, InputTypeInterface,
+    OutputTypeInterface, SerializableTypeInterface, ASTNodeAwareInterface, DescriptionAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

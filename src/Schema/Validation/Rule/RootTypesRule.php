@@ -49,51 +49,5 @@ class RootTypesRule extends AbstractRule
 
             return;
         }
-
-        if (null !== $rootType && !($rootType instanceof ObjectType)) {
-            $this->context->reportError(
-                new SchemaValidationException(
-                    \sprintf(
-                        $operation === 'query'
-                            ? '%s root type must be Object type, it cannot be %s.'
-                            : '%s root type must be Object type if provided, it cannot be %s.',
-                        \ucfirst($operation),
-                        (string)$rootType
-                    ),
-                    null !== $rootType ? [$this->getOperationTypeNode($schema, $rootType, $operation)] : null
-                )
-            );
-
-            return;
-        }
-    }
-
-    /**
-     * @param Schema                        $schema
-     * @param NamedTypeInterface|ObjectType $type
-     * @param string                        $operation
-     * @return NodeInterface|null
-     */
-    protected function getOperationTypeNode(
-        Schema $schema,
-        NamedTypeInterface $type,
-        string $operation
-    ): ?NodeInterface {
-        /** @var SchemaDefinitionNode $node */
-        $node = $schema->getAstNode();
-
-        if (null === $node) {
-            return $type->getAstNode();
-        }
-
-        /** @var OperationTypeDefinitionNode $operationTypeNode */
-        $operationTypeNode = find(
-            $node->getOperationTypes(),
-            function (OperationTypeDefinitionNode $operationType) use ($operation) {
-                return $operationType->getOperation() === $operation;
-            }
-        );
-
-        return $operationTypeNode->getType();
     }
 }

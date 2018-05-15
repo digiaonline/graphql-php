@@ -24,6 +24,12 @@ interface AcceptsVisitorsInterface
     ): ?NodeInterface;
 
     /**
+     * @param NodeInterface|AcceptsVisitorsTrait $node
+     * @return bool
+     */
+    public function determineIsEdited($node): bool;
+
+    /**
      * @return int|null|string
      */
     public function getKey();

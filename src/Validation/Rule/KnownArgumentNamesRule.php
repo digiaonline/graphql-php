@@ -6,6 +6,8 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\FieldNode;
+use Digia\GraphQL\Language\Node\NameAwareInterface;
+use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
 use function Digia\GraphQL\Util\suggestionList;
@@ -56,8 +58,12 @@ class KnownArgumentNamesRule extends AbstractRule
                 return $argument->getName();
             }, $fieldDefinition->getArguments());
 
-            /** @noinspection PhpUndefinedMethodInspection */
-            $suggestions = suggestionList($node->getNameValue(), $options);
+            $suggestions = suggestionList(
+                $node instanceof NameAwareInterface
+                    ? $node->getNameValue()
+                    : 'unknown',
+                $options
+            );
 
             $this->context->reportError(
                 new ValidationException(

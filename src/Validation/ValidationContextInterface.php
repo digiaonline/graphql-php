@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
+use Digia\GraphQL\Language\Visitor\AcceptsVisitorsInterface;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -85,10 +86,10 @@ interface ValidationContextInterface
     public function getRecursiveVariableUsages(OperationDefinitionNode $operation): array;
 
     /**
-     * @param NodeInterface|OperationDefinitionNode|FragmentDefinitionNode $node
+     * @param NodeInterface|OperationDefinitionNode|FragmentDefinitionNode|AcceptsVisitorsInterface $node
      * @return array
      */
-    public function getVariableUsages(NodeInterface $node): array;
+    public function getVariableUsages($node): array;
 
     /**
      * @param OperationDefinitionNode $operation

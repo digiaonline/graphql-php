@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Schema\DefinitionBuilderInterface;
 use Digia\GraphQL\Type\Definition\Directive;
+use Digia\GraphQL\Type\Definition\FieldsAwareInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
@@ -174,14 +175,13 @@ class ExtensionContext implements ExtensionContextInterface
     }
 
     /**
-     * @param TypeInterface $type
+     * @param NamedTypeInterface $type
      * @return TypeInterface
      * @throws InvalidArgumentException
      * @throws InvariantException
      */
-    protected function getExtendedType(TypeInterface $type): TypeInterface
+    protected function getExtendedType(NamedTypeInterface $type): TypeInterface
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $typeName = $type->getName();
 
         if (!isset($this->extendTypeCache[$typeName])) {
@@ -335,14 +335,14 @@ class ExtensionContext implements ExtensionContextInterface
     }
 
     /**
-     * @param TypeInterface|ObjectType|InterfaceType $type
+     * @param NamedTypeInterface|FieldsAwareInterface $type
      * @return array
      * @throws InvalidTypeException
      * @throws InvariantException
      * @throws ExtensionException
      * @throws InvalidArgumentException
      */
-    protected function extendFieldMap(TypeInterface $type): array
+    protected function extendFieldMap($type): array
     {
         $typeName    = $type->getName();
         $newFieldMap = [];

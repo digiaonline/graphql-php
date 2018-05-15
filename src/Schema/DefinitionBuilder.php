@@ -190,8 +190,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @param TypeInterface      $innerType
-     * @param NamedTypeInterface $inputTypeNode
+     * @param NamedTypeInterface $innerType
+     * @param TypeNodeInterface  $inputTypeNode
      * @return TypeInterface
      * @throws InvariantException
      * @throws InvalidTypeException

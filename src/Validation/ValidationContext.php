@@ -12,6 +12,7 @@ use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
+use Digia\GraphQL\Language\Visitor\AcceptsVisitorsInterface;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\Visitor;
 use Digia\GraphQL\Schema\Schema;
@@ -234,10 +235,9 @@ class ValidationContext implements ValidationContextInterface
     }
 
     /**
-     * @param NodeInterface|OperationDefinitionNode|FragmentDefinitionNode $node
      * @inheritdoc
      */
-    public function getVariableUsages(NodeInterface $node): array
+    public function getVariableUsages($node): array
     {
         $usages = $this->variableUsages[(string)$node] ?? null;
 

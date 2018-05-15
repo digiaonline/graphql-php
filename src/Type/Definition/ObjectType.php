@@ -49,7 +49,7 @@ use function Digia\GraphQL\Util\invariant;
  *       }
  *     ]);
  */
-class ObjectType implements TypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
+class ObjectType implements NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
     ASTNodeAwareInterface, DescriptionAwareInterface, FieldsAwareInterface
 {
     use NameTrait;

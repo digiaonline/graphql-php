@@ -34,8 +34,8 @@ use function Digia\GraphQL\Util\toString;
  * Note: If a value is not provided in a definition, the name of the enum value
  * will be used as its internal value.
  */
-class EnumType implements TypeInterface, NamedTypeInterface, InputTypeInterface, LeafTypeInterface,
-    OutputTypeInterface, DescriptionAwareInterface, ASTNodeAwareInterface
+class EnumType implements NamedTypeInterface, InputTypeInterface, LeafTypeInterface,
+    OutputTypeInterface, SerializableTypeInterface, DescriptionAwareInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
