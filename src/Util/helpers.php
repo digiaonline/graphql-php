@@ -21,7 +21,7 @@ function assertInvalidName(string $name): string
 
 /**
  * @param string $name
- * @param null   $node
+ * @param mixed  $node
  * @return ValidationException|null
  */
 function isValidNameError(string $name, $node = null): ?ValidationException

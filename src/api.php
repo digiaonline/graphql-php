@@ -29,7 +29,7 @@ function buildSchema($source, $resolverRegistry = [], array $options = []): Sche
 }
 
 /**
- * @param Schema                 $schema
+ * @param Schema                          $schema
  * @param string|Source                   $source
  * @param array|ResolverRegistryInterface $resolverRegistry
  * @param array                           $options
@@ -87,8 +87,8 @@ function parseType($source, array $options = []): TypeNodeInterface
 }
 
 /**
- * @param Schema $schema
- * @param DocumentNode    $document
+ * @param Schema       $schema
+ * @param DocumentNode $document
  * @return array|ValidationException[]
  */
 function validate(Schema $schema, DocumentNode $document): array
@@ -97,13 +97,13 @@ function validate(Schema $schema, DocumentNode $document): array
 }
 
 /**
- * @param Schema $schema
- * @param DocumentNode    $document
- * @param mixed|null      $rootValue
- * @param mixed|null      $contextValue
- * @param array           $variableValues
- * @param mixed|null      $operationName
- * @param callable|null   $fieldResolver
+ * @param Schema        $schema
+ * @param DocumentNode  $document
+ * @param mixed|null    $rootValue
+ * @param mixed|null    $contextValue
+ * @param array         $variableValues
+ * @param mixed|null    $operationName
+ * @param callable|null $fieldResolver
  * @return ExecutionResult
  */
 function execute(
@@ -136,13 +136,13 @@ function printNode(NodeInterface $node): string
 }
 
 /**
- * @param Schema $schema
- * @param string          $source
- * @param mixed|null      $rootValue
- * @param mixed|null      $contextValue
- * @param array           $variableValues
- * @param mixed|null      $operationName
- * @param callable|null   $fieldResolver
+ * @param Schema        $schema
+ * @param string        $source
+ * @param mixed|null    $rootValue
+ * @param mixed|null    $contextValue
+ * @param array         $variableValues
+ * @param mixed|null    $operationName
+ * @param callable|null $fieldResolver
  * @return array
  * @throws InvariantException
  */
@@ -159,8 +159,6 @@ function graphql(
     if (!empty($schemaValidationErrors)) {
         return (new ExecutionResult([], $schemaValidationErrors))->toArray();
     }
-
-    $document = null;
 
     try {
         $document = parse($source);

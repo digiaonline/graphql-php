@@ -52,13 +52,13 @@ class Token implements SerializationInterface
     /**
      * Token constructor.
      *
-     * @param string     $kind
-     * @param int        $start
-     * @param int        $end
-     * @param int        $line
-     * @param int        $column
-     * @param Token|null $prev
-     * @param null       $value
+     * @param string      $kind
+     * @param int         $start
+     * @param int         $end
+     * @param int         $line
+     * @param int         $column
+     * @param Token|null  $prev
+     * @param string|null $value
      */
     public function __construct(
         string $kind,
@@ -67,7 +67,7 @@ class Token implements SerializationInterface
         int $line = 0,
         int $column = 0,
         ?Token $prev = null,
-        $value = null
+        ?string $value = null
     ) {
         $this->kind   = $kind;
         $this->start  = $start;
@@ -135,9 +135,9 @@ class Token implements SerializationInterface
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getValue()
+    public function getValue(): ?string
     {
         return $this->value;
     }

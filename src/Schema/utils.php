@@ -9,21 +9,21 @@ namespace Digia\GraphQL\Schema;
  */
 function descriptionLines(string $description, int $maxLength): array
 {
-    $lines         = [];
-    $rawLines      = \explode("\n", $description);
-    $rawLinesCount = \count($rawLines);
+    $lines    = [];
+    $rawLines = \explode("\n", $description);
 
-    for ($i = 0; $i < $rawLinesCount; $i++) {
-        if ('' === $rawLines[$i]) {
-            $lines[] = $rawLines[$i];
+    foreach ($rawLines as $rawLine) {
+        if ('' === $rawLine) {
+            $lines[] = $rawLine;
             continue;
         }
 
         // For > 120 character long lines, cut at space boundaries into sublines
         // of ~80 chars.
-        $subLines = breakLine($rawLines[$i], $maxLength);
-        for ($j = 0; $j < \count($subLines); $j++) {
-            $lines[] = $subLines[$j];
+        $subLines = breakLine($rawLine, $maxLength);
+
+        foreach ($subLines as $subLine) {
+            $lines[] = $subLine;
         }
     }
 

@@ -625,7 +625,7 @@ function newDirective(array $config = []): Directive
     );
 
     return new Directive(
-        $config['name'] ?? null,
+        $config['name'],
         $config['description'] ?? null,
         $config['locations'],
         $config['args'] ?? [],

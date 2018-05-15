@@ -6,7 +6,6 @@ use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 
 class ResolveInfo
@@ -22,7 +21,7 @@ class ResolveInfo
     protected $fieldNodes;
 
     /**
-     * @var OutputTypeInterface
+     * @var TypeInterface
      */
     protected $returnType;
 
@@ -116,9 +115,9 @@ class ResolveInfo
     }
 
     /**
-     * @return OutputTypeInterface
+     * @return TypeInterface
      */
-    public function getReturnType(): OutputTypeInterface
+    public function getReturnType(): TypeInterface
     {
         return $this->returnType;
     }
