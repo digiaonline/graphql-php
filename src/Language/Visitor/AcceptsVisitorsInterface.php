@@ -6,13 +6,12 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 interface AcceptsVisitorsInterface
 {
-
     /**
-     * @param VisitorInterface      $visitor
-     * @param string|int|null       $key
-     * @param NodeInterface|null    $parent
-     * @param array|string[]        $path
-     * @param array|NodeInterface[] $ancestors
+     * @param VisitorInterface   $visitor
+     * @param mixed              $key
+     * @param NodeInterface|null $parent
+     * @param string[]           $path
+     * @param NodeInterface[]    $ancestors
      * @return NodeInterface|null
      */
     public function acceptVisitor(
@@ -30,7 +29,7 @@ interface AcceptsVisitorsInterface
     public function determineIsEdited($node): bool;
 
     /**
-     * @return int|null|string
+     * @return mixed
      */
     public function getKey();
 
@@ -40,7 +39,7 @@ interface AcceptsVisitorsInterface
     public function getParent(): ?NodeInterface;
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getPath(): array;
 
