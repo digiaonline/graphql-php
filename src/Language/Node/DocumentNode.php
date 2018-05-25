@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Language\Node;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Util\SerializationInterface;
 
-class DocumentNode extends AbstractNode implements NodeInterface
+class DocumentNode extends AbstractNode
 {
     /**
      * @var DefinitionNodeInterface[]

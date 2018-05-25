@@ -39,12 +39,12 @@ trait AcceptsVisitorsTrait
     protected $isEdited = false;
 
     /**
-     * @param VisitorInterface      $visitor
-     * @param string|int|null       $key
-     * @param NodeInterface|null    $parent
-     * @param array|string[]        $path
-     * @param array|NodeInterface[] $ancestors
-     * @return NodeInterface|AcceptsVisitorsTrait|SerializationInterface|null
+     * @param VisitorInterface   $visitor
+     * @param mixed              $key
+     * @param NodeInterface|null $parent
+     * @param string[]           $path
+     * @param NodeInterface[]    $ancestors
+     * @return NodeInterface|SerializationInterface|null
      */
     public function acceptVisitor(
         VisitorInterface $visitor,
@@ -59,7 +59,7 @@ trait AcceptsVisitorsTrait
         $this->path      = $path;
         $this->ancestors = $ancestors;
 
-        /** @var AcceptsVisitorsTrait $newNode */
+        /** @var NodeInterface $newNode */
         $newNode = clone $this; // TODO: Benchmark cloning
 
         // If the result was null, it means that we should not traverse this branch.
@@ -73,22 +73,22 @@ trait AcceptsVisitorsTrait
             return $newNode;
         }
 
-        foreach (self::$kindToNodesToVisitMap[$this->kind] as $name) {
-            $nodeOrNodes = $this->getNodeOrNodes($name);
+        foreach (self::$kindToNodesToVisitMap[$this->kind] as $property) {
+            $nodeOrNodes = $this->{$property};
 
-            if (null === $nodeOrNodes || empty($nodeOrNodes)) {
+            if (empty($nodeOrNodes)) {
                 continue;
             }
 
-            $newNodeOrNodes = $this->visitNodeOrNodes($nodeOrNodes, $name);
+            $newNodeOrNodes = $this->visitNodeOrNodes($nodeOrNodes, $property, $newNode);
 
-            if (null === $newNodeOrNodes || empty($newNodeOrNodes)) {
+            if (empty($newNodeOrNodes)) {
                 continue;
             }
 
-            $setter = 'set' . ucfirst($name);
+            $setter = 'set' . \ucfirst($property);
 
-            if (method_exists($newNode, $setter)) {
+            if (\method_exists($newNode, $setter)) {
                 $newNode->{$setter}($newNodeOrNodes);
             }
         }
@@ -114,26 +114,21 @@ trait AcceptsVisitorsTrait
     }
 
     /**
-     * @param bool $isEdited
-     * @return $this
-     */
-    public function setIsEdited(bool $isEdited)
-    {
-        $this->isEdited = $isEdited;
-        return $this;
-    }
-
-    /**
-     * @param int $depth
-     * @return NodeInterface|null
+     * @inheritdoc
      */
     public function getAncestor(int $depth = 1): ?NodeInterface
     {
-        return !empty($this->ancestors) ? $this->ancestors[\count($this->ancestors) - $depth] : null;
+        if (empty($this->ancestors)) {
+            return null;
+        }
+
+        $index = \count($this->ancestors) - $depth;
+
+        return $this->ancestors[$index] ?? null;
     }
 
     /**
-     * @return NodeInterface[]
+     * @inheritdoc
      */
     public function getAncestors(): array
     {
@@ -141,7 +136,7 @@ trait AcceptsVisitorsTrait
     }
 
     /**
-     * @return int|null|string
+     * @inheritdoc
      */
     public function getKey()
     {
@@ -149,7 +144,7 @@ trait AcceptsVisitorsTrait
     }
 
     /**
-     * @return NodeInterface|null
+     * @inheritdoc
      */
     public function getParent(): ?NodeInterface
     {
@@ -157,7 +152,7 @@ trait AcceptsVisitorsTrait
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function getPath(): array
     {
@@ -165,26 +160,18 @@ trait AcceptsVisitorsTrait
     }
 
     /**
-     * @param string|int $key
-     * @return array|NodeInterface|NodeInterface[]|null
-     */
-    protected function getNodeOrNodes($key)
-    {
-        return $this->{$key};
-    }
-
-    /**
      * @param NodeInterface|NodeInterface[] $nodeOrNodes
-     * @param string|int                    $key
-     * @return array|NodeInterface|NodeInterface[]|null
+     * @param mixed                         $key
+     * @param NodeInterface                 $parent
+     * @return NodeInterface|NodeInterface[]|null
      */
-    protected function visitNodeOrNodes($nodeOrNodes, $key)
+    protected function visitNodeOrNodes($nodeOrNodes, $key, NodeInterface $parent)
     {
-        $this->addAncestor($this);
+        $this->addAncestor($parent);
 
         $newNodeOrNodes = \is_array($nodeOrNodes)
             ? $this->visitNodes($nodeOrNodes, $key)
-            : $this->visitNode($nodeOrNodes, $key, $this);
+            : $this->visitNode($nodeOrNodes, $key, $parent);
 
         $this->removeAncestor();
 
@@ -270,7 +257,7 @@ trait AcceptsVisitorsTrait
 
     /**
      * Adds an ancestor.
-     * @param NodeInterface|AcceptsVisitorsTrait $node
+     * @param NodeInterface $node
      */
     protected function addAncestor(NodeInterface $node)
     {

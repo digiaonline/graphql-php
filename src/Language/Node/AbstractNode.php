@@ -8,7 +8,7 @@ use Digia\GraphQL\Language\Visitor\AcceptsVisitorsTrait;
 use Digia\GraphQL\Util\ArrayToJsonTrait;
 use Digia\GraphQL\Util\SerializationInterface;
 
-abstract class AbstractNode implements SerializationInterface, AcceptsVisitorsInterface
+abstract class AbstractNode implements NodeInterface, SerializationInterface, AcceptsVisitorsInterface
 {
     use AcceptsVisitorsTrait;
     use ArrayToJsonTrait;
