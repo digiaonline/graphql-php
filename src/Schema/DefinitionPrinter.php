@@ -76,7 +76,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     }
 
     /**
-     * @param mixed $definition
+     * @param DefinitionInterface $definition
      * @return string
      * @throws PrintException
      * @throws InvariantException
@@ -94,9 +94,9 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     }
 
     /**
-     * @param Schema $schema
-     * @param callable        $directiveFilter
-     * @param callable        $typeFilter
+     * @param Schema   $schema
+     * @param callable $directiveFilter
+     * @param callable $typeFilter
      * @return string
      * @throws PrintException
      * @throws InvariantException
@@ -117,8 +117,8 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     }
 
     /**
-     * @param Schema $schema
-     * @param callable        $filter
+     * @param Schema   $schema
+     * @param callable $filter
      * @return array
      */
     protected function getSchemaDirectives(Schema $schema, callable $filter): array
@@ -127,8 +127,8 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     }
 
     /**
-     * @param Schema $schema
-     * @param callable        $filter
+     * @param Schema   $schema
+     * @param callable $filter
      * @return array
      */
     protected function getSchemaTypes(Schema $schema, callable $filter): array

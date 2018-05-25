@@ -121,12 +121,12 @@ class FieldCollector
     }
 
     /**
-     * @param FragmentDefinitionNode|InlineFragmentNode|NodeInterface $fragment
-     * @param ObjectType                                              $type
+     * @param FragmentDefinitionNode|InlineFragmentNode $fragment
+     * @param ObjectType                                $type
      * @return bool
      * @throws InvariantException
      */
-    protected function doesFragmentConditionMatch(NodeInterface $fragment, ObjectType $type): bool
+    protected function doesFragmentConditionMatch($fragment, ObjectType $type): bool
     {
         $typeConditionNode = $fragment->getTypeCondition();
 

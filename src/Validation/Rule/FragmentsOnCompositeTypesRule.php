@@ -47,12 +47,12 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
 
 
     /**
-     * @param NodeInterface|InlineFragmentNode|FragmentDefinitionNode $node
-     * @param callable                                                $errorMessageFunction
+     * @param InlineFragmentNode|FragmentDefinitionNode $node
+     * @param callable                                  $errorMessageFunction
      * @throws \Exception
      * @throws \TypeError
      */
-    protected function validateFragementNode(NodeInterface $node, callable $errorMessageFunction)
+    protected function validateFragementNode($node, callable $errorMessageFunction)
     {
         $typeCondition = $node->getTypeCondition();
 
@@ -62,7 +62,7 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
             if (null !== $type && !($type instanceof CompositeTypeInterface)) {
                 $this->context->reportError(
                     new ValidationException($errorMessageFunction($node),
-                    [$typeCondition]
+                        [$typeCondition]
                     )
                 );
             }

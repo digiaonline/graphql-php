@@ -31,7 +31,7 @@ use function Digia\GraphQL\Util\invariant;
  *       }
  *     ]);
  */
-class UnionType implements AbstractTypeInterface, NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
+class UnionType implements AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface,
     ASTNodeAwareInterface, DescriptionAwareInterface
 {
     use NameTrait;

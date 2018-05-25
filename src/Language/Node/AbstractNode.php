@@ -64,8 +64,6 @@ abstract class AbstractNode implements SerializationInterface, AcceptsVisitorsIn
      */
     public function toArray(): array
     {
-        // TODO: Remove this method when every node implement its own toArray-method.
-
         return [
             'kind' => $this->kind,
             'loc'  => $this->getLocationAsArray(),

@@ -19,6 +19,7 @@ use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
+use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use InvalidArgumentException;
@@ -602,7 +603,7 @@ class Executor
         ResolveInfo $info,
         &$result
     ) {
-        /** @var NamedTypeInterface|TypeInterface $runtimeType */
+        /** @var NamedTypeInterface $runtimeType */
         $runtimeType = \is_string($runtimeTypeOrName)
             ? $this->context->getSchema()->getType($runtimeTypeOrName)
             : $runtimeTypeOrName;
@@ -750,18 +751,17 @@ class Executor
     }
 
     /**
-     * @param LeafTypeInterface $returnType
-     * @param mixed             $result
+     * @param LeafTypeInterface|SerializableTypeInterface $returnType
+     * @param mixed                                       $result
      * @return mixed
      * @throws ExecutionException
      */
-    protected function completeLeafValue(LeafTypeInterface $returnType, &$result)
+    protected function completeLeafValue($returnType, &$result)
     {
-        /** @var ScalarType $returnType */
         $serializedResult = $returnType->serialize($result);
 
         if ($serializedResult === null) {
-            // TODO: Make a function for this type of exception
+            // TODO: Make a method for this type of exception
             throw new ExecutionException(
                 \sprintf('Expected value of type "%s" but received: %s.', (string)$returnType, toString($result))
             );
@@ -873,7 +873,7 @@ class Executor
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @return bool
      */
     protected function isPromise($value): bool

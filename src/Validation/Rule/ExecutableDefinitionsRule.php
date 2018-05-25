@@ -3,8 +3,10 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Language\Node\DefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\ExecutableDefinitionNodeInterface;
+use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
@@ -24,12 +26,9 @@ class ExecutableDefinitionsRule extends AbstractRule
     {
         foreach ($node->getDefinitions() as $definition) {
             if (!$definition instanceof ExecutableDefinitionNodeInterface) {
-                /** @noinspection PhpUndefinedMethodInspection */
                 $this->context->reportError(
                     new ValidationException(
-                        nonExecutableDefinitionMessage(
-                            $definition instanceof SchemaDefinitionNode ? 'schema' : $definition->getNameValue()
-                        ),
+                        nonExecutableDefinitionMessage($this->getDefinitionName($definition)),
                         [$definition]
                     )
                 );
@@ -37,5 +36,20 @@ class ExecutableDefinitionsRule extends AbstractRule
         }
 
         return $node;
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return string
+     */
+    protected function getDefinitionName(NodeInterface $node): string
+    {
+        if ($node instanceof SchemaDefinitionNode) {
+            return 'schema';
+        }
+
+        return $node instanceof NameAwareInterface
+            ? $node->getNameValue()
+            : 'unknown';
     }
 }

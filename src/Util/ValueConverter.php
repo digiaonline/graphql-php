@@ -23,6 +23,7 @@ use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
+use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\parseValue;
 use function Digia\GraphQL\Type\ID;
@@ -144,12 +145,12 @@ class ValueConverter
     }
 
     /**
-     * @param mixed                             $value
-     * @param TypeInterface|ScalarType|EnumType $type
+     * @param mixed                     $value
+     * @param SerializableTypeInterface $type
      * @return ValueNodeInterface|null
      * @throws ConversionException
      */
-    protected function convertScalarOrEnum($value, TypeInterface $type): ?ValueNodeInterface
+    protected function convertScalarOrEnum($value, SerializableTypeInterface $type): ?ValueNodeInterface
     {
         // Since value is an internally represented value, it must be serialized
         // to an externally represented value before converting into an AST.

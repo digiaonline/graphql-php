@@ -3,7 +3,9 @@
 namespace Digia\GraphQL\Validation\Conflict;
 
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\FragmentNodeInterface;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
+use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 
 class ComparisonContext
@@ -46,7 +48,9 @@ class ComparisonContext
      */
     public function registerFragment(NodeInterface $fragment)
     {
-        $this->fragmentNames[] = $fragment->getNameValue();
+        if ($fragment instanceof NameAwareInterface) {
+            $this->fragmentNames[] = $fragment->getNameValue();
+        }
 
         return $this;
     }

@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\GraphQL;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\arraySome;
@@ -62,15 +63,14 @@ function specifiedScalarTypes(): array
 }
 
 /**
- * @param TypeInterface $type
+ * @param NamedTypeInterface $type
  * @return bool
  */
-function isSpecifiedScalarType(TypeInterface $type): bool
+function isSpecifiedScalarType(NamedTypeInterface $type): bool
 {
     return arraySome(
         specifiedScalarTypes(),
         function (ScalarType $specifiedScalarType) use ($type) {
-            /** @noinspection PhpUndefinedMethodInspection */
             return $type->getName() === $specifiedScalarType->getName();
         }
     );

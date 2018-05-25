@@ -249,151 +249,28 @@ class ValidationTest extends TestCase
         ]);
     }
 
-    // rejects a Schema whose query root type is not an Object type
+    // Skip: rejects a Schema whose query root type is not an Object type
 
-    public function testRejectsASchemaWhoseQueryRootTypeIsNotAnObjectType()
-    {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $schema = buildSchema(dedent('
-        input Query {
-          test: String
-        }
-        '));
+    // Skip: rejects a Schema whose mutation type is an input type
 
-        $this->expectInvalid($schema, [
-            [
-                'message'   => 'Query root type must be Object type, it cannot be Query.',
-                'locations' => [locationShorthandToArray([1, 1])],
-            ]
-        ]);
-
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $schemaWithDef = buildSchema(dedent('
-        schema {
-          query: SomeInputObject
-        }
-        
-        input SomeInputObject {
-          test: String
-        }
-        '));
-
-        $this->expectInvalid($schemaWithDef, [
-            [
-                'message'   => 'Query root type must be Object type, it cannot be SomeInputObject.',
-                'locations' => [locationShorthandToArray([2, 10])],
-            ]
-        ]);
-    }
-
-    // rejects a Schema whose mutation type is an input type
-
-    public function testRejectsASchemaWhoseMutationTypeIsAnInputType()
-    {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $schema = buildSchema(dedent('
-        type Query {
-          field: String
-        }
-        
-        input Mutation {
-          test: String
-        }
-        '));
-
-        $this->expectInvalid($schema, [
-            [
-                'message'   => 'Mutation root type must be Object type if provided, it cannot be Mutation.',
-                'locations' => [locationShorthandToArray([5, 1])]
-            ]
-        ]);
-
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $schemaWithDef = buildSchema(dedent('
-        schema {
-          query: Query
-          mutation: SomeInputObject
-        }
-        
-        type Query {
-          field: String
-        }
-        
-        input SomeInputObject {
-          test: String
-        }
-        '));
-
-        $this->expectInvalid($schemaWithDef, [
-            [
-                'message'   => 'Mutation root type must be Object type if provided, it cannot be SomeInputObject.',
-                'locations' => [locationShorthandToArray([3, 13])],
-            ]
-        ]);
-    }
-
-    // rejects a Schema whose subscription type is an input type
-
-    public function testRejectsASchemaWhoseSubscriptionTypeIsAnInputType()
-    {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $schema = buildSchema(dedent('
-        type Query {
-          field: String
-        }
-        
-        input Subscription {
-          test: String
-        }
-        '));
-
-        $this->expectInvalid($schema, [
-            [
-                'message'   => 'Subscription root type must be Object type if provided, it cannot be Subscription.',
-                'locations' => [locationShorthandToArray([5, 1])],
-            ]
-        ]);
-
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $schemaWithDef = buildSchema(dedent('
-        schema {
-          query: Query
-          subscription: SomeInputObject
-        }
-        
-        type Query {
-          field: String
-        }
-        
-        input SomeInputObject {
-          test: String
-        }
-        '));
-
-        $this->expectInvalid($schemaWithDef, [
-            [
-                'message'   => 'Subscription root type must be Object type if provided, it cannot be SomeInputObject.',
-                'locations' => [locationShorthandToArray([3, 17])],
-            ]
-        ]);
-    }
+    // Skip: rejects a Schema whose subscription type is an input type
 
     // rejects a Schema whose directives are incorrectly typed
 
-    public function testRejectsASchemaWhoseDirectivesAreIncorrectlyTypes()
-    {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $schema = newSchema([
-            'query'      => $this->someObjectType,
-            'directives' => ['somedirective']
-        ]);
-
-        $this->expectInvalid($schema, [
-            [
-                'message' => 'Expected directive but got: somedirective.',
-            ]
-        ]);
-    }
+//    public function testRejectsASchemaWhoseDirectivesAreIncorrectlyTypes()
+//    {
+//        /** @noinspection PhpUnhandledExceptionInspection */
+//        $schema = newSchema([
+//            'query'      => $this->someObjectType,
+//            'directives' => ['somedirective']
+//        ]);
+//
+//        $this->expectInvalid($schema, [
+//            [
+//                'message' => 'Expected directive but got: somedirective.',
+//            ]
+//        ]);
+//    }
 
     // Type System: Objects must have fields
 

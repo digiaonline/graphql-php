@@ -59,7 +59,7 @@ trait AcceptsVisitorsTrait
         $this->path      = $path;
         $this->ancestors = $ancestors;
 
-        /** @var NodeInterface|AcceptsVisitorsTrait|null $newNode */
+        /** @var AcceptsVisitorsTrait $newNode */
         $newNode = clone $this; // TODO: Benchmark cloning
 
         // If the result was null, it means that we should not traverse this branch.
@@ -69,7 +69,7 @@ trait AcceptsVisitorsTrait
 
         // If the node was edited, we want to return early
         // to avoid visiting its sub-tree completely.
-        if ($newNode->determineIsEdited($this)) {
+        if ($newNode instanceof AcceptsVisitorsInterface && $newNode->determineIsEdited($this)) {
             return $newNode;
         }
 
@@ -94,6 +94,15 @@ trait AcceptsVisitorsTrait
         }
 
         return $visitor->leaveNode($newNode);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function determineIsEdited($node): bool
+    {
+        $this->isEdited = $this->isEdited || !$this->compareNode($node);
+        return $this->isEdited;
     }
 
     /**
@@ -215,7 +224,7 @@ trait AcceptsVisitorsTrait
      * @param NodeInterface|null                 $parent
      * @return NodeInterface|null
      */
-    protected function visitNode(NodeInterface $node, $key, ?NodeInterface $parent): ?NodeInterface
+    protected function visitNode($node, $key, ?NodeInterface $parent): ?NodeInterface
     {
         $this->addOneToPath($key);
 
@@ -230,16 +239,6 @@ trait AcceptsVisitorsTrait
         $this->removeOneFromPath();
 
         return $newNode;
-    }
-
-    /**
-     * @param NodeInterface|AcceptsVisitorsTrait $node
-     * @return bool
-     */
-    protected function determineIsEdited(NodeInterface $node): bool
-    {
-        $this->isEdited = $this->isEdited || !$this->compareNode($node);
-        return $this->isEdited;
     }
 
     /**
@@ -271,7 +270,7 @@ trait AcceptsVisitorsTrait
 
     /**
      * Adds an ancestor.
-     * @param NodeInterface $node
+     * @param NodeInterface|AcceptsVisitorsTrait $node
      */
     protected function addAncestor(NodeInterface $node)
     {

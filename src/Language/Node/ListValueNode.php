@@ -70,7 +70,7 @@ class ListValueNode extends AbstractNode implements ValueNodeInterface
      */
     public function __toString(): string
     {
-        return \json_encode(\array_map(function (ValueNodeInterface $node) {
+        return \json_encode(\array_map(function (ValueAwareInterface $node) {
             return $node->getValue();
         }, $this->getValues()));
     }

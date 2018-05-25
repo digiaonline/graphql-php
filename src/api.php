@@ -14,7 +14,6 @@ use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\Schema;
-use Digia\GraphQL\Util\SerializationInterface;
 
 /**
  * @param string|Source                   $source
@@ -53,7 +52,7 @@ function validateSchema(Schema $schema): array
 /**
  * @param string|Source $source
  * @param array         $options
- * @return NodeInterface|DocumentNode|SerializationInterface
+ * @return NodeInterface
  * @throws InvariantException
  * @throws SyntaxErrorException
  */
@@ -65,7 +64,7 @@ function parse($source, array $options = []): NodeInterface
 /**
  * @param string|Source $source
  * @param array         $options
- * @return ValueNodeInterface|SerializationInterface
+ * @return ValueNodeInterface
  * @throws InvariantException
  * @throws SyntaxErrorException
  */
@@ -77,7 +76,7 @@ function parseValue($source, array $options = []): ValueNodeInterface
 /**
  * @param string|Source $source
  * @param array         $options
- * @return TypeNodeInterface|SerializationInterface
+ * @return TypeNodeInterface
  * @throws InvariantException
  * @throws SyntaxErrorException
  */

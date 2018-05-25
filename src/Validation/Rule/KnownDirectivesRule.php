@@ -77,9 +77,8 @@ class KnownDirectivesRule extends AbstractRule
      * @param NodeInterface|AcceptsVisitorsInterface $node
      * @return string|null
      */
-    protected function getDirectiveLocationFromASTPath(NodeInterface $node): ?string
+    protected function getDirectiveLocationFromASTPath($node): ?string
     {
-        /** @var NodeInterface $appliedTo */
         $appliedTo = $node->getAncestor();
 
         if ($appliedTo instanceof OperationDefinitionNode) {

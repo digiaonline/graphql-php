@@ -147,7 +147,7 @@ class TypeInfo
     }
 
     /**
-     * @return TypeInterface|CompositeTypeInterface|null
+     * @return CompositeTypeInterface|null
      */
     public function getParentType(): ?CompositeTypeInterface
     {
