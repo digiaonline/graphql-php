@@ -52,11 +52,11 @@ function validateSchema(Schema $schema): array
 /**
  * @param string|Source $source
  * @param array         $options
- * @return NodeInterface
+ * @return DocumentNode
  * @throws InvariantException
  * @throws SyntaxErrorException
  */
-function parse($source, array $options = []): NodeInterface
+function parse($source, array $options = []): DocumentNode
 {
     return GraphQL::parse($source, $options);
 }
