@@ -24,6 +24,11 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface, Ac
     protected $location;
 
     /**
+     * @return array
+     */
+    abstract public function toAST(): array;
+
+    /**
      * AbstractNode constructor.
      *
      * @param string        $kind
@@ -54,7 +59,7 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface, Ac
     /**
      * @return array|null
      */
-    public function getLocationAsArray(): ?array
+    public function getLocationAST(): ?array
     {
         return null !== $this->location ? $this->location->toArray() : null;
     }
@@ -64,10 +69,7 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface, Ac
      */
     public function toArray(): array
     {
-        return [
-            'kind' => $this->kind,
-            'loc'  => $this->getLocationAsArray(),
-        ];
+        return $this->toAST();
     }
 
     /**

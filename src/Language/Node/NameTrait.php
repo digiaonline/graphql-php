@@ -28,7 +28,7 @@ trait NameTrait
     /**
      * @return array|null
      */
-    public function getNameAsArray(): ?array
+    public function getNameAST(): ?array
     {
         return null !== $this->name ? $this->name->toArray() : null;
     }

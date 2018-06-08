@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
-use Digia\GraphQL\Util\SerializationInterface;
 
 class ListValueNode extends AbstractNode implements ValueNodeInterface
 {
@@ -36,10 +35,10 @@ class ListValueNode extends AbstractNode implements ValueNodeInterface
     /**
      * @return array
      */
-    public function getValuesAsArray(): array
+    public function getValuesAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (ValueNodeInterface $node) {
+            return $node->toAST();
         }, $this->values);
     }
 
@@ -56,12 +55,12 @@ class ListValueNode extends AbstractNode implements ValueNodeInterface
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'   => $this->kind,
-            'loc'    => $this->getLocationAsArray(),
-            'values' => $this->getValuesAsArray(),
+            'loc'    => $this->getLocationAST(),
+            'values' => $this->getValuesAST(),
         ];
     }
 

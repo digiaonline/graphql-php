@@ -7,16 +7,12 @@ use Digia\GraphQL\Language\Location;
 class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInterface
 {
     use DefaultValueTrait;
+    use TypeTrait;
 
     /**
      * @var VariableNode
      */
     protected $variable;
-
-    /**
-     * @var TypeNodeInterface
-     */
-    protected $type;
 
     /**
      * VariableDefinitionNode constructor.
@@ -48,31 +44,11 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
     }
 
     /**
-     * @return TypeNodeInterface
+     * @return array
      */
-    public function getType(): TypeNodeInterface
+    public function getVariableAST(): array
     {
-        return $this->type;
-    }
-
-    /**
-     * @param VariableNode $variable
-     * @return VariableDefinitionNode
-     */
-    public function setVariable(VariableNode $variable): VariableDefinitionNode
-    {
-        $this->variable = $variable;
-        return $this;
-    }
-
-    /**
-     * @param TypeNodeInterface $type
-     * @return VariableDefinitionNode
-     */
-    public function setType(TypeNodeInterface $type): VariableDefinitionNode
-    {
-        $this->type = $type;
-        return $this;
+        return $this->variable->toAST();
     }
 
     /**
@@ -81,5 +57,18 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
     public function __toString(): string
     {
         return (string)$this->type;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toAST(): array
+    {
+        return [
+            'kind'     => $this->kind,
+            'variable' => $this->getVariableAST(),
+            'type'     => $this->getTypeAST(),
+            'loc'      => $this->getLocationAST(),
+        ];
     }
 }

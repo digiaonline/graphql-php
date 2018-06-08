@@ -31,14 +31,14 @@ class UnionTypeExtensionNode extends AbstractNode implements TypeExtensionNodeIn
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'       => $this->kind,
-            'name'       => $this->getNameAsArray(),
-            'directives' => $this->getDirectivesAsArray(),
-            'types'      => $this->getTypesAsArray(),
-            'loc'        => $this->getLocationAsArray(),
+            'name'       => $this->getNameAST(),
+            'directives' => $this->getDirectivesAST(),
+            'types'      => $this->getTypesAST(),
+            'loc'        => $this->getLocationAST(),
         ];
     }
 }

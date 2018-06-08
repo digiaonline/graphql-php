@@ -24,11 +24,11 @@ class IntValueNode extends AbstractNode implements ValueNodeInterface, ValueAwar
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'  => $this->kind,
-            'loc'   => $this->getLocationAsArray(),
+            'loc'   => $this->getLocationAST(),
             'value' => $this->value,
         ];
     }

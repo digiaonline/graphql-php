@@ -20,9 +20,9 @@ trait TypeConditionTrait
     /**
      * @return array|null
      */
-    public function getTypeConditionAsArray(): ?array
+    public function getTypeConditionAST(): ?array
     {
-        return null !== $this->typeCondition ? $this->typeCondition->toArray() : null;
+        return null !== $this->typeCondition ? $this->typeCondition->toAST() : null;
     }
 
     /**

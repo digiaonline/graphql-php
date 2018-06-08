@@ -38,15 +38,15 @@ class UnionTypeDefinitionNode extends AbstractNode implements TypeDefinitionNode
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'        => $this->kind,
-            'description' => $this->getDescriptionAsArray(),
-            'name'        => $this->getNameAsArray(),
-            'directives'  => $this->getDirectivesAsArray(),
-            'types'       => $this->getTypesAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'description' => $this->getDescriptionAST(),
+            'name'        => $this->getNameAST(),
+            'directives'  => $this->getDirectivesAST(),
+            'types'       => $this->getTypesAST(),
+            'loc'         => $this->getLocationAST(),
         ];
     }
 }

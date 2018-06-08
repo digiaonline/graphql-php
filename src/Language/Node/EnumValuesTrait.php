@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Util\SerializationInterface;
-
 trait EnumValuesTrait
 {
     /**
@@ -30,10 +28,10 @@ trait EnumValuesTrait
     /**
      * @return array
      */
-    public function getValuesAsArray(): array
+    public function getValuesAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (EnumValueDefinitionNode $node) {
+            return $node->toAST();
         }, $this->values);
     }
 

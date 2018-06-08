@@ -43,16 +43,16 @@ class FieldDefinitionNode extends AbstractNode implements DefinitionNodeInterfac
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'        => $this->kind,
             'description' => $this->description,
-            'name'        => $this->getNameAsArray(),
-            'arguments'   => $this->getArgumentsAsArray(),
-            'type'        => $this->getTypeAsArray(),
-            'directives'  => $this->getDirectivesAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'name'        => $this->getNameAST(),
+            'arguments'   => $this->getArgumentsAST(),
+            'type'        => $this->getTypeAST(),
+            'directives'  => $this->getDirectivesAST(),
+            'loc'         => $this->getLocationAST(),
         ];
     }
 }

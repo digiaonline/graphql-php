@@ -28,4 +28,15 @@ class EnumValueNode extends AbstractNode implements ValueNodeInterface
     {
         return (string)$this->value;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function toAST(): array
+    {
+        return [
+            'kind'  => $this->kind,
+            'value' => $this->value,
+        ];
+    }
 }

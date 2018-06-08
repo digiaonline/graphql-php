@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
 
-class InterfaceTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface,
-    DirectivesAwareInterface, NameAwareInterface
+class InterfaceTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInterface, DirectivesAwareInterface,
+    NameAwareInterface
 {
     use NameTrait;
     use DirectivesTrait;
@@ -31,14 +31,14 @@ class InterfaceTypeExtensionNode extends AbstractNode implements TypeExtensionNo
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'       => $this->kind,
-            'name'       => $this->getNameAsArray(),
-            'directives' => $this->getDirectivesAsArray(),
-            'fields'     => $this->getFieldsAsArray(),
-            'loc'        => $this->getLocationAsArray(),
+            'name'       => $this->getNameAST(),
+            'directives' => $this->getDirectivesAST(),
+            'fields'     => $this->getFieldsAST(),
+            'loc'        => $this->getLocationAST(),
         ];
     }
 }

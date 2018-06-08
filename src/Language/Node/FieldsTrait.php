@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Util\SerializationInterface;
-
 trait FieldsTrait
 {
     /**
@@ -30,10 +28,10 @@ trait FieldsTrait
     /**
      * @return array
      */
-    public function getFieldsAsArray(): array
+    public function getFieldsAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (FieldDefinitionNode $node) {
+            return $node->toAST();
         }, $this->fields);
     }
 

@@ -28,10 +28,10 @@ trait DirectivesTrait
     /**
      * @return array
      */
-    public function getDirectivesAsArray(): array
+    public function getDirectivesAST(): array
     {
         return \array_map(function (DirectiveNode $directive) {
-            return $directive->toArray();
+            return $directive->toAST();
         }, $this->directives);
     }
 

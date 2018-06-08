@@ -39,15 +39,15 @@ class ObjectTypeExtensionNode extends AbstractNode implements TypeExtensionNodeI
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'       => $this->kind,
-            'name'       => $this->getNameAsArray(),
-            'interfaces' => $this->getInterfacesAsArray(),
-            'directives' => $this->getDirectivesAsArray(),
-            'fields'     => $this->getFieldsAsArray(),
-            'loc'        => $this->getLocationAsArray(),
+            'name'       => $this->getNameAST(),
+            'interfaces' => $this->getInterfacesAST(),
+            'directives' => $this->getDirectivesAST(),
+            'fields'     => $this->getFieldsAST(),
+            'loc'        => $this->getLocationAST(),
         ];
     }
 }

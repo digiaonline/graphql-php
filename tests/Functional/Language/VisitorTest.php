@@ -60,7 +60,7 @@ class VisitorTest extends TestCase
     public function testAllowsForEditingOnEnter()
     {
         /** @noinspection PhpUnhandledExceptionInspection */
-        $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
+        $document = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
             function (NodeInterface $node): ?NodeInterface {
@@ -71,25 +71,25 @@ class VisitorTest extends TestCase
             }
         );
 
-        $editedAst = $ast->acceptVisitor($visitor);
+        $editedDocument = $document->acceptVisitor($visitor);
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
             parse('{ a, b, c { a, b, c } }', ['noLocation' => true])->toArray(),
-            $ast->toArray()
+            $document->toAST()
         );
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
             parse('{ a,    c { a,    c } }', ['noLocation' => true])->toArray(),
-            $editedAst->toArray()
+            $editedDocument->toAST()
         );
     }
 
     public function testAllowsForEditingOnLeave()
     {
         /** @noinspection PhpUnhandledExceptionInspection */
-        $ast = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
+        $document = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
             null,
@@ -101,18 +101,18 @@ class VisitorTest extends TestCase
             }
         );
 
-        $editedAst = $ast->acceptVisitor($visitor);
+        $editedDocument = $document->acceptVisitor($visitor);
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
             parse('{ a, b, c { a, b, c } }', ['noLocation' => true])->toArray(),
-            $ast->toArray()
+            $document->toAST()
         );
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
             parse('{ a,    c { a,    c } }', ['noLocation' => true])->toArray(),
-            $editedAst->toArray()
+            $editedDocument->toAST()
         );
     }
 
@@ -1185,10 +1185,10 @@ class VisitorTest extends TestCase
                     ) {
                         return $nodeBuilder->build([
                             'kind'         => NodeKindEnum::FIELD,
-                            'alias'        => $node->getAliasAsArray(),
-                            'name'         => $node->getNameAsArray(),
-                            'arguments'    => $node->getArgumentsAsArray(),
-                            'directives'   => $node->getDirectivesAsArray(),
+                            'alias'        => $node->getAliasAST(),
+                            'name'         => $node->getNameAST(),
+                            'arguments'    => $node->getArgumentsAST(),
+                            'directives'   => $node->getDirectivesAST(),
                             'selectionSet' => [
                                 'kind'   => NodeKindEnum::SELECTION_SET,
                                 'fields' => [

@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
 
-class InlineFragmentNode extends AbstractNode implements FragmentNodeInterface
+class InlineFragmentNode extends AbstractNode implements FragmentNodeInterface, SelectionNodeInterface
 {
     use DirectivesTrait;
     use TypeConditionTrait;
@@ -34,12 +34,14 @@ class InlineFragmentNode extends AbstractNode implements FragmentNodeInterface
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
-            'typeCondition' => $this->getTypeConditionAsArray(),
-            'directives' => $this->getDirectivesAsArray(),
-            'selectionSet' => $this->getSelectionSetAsArray(),
+            'kind'          => $this->kind,
+            'typeCondition' => $this->getTypeConditionAST(),
+            'directives'    => $this->getDirectivesAST(),
+            'selectionSet'  => $this->getSelectionSetAST(),
+            'loc'           => $this->getLocationAST(),
         ];
     }
 }

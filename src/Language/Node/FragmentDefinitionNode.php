@@ -43,14 +43,16 @@ class FragmentDefinitionNode extends AbstractNode implements ExecutableDefinitio
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
-            'name'                => $this->getNameAsArray(),
-            'variableDefinitions' => $this->getVariableDefinitionsAsArray(),
-            'typeCondition'       => $this->getTypeConditionAsArray(),
-            'directives'          => $this->getDirectivesAsArray(),
-            'selectionSet'        => $this->getSelectionSetAsArray(),
+            'kind'                => $this->kind,
+            'name'                => $this->getNameAST(),
+            'variableDefinitions' => $this->getVariableDefinitionsAST(),
+            'typeCondition'       => $this->getTypeConditionAST(),
+            'directives'          => $this->getDirectivesAST(),
+            'selectionSet'        => $this->getSelectionSetAST(),
+            'loc'                 => $this->getLocationAST(),
         ];
     }
 }

@@ -34,7 +34,7 @@ trait AcceptsVisitorsTrait
     protected $ancestors = [];
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isEdited = false;
 

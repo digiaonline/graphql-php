@@ -39,13 +39,13 @@ class OperationTypeDefinitionNode extends AbstractNode implements DefinitionNode
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'      => $this->kind,
             'operation' => $this->operation,
-            'type'      => $this->getTypeAsArray(),
-            'loc'       => $this->getLocationAsArray(),
+            'type'      => $this->getTypeAST(),
+            'loc'       => $this->getLocationAST(),
         ];
     }
 }

@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
-use Digia\GraphQL\Util\SerializationInterface;
 
 class ObjectValueNode extends AbstractNode implements ValueNodeInterface
 {
@@ -36,10 +35,10 @@ class ObjectValueNode extends AbstractNode implements ValueNodeInterface
     /**
      * @return array
      */
-    public function getFieldsAsArray(): array
+    public function getFieldsAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (ObjectFieldNode $node) {
+            return $node->toAST();
         }, $this->fields);
     }
 
@@ -51,5 +50,16 @@ class ObjectValueNode extends AbstractNode implements ValueNodeInterface
     {
         $this->fields = $fields;
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toAST(): array
+    {
+        return [
+            'kind'   => $this->kind,
+            'fields' => $this->getFieldsAST(),
+        ];
     }
 }

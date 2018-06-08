@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
-use Digia\GraphQL\Util\SerializationInterface;
 
 class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionNodeInterface
 {
@@ -40,10 +39,10 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
     /**
      * @return array
      */
-    public function getOperationTypesAsArray(): array
+    public function getOperationTypesAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (OperationTypeDefinitionNode $node) {
+            return $node->toAST();
         }, $this->operationTypes);
     }
 
@@ -60,13 +59,13 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'           => $this->kind,
-            'directives'     => $this->getDirectivesAsArray(),
-            'operationTypes' => $this->getOperationTypesAsArray(),
-            'loc'            => $this->getLocationAsArray(),
+            'directives'     => $this->getDirectivesAST(),
+            'operationTypes' => $this->getOperationTypesAST(),
+            'loc'            => $this->getLocationAST(),
         ];
     }
 }

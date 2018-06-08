@@ -43,16 +43,16 @@ class InputValueDefinitionNode extends AbstractNode implements DefinitionNodeInt
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'         => $this->kind,
-            'description'  => $this->getDescriptionAsArray(),
-            'name'         => $this->getNameAsArray(),
-            'type'         => $this->getTypeAsArray(),
-            'defaultValue' => $this->getDefaultValueAsArray(),
-            'directives'   => $this->getDirectivesAsArray(),
-            'loc'          => $this->getLocationAsArray(),
+            'description'  => $this->getDescriptionAST(),
+            'name'         => $this->getNameAST(),
+            'type'         => $this->getTypeAST(),
+            'defaultValue' => $this->getDefaultValueAST(),
+            'directives'   => $this->getDirectivesAST(),
+            'loc'          => $this->getLocationAST(),
         ];
     }
 }

@@ -43,16 +43,16 @@ class ObjectTypeDefinitionNode extends AbstractNode implements TypeDefinitionNod
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'        => $this->kind,
-            'description' => $this->getDescriptionAsArray(),
-            'name'        => $this->getNameAsArray(),
-            'interfaces'  => $this->getInterfacesAsArray(),
-            'directives'  => $this->getDirectivesAsArray(),
-            'fields'      => $this->getFieldsAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'description' => $this->getDescriptionAST(),
+            'name'        => $this->getNameAST(),
+            'interfaces'  => $this->getInterfacesAST(),
+            'directives'  => $this->getDirectivesAST(),
+            'fields'      => $this->getFieldsAST(),
+            'loc'         => $this->getLocationAST(),
         ];
     }
 }

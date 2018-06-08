@@ -55,16 +55,16 @@ class OperationDefinitionNode extends AbstractNode implements ExecutableDefiniti
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'                => $this->kind,
-            'loc'                 => $this->getLocationAsArray(),
+            'loc'                 => $this->getLocationAST(),
             'operation'           => $this->operation,
-            'name'                => $this->getNameAsArray(),
-            'variableDefinitions' => $this->getVariableDefinitionsAsArray(),
-            'directives'          => $this->getDirectivesAsArray(),
-            'selectionSet'        => $this->getSelectionSetAsArray(),
+            'name'                => $this->getNameAST(),
+            'variableDefinitions' => $this->getVariableDefinitionsAST(),
+            'directives'          => $this->getDirectivesAST(),
+            'selectionSet'        => $this->getSelectionSetAST(),
         ];
     }
 }

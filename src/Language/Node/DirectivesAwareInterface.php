@@ -17,7 +17,7 @@ interface DirectivesAwareInterface
     /**
      * @return array
      */
-    public function getDirectivesAsArray(): array;
+    public function getDirectivesAST(): array;
 
     /**
      * @param DirectiveNode[] $directives

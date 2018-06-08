@@ -28,13 +28,13 @@ class ScalarTypeExtensionNode extends AbstractNode implements TypeExtensionNodeI
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'       => $this->kind,
-            'name'       => $this->getNameAsArray(),
-            'directives' => $this->getDirectivesAsArray(),
-            'loc'        => $this->getLocationAsArray(),
+            'name'       => $this->getNameAST(),
+            'directives' => $this->getDirectivesAST(),
+            'loc'        => $this->getLocationAST(),
         ];
     }
 }

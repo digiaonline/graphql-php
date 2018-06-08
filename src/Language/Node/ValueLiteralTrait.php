@@ -2,18 +2,15 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Util\SerializationInterface;
-
 trait ValueLiteralTrait
 {
-
     /**
-     * @var ValueNodeInterface|SerializationInterface|null
+     * @var ValueNodeInterface|null
      */
     protected $value;
 
     /**
-     * @return ValueNodeInterface|SerializationInterface|null
+     * @return ValueNodeInterface|null
      */
     public function getValue()
     {
@@ -23,13 +20,13 @@ trait ValueLiteralTrait
     /**
      * @return array
      */
-    public function getValueAsArray(): array
+    public function getValueAST(): array
     {
-        return null !== $this->value ? $this->value->toArray() : null;
+        return null !== $this->value ? $this->value->toAST() : null;
     }
 
     /**
-     * @param ValueNodeInterface|SerializationInterface|null $value
+     * @param ValueNodeInterface|null $value
      * @return $this
      */
     public function setValue($value)

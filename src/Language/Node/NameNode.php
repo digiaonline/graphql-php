@@ -29,12 +29,12 @@ class NameNode extends AbstractNode
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'  => $this->kind,
             'value' => $this->value,
-            'loc'   => $this->getLocationAsArray(),
+            'loc'   => $this->getLocationAST(),
         ];
     }
 }

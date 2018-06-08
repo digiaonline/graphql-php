@@ -17,7 +17,7 @@ interface ArgumentsAwareInterface
     /**
      * @return array
      */
-    public function getArgumentsAsArray(): array;
+    public function getArgumentsAST(): array;
 
     /**
      * @param ArgumentNode[] $arguments

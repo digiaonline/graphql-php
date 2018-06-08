@@ -31,14 +31,14 @@ class EnumTypeExtensionNode extends AbstractNode implements TypeExtensionNodeInt
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'       => $this->kind,
-            'name'       => $this->getNameAsArray(),
-            'directives' => $this->getDirectivesAsArray(),
-            'values'     => $this->getValuesAsArray(),
-            'loc'        => $this->getLocationAsArray(),
+            'name'       => $this->getNameAST(),
+            'directives' => $this->getDirectivesAST(),
+            'values'     => $this->getValuesAST(),
+            'loc'        => $this->getLocationAST(),
         ];
     }
 }

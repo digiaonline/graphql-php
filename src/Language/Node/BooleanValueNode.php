@@ -24,12 +24,12 @@ class BooleanValueNode extends AbstractNode implements ValueNodeInterface, Value
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'  => $this->kind,
             'value' => $this->value,
-            'loc'   => $this->getLocationAsArray(),
+            'loc'   => $this->getLocationAST(),
         ];
     }
 }
