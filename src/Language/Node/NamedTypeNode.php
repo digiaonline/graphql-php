@@ -24,12 +24,12 @@ class NamedTypeNode extends AbstractNode implements TypeNodeInterface, NameAware
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind' => $this->kind,
-            'name' => $this->getNameAsArray(),
-            'loc'  => $this->getLocationAsArray(),
+            'name' => $this->getNameAST(),
+            'loc'  => $this->getLocationAST(),
         ];
     }
 }

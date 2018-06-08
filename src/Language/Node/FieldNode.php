@@ -43,16 +43,16 @@ class FieldNode extends AbstractNode implements SelectionNodeInterface, Argument
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'         => $this->kind,
-            'loc'          => $this->getLocationAsArray(),
-            'alias'        => $this->getAliasAsArray(),
-            'name'         => $this->getNameAsArray(),
-            'arguments'    => $this->getArgumentsAsArray(),
-            'directives'   => $this->getDirectivesAsArray(),
-            'selectionSet' => $this->getSelectionSetAsArray(),
+            'loc'          => $this->getLocationAST(),
+            'alias'        => $this->getAliasAST(),
+            'name'         => $this->getNameAST(),
+            'arguments'    => $this->getArgumentsAST(),
+            'directives'   => $this->getDirectivesAST(),
+            'selectionSet' => $this->getSelectionSetAST(),
         ];
     }
 }

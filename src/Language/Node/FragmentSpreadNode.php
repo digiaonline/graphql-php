@@ -4,7 +4,8 @@ namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
 
-class FragmentSpreadNode extends AbstractNode implements FragmentNodeInterface, NameAwareInterface
+class FragmentSpreadNode extends AbstractNode implements FragmentNodeInterface, NameAwareInterface,
+    SelectionNodeInterface
 {
     use NameTrait;
     use DirectivesTrait;
@@ -34,14 +35,14 @@ class FragmentSpreadNode extends AbstractNode implements FragmentNodeInterface, 
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'         => $this->kind,
-            'name'         => $this->getNameAsArray(),
-            'directives'   => $this->getDirectivesAsArray(),
-            'selectionSet' => $this->getSelectionSetAsArray(),
-            'loc'          => $this->getLocationAsArray(),
+            'name'         => $this->getNameAST(),
+            'directives'   => $this->getDirectivesAST(),
+            'selectionSet' => $this->getSelectionSetAST(),
+            'loc'          => $this->getLocationAST(),
         ];
     }
 }

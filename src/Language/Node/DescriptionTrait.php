@@ -28,9 +28,9 @@ trait DescriptionTrait
     /**
      * @return array|null
      */
-    public function getDescriptionAsArray(): ?array
+    public function getDescriptionAST(): ?array
     {
-        return null !== $this->description ? $this->description->toArray() : null;
+        return null !== $this->description ? $this->description->toAST() : null;
     }
 
     /**

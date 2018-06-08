@@ -46,9 +46,9 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
     /**
      * @return array
      */
-    public function getVariableAsArray(): array
+    public function getVariableAST(): array
     {
-        return $this->variable->toArray();
+        return $this->variable->toAST();
     }
 
     /**
@@ -62,13 +62,13 @@ class VariableDefinitionNode extends AbstractNode implements DefinitionNodeInter
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'     => $this->kind,
-            'variable' => $this->getVariableAsArray(),
-            'type'     => $this->getTypeAsArray(),
-            'loc'      => $this->getLocationAsArray(),
+            'variable' => $this->getVariableAST(),
+            'type'     => $this->getTypeAST(),
+            'loc'      => $this->getLocationAST(),
         ];
     }
 }

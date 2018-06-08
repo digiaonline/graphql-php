@@ -27,13 +27,13 @@ class ObjectFieldNode extends AbstractNode implements NameAwareInterface
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'  => $this->kind,
-            'name'  => $this->getNameAsArray(),
-            'value' => $this->getValueAsArray(),
-            'loc'   => $this->getLocationAsArray(),
+            'name'  => $this->getNameAST(),
+            'value' => $this->getValueAST(),
+            'loc'   => $this->getLocationAST(),
         ];
     }
 }

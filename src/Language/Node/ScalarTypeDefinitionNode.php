@@ -31,14 +31,14 @@ class ScalarTypeDefinitionNode extends AbstractNode implements TypeDefinitionNod
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'        => $this->kind,
-            'description' => $this->getDescriptionAsArray(),
-            'name'        => $this->getNameAsArray(),
-            'directives'  => $this->getDirectivesAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'description' => $this->getDescriptionAST(),
+            'name'        => $this->getNameAST(),
+            'directives'  => $this->getDirectivesAST(),
+            'loc'         => $this->getLocationAST(),
         ];
     }
 }

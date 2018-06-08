@@ -17,7 +17,7 @@ interface NameAwareInterface
     /**
      * @return array|null
      */
-    public function getNameAsArray(): ?array;
+    public function getNameAST(): ?array;
 
     /**
      * @param NameNode|null $name

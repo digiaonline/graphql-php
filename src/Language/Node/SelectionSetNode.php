@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
-use Digia\GraphQL\Util\SerializationInterface;
 
 class SelectionSetNode extends AbstractNode
 {
@@ -36,10 +35,10 @@ class SelectionSetNode extends AbstractNode
     /**
      * @return array
      */
-    public function getSelectionsAsArray(): array
+    public function getSelectionsAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (SelectionNodeInterface $node) {
+            return $node->toAST();
         }, $this->selections);
     }
 
@@ -56,12 +55,12 @@ class SelectionSetNode extends AbstractNode
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'       => $this->kind,
-            'loc'        => $this->getLocationAsArray(),
-            'selections' => $this->getSelectionsAsArray(),
+            'loc'        => $this->getLocationAST(),
+            'selections' => $this->getSelectionsAST(),
         ];
     }
 }

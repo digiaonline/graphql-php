@@ -24,12 +24,12 @@ class ListTypeNode extends AbstractNode implements TypeNodeInterface
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind' => $this->kind,
-            'type' => $this->getTypeAsArray(),
-            'loc'  => $this->getLocationAsArray(),
+            'type' => $this->getTypeAST(),
+            'loc'  => $this->getLocationAST(),
         ];
     }
 }

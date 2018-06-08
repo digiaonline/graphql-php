@@ -2,17 +2,15 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Util\SerializationInterface;
-
 trait TypeTrait
 {
     /**
-     * @var TypeNodeInterface|SerializationInterface
+     * @var TypeNodeInterface
      */
     protected $type;
 
     /**
-     * @return TypeNodeInterface|SerializationInterface
+     * @return TypeNodeInterface
      */
     public function getType()
     {
@@ -22,13 +20,13 @@ trait TypeTrait
     /**
      * @return array
      */
-    public function getTypeAsArray(): array
+    public function getTypeAST(): array
     {
-        return $this->type->toArray();
+        return $this->type->toAST();
     }
 
     /**
-     * @param TypeNodeInterface|SerializationInterface $type
+     * @param TypeNodeInterface $type
      * @return $this
      */
     public function setType($type)

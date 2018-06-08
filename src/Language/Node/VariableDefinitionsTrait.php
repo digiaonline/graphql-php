@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Util\SerializationInterface;
-
 trait VariableDefinitionsTrait
 {
     /**
@@ -22,10 +20,10 @@ trait VariableDefinitionsTrait
     /**
      * @return array
      */
-    public function getVariableDefinitionsAsArray(): array
+    public function getVariableDefinitionsAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (VariableDefinitionNode $node) {
+            return $node->toAST();
         }, $this->variableDefinitions);
     }
 

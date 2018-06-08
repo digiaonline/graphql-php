@@ -29,7 +29,7 @@ trait AliasTrait
     /**
      * @return null|string
      */
-    public function getAliasOrNameValue()
+    public function getAliasOrNameValue(): ?string
     {
         return $this->getAliasValue() ?? $this->getNameValue();
     }
@@ -37,9 +37,9 @@ trait AliasTrait
     /**
      * @return array|null
      */
-    public function getAliasAsArray(): ?array
+    public function getAliasAST(): ?array
     {
-        return null !== $this->alias ? $this->alias->toArray() : null;
+        return null !== $this->alias ? $this->alias->toAST() : null;
     }
 
     /**

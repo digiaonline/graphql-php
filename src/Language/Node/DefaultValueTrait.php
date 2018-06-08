@@ -2,12 +2,10 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Util\SerializationInterface;
-
 trait DefaultValueTrait
 {
     /**
-     * @var ValueNodeInterface|SerializationInterface|null
+     * @var ValueNodeInterface|null
      */
     protected $defaultValue;
 
@@ -20,9 +18,9 @@ trait DefaultValueTrait
     }
 
     /**
-     * @return ValueNodeInterface|SerializationInterface|null
+     * @return ValueNodeInterface|null
      */
-    public function getDefaultValue()
+    public function getDefaultValue(): ?ValueNodeInterface
     {
         return $this->defaultValue;
     }
@@ -30,8 +28,8 @@ trait DefaultValueTrait
     /**
      * @return array
      */
-    public function getDefaultValueAsArray(): ?array
+    public function getDefaultValueAST(): ?array
     {
-        return null !== $this->defaultValue ? $this->defaultValue->toArray() : null;
+        return null !== $this->defaultValue ? $this->defaultValue->toAST() : null;
     }
 }

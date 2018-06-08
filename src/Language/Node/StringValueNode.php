@@ -39,11 +39,11 @@ class StringValueNode extends AbstractNode implements ValueNodeInterface, ValueA
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'  => $this->kind,
-            'loc'   => $this->getLocationAsArray(),
+            'loc'   => $this->getLocationAST(),
             'block' => $this->block,
             'value' => $this->value,
         ];

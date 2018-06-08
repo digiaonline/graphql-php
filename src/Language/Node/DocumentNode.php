@@ -3,12 +3,11 @@
 namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
-use Digia\GraphQL\Util\SerializationInterface;
 
 class DocumentNode extends AbstractNode
 {
     /**
-     * @var DefinitionNodeInterface[]
+     * @var DefinitionNodeInterface[]|TypeExtensionNodeInterface[]
      */
     protected $definitions;
 
@@ -26,7 +25,7 @@ class DocumentNode extends AbstractNode
     }
 
     /**
-     * @return DefinitionNodeInterface[]
+     * @return DefinitionNodeInterface[]|TypeExtensionNodeInterface[]
      */
     public function getDefinitions(): array
     {
@@ -36,22 +35,22 @@ class DocumentNode extends AbstractNode
     /**
      * @return array
      */
-    public function getDefinitionsAsArray(): array
+    public function getDefinitionsAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (NodeInterface $node) {
+            return $node->toAST();
         }, $this->definitions);
     }
 
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'        => $this->kind,
-            'definitions' => $this->getDefinitionsAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'definitions' => $this->getDefinitionsAST(),
+            'loc'         => $this->getLocationAST(),
         ];
     }
 

@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language\Node;
 
-use Digia\GraphQL\Util\SerializationInterface;
-
 trait ArgumentsTrait
 {
     /**
@@ -30,10 +28,10 @@ trait ArgumentsTrait
     /**
      * @return array
      */
-    public function getArgumentsAsArray(): array
+    public function getArgumentsAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (ArgumentNode $node) {
+            return $node->toAST();
         }, $this->getArguments());
     }
 

@@ -29,7 +29,7 @@ trait SelectionSetTrait
     /**
      * @return array|null
      */
-    public function getSelectionSetAsArray(): ?array
+    public function getSelectionSetAST(): ?array
     {
         return null !== $this->selectionSet ? $this->selectionSet->toArray() : null;
     }

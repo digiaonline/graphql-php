@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
-use Digia\GraphQL\Util\SerializationInterface;
 
 class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInterface, NameAwareInterface
 {
@@ -51,10 +50,10 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
     /**
      * @return array
      */
-    public function getLocationsAsArray(): array
+    public function getLocationsAST(): array
     {
-        return \array_map(function (SerializationInterface $node) {
-            return $node->toArray();
+        return \array_map(function (NameNode $node) {
+            return $node->toAST();
         }, $this->locations);
     }
 
@@ -71,15 +70,15 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind'        => $this->kind,
-            'description' => $this->getDescriptionAsArray(),
-            'name'        => $this->getNameAsArray(),
-            'arguments'   => $this->getArgumentsAsArray(),
-            'locations'   => $this->getLocationsAsArray(),
-            'loc'         => $this->getLocationAsArray(),
+            'description' => $this->getDescriptionAST(),
+            'name'        => $this->getNameAST(),
+            'arguments'   => $this->getArgumentsAST(),
+            'locations'   => $this->getLocationsAST(),
+            'loc'         => $this->getLocationAST(),
         ];
     }
 }

@@ -19,11 +19,11 @@ class NullValueNode extends AbstractNode implements ValueNodeInterface
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toAST(): array
     {
         return [
             'kind' => $this->kind,
-            'loc'  => $this->getLocationAsArray(),
+            'loc'  => $this->getLocationAST(),
         ];
     }
 }
