@@ -52,4 +52,15 @@ class ObjectValueNode extends AbstractNode implements ValueNodeInterface
         $this->fields = $fields;
         return $this;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind'   => $this->kind,
+            'fields' => $this->getFieldsAsArray(),
+        ];
+    }
 }

@@ -30,4 +30,18 @@ class FragmentSpreadNode extends AbstractNode implements FragmentNodeInterface, 
         $this->directives   = $directives;
         $this->selectionSet = $selectionSet;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind'         => $this->kind,
+            'name'         => $this->getNameAsArray(),
+            'directives'   => $this->getDirectivesAsArray(),
+            'selectionSet' => $this->getSelectionSetAsArray(),
+            'loc'          => $this->getLocationAsArray(),
+        ];
+    }
 }

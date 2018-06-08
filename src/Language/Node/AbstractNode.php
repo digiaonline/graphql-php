@@ -60,17 +60,6 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface, Ac
     }
 
     /**
-     * @return array
-     */
-    public function toArray(): array
-    {
-        return [
-            'kind' => $this->kind,
-            'loc'  => $this->getLocationAsArray(),
-        ];
-    }
-
-    /**
      * @return string
      */
     public function __toString(): string

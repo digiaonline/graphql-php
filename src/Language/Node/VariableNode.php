@@ -20,4 +20,15 @@ class VariableNode extends AbstractNode implements ValueNodeInterface, NameAware
 
         $this->name = $name;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind' => $this->kind,
+            'name' => $this->getNameAsArray(),
+        ];
+    }
 }

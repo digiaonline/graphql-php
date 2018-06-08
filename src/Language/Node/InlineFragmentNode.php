@@ -37,9 +37,11 @@ class InlineFragmentNode extends AbstractNode implements FragmentNodeInterface
     public function toArray(): array
     {
         return [
+            'kind'          => $this->kind,
             'typeCondition' => $this->getTypeConditionAsArray(),
-            'directives' => $this->getDirectivesAsArray(),
-            'selectionSet' => $this->getSelectionSetAsArray(),
+            'directives'    => $this->getDirectivesAsArray(),
+            'selectionSet'  => $this->getSelectionSetAsArray(),
+            'loc'           => $this->getLocationAsArray(),
         ];
     }
 }

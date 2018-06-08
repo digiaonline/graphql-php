@@ -15,4 +15,15 @@ class NullValueNode extends AbstractNode implements ValueNodeInterface
     {
         parent::__construct(NodeKindEnum::NULL, $location);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        return [
+            'kind' => $this->kind,
+            'loc'  => $this->getLocationAsArray(),
+        ];
+    }
 }

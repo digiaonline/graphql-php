@@ -30,10 +30,10 @@ class DirectiveNode extends AbstractNode implements ArgumentsAwareInterface, Nam
     public function toArray(): array
     {
         return [
-            'kind' => $this->kind,
-            'name' => $this->getNameAsArray(),
+            'kind'      => $this->kind,
+            'name'      => $this->getNameAsArray(),
             'arguments' => $this->getArgumentsAsArray(),
-            'location' => $this->getLocationAsArray(),
+            'location'  => $this->getLocationAsArray(),
         ];
     }
 }
