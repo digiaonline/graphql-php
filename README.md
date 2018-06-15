@@ -63,7 +63,7 @@ to build an executable schema.
 
 ### Language
 
-Defines the GraphQL language and the associated abstact syntax tree (AST).
+Defines the GraphQL language and the associated abstract syntax tree (AST).
 
 **Package lead: [@crisu83](https://github.com/crisu83/)**
 

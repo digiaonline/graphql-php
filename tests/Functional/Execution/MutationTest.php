@@ -109,7 +109,7 @@ class MutationTest extends TestCase
         $this->assertEquals($expected, $result->toArray());
     }
 
-    //evaluates mutations correctly in the presense of a failed mutation
+    //evaluates mutations correctly in the presence of a failed mutation
 
     /**
      * @throws \Digia\GraphQL\Error\InvariantException
