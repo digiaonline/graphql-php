@@ -63,7 +63,7 @@ to build an executable schema.
 
 ### Language
 
-Defines the GraphQL language and the associated Abstact Syntax Tree (AST).
+Defines the GraphQL language and the associated abstact syntax tree (AST).
 
 **Package lead: [@crisu83](https://github.com/crisu83/)**
 
@@ -73,14 +73,14 @@ We want to encourage developers to use the official GraphQL parser written in C+
 performance is outstanding. However, we will also provide a shim for the parser, which will allow developers to use 
 this library without installing a custom PHP extension in their environment.
 
-The official GraphQL parser takes a GQL string as its input and returns the corresponding Abstract Syntax Tree (AST), 
+The official GraphQL parser takes a GQL string as its input and returns the corresponding abstract syntax tree (AST), 
 an associative array in PHP, as its output. Most of the GraphQL implementations (across all languages) take a
 different approach where they convert the AST directly into nodes (class instances in PHP). While this approach might 
 be a little bit faster, it introduces tight coupling between the parser and the rest of the library, which we think is 
 short-sighted. Instead we decided to take a different approach, where the parser produces the AST as an associative 
 array. This will allow developers to use the C++ parser if they want more performance.
 
-#### Abstract Syntax Tree
+#### Abstract syntax tree
 
 We introduced a builder system, using the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern),
 for converting the AST into nodes which allows developers to implement their own builders, without changing our code.
