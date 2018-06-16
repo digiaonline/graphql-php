@@ -59,7 +59,7 @@ function suggestionList(string $input, array $options): array
 
     /** @noinspection ForeachInvariantsInspection */
     for ($i = 0; $i < $oLength; $i++) {
-        // Comparison must be case-insenstive.
+        // Comparison must be case-insensitive.
         $distance = \levenshtein(\strtolower($input), \strtolower($options[$i]));
         $threshold = \max($inputThreshold, \strlen($options[$i]) / 2, 1);
         if ($distance <= $threshold) {

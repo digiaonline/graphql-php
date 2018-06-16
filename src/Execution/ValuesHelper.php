@@ -36,7 +36,7 @@ class ValuesHelper
      * Prepares an object map of argument values given a list of argument
      * definitions and list of argument AST nodes.
      *
-     * @see http://facebook.github.io/graphql/October2016/#CoerceArgumentValues()
+     * @see https://facebook.github.io/graphql/October2016/#CoerceArgumentValues()
      *
      * @param Field|Directive         $definition
      * @param ArgumentsAwareInterface $node
