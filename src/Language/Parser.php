@@ -62,6 +62,25 @@ class Parser implements ParserInterface
     protected $lexer;
 
     /**
+     * @param string $name
+     * @param array  $arguments
+     * @return mixed
+     *
+     * @throws InvariantException
+     * @throws SyntaxErrorException
+     */
+    public function __call(string $name, array $arguments)
+    {
+        $lexCallback = str_replace('parse', 'lex', $name);
+
+        if (\method_exists($this, $lexCallback)) {
+            return $this->parsePartial([$this, $lexCallback], ...$arguments);
+        }
+
+        return $this;
+    }
+
+    /**
      * Given a GraphQL source, parses it into a Document.
      * Throws GraphQLError if a syntax error is encountered.
      *
@@ -74,7 +93,26 @@ class Parser implements ParserInterface
     {
         $this->lexer = $this->createLexer($source, $options);
 
-        return $this->parseDocument();
+        return $this->lexDocument();
+    }
+
+    /**
+     * @param callable      $lexCallback
+     * @param Source|string $source
+     * @param array         $options
+     * @return mixed
+     * @throws InvariantException
+     * @throws SyntaxErrorException
+     */
+    protected function parsePartial(callable $lexCallback, $source, array $options = [])
+    {
+        $this->lexer = $this->createLexer($source, $options);
+
+        $this->expect(TokenKindEnum::SOF);
+        $node = \call_user_func($lexCallback, $source, $options);
+        $this->expect(TokenKindEnum::EOF);
+
+        return $node;
     }
 
     /**
@@ -88,13 +126,14 @@ class Parser implements ParserInterface
      * @inheritdoc
      * @throws SyntaxErrorException
      * @throws InvariantException
+     * @todo Deprecate this method in favor of `parsePartial`
      */
     public function parseValue($source, array $options = []): NodeInterface
     {
         $this->lexer = $this->createLexer($source, $options);
 
         $this->expect(TokenKindEnum::SOF);
-        $value = $this->parseValueLiteral();
+        $value = $this->lexValueLiteral();
         $this->expect(TokenKindEnum::EOF);
 
         return $value;
@@ -111,13 +150,14 @@ class Parser implements ParserInterface
      * @inheritdoc
      * @throws SyntaxErrorException
      * @throws InvariantException
+     * @todo Deprecate this method in favor of `parsePartial`
      */
     public function parseType($source, array $options = []): TypeNodeInterface
     {
         $this->lexer = $this->createLexer($source, $options);
 
         $this->expect(TokenKindEnum::SOF);
-        $type = $this->parseTypeReference();
+        $type = $this->lexTypeReference();
         $this->expect(TokenKindEnum::EOF);
 
         return $type;
@@ -129,7 +169,7 @@ class Parser implements ParserInterface
      * @return NameNode
      * @throws SyntaxErrorException
      */
-    protected function parseName(): NameNode
+    protected function lexName(): NameNode
     {
         $token = $this->expect(TokenKindEnum::NAME);
 
@@ -145,7 +185,7 @@ class Parser implements ParserInterface
      * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
-    public function parseDocument(): DocumentNode
+    protected function lexDocument(): DocumentNode
     {
         $start = $this->lexer->getToken();
 
@@ -154,7 +194,7 @@ class Parser implements ParserInterface
         $definitions = [];
 
         do {
-            $definitions[] = $this->parseDefinition();
+            $definitions[] = $this->lexDefinition();
         } while (!$this->skip(TokenKindEnum::EOF));
 
         return new DocumentNode($definitions, $this->createLocation($start));
@@ -169,7 +209,7 @@ class Parser implements ParserInterface
      * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
-    protected function parseDefinition(): NodeInterface
+    protected function lexDefinition(): NodeInterface
     {
         if ($this->peek(TokenKindEnum::NAME)) {
             $token = $this->lexer->getToken();
@@ -179,7 +219,7 @@ class Parser implements ParserInterface
                 case KeywordEnum::MUTATION:
                 case KeywordEnum::SUBSCRIPTION:
                 case KeywordEnum::FRAGMENT:
-                    return $this->parseExecutableDefinition();
+                    return $this->lexExecutableDefinition();
                 case KeywordEnum::SCHEMA:
                 case KeywordEnum::SCALAR:
                 case KeywordEnum::TYPE:
@@ -189,12 +229,12 @@ class Parser implements ParserInterface
                 case KeywordEnum::INPUT:
                 case KeywordEnum::EXTEND:
                 case KeywordEnum::DIRECTIVE:
-                    return $this->parseTypeSystemDefinition();
+                    return $this->lexTypeSystemDefinition();
             }
         } elseif ($this->peek(TokenKindEnum::BRACE_L)) {
-            return $this->parseExecutableDefinition();
+            return $this->lexExecutableDefinition();
         } elseif ($this->peekDescription()) {
-            return $this->parseTypeSystemDefinition();
+            return $this->lexTypeSystemDefinition();
         }
 
         throw $this->unexpected();
@@ -208,7 +248,7 @@ class Parser implements ParserInterface
      * @return NodeInterface
      * @throws SyntaxErrorException
      */
-    protected function parseExecutableDefinition(): NodeInterface
+    protected function lexExecutableDefinition(): NodeInterface
     {
         if ($this->peek(TokenKindEnum::NAME)) {
             // Valid names are: query, mutation, subscription and fragment
@@ -218,13 +258,13 @@ class Parser implements ParserInterface
                 case KeywordEnum::QUERY:
                 case KeywordEnum::MUTATION:
                 case KeywordEnum::SUBSCRIPTION:
-                    return $this->parseOperationDefinition();
+                    return $this->lexOperationDefinition();
                 case KeywordEnum::FRAGMENT:
-                    return $this->parseFragmentDefinition();
+                    return $this->lexFragmentDefinition();
             }
         } elseif ($this->peek(TokenKindEnum::BRACE_L)) {
             // Anonymous query
-            return $this->parseOperationDefinition();
+            return $this->lexOperationDefinition();
         }
 
         throw $this->unexpected();
@@ -240,7 +280,7 @@ class Parser implements ParserInterface
      * @return OperationDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseOperationDefinition(): OperationDefinitionNode
+    protected function lexOperationDefinition(): OperationDefinitionNode
     {
         $start = $this->lexer->getToken();
 
@@ -251,23 +291,23 @@ class Parser implements ParserInterface
                 null,
                 [],
                 [],
-                $this->parseSelectionSet(),
+                $this->lexSelectionSet(),
                 $this->createLocation($start)
             );
         }
 
-        $operation = $this->parseOperationType();
+        $operation = $this->lexOperationType();
 
         if ($this->peek(TokenKindEnum::NAME)) {
-            $name = $this->parseName();
+            $name = $this->lexName();
         }
 
         return new OperationDefinitionNode(
             $operation,
             $name ?? null,
-            $this->parseVariableDefinitions(),
-            $this->parseDirectives(),
-            $this->parseSelectionSet(),
+            $this->lexVariableDefinitions(),
+            $this->lexDirectives(),
+            $this->lexSelectionSet(),
             $this->createLocation($start)
         );
     }
@@ -278,7 +318,7 @@ class Parser implements ParserInterface
      * @return string
      * @throws SyntaxErrorException
      */
-    protected function parseOperationType(): string
+    protected function lexOperationType(): string
     {
         $token = $this->expect(TokenKindEnum::NAME);
         $value = $token->getValue();
@@ -296,12 +336,12 @@ class Parser implements ParserInterface
      * @return array
      * @throws SyntaxErrorException
      */
-    protected function parseVariableDefinitions(): array
+    protected function lexVariableDefinitions(): array
     {
         return $this->peek(TokenKindEnum::PAREN_L)
             ? $this->many(
                 TokenKindEnum::PAREN_L,
-                [$this, 'parseVariableDefinition'],
+                [$this, 'lexVariableDefinition'],
                 TokenKindEnum::PAREN_R
             )
             : [];
@@ -313,7 +353,7 @@ class Parser implements ParserInterface
      * @return VariableDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseVariableDefinition(): VariableDefinitionNode
+    protected function lexVariableDefinition(): VariableDefinitionNode
     {
         $start = $this->lexer->getToken();
 
@@ -322,14 +362,14 @@ class Parser implements ParserInterface
          */
         $parseType = function (): TypeNodeInterface {
             $this->expect(TokenKindEnum::COLON);
-            return $this->parseTypeReference();
+            return $this->lexTypeReference();
         };
 
         return new VariableDefinitionNode(
-            $this->parseVariable(),
+            $this->lexVariable(),
             $parseType(),
             $this->skip(TokenKindEnum::EQUALS)
-                ? $this->parseValueLiteral(true)
+                ? $this->lexValueLiteral(true)
                 : null,
             $this->createLocation($start)
         );
@@ -341,13 +381,13 @@ class Parser implements ParserInterface
      * @return VariableNode
      * @throws SyntaxErrorException
      */
-    protected function parseVariable(): VariableNode
+    protected function lexVariable(): VariableNode
     {
         $start = $this->lexer->getToken();
 
         $this->expect(TokenKindEnum::DOLLAR);
 
-        return new VariableNode($this->parseName(), $this->createLocation($start));
+        return new VariableNode($this->lexName(), $this->createLocation($start));
     }
 
     /**
@@ -356,14 +396,14 @@ class Parser implements ParserInterface
      * @return SelectionSetNode
      * @throws SyntaxErrorException
      */
-    protected function parseSelectionSet(): SelectionSetNode
+    protected function lexSelectionSet(): SelectionSetNode
     {
         $start = $this->lexer->getToken();
 
         return new SelectionSetNode(
             $this->many(
                 TokenKindEnum::BRACE_L,
-                [$this, 'parseSelection'],
+                [$this, 'lexSelection'],
                 TokenKindEnum::BRACE_R
             ),
             $this->createLocation($start)
@@ -379,11 +419,11 @@ class Parser implements ParserInterface
      * @return NodeInterface|FragmentNodeInterface|FieldNode
      * @throws SyntaxErrorException
      */
-    protected function parseSelection(): NodeInterface
+    protected function lexSelection(): NodeInterface
     {
         return $this->peek(TokenKindEnum::SPREAD)
-            ? $this->parseFragment()
-            : $this->parseField();
+            ? $this->lexFragment()
+            : $this->lexField();
     }
 
     /**
@@ -394,15 +434,15 @@ class Parser implements ParserInterface
      * @return FieldNode
      * @throws SyntaxErrorException
      */
-    protected function parseField(): FieldNode
+    protected function lexField(): FieldNode
     {
         $start = $this->lexer->getToken();
 
-        $nameOrAlias = $this->parseName();
+        $nameOrAlias = $this->lexName();
 
         if ($this->skip(TokenKindEnum::COLON)) {
             $alias = $nameOrAlias;
-            $name  = $this->parseName();
+            $name  = $this->lexName();
         } else {
             $name = $nameOrAlias;
         }
@@ -410,10 +450,10 @@ class Parser implements ParserInterface
         return new FieldNode(
             $alias ?? null,
             $name,
-            $this->parseArguments(false),
-            $this->parseDirectives(),
+            $this->lexArguments(false),
+            $this->lexDirectives(),
             $this->peek(TokenKindEnum::BRACE_L)
-                ? $this->parseSelectionSet()
+                ? $this->lexSelectionSet()
                 : null,
             $this->createLocation($start)
         );
@@ -422,17 +462,17 @@ class Parser implements ParserInterface
     /**
      * Arguments[Const] : ( Argument[?Const]+ )
      *
-     * @param bool           $isConst
+     * @param bool $isConst
      * @return array
      * @throws SyntaxErrorException
      */
-    protected function parseArguments(bool $isConst = false): ?array
+    protected function lexArguments(bool $isConst = false): ?array
     {
         /**
          * @return ArgumentNode
          */
         $parseFunction = function () use ($isConst): ArgumentNode {
-            return $this->parseArgument($isConst);
+            return $this->lexArgument($isConst);
         };
 
         return $this->peek(TokenKindEnum::PAREN_L)
@@ -447,11 +487,11 @@ class Parser implements ParserInterface
     /**
      * Argument[Const] : Name : Value[?Const]
      *
-     * @param bool           $isConst
+     * @param bool $isConst
      * @return ArgumentNode
      * @throws SyntaxErrorException
      */
-    protected function parseArgument(bool $isConst = false): ArgumentNode
+    protected function lexArgument(bool $isConst = false): ArgumentNode
     {
         $start = $this->lexer->getToken();
 
@@ -460,11 +500,11 @@ class Parser implements ParserInterface
          */
         $parseValue = function () use ($isConst): NodeInterface {
             $this->expect(TokenKindEnum::COLON);
-            return $this->parseValueLiteral($isConst);
+            return $this->lexValueLiteral($isConst);
         };
 
         return new ArgumentNode(
-            $this->parseName(),
+            $this->lexName(),
             $parseValue(),
             $this->createLocation($start)
         );
@@ -482,7 +522,7 @@ class Parser implements ParserInterface
      * @return FragmentNodeInterface
      * @throws SyntaxErrorException
      */
-    protected function parseFragment(): FragmentNodeInterface
+    protected function lexFragment(): FragmentNodeInterface
     {
         $start = $this->lexer->getToken();
 
@@ -492,8 +532,8 @@ class Parser implements ParserInterface
 
         if (KeywordEnum::ON !== $token->getValue() && $this->peek(TokenKindEnum::NAME)) {
             return new FragmentSpreadNode(
-                $this->parseFragmentName($token),
-                $this->parseDirectives(),
+                $this->lexFragmentName($token),
+                $this->lexDirectives(),
                 null,
                 $this->createLocation($start)
             );
@@ -501,13 +541,13 @@ class Parser implements ParserInterface
 
         if (KeywordEnum::ON === $token->getValue()) {
             $this->lexer->advance();
-            $typeCondition = $this->parseNamedType();
+            $typeCondition = $this->lexNamedType();
         }
 
         return new InlineFragmentNode(
             $typeCondition ?? null,
-            $this->parseDirectives(),
-            $this->parseSelectionSet(),
+            $this->lexDirectives(),
+            $this->lexSelectionSet(),
             $this->createLocation($start)
         );
     }
@@ -521,7 +561,7 @@ class Parser implements ParserInterface
      * @return FragmentDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseFragmentDefinition(): FragmentDefinitionNode
+    protected function lexFragmentDefinition(): FragmentDefinitionNode
     {
         $start = $this->lexer->getToken();
 
@@ -529,15 +569,15 @@ class Parser implements ParserInterface
 
         $parseTypeCondition = function () {
             $this->expectKeyword(KeywordEnum::ON);
-            return $this->parseNamedType();
+            return $this->lexNamedType();
         };
 
         return new FragmentDefinitionNode(
-            $this->parseFragmentName(),
-            $this->parseVariableDefinitions(),
+            $this->lexFragmentName(),
+            $this->lexVariableDefinitions(),
             $parseTypeCondition(),
-            $this->parseDirectives(),
-            $this->parseSelectionSet(),
+            $this->lexDirectives(),
+            $this->lexSelectionSet(),
             $this->createLocation($start)
         );
     }
@@ -549,7 +589,7 @@ class Parser implements ParserInterface
      * @return NameNode
      * @throws SyntaxErrorException
      */
-    protected function parseFragmentName(?Token $token = null): NameNode
+    protected function lexFragmentName(?Token $token = null): NameNode
     {
         if (null === $token) {
             $token = $this->lexer->getToken();
@@ -559,7 +599,7 @@ class Parser implements ParserInterface
             throw $this->unexpected();
         }
 
-        return $this->parseName();
+        return $this->lexName();
     }
 
     // Implements the parsing rules in the Values section.
@@ -586,16 +626,16 @@ class Parser implements ParserInterface
      * @return NodeInterface|ValueNodeInterface|TypeNodeInterface
      * @throws SyntaxErrorException
      */
-    protected function parseValueLiteral(bool $isConst = false): NodeInterface
+    protected function lexValueLiteral(bool $isConst = false): NodeInterface
     {
         $token = $this->lexer->getToken();
         $value = $token->getValue();
 
         switch ($token->getKind()) {
             case TokenKindEnum::BRACKET_L:
-                return $this->parseList($isConst);
+                return $this->lexList($isConst);
             case TokenKindEnum::BRACE_L:
-                return $this->parseObject($isConst);
+                return $this->lexObject($isConst);
             case TokenKindEnum::INT:
                 $this->lexer->advance();
                 return new IntValueNode($value, $this->createLocation($token));
@@ -604,7 +644,7 @@ class Parser implements ParserInterface
                 return new FloatValueNode($value, $this->createLocation($token));
             case TokenKindEnum::STRING:
             case TokenKindEnum::BLOCK_STRING:
-                return $this->parseStringLiteral();
+                return $this->lexStringLiteral();
             case TokenKindEnum::NAME:
                 if ($value === 'true' || $value === 'false') {
                     $this->lexer->advance();
@@ -620,7 +660,7 @@ class Parser implements ParserInterface
                 return new EnumValueNode($value, $this->createLocation($token));
             case TokenKindEnum::DOLLAR:
                 if (!$isConst) {
-                    return $this->parseVariable();
+                    return $this->lexVariable();
                 }
                 break;
         }
@@ -631,7 +671,7 @@ class Parser implements ParserInterface
     /**
      * @return StringValueNode
      */
-    protected function parseStringLiteral(): StringValueNode
+    protected function lexStringLiteral(): StringValueNode
     {
         $token = $this->lexer->getToken();
 
@@ -653,12 +693,12 @@ class Parser implements ParserInterface
      * @return ListValueNode
      * @throws SyntaxErrorException
      */
-    protected function parseList(bool $isConst): ListValueNode
+    protected function lexList(bool $isConst): ListValueNode
     {
         $start = $this->lexer->getToken();
 
         $parseFunction = function () use ($isConst) {
-            return $this->parseValueLiteral($isConst);
+            return $this->lexValueLiteral($isConst);
         };
 
         return new ListValueNode(
@@ -680,7 +720,7 @@ class Parser implements ParserInterface
      * @return ObjectValueNode
      * @throws SyntaxErrorException
      */
-    protected function parseObject(bool $isConst): ObjectValueNode
+    protected function lexObject(bool $isConst): ObjectValueNode
     {
         $start = $this->lexer->getToken();
 
@@ -689,7 +729,7 @@ class Parser implements ParserInterface
         $fields = [];
 
         while (!$this->skip(TokenKindEnum::BRACE_R)) {
-            $fields[] = $this->parseObjectField($isConst);
+            $fields[] = $this->lexObjectField($isConst);
         }
 
         return new ObjectValueNode($fields, $this->createLocation($start));
@@ -702,7 +742,7 @@ class Parser implements ParserInterface
      * @return ObjectFieldNode
      * @throws SyntaxErrorException
      */
-    protected function parseObjectField(bool $isConst): ObjectFieldNode
+    protected function lexObjectField(bool $isConst): ObjectFieldNode
     {
         $start = $this->lexer->getToken();
 
@@ -712,11 +752,11 @@ class Parser implements ParserInterface
          */
         $parseValue = function (bool $isConst): NodeInterface {
             $this->expect(TokenKindEnum::COLON);
-            return $this->parseValueLiteral($isConst);
+            return $this->lexValueLiteral($isConst);
         };
 
         return new ObjectFieldNode(
-            $this->parseName(),
+            $this->lexName(),
             $parseValue($isConst),
             $this->createLocation($start)
         );
@@ -731,12 +771,12 @@ class Parser implements ParserInterface
      * @return array
      * @throws SyntaxErrorException
      */
-    protected function parseDirectives(bool $isConst = false): array
+    protected function lexDirectives(bool $isConst = false): array
     {
         $directives = [];
 
         while ($this->peek(TokenKindEnum::AT)) {
-            $directives[] = $this->parseDirective($isConst);
+            $directives[] = $this->lexDirective($isConst);
         }
 
         return $directives;
@@ -749,15 +789,15 @@ class Parser implements ParserInterface
      * @return DirectiveNode
      * @throws SyntaxErrorException
      */
-    protected function parseDirective(bool $isConst): DirectiveNode
+    protected function lexDirective(bool $isConst): DirectiveNode
     {
         $start = $this->lexer->getToken();
 
         $this->expect(TokenKindEnum::AT);
 
         return new DirectiveNode(
-            $this->parseName(),
-            $this->parseArguments($isConst),
+            $this->lexName(),
+            $this->lexArguments($isConst),
             $this->createLocation($start)
         );
     }
@@ -773,18 +813,18 @@ class Parser implements ParserInterface
      * @return TypeNodeInterface
      * @throws SyntaxErrorException
      */
-    protected function parseTypeReference(): TypeNodeInterface
+    protected function lexTypeReference(): TypeNodeInterface
     {
         $start = $this->lexer->getToken();
 
         if ($this->skip(TokenKindEnum::BRACKET_L)) {
-            $type = $this->parseTypeReference();
+            $type = $this->lexTypeReference();
 
             $this->expect(TokenKindEnum::BRACKET_R);
 
             $type = new ListTypeNode($type, $this->createLocation($start));
         } else {
-            $type = $this->parseNamedType();
+            $type = $this->lexNamedType();
         }
 
         if ($this->skip(TokenKindEnum::BANG)) {
@@ -800,11 +840,11 @@ class Parser implements ParserInterface
      * @return NamedTypeNode
      * @throws SyntaxErrorException
      */
-    protected function parseNamedType(): NamedTypeNode
+    protected function lexNamedType(): NamedTypeNode
     {
         $start = $this->lexer->getToken();
 
-        return new NamedTypeNode($this->parseName(), $this->createLocation($start));
+        return new NamedTypeNode($this->lexName(), $this->createLocation($start));
     }
 
     // Implements the parsing rules in the Type Definition section.
@@ -828,7 +868,7 @@ class Parser implements ParserInterface
      * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
-    protected function parseTypeSystemDefinition(): NodeInterface
+    protected function lexTypeSystemDefinition(): NodeInterface
     {
         // Many definitions begin with a description and require a lookahead.
         $token = $this->peekDescription()
@@ -838,23 +878,23 @@ class Parser implements ParserInterface
         if (TokenKindEnum::NAME === $token->getKind()) {
             switch ($token->getValue()) {
                 case KeywordEnum::SCHEMA:
-                    return $this->parseSchemaDefinition();
+                    return $this->lexSchemaDefinition();
                 case KeywordEnum::SCALAR:
-                    return $this->parseScalarTypeDefinition();
+                    return $this->lexScalarTypeDefinition();
                 case KeywordEnum::TYPE:
-                    return $this->parseObjectTypeDefinition();
+                    return $this->lexObjectTypeDefinition();
                 case KeywordEnum::INTERFACE:
-                    return $this->parseInterfaceTypeDefinition();
+                    return $this->lexInterfaceTypeDefinition();
                 case KeywordEnum::UNION:
-                    return $this->parseUnionTypeDefinition();
+                    return $this->lexUnionTypeDefinition();
                 case KeywordEnum::ENUM:
-                    return $this->parseEnumTypeDefinition();
+                    return $this->lexEnumTypeDefinition();
                 case KeywordEnum::INPUT:
-                    return $this->parseInputObjectTypeDefinition();
+                    return $this->lexInputObjectTypeDefinition();
                 case KeywordEnum::DIRECTIVE:
-                    return $this->parseDirectiveDefinition();
+                    return $this->lexDirectiveDefinition();
                 case KeywordEnum::EXTEND:
-                    return $this->parseTypeSystemExtension();
+                    return $this->lexTypeSystemExtension();
             }
         }
 
@@ -874,10 +914,10 @@ class Parser implements ParserInterface
      *
      * @return StringValueNode|null
      */
-    public function parseDescription(): ?StringValueNode
+    public function lexDescription(): ?StringValueNode
     {
         return $this->peekDescription()
-            ? $this->parseStringLiteral()
+            ? $this->lexStringLiteral()
             : null;
     }
 
@@ -887,17 +927,17 @@ class Parser implements ParserInterface
      * @return SchemaDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseSchemaDefinition(): SchemaDefinitionNode
+    protected function lexSchemaDefinition(): SchemaDefinitionNode
     {
         $start = $this->lexer->getToken();
 
         $this->expectKeyword(KeywordEnum::SCHEMA);
 
         return new SchemaDefinitionNode(
-            $this->parseDirectives(),
+            $this->lexDirectives(),
             $this->many(
                 TokenKindEnum::BRACE_L,
-                [$this, 'parseOperationTypeDefinition'],
+                [$this, 'lexOperationTypeDefinition'],
                 TokenKindEnum::BRACE_R
             ),
             $this->createLocation($start)
@@ -910,17 +950,17 @@ class Parser implements ParserInterface
      * @return OperationTypeDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseOperationTypeDefinition(): OperationTypeDefinitionNode
+    protected function lexOperationTypeDefinition(): OperationTypeDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $operation = $this->parseOperationType();
+        $operation = $this->lexOperationType();
 
         $this->expect(TokenKindEnum::COLON);
 
         return new OperationTypeDefinitionNode(
             $operation,
-            $this->parseNamedType(),
+            $this->lexNamedType(),
             $this->createLocation($start)
         );
     }
@@ -931,18 +971,18 @@ class Parser implements ParserInterface
      * @return ScalarTypeDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseScalarTypeDefinition(): ScalarTypeDefinitionNode
+    protected function lexScalarTypeDefinition(): ScalarTypeDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $description = $this->parseDescription();
+        $description = $this->lexDescription();
 
         $this->expectKeyword(KeywordEnum::SCALAR);
 
         return new ScalarTypeDefinitionNode(
             $description,
-            $this->parseName(),
-            $this->parseDirectives(),
+            $this->lexName(),
+            $this->lexDirectives(),
             $this->createLocation($start)
         );
     }
@@ -955,20 +995,20 @@ class Parser implements ParserInterface
      * @return ObjectTypeDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseObjectTypeDefinition(): ObjectTypeDefinitionNode
+    protected function lexObjectTypeDefinition(): ObjectTypeDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $description = $this->parseDescription();
+        $description = $this->lexDescription();
 
         $this->expectKeyword(KeywordEnum::TYPE);
 
         return new ObjectTypeDefinitionNode(
             $description,
-            $this->parseName(),
-            $this->parseImplementsInterfaces(),
-            $this->parseDirectives(),
-            $this->parseFieldsDefinition(),
+            $this->lexName(),
+            $this->lexImplementsInterfaces(),
+            $this->lexDirectives(),
+            $this->lexFieldsDefinition(),
             $this->createLocation($start)
         );
     }
@@ -981,7 +1021,7 @@ class Parser implements ParserInterface
      * @return array
      * @throws SyntaxErrorException
      */
-    protected function parseImplementsInterfaces(): array
+    protected function lexImplementsInterfaces(): array
     {
         $types = [];
 
@@ -994,7 +1034,7 @@ class Parser implements ParserInterface
             $this->skip(TokenKindEnum::AMP);
 
             do {
-                $types[] = $this->parseNamedType();
+                $types[] = $this->lexNamedType();
             } while ($this->skip(TokenKindEnum::AMP));
         }
 
@@ -1007,12 +1047,12 @@ class Parser implements ParserInterface
      * @return array
      * @throws SyntaxErrorException
      */
-    protected function parseFieldsDefinition(): array
+    protected function lexFieldsDefinition(): array
     {
         return $this->peek(TokenKindEnum::BRACE_L)
             ? $this->many(
                 TokenKindEnum::BRACE_L,
-                [$this, 'parseFieldDefinition'],
+                [$this, 'lexFieldDefinition'],
                 TokenKindEnum::BRACE_R
             )
             : [];
@@ -1025,13 +1065,13 @@ class Parser implements ParserInterface
      * @return FieldDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseFieldDefinition(): FieldDefinitionNode
+    protected function lexFieldDefinition(): FieldDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $description = $this->parseDescription();
-        $name        = $this->parseName();
-        $arguments   = $this->parseArgumentsDefinition();
+        $description = $this->lexDescription();
+        $name        = $this->lexName();
+        $arguments   = $this->lexArgumentsDefinition();
 
         $this->expect(TokenKindEnum::COLON);
 
@@ -1039,8 +1079,8 @@ class Parser implements ParserInterface
             $description,
             $name,
             $arguments,
-            $this->parseTypeReference(),
-            $this->parseDirectives(),
+            $this->lexTypeReference(),
+            $this->lexDirectives(),
             $this->createLocation($start)
         );
     }
@@ -1051,10 +1091,10 @@ class Parser implements ParserInterface
      * @return InputValueDefinitionNode[]
      * @throws SyntaxErrorException
      */
-    protected function parseArgumentsDefinition(): array
+    protected function lexArgumentsDefinition(): array
     {
         $parseFunction = function (): InputValueDefinitionNode {
-            return $this->parseInputValueDefinition();
+            return $this->lexInputValueDefinition();
         };
 
         return $this->peek(TokenKindEnum::PAREN_L)
@@ -1073,23 +1113,23 @@ class Parser implements ParserInterface
      * @return InputValueDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseInputValueDefinition(): InputValueDefinitionNode
+    protected function lexInputValueDefinition(): InputValueDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $description = $this->parseDescription();
-        $name        = $this->parseName();
+        $description = $this->lexDescription();
+        $name        = $this->lexName();
 
         $this->expect(TokenKindEnum::COLON);
 
         return new InputValueDefinitionNode(
             $description,
             $name,
-            $this->parseTypeReference(),
+            $this->lexTypeReference(),
             $this->skip(TokenKindEnum::EQUALS)
-                ? $this->parseValueLiteral(true)
+                ? $this->lexValueLiteral(true)
                 : null,
-            $this->parseDirectives(true),
+            $this->lexDirectives(true),
             $this->createLocation($start)
         );
     }
@@ -1101,19 +1141,19 @@ class Parser implements ParserInterface
      * @return InterfaceTypeDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseInterfaceTypeDefinition(): InterfaceTypeDefinitionNode
+    protected function lexInterfaceTypeDefinition(): InterfaceTypeDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $description = $this->parseDescription();
+        $description = $this->lexDescription();
 
         $this->expectKeyword(KeywordEnum::INTERFACE);
 
         return new InterfaceTypeDefinitionNode(
             $description,
-            $this->parseName(),
-            $this->parseDirectives(),
-            $this->parseFieldsDefinition(),
+            $this->lexName(),
+            $this->lexDirectives(),
+            $this->lexFieldsDefinition(),
             $this->createLocation($start)
         );
     }
@@ -1125,19 +1165,19 @@ class Parser implements ParserInterface
      * @return UnionTypeDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseUnionTypeDefinition(): UnionTypeDefinitionNode
+    protected function lexUnionTypeDefinition(): UnionTypeDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $description = $this->parseDescription();
+        $description = $this->lexDescription();
 
         $this->expectKeyword(KeywordEnum::UNION);
 
         return new UnionTypeDefinitionNode(
             $description,
-            $this->parseName(),
-            $this->parseDirectives(),
-            $this->parseUnionMemberTypes(),
+            $this->lexName(),
+            $this->lexDirectives(),
+            $this->lexUnionMemberTypes(),
             $this->createLocation($start)
         );
     }
@@ -1150,7 +1190,7 @@ class Parser implements ParserInterface
      * @return array
      * @throws SyntaxErrorException
      */
-    protected function parseUnionMemberTypes(): array
+    protected function lexUnionMemberTypes(): array
     {
         $types = [];
 
@@ -1159,7 +1199,7 @@ class Parser implements ParserInterface
             $this->skip(TokenKindEnum::PIPE);
 
             do {
-                $types[] = $this->parseNamedType();
+                $types[] = $this->lexNamedType();
             } while ($this->skip(TokenKindEnum::PIPE));
         }
 
@@ -1173,19 +1213,19 @@ class Parser implements ParserInterface
      * @return EnumTypeDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseEnumTypeDefinition(): EnumTypeDefinitionNode
+    protected function lexEnumTypeDefinition(): EnumTypeDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $description = $this->parseDescription();
+        $description = $this->lexDescription();
 
         $this->expectKeyword(KeywordEnum::ENUM);
 
         return new EnumTypeDefinitionNode(
             $description,
-            $this->parseName(),
-            $this->parseDirectives(),
-            $this->parseEnumValuesDefinition(),
+            $this->lexName(),
+            $this->lexDirectives(),
+            $this->lexEnumValuesDefinition(),
             $this->createLocation($start)
         );
     }
@@ -1196,12 +1236,12 @@ class Parser implements ParserInterface
      * @return array
      * @throws SyntaxErrorException
      */
-    protected function parseEnumValuesDefinition(): array
+    protected function lexEnumValuesDefinition(): array
     {
         return $this->peek(TokenKindEnum::BRACE_L)
             ? $this->many(
                 TokenKindEnum::BRACE_L,
-                [$this, 'parseEnumValueDefinition'],
+                [$this, 'lexEnumValueDefinition'],
                 TokenKindEnum::BRACE_R
             )
             : [];
@@ -1215,14 +1255,14 @@ class Parser implements ParserInterface
      * @return EnumValueDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseEnumValueDefinition(): EnumValueDefinitionNode
+    protected function lexEnumValueDefinition(): EnumValueDefinitionNode
     {
         $start = $this->lexer->getToken();
 
         return new EnumValueDefinitionNode(
-            $this->parseDescription(),
-            $this->parseName(),
-            $this->parseDirectives(),
+            $this->lexDescription(),
+            $this->lexName(),
+            $this->lexDirectives(),
             $this->createLocation($start)
         );
     }
@@ -1234,19 +1274,19 @@ class Parser implements ParserInterface
      * @return InputObjectTypeDefinitionNode
      * @throws SyntaxErrorException
      */
-    protected function parseInputObjectTypeDefinition(): InputObjectTypeDefinitionNode
+    protected function lexInputObjectTypeDefinition(): InputObjectTypeDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $description = $this->parseDescription();
+        $description = $this->lexDescription();
 
         $this->expectKeyword(KeywordEnum::INPUT);
 
         return new InputObjectTypeDefinitionNode(
             $description,
-            $this->parseName(),
-            $this->parseDirectives(true),
-            $this->parseInputFieldsDefinition(),
+            $this->lexName(),
+            $this->lexDirectives(true),
+            $this->lexInputFieldsDefinition(),
             $this->createLocation($start)
         );
     }
@@ -1257,10 +1297,10 @@ class Parser implements ParserInterface
      * @return array
      * @throws SyntaxErrorException
      */
-    protected function parseInputFieldsDefinition(): array
+    protected function lexInputFieldsDefinition(): array
     {
         $parseFunction = function (): InputValueDefinitionNode {
-            return $this->parseInputValueDefinition();
+            return $this->lexInputValueDefinition();
         };
 
         return $this->peek(TokenKindEnum::BRACE_L)
@@ -1284,24 +1324,24 @@ class Parser implements ParserInterface
      * @return TypeExtensionNodeInterface
      * @throws SyntaxErrorException
      */
-    protected function parseTypeSystemExtension(): TypeExtensionNodeInterface
+    protected function lexTypeSystemExtension(): TypeExtensionNodeInterface
     {
         $token = $this->lexer->lookahead();
 
         if (TokenKindEnum::NAME === $token->getKind()) {
             switch ($token->getValue()) {
                 case KeywordEnum::SCALAR:
-                    return $this->parseScalarTypeExtension(false);
+                    return $this->lexScalarTypeExtension(false);
                 case KeywordEnum::TYPE:
-                    return $this->parseObjectTypeExtension();
+                    return $this->lexObjectTypeExtension();
                 case KeywordEnum::INTERFACE:
-                    return $this->parseInterfaceTypeExtension();
+                    return $this->lexInterfaceTypeExtension();
                 case KeywordEnum::UNION:
-                    return $this->parseUnionTypeExtension();
+                    return $this->lexUnionTypeExtension();
                 case KeywordEnum::ENUM:
-                    return $this->parseEnumTypeExtension();
+                    return $this->lexEnumTypeExtension();
                 case KeywordEnum::INPUT:
-                    return $this->parseInputObjectTypeExtension();
+                    return $this->lexInputObjectTypeExtension();
             }
         }
 
@@ -1316,15 +1356,15 @@ class Parser implements ParserInterface
      * @return ScalarTypeExtensionNode
      * @throws SyntaxErrorException
      */
-    protected function parseScalarTypeExtension(bool $isConst = false): ScalarTypeExtensionNode
+    protected function lexScalarTypeExtension(bool $isConst = false): ScalarTypeExtensionNode
     {
         $start = $this->lexer->getToken();
 
         $this->expectKeyword(KeywordEnum::EXTEND);
         $this->expectKeyword(KeywordEnum::SCALAR);
 
-        $name       = $this->parseName();
-        $directives = $this->parseDirectives($isConst);
+        $name       = $this->lexName();
+        $directives = $this->lexDirectives($isConst);
 
         if (empty($directives)) {
             throw $this->unexpected();
@@ -1342,17 +1382,17 @@ class Parser implements ParserInterface
      * @return ObjectTypeExtensionNode
      * @throws SyntaxErrorException
      */
-    protected function parseObjectTypeExtension(): ObjectTypeExtensionNode
+    protected function lexObjectTypeExtension(): ObjectTypeExtensionNode
     {
         $start = $this->lexer->getToken();
 
         $this->expectKeyword(KeywordEnum::EXTEND);
         $this->expectKeyword(KeywordEnum::TYPE);
 
-        $name       = $this->parseName();
-        $interfaces = $this->parseImplementsInterfaces();
-        $directives = $this->parseDirectives();
-        $fields     = $this->parseFieldsDefinition();
+        $name       = $this->lexName();
+        $interfaces = $this->lexImplementsInterfaces();
+        $directives = $this->lexDirectives();
+        $fields     = $this->lexFieldsDefinition();
 
         if (empty($interfaces) && empty($directives) && empty($fields)) {
             throw $this->unexpected();
@@ -1375,16 +1415,16 @@ class Parser implements ParserInterface
      * @return InterfaceTypeExtensionNode
      * @throws SyntaxErrorException
      */
-    protected function parseInterfaceTypeExtension(): InterfaceTypeExtensionNode
+    protected function lexInterfaceTypeExtension(): InterfaceTypeExtensionNode
     {
         $start = $this->lexer->getToken();
 
         $this->expectKeyword(KeywordEnum::EXTEND);
         $this->expectKeyword(KeywordEnum::INTERFACE);
 
-        $name       = $this->parseName();
-        $directives = $this->parseDirectives();
-        $fields     = $this->parseFieldsDefinition();
+        $name       = $this->lexName();
+        $directives = $this->lexDirectives();
+        $fields     = $this->lexFieldsDefinition();
 
         if (empty($directives) && empty($fields)) {
             throw $this->unexpected();
@@ -1401,16 +1441,16 @@ class Parser implements ParserInterface
      * @return UnionTypeExtensionNode
      * @throws SyntaxErrorException
      */
-    protected function parseUnionTypeExtension(): UnionTypeExtensionNode
+    protected function lexUnionTypeExtension(): UnionTypeExtensionNode
     {
         $start = $this->lexer->getToken();
 
         $this->expectKeyword(KeywordEnum::EXTEND);
         $this->expectKeyword(KeywordEnum::UNION);
 
-        $name       = $this->parseName();
-        $directives = $this->parseDirectives();
-        $types      = $this->parseUnionMemberTypes();
+        $name       = $this->lexName();
+        $directives = $this->lexDirectives();
+        $types      = $this->lexUnionMemberTypes();
 
         if (empty($directives) && empty($types)) {
             throw $this->unexpected();
@@ -1427,16 +1467,16 @@ class Parser implements ParserInterface
      * @return EnumTypeExtensionNode
      * @throws SyntaxErrorException
      */
-    protected function parseEnumTypeExtension(): EnumTypeExtensionNode
+    protected function lexEnumTypeExtension(): EnumTypeExtensionNode
     {
         $start = $this->lexer->getToken();
 
         $this->expectKeyword(KeywordEnum::EXTEND);
         $this->expectKeyword(KeywordEnum::ENUM);
 
-        $name       = $this->parseName();
-        $directives = $this->parseDirectives();
-        $values     = $this->parseEnumValuesDefinition();
+        $name       = $this->lexName();
+        $directives = $this->lexDirectives();
+        $values     = $this->lexEnumValuesDefinition();
 
         if (empty($directives) && empty($values)) {
             throw $this->unexpected();
@@ -1453,16 +1493,16 @@ class Parser implements ParserInterface
      * @return InputObjectTypeExtensionNode
      * @throws SyntaxErrorException
      */
-    protected function parseInputObjectTypeExtension(): InputObjectTypeExtensionNode
+    protected function lexInputObjectTypeExtension(): InputObjectTypeExtensionNode
     {
         $start = $this->lexer->getToken();
 
         $this->expectKeyword(KeywordEnum::EXTEND);
         $this->expectKeyword(KeywordEnum::INPUT);
 
-        $name       = $this->parseName();
-        $directives = $this->parseDirectives(true);
-        $fields     = $this->parseInputFieldsDefinition();
+        $name       = $this->lexName();
+        $directives = $this->lexDirectives(true);
+        $fields     = $this->lexInputFieldsDefinition();
 
         if (empty($directives) && empty($fields)) {
             throw $this->unexpected();
@@ -1479,21 +1519,21 @@ class Parser implements ParserInterface
      * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
-    protected function parseDirectiveDefinition(): DirectiveDefinitionNode
+    protected function lexDirectiveDefinition(): DirectiveDefinitionNode
     {
         $start = $this->lexer->getToken();
 
-        $description = $this->parseDescription();
+        $description = $this->lexDescription();
 
         $this->expectKeyword(KeywordEnum::DIRECTIVE);
         $this->expect(TokenKindEnum::AT);
 
-        $name      = $this->parseName();
-        $arguments = $this->parseArgumentsDefinition();
+        $name      = $this->lexName();
+        $arguments = $this->lexArgumentsDefinition();
 
         $this->expectKeyword(KeywordEnum::ON);
 
-        $locations = $this->parseDirectiveLocations();
+        $locations = $this->lexDirectiveLocations();
 
         return new DirectiveDefinitionNode(
             $description,
@@ -1513,14 +1553,14 @@ class Parser implements ParserInterface
      * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
-    protected function parseDirectiveLocations(): array
+    protected function lexDirectiveLocations(): array
     {
         $this->skip(TokenKindEnum::PIPE);
 
         $locations = [];
 
         do {
-            $locations[] = $this->parseDirectiveLocation();
+            $locations[] = $this->lexDirectiveLocation();
         } while ($this->skip(TokenKindEnum::PIPE));
 
         return $locations;
@@ -1557,11 +1597,11 @@ class Parser implements ParserInterface
      * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
-    protected function parseDirectiveLocation(): NameNode
+    protected function lexDirectiveLocation(): NameNode
     {
         $start = $this->lexer->getToken();
 
-        $name = $this->parseName();
+        $name = $this->lexName();
 
         if (arraySome(DirectiveLocationEnum::values(), function ($value) use ($name) {
             return $name->getValue() === $value;

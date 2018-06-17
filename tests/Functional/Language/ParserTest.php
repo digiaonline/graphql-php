@@ -5,11 +5,16 @@ namespace Digia\GraphQL\Test\Functional\Language;
 use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\GraphQL;
 use function Digia\GraphQL\Language\dedent;
+use Digia\GraphQL\Language\Node\ArgumentNode;
+use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Language\Node\NullValueNode;
+use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Language\NodeBuilderInterface;
+use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\Source;
 use function Digia\GraphQL\Test\readFileContents;
 use Digia\GraphQL\Test\TestCase;
@@ -19,6 +24,38 @@ use function Digia\GraphQL\parseValue;
 
 class ParserTest extends TestCase
 {
+
+    public function testParsePartial()
+    {
+        $parser = GraphQL::make(ParserInterface::class);
+
+        /** @var NameNode $nameNode */
+        $nameNode = $parser->parseName('foo');
+
+        $this->assertInstanceOf(NameNode::class, $nameNode);
+        $this->assertEquals('foo', $nameNode->getValue());
+
+        /** @var VariableNode $variableNode */
+        $variableNode = $parser->parseVariable('$foo');
+
+        $this->assertInstanceOf(VariableNode::class, $variableNode);
+        $this->assertEquals('foo', $variableNode->getNameValue());
+
+        /** @var ArgumentNode $argumentNode */
+        $argumentNode = $parser->parseArgument('foo: String');
+
+        $this->assertInstanceOf(ArgumentNode::class, $argumentNode);
+        $this->assertEquals('foo', $argumentNode->getNameValue());
+
+        /** @var DirectiveNode $directiveNode */
+        $directiveNode = $parser->parseDirective('@foo(bar: String, baz: Int)');
+        $directiveArgs = $directiveNode->getArguments();
+
+        $this->assertInstanceOf(DirectiveNode::class, $directiveNode);
+        $this->assertEquals('foo', $directiveNode->getNameValue());
+        $this->assertEquals('bar', $directiveArgs[0]->getNameValue());
+        $this->assertEquals('baz', $directiveArgs[1]->getNameValue());
+    }
 
     public function testParseProvidesUsefulErrors()
     {
