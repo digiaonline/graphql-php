@@ -189,13 +189,11 @@ class Parser implements ParserInterface
                 case KeywordEnum::INPUT:
                 case KeywordEnum::EXTEND:
                 case KeywordEnum::DIRECTIVE:
-                    // Note: The schema definition language is an experimental addition.
                     return $this->parseTypeSystemDefinition();
             }
         } elseif ($this->peek(TokenKindEnum::BRACE_L)) {
             return $this->parseExecutableDefinition();
         } elseif ($this->peekDescription()) {
-            // Note: The schema definition language is an experimental addition.
             return $this->parseTypeSystemDefinition();
         }
 
