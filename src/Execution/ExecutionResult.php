@@ -63,13 +63,15 @@ class ExecutionResult implements SerializationInterface
      */
     public function toArray(): array
     {
-        $array = ['data' => $this->data];
+        $array = [];
 
         if (!empty($this->errors)) {
             $array['errors'] = \array_map(function (GraphQLException $error) {
                 return $error->toArray();
             }, $this->errors);
         }
+
+        $array['data'] = $this->data;
 
         return $array;
     }
