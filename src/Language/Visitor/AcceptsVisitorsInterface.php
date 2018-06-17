@@ -53,4 +53,16 @@ interface AcceptsVisitorsInterface
      * @return NodeInterface[]
      */
     public function getAncestors(): array;
+
+    public function setVisitor(VisitorInterface $visitor);
+
+    public function setKey($key);
+
+    public function setParent(?NodeInterface $parent);
+
+    public function setPath(array $path);
+
+    public function setAncestors(array $ancestors);
+
+    public function setIsEdited(bool $isEdited);
 }

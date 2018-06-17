@@ -3,10 +3,17 @@
 namespace Digia\GraphQL\Language\Visitor;
 
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\NodeBuilder;
+use Digia\GraphQL\Language\NodeBuilderInterface;
 use Digia\GraphQL\Util\SerializationInterface;
 
 trait AcceptsVisitorsTrait
 {
+
+    /**
+     * @var NodeBuilderInterface
+     */
+    private static $nodeBuilder;
 
     /**
      * @var VisitorInterface
@@ -73,27 +80,46 @@ trait AcceptsVisitorsTrait
             return $newNode;
         }
 
-        foreach (self::$kindToNodesToVisitMap[$this->kind] as $property) {
-            $nodeOrNodes = $this->{$property};
+        $newAst = $newNode->toAST();
+
+        foreach (self::$kindToNodesToVisitMap[$this->kind] as $propertyName) {
+            $nodeOrNodes = $this->{$propertyName};
 
             if (empty($nodeOrNodes)) {
                 continue;
             }
 
-            $newNodeOrNodes = $this->visitNodeOrNodes($nodeOrNodes, $property, $newNode);
+            $propertyAst = $this->visitNodeOrNodes($nodeOrNodes, $propertyName, $newNode);
 
-            if (empty($newNodeOrNodes)) {
+            if (empty($propertyAst)) {
                 continue;
             }
 
-            $setter = 'set' . \ucfirst($property);
-
-            if (\method_exists($newNode, $setter)) {
-                $newNode->{$setter}($newNodeOrNodes);
-            }
+            $newAst[$propertyName] = $propertyAst;
         }
 
+        $newNode = $this->createNode($newAst);
+
         return $visitor->leaveNode($newNode);
+    }
+
+    /**
+     * @param array $ast
+     * @return NodeInterface
+     */
+    protected function createNode(array $ast): NodeInterface
+    {
+        /** @var NodeInterface|AcceptsVisitorsInterface $newNode */
+        $newNode = $this->getNodeBuilder()->build($ast);
+
+        $newNode->setVisitor($this->visitor);
+        $newNode->setKey($this->key);
+        $newNode->setParent($this->parent);
+        $newNode->setPath($this->path);
+        $newNode->setAncestors($this->ancestors);
+        $newNode->setIsEdited($this->isEdited);
+
+        return $newNode;
     }
 
     /**
@@ -160,72 +186,132 @@ trait AcceptsVisitorsTrait
     }
 
     /**
+     * @param VisitorInterface $visitor
+     * @return $this
+     */
+    public function setVisitor(VisitorInterface $visitor)
+    {
+        $this->visitor = $visitor;
+        return $this;
+    }
+
+    /**
+     * @param mixed $key
+     * @return $this
+     */
+    public function setKey($key)
+    {
+        $this->key = $key;
+        return $this;
+    }
+
+    /**
+     * @param NodeInterface|null $parent
+     * @return $this
+     */
+    public function setParent(?NodeInterface $parent)
+    {
+        $this->parent = $parent;
+        return $this;
+    }
+
+    /**
+     * @param array $path
+     * @return $this
+     */
+    public function setPath(array $path)
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    /**
+     * @param array $ancestors
+     * @return $this
+     */
+    public function setAncestors(array $ancestors)
+    {
+        $this->ancestors = $ancestors;
+        return $this;
+    }
+
+    /**
+     * @param bool $isEdited
+     * @return $this
+     */
+    public function setIsEdited(bool $isEdited)
+    {
+        $this->isEdited = $isEdited;
+        return $this;
+    }
+
+    /**
      * @param NodeInterface|NodeInterface[] $nodeOrNodes
      * @param mixed                         $key
      * @param NodeInterface                 $parent
-     * @return NodeInterface|NodeInterface[]|null
+     * @return array|null
      */
-    protected function visitNodeOrNodes($nodeOrNodes, $key, NodeInterface $parent)
+    protected function visitNodeOrNodes($nodeOrNodes, $key, NodeInterface $parent): ?array
     {
         $this->addAncestor($parent);
 
-        $newNodeOrNodes = \is_array($nodeOrNodes)
+        $ast = \is_array($nodeOrNodes)
             ? $this->visitNodes($nodeOrNodes, $key)
             : $this->visitNode($nodeOrNodes, $key, $parent);
 
         $this->removeAncestor();
 
-        return $newNodeOrNodes;
+        return $ast;
     }
 
     /**
      * @param NodeInterface[]    $nodes
      * @param string|int         $key
      * @param NodeInterface|null $parent
-     * @return NodeInterface[]
+     * @return array
      */
     protected function visitNodes(array $nodes, $key): array
     {
         $this->addOneToPath($key);
 
-        $index    = 0;
-        $newNodes = [];
+        $ast   = [];
+        $index = 0;
 
         foreach ($nodes as $node) {
-            $newNode = $this->visitNode($node, $index, null);
+            $nodeAst = $this->visitNode($node, $index, null);
 
-            if (null !== $newNode) {
-                $newNodes[$index] = $newNode;
+            if (null !== $nodeAst) {
+                $ast[$index] = $nodeAst;
                 $index++;
             }
         }
 
         $this->removeOneFromPath();
 
-        return $newNodes;
+        return $ast;
     }
 
     /**
      * @param NodeInterface|AcceptsVisitorsTrait $node
      * @param string|int                         $key
      * @param NodeInterface|null                 $parent
-     * @return NodeInterface|null
+     * @return array|null
      */
-    protected function visitNode($node, $key, ?NodeInterface $parent): ?NodeInterface
+    protected function visitNode($node, $key, ?NodeInterface $parent): ?array
     {
         $this->addOneToPath($key);
 
+        /** @var NodeInterface|AcceptsVisitorsTrait $newNode */
         $newNode = $node->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
 
-        // If the node was edited, we need to revisit it
-        // to produce the expected result.
+        // If the node was edited, we need to revisit it to produce the expected result.
         if (null !== $newNode && $newNode->isEdited()) {
             $newNode = $newNode->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
         }
 
         $this->removeOneFromPath();
 
-        return $newNode;
+        return null !== $newNode ? $newNode->toAST() : null;
     }
 
     /**
@@ -270,6 +356,18 @@ trait AcceptsVisitorsTrait
     protected function removeAncestor()
     {
         $this->ancestors = \array_slice($this->ancestors, 0, -1);
+    }
+
+    /**
+     * @return NodeBuilderInterface
+     */
+    protected function getNodeBuilder(): NodeBuilderInterface
+    {
+        if (null === self::$nodeBuilder) {
+            self::$nodeBuilder = new NodeBuilder();
+        }
+
+        return self::$nodeBuilder;
     }
 
     /**
