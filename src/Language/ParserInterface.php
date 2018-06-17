@@ -17,30 +17,4 @@ interface ParserInterface
      * @return DocumentNode
      */
     public function parse($source, array $options = []): DocumentNode;
-
-    /**
-     * Given a string containing a GraphQL value (ex. `[42]`), parse the AST for
-     * that value.
-     *
-     * This is useful within tools that operate upon GraphQL Values directly and
-     * in isolation of complete GraphQL documents.
-     *
-     * @param Source|string $source
-     * @param array         $options
-     * @return NodeInterface
-     */
-    public function parseValue($source, array $options = []): NodeInterface;
-
-    /**
-     * Given a string containing a GraphQL Type (ex. `[Int!]`), parse the AST for
-     * that type.
-     *
-     * This is useful within tools that operate upon GraphQL Types directly and
-     * in isolation of complete GraphQL documents.
-     *
-     * @param Source|string $source
-     * @param array         $options
-     * @return TypeNodeInterface
-     */
-    public function parseType($source, array $options = []): TypeNodeInterface;
 }
