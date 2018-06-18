@@ -71,7 +71,7 @@ class Parser implements ParserInterface
      */
     public function __call(string $name, array $arguments)
     {
-        $lexCallback = str_replace('parse', 'lex', $name);
+        $lexCallback = \str_replace('parse', 'lex', $name);
 
         if (\method_exists($this, $lexCallback)) {
             return $this->parsePartial([$this, $lexCallback], ...$arguments);
@@ -109,7 +109,7 @@ class Parser implements ParserInterface
         $this->lexer = $this->createLexer($source, $options);
 
         $this->expect(TokenKindEnum::SOF);
-        $node = \call_user_func($lexCallback, $source, $options);
+        $node = $lexCallback($source, $options);
         $this->expect(TokenKindEnum::EOF);
 
         return $node;
