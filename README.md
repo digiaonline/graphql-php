@@ -9,7 +9,7 @@ A PHP7 implementation of the [GraphQL specification](https://facebook.github.io/
 
 ## Related packages
 
-- [Relay support](https://github.com/digiaonline/graphql-relay-php/edit/master/README.md) (WIP)
+- [Relay support](https://github.com/digiaonline/graphql-relay-php/blob/master/README.md) (WIP)
 
 ## Requirements
 
