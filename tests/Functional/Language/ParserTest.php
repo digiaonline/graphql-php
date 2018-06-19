@@ -17,6 +17,7 @@ use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Language\NodeBuilderInterface;
+use Digia\GraphQL\Language\Parser;
 use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\Source;
 use function Digia\GraphQL\Test\readFileContents;
@@ -30,6 +31,7 @@ class ParserTest extends TestCase
 
     public function testParsePartial()
     {
+        /** @var ParserInterface $parser */
         $parser = GraphQL::make(ParserInterface::class);
 
         /** @var NameNode $nameNode */

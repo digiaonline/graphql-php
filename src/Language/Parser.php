@@ -55,6 +55,12 @@ use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use function Digia\GraphQL\Util\arraySome;
 
+/** @noinspection PhpHierarchyChecksInspection */
+
+/**
+ * Class Parser
+ * @package Digia\GraphQL\Language
+ */
 class Parser implements ParserInterface
 {
     /**
