@@ -12,6 +12,9 @@ use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Language\Node\NullValueNode;
+use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Node\StringValueNode;
+use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Language\NodeBuilderInterface;
 use Digia\GraphQL\Language\ParserInterface;
@@ -34,6 +37,23 @@ class ParserTest extends TestCase
 
         $this->assertInstanceOf(NameNode::class, $nameNode);
         $this->assertEquals('foo', $nameNode->getValue());
+
+        /** @var OperationDefinitionNode $operationDefinition */
+        $operationDefinition = $parser->parseOperationDefinition('query FooQuery { foo }');
+
+        $this->assertInstanceOf(OperationDefinitionNode::class, $operationDefinition);
+        $this->assertEquals('query', $operationDefinition->getOperation());
+        $this->assertEquals('FooQuery', $operationDefinition->getNameValue());
+
+        /** @var VariableDefinitionNode $variableDefinitionNode */
+        $variableDefinitionNode = $parser->parseVariableDefinition('$foo: String = "bar"');
+
+        $this->assertInstanceOf(VariableDefinitionNode::class, $variableDefinitionNode);
+        $this->assertEquals('foo', $variableDefinitionNode->getVariable()->getNameValue());
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals('String', $variableDefinitionNode->getType()->getNameValue());
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals('bar', $variableDefinitionNode->getDefaultValue()->getValue());
 
         /** @var VariableNode $variableNode */
         $variableNode = $parser->parseVariable('$foo');
