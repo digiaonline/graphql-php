@@ -13,6 +13,7 @@ use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumTypeExtensionNode;
 use Digia\GraphQL\Language\Node\EnumValueDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumValueNode;
+use Digia\GraphQL\Language\Node\ExecutableDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\FieldDefinitionNode;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FloatValueNode;
@@ -197,10 +198,10 @@ class Parser implements ParserInterface
      *   - OperationDefinition
      *   - FragmentDefinition
      *
-     * @return NodeInterface
+     * @return ExecutableDefinitionNodeInterface
      * @throws SyntaxErrorException
      */
-    protected function lexExecutableDefinition(): NodeInterface
+    protected function lexExecutableDefinition(): ExecutableDefinitionNodeInterface
     {
         if ($this->peek(TokenKindEnum::NAME)) {
             // Valid names are: query, mutation, subscription and fragment

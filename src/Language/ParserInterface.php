@@ -3,8 +3,6 @@
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Node\TypeNodeInterface;
 
 interface ParserInterface
 {
