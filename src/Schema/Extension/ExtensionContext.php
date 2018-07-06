@@ -39,7 +39,7 @@ class ExtensionContext implements ExtensionContextInterface
     protected $definitionBuilder;
 
     /**
-     * @var NamedTypeInterface[]
+     * @var TypeInterface[]
      */
     protected $extendTypeCache = [];
 
@@ -65,7 +65,6 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * @return TypeInterface|null
-     * @throws InvalidArgumentException
      * @throws InvariantException
      */
     public function getExtendedQueryType(): ?TypeInterface
@@ -79,7 +78,6 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * @return TypeInterface|null
-     * @throws InvalidArgumentException
      * @throws InvariantException
      */
     public function getExtendedMutationType(): ?TypeInterface
@@ -93,7 +91,6 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * @return TypeInterface|null
-     * @throws InvalidArgumentException
      * @throws InvariantException
      */
     public function getExtendedSubscriptionType(): ?TypeInterface
@@ -152,7 +149,6 @@ class ExtensionContext implements ExtensionContextInterface
      * @param NamedTypeNode $node
      * @return TypeInterface|null
      * @throws ExtensionException
-     * @throws InvalidArgumentException
      * @throws InvariantException
      */
     public function resolveType(NamedTypeNode $node): ?TypeInterface
@@ -160,7 +156,7 @@ class ExtensionContext implements ExtensionContextInterface
         $typeName     = $node->getNameValue();
         $existingType = $this->info->getSchema()->getType($typeName);
 
-        if (null !== $existingType) {
+        if ($existingType instanceof NamedTypeInterface) {
             return $this->getExtendedType($existingType);
         }
 
@@ -177,7 +173,6 @@ class ExtensionContext implements ExtensionContextInterface
     /**
      * @param NamedTypeInterface $type
      * @return TypeInterface
-     * @throws InvalidArgumentException
      * @throws InvariantException
      */
     protected function getExtendedType(NamedTypeInterface $type): TypeInterface
