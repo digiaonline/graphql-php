@@ -179,8 +179,8 @@ class ValueConverter
                 return new EnumValueNode($serialized, null);
             }
 
-            // ID types can use Int literals.
-            if ($type === ID() && \is_int($serialized)) {
+            // ID types can use Int literals.)
+            if (\is_numeric($serialized) && $type === ID()) {
                 return new IntValueNode($serialized, null);
             }
 
