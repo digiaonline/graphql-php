@@ -14,6 +14,7 @@ A PHP7 implementation of the [GraphQL specification](https://facebook.github.io/
 ## Requirements
 
 - PHP version >= 7.1
+- ext-mbstring
 
 ## Motivation
 
