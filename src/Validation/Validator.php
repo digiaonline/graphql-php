@@ -10,7 +10,6 @@ use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use Digia\GraphQL\Validation\Rule\RuleInterface;
 use Digia\GraphQL\Validation\Rule\SupportedRules;
-use function Digia\GraphQL\Util\invariant;
 
 class Validator implements ValidatorInterface
 {
@@ -37,8 +36,6 @@ class Validator implements ValidatorInterface
         ?array $rules = null,
         ?TypeInfo $typeInfo = null
     ): array {
-        invariant(null !== $document, 'Must provided document');
-
         $this->schemaValidator->assertValid($schema);
 
         $typeInfo = $typeInfo ?? new TypeInfo($schema);
