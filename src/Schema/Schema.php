@@ -48,17 +48,17 @@ class Schema implements DefinitionInterface
     use ASTNodeTrait;
 
     /**
-     * @var TypeInterface|null
+     * @var ObjectType|null
      */
     protected $queryType;
 
     /**
-     * @var TypeInterface|null
+     * @var ObjectType|null
      */
     protected $mutationType;
 
     /**
-     * @var TypeInterface|null
+     * @var ObjectType|null
      */
     protected $subscriptionType;
 
@@ -278,7 +278,7 @@ class Schema implements DefinitionInterface
     /**
      * @throws InvariantException
      */
-    protected function buildImplementations()
+    protected function buildImplementations(): void
     {
         $implementations = [];
 
@@ -377,6 +377,7 @@ class Schema implements DefinitionInterface
      * @param array     $map
      * @param Directive $directive
      * @return array
+     * @throws InvariantException
      */
     protected function typeMapDirectiveReducer(array $map, Directive $directive): array
     {
