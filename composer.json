@@ -52,11 +52,11 @@
     "scripts": {
         "test": [
             "phpunit",
-            "phpstan analyse -l 3 src/"
+            "phpstan analyse -l 4 src/"
         ],
         "travis": [
             "phpunit --coverage-clover build/logs/clover.xml",
-            "phpstan analyse -l 3 src/"
+            "phpstan analyse -l 4 src/"
         ]
     },
     "autoload-dev": {
