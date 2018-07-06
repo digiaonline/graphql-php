@@ -6,3 +6,4 @@
 clover.xml
 composer.lock
 cachegrind.out.*
+phpunit.xml
