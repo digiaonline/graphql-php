@@ -315,7 +315,7 @@ class Lexer implements LexerInterface
         ++$this->position;
 
         while ($this->position !== $this->bodyLength &&
-            ($code = $this->readCharCode($this->position)) !== null &&
+            ($code = $this->readCharCode($this->position)) !== 0 &&
             isAlphaNumeric($code)) {
             ++$this->position;
         }
@@ -428,7 +428,7 @@ class Lexer implements LexerInterface
 
         do {
             $code = $this->readCharCode(++$this->position);
-        } while ($code !== null && ($code > 0x001f || 0x0009 === $code)); // SourceCharacter but not LineTerminator
+        } while ($code !== 0 && ($code > 0x001f || 0x0009 === $code)); // SourceCharacter but not LineTerminator
 
         return new Token(
             TokenKindEnum::COMMENT,
@@ -470,7 +470,7 @@ class Lexer implements LexerInterface
         $value      = '';
 
         while ($this->position < $this->bodyLength &&
-            ($code = $this->readCharCode($this->position)) !== null && !isLineTerminator($code)) {
+            ($code = $this->readCharCode($this->position)) !== 0 && !isLineTerminator($code)) {
             // Closing Quote (")
             if (34 === $code) {
                 $value .= sliceString($this->body, $chunkStart, $this->position);
@@ -561,7 +561,7 @@ class Lexer implements LexerInterface
         $chunkStart     = $this->position;
         $rawValue       = '';
 
-        while ($this->position < $this->bodyLength && ($code = $this->readCharCode($this->position)) !== null) {
+        while ($this->position < $this->bodyLength && ($code = $this->readCharCode($this->position)) !== 0) {
             // Closing Triple-Quote (""")
             if ($this->isTripleQuote($code)) {
                 $rawValue .= sliceString($this->body, $chunkStart, $this->position);
