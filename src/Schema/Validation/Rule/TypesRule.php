@@ -17,7 +17,6 @@ use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\EnumType;
-use Digia\GraphQL\Type\Definition\ExtensionASTNodesTrait;
 use Digia\GraphQL\Type\Definition\FieldsAwareInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -38,6 +37,8 @@ class TypesRule extends AbstractRule
 {
     /**
      * @inheritdoc
+     *
+     * @throws InvariantException
      */
     public function evaluate(): void
     {
@@ -434,9 +435,7 @@ class TypesRule extends AbstractRule
                             $unionType->getName(),
                             toString($memberType)
                         ),
-                        null !== $memberTypeName
-                            ? $this->getUnionMemberTypeNodes($unionType, $memberTypeName)
-                            : null
+                        $this->getUnionMemberTypeNodes($unionType, $memberTypeName)
                     )
                 );
             }
@@ -686,7 +685,7 @@ class TypesRule extends AbstractRule
      */
     protected function getUnionMemberTypeNodes(UnionType $unionType, string $memberTypeName): ?array
     {
-        /** @var UnionTypeDefinitionNode $node */
+        /** @var UnionTypeDefinitionNode|null $node */
         $node = $unionType->getAstNode();
 
         if (null === $node) {
@@ -705,7 +704,7 @@ class TypesRule extends AbstractRule
      */
     protected function getEnumValueNodes(EnumType $enumType, string $valueName): ?array
     {
-        /** @var EnumTypeDefinitionNode $node */
+        /** @var EnumTypeDefinitionNode|null $node */
         $node = $enumType->getAstNode();
 
         if (null === $node) {
@@ -719,7 +718,6 @@ class TypesRule extends AbstractRule
 
     /**
      * @param mixed $node
-     * @throws InvariantException
      */
     protected function validateName($node): void
     {

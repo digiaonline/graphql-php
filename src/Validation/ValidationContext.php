@@ -195,7 +195,7 @@ class ValidationContext implements ValidationContextInterface
                 /** @var SelectionSetNode $set */
                 $set = array_pop($setsToVisit);
 
-                /** @var FieldNode $selection */
+                /** @var FieldNode|FragmentSpreadNode $selection */
                 foreach ($set->getSelections() as $selection) {
                     if ($selection instanceof FragmentSpreadNode) {
                         $spreads[] = $selection;

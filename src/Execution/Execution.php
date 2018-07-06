@@ -111,21 +111,16 @@ class Execution implements ExecutionInterface
             throw new ExecutionException('Must provide an operation.');
         }
 
-        $variableValues = [];
+        $coercedVariableValues = coerceVariableValues(
+            $schema,
+            $operation->getVariableDefinitions(),
+            $rawVariableValues
+        );
 
-        /** @var OperationDefinitionNode $operation */
-        if (null !== $operation) {
-            $coercedVariableValues = coerceVariableValues(
-                $schema,
-                $operation->getVariableDefinitions(),
-                $rawVariableValues
-            );
+        $variableValues = $coercedVariableValues->getValue();
 
-            $variableValues = $coercedVariableValues->getValue();
-
-            if ($coercedVariableValues->hasErrors()) {
-                $errors = $coercedVariableValues->getErrors();
-            }
+        if ($coercedVariableValues->hasErrors()) {
+            $errors = $coercedVariableValues->getErrors();
         }
 
         return new ExecutionContext(

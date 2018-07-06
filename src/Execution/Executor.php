@@ -669,22 +669,21 @@ class Executor
 
         foreach ($possibleTypes as $index => $type) {
             $isTypeOfResult = $type->isTypeOf($value, $context, $info);
-            if (null !== $isTypeOfResult) {
-                if ($this->isPromise($isTypeOfResult)) {
-                    $promisedIsTypeOfResults[$index] = $isTypeOfResult;
-                    continue;
-                }
 
-                if ($isTypeOfResult === true) {
+            if ($this->isPromise($isTypeOfResult)) {
+                $promisedIsTypeOfResults[$index] = $isTypeOfResult;
+                continue;
+            }
+
+            if ($isTypeOfResult === true) {
+                return $type;
+            }
+
+            if (\is_array($value)) {
+                // TODO: Make `type` configurable
+                /** @noinspection NestedPositiveIfStatementsInspection */
+                if (isset($value['type']) && $value['type'] === $type->getName()) {
                     return $type;
-                }
-
-                if (\is_array($value)) {
-                    // TODO: Make `type` configurable
-                    /** @noinspection NestedPositiveIfStatementsInspection */
-                    if (isset($value['type']) && $value['type'] === $type->getName()) {
-                        return $type;
-                    }
                 }
             }
         }
