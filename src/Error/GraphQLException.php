@@ -66,7 +66,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     /**
      * Extension fields to add to the formatted error.
      *
-     * @var \Exception|null
+     * @var \Throwable|null
      */
     protected $originalException;
 
@@ -166,9 +166,9 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     }
 
     /**
-     * @return \Exception|null
+     * @return \Throwable|null
      */
-    public function getOriginalException(): ?\Exception
+    public function getOriginalException(): ?\Throwable
     {
         return $this->originalException;
     }
