@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\Node\ObjectValueNode;
@@ -17,12 +18,12 @@ use function Digia\GraphQL\Validation\duplicateInputFieldMessage;
 class UniqueInputFieldNamesRule extends AbstractRule
 {
     /**
-     * @var array[]git
+     * @var array[]
      */
     protected $knownInputNamesStack = [];
 
     /**
-     * @var string[]
+     * @var NameNode[]
      */
     protected $knownInputNames = [];
 
@@ -32,11 +33,14 @@ class UniqueInputFieldNamesRule extends AbstractRule
     protected function enterObjectValue(ObjectValueNode $node): ?NodeInterface
     {
         $this->knownInputNamesStack[] = $this->knownInputNames;
-        $this->knownInputNames = [];
+        $this->knownInputNames        = [];
 
         return $node;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function enterObjectField(ObjectFieldNode $node): ?NodeInterface
     {
         $fieldName = $node->getNameValue();
