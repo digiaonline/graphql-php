@@ -478,8 +478,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                 'description' => 'The name of the current Object type at runtime.',
                 'type'        => newNonNull(String()),
                 'resolve'     => function ($source, $args, $context, ResolveInfo $info): string {
-                    $parentType = $info->getParentType();
-                    return null !== $parentType ? $parentType->getName() : null;
+                    return $info->getParentType()->getName();
                 },
             ]);
         });
