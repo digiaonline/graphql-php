@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Util;
 
-use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
@@ -27,22 +26,22 @@ class TypeInfo
     protected $schema;
 
     /**
-     * @var array|OutputTypeInterface[]
+     * @var TypeInterface[]
      */
     protected $typeStack = [];
 
     /**
-     * @var array|CompositeTypeInterface[]
+     * @var CompositeTypeInterface[]
      */
     protected $parentTypeStack = [];
 
     /**
-     * @var array|InputTypeInterface[]
+     * @var TypeInterface[]
      */
     protected $inputTypeStack = [];
 
     /**
-     * @var array|Field[]
+     * @var Field[]
      */
     protected $fieldDefinitionStack = [];
 
@@ -68,8 +67,9 @@ class TypeInfo
 
     /**
      * TypeInfo constructor.
-     * @param Schema        $schema
-     * @param callable|null $getFieldDefinitionFunction
+     * @param Schema             $schema
+     * @param callable|null      $getFieldDefinitionFunction
+     * @param TypeInterface|null $initialType
      */
     public function __construct(
         Schema $schema,
@@ -77,9 +77,11 @@ class TypeInfo
         ?TypeInterface $initialType = null
     ) {
         $this->schema                     = $schema;
-        $this->getFieldDefinitionFunction = null !== $getFieldDefinitionFunction
-            ? $getFieldDefinitionFunction
-            : function (Schema $schema, TypeInterface $parentType, FieldNode $fieldNode) {
+        $this->getFieldDefinitionFunction = $getFieldDefinitionFunction ?? function (
+                Schema $schema,
+                TypeInterface $parentType,
+                FieldNode $fieldNode
+            ) {
                 return getFieldDefinition($schema, $parentType, $fieldNode);
             };
 
@@ -114,10 +116,7 @@ class TypeInfo
         $this->typeStack[] = $type;
     }
 
-    /**
-     *
-     */
-    public function popType()
+    public function popType(): void
     {
         array_pop($this->typeStack);
     }
@@ -138,10 +137,7 @@ class TypeInfo
         $this->parentTypeStack[] = $type;
     }
 
-    /**
-     *
-     */
-    public function popParentType()
+    public function popParentType(): void
     {
         array_pop($this->parentTypeStack);
     }
@@ -162,10 +158,7 @@ class TypeInfo
         $this->inputTypeStack[] = $type;
     }
 
-    /**
-     *
-     */
-    public function popInputType()
+    public function popInputType(): void
     {
         array_pop($this->inputTypeStack);
     }
@@ -194,10 +187,7 @@ class TypeInfo
         $this->fieldDefinitionStack[] = $fieldDefinition;
     }
 
-    /**
-     *
-     */
-    public function popFieldDefinition()
+    public function popFieldDefinition(): void
     {
         array_pop($this->fieldDefinitionStack);
     }
@@ -273,7 +263,8 @@ class TypeInfo
      */
     protected function getFromStack(array $stack, int $depth)
     {
-        $count = count($stack);
+        $count = \count($stack);
+
         return $count >= $depth ? $stack[$count - $depth] : null;
     }
 }
@@ -283,7 +274,6 @@ class TypeInfo
  * @param TypeInterface $parentType
  * @param FieldNode     $fieldNode
  * @return Field|null
- * @throws InvalidTypeException
  */
 function getFieldDefinition(Schema $schema, TypeInterface $parentType, FieldNode $fieldNode): ?Field
 {
