@@ -11,6 +11,10 @@
         {
             "name": "Hung Nguyen",
             "email": "hungneox@gmail.com"
+        },
+        {
+            "name": "Sam Stenvall",
+            "email": "sam.stenvall@digia.com"
         }
     ],
     "require": {
