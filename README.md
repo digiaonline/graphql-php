@@ -121,7 +121,7 @@ In practice this means that the query AST is visited by the each rule. Every rul
 Run the following command to install the package through Composer:
 
 ```sh
-composer require digiaonline/graphql
+composer require digiaonline/graphql:dev-master
 ```
 
 ### Example
