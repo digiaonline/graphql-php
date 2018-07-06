@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 /**
  * Tagging interface for serializable types (Enum and Scalar).
  */
-interface SerializableTypeInterface
+interface SerializableTypeInterface extends TypeInterface
 {
     /**
      * @param mixed $value

@@ -11,7 +11,7 @@ interface ValidationContextInterface
     /**
      * @param ValidationExceptionInterface $error
      */
-    public function reportError(ValidationExceptionInterface $error);
+    public function reportError(ValidationExceptionInterface $error): void;
 
     /**
      * @return ValidationExceptionInterface[]

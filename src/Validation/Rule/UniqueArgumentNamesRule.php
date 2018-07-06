@@ -6,6 +6,7 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\FieldNode;
+use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 
@@ -18,7 +19,7 @@ use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 class UniqueArgumentNamesRule extends AbstractRule
 {
     /**
-     * @var string[]
+     * @var NameNode[]
      */
     protected $knownArgumentNames = [];
 

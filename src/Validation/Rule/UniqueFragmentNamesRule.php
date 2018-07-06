@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
+use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use function Digia\GraphQL\Validation\duplicateFragmentMessage;
@@ -16,7 +17,7 @@ use function Digia\GraphQL\Validation\duplicateFragmentMessage;
 class UniqueFragmentNamesRule extends AbstractRule
 {
     /**
-     * @var string[]
+     * @var NameNode[]
      */
     protected $knownFragmentNames = [];
 

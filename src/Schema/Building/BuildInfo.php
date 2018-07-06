@@ -8,7 +8,6 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 
 class BuildInfo
 {
@@ -18,7 +17,7 @@ class BuildInfo
     protected $document;
 
     /**
-     * @var TypeInterface[]
+     * @var TypeNodeInterface[]
      */
     protected $typeDefinitionMap;
 
@@ -40,7 +39,7 @@ class BuildInfo
     /**
      * BuildingInfo constructor.
      * @param DocumentNode                  $document
-     * @param TypeInterface[]               $typeDefinitionMap
+     * @param TypeNodeInterface[]           $typeDefinitionMap
      * @param DirectiveDefinitionNode[]     $directiveDefinitions
      * @param OperationTypeDefinitionNode[] $operationTypeDefinitions
      * @param SchemaDefinitionNode|null     $schemaDefinition
@@ -61,16 +60,16 @@ class BuildInfo
 
     /**
      * @param string $typeName
-     * @return TypeInterface|null
+     * @return TypeNodeInterface|null
      */
-    public function getTypeDefinition(string $typeName): ?TypeInterface
+    public function getTypeDefinition(string $typeName): ?TypeNodeInterface
     {
         return $this->typeDefinitionMap[$typeName] ?? null;
     }
 
     /**
      * @param string $operation
-     * @return TypeNodeInterface|null
+     * @return NodeInterface|null
      */
     public function getOperationTypeDefinition(string $operation): ?NodeInterface
     {
@@ -98,7 +97,7 @@ class BuildInfo
     }
 
     /**
-     * @return TypeInterface[]
+     * @return TypeNodeInterface[]
      */
     public function getTypeDefinitionMap(): array
     {

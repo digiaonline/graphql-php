@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
@@ -16,7 +17,7 @@ use function Digia\GraphQL\Validation\duplicateVariableMessage;
 class UniqueVariableNamesRule extends AbstractRule
 {
     /**
-     * @var string[]
+     * @var NameNode[]
      */
     protected $knownVariableNames = [];
 
