@@ -38,7 +38,7 @@ class SerializationTest extends TestCase
     /**
      * @param mixed $value
      * @dataProvider valuesIntCannotRepresentDataProvider
-     * @expectedException \@expectedException \Digia\GraphQL\Error\InvalidTypeException
+     * @expectedException \Digia\GraphQL\Error\InvalidTypeException
      */
     public function testValuesIntCannotRepresent($value)
     {
@@ -56,8 +56,6 @@ class SerializationTest extends TestCase
             [1.1],
             [-1.1],
             ['-1.1'],
-            [PHP_INT_MAX + 1],
-            [PHP_INT_MIN - 1],
             [1e100],
             [-1e100],
             ['one'],
