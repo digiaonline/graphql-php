@@ -469,8 +469,13 @@ class Lexer implements LexerInterface
         $chunkStart = ++$this->position; // skip the quote
         $value      = '';
 
-        while ($this->position < $this->bodyLength &&
-            ($code = $this->readCharCode($this->position)) !== 0 && !isLineTerminator($code)) {
+        while ($this->position < $this->bodyLength) {
+            $code = $this->readCharCode($this->position);
+
+            if (isLineTerminator($code)) {
+                break;
+            }
+
             // Closing Quote (")
             if (34 === $code) {
                 $value .= sliceString($this->body, $chunkStart, $this->position);
@@ -561,7 +566,9 @@ class Lexer implements LexerInterface
         $chunkStart     = $this->position;
         $rawValue       = '';
 
-        while ($this->position < $this->bodyLength && ($code = $this->readCharCode($this->position)) !== 0) {
+        while ($this->position < $this->bodyLength) {
+            $code = $this->readCharCode($this->position);
+
             // Closing Triple-Quote (""")
             if ($this->isTripleQuote($code)) {
                 $rawValue .= sliceString($this->body, $chunkStart, $this->position);
