@@ -52,7 +52,7 @@ class ValuesHelper
         $argumentDefinitions = $definition->getArguments();
         $argumentNodes       = $node->getArguments();
 
-        if (empty($argumentDefinitions) || $argumentNodes === null) {
+        if (empty($argumentDefinitions)) {
             return $coercedValues;
         }
 
@@ -63,7 +63,7 @@ class ValuesHelper
         foreach ($argumentDefinitions as $argumentDefinition) {
             $argumentName = $argumentDefinition->getName();
             $argumentType = $argumentDefinition->getType();
-            /** @var ArgumentNode $argumentNode */
+            /** @var ArgumentNode|null $argumentNode */
             $argumentNode = $argumentNodeMap[$argumentName] ?? null;
             $defaultValue = $argumentDefinition->getDefaultValue();
 

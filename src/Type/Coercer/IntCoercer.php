@@ -8,6 +8,8 @@ class IntCoercer extends AbstractCoercer
 {
     /**
      * @inheritdoc
+     *
+     * @throws InvalidTypeException
      */
     public function coerce($value)
     {
@@ -19,19 +21,18 @@ class IntCoercer extends AbstractCoercer
             $value = (int)$value;
         }
 
-        if (!\is_int($value) || $value > PHP_INT_MAX || $value < PHP_INT_MIN) {
+        if (!\is_numeric($value) || $value > PHP_INT_MAX || $value < PHP_INT_MIN) {
             throw new InvalidTypeException(
                 \sprintf('Int cannot represent non 32-bit signed integer value: %s', $value)
             );
         }
 
-        $intValue   = (int)$value;
         $floatValue = (float)$value;
 
-        if ($floatValue != $intValue || \floor($floatValue) !== $floatValue) {
+        if ($floatValue != $value || \floor($floatValue) !== $floatValue) {
             throw new InvalidTypeException(\sprintf('Int cannot represent non-integer value: %s', $value));
         }
 
-        return $intValue;
+        return $value;
     }
 }

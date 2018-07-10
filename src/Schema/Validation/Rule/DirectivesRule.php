@@ -93,7 +93,7 @@ class DirectivesRule extends AbstractRule
     {
         $nodes = [];
 
-        /** @var DirectiveNode $directiveNode */
+        /** @var DirectiveNode|null $directiveNode */
         $directiveNode = $directive->getAstNode();
 
         if (null !== $directiveNode) {

@@ -93,7 +93,7 @@ class NodePrinter implements NodePrinterInterface
 
         // Anonymous queries with no directives or variable definitions can use
         // the query short form.
-        return null === $name && empty($directives) && empty($variablesDefinitions) && $operation === 'query'
+        return empty($name) && empty($directives) && empty($variablesDefinitions) && $operation === 'query'
             ? $selectionSet
             : \implode(' ', [
                 $operation,

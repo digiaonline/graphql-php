@@ -11,7 +11,7 @@ interface SerializableTypeInterface extends TypeInterface
 {
     /**
      * @param mixed $value
-     * @return null|string
+     * @return mixed
      */
     public function serialize($value);
 

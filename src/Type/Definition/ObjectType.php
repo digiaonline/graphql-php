@@ -117,7 +117,7 @@ class ObjectType implements NamedTypeInterface, CompositeTypeInterface, OutputTy
      */
     public function isTypeOf($value, $context, $info)
     {
-        return isset($this->isTypeOfCallback)
+        return $this->isTypeOfCallback !== null
             ? \call_user_func($this->isTypeOfCallback, $value, $context, $info)
             : false;
     }
