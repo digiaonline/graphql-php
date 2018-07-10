@@ -120,7 +120,7 @@ class Lexer implements LexerInterface
         $this->line       = 1;
         $this->lineStart  = 0;
         $this->body       = $source->getBody();
-        $this->bodyLength = \strlen($this->body);
+        $this->bodyLength = \mb_strlen($this->body);
         $this->source     = $source;
         $this->options    = $options;
     }
