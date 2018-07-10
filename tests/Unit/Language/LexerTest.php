@@ -199,13 +199,11 @@ EOD;
             [1, 21]
         );
 
-        // TODO: Fix the following EOF-related test
-
-//        $this->assertSyntaxError(
-//            "\"null-byte is not \u{0000} end of file\"",
-//            'Invalid character within String: "\\u0000".',
-//            [1, 19]
-//        );
+        $this->assertSyntaxError(
+            "\"null-byte is not \u{0000} end of file\"",
+            'Invalid character within String: <EOF>.',
+            [1, 19]
+        );
 
         $this->assertSyntaxError("\"multi\nline\"", 'Unterminated string.', [1, 7]);
 
@@ -343,13 +341,11 @@ EOD;
             [1, 23]
         );
 
-        // TODO: Fix the following EOF-related test
-
-//        $this->assertSyntaxError(
-//            "\"\"\"null-byte is not \u{0000} end of file\"\"\"",
-//            'Invalid character within String: "\\u0000".',
-//            [1, 21]
-//        );
+        $this->assertSyntaxError(
+            "\"\"\"null-byte is not \u{0000} end of file\"\"\"",
+            'Invalid character within String: <EOF>.',
+            [1, 21]
+        );
     }
 
     // lexes numbers
