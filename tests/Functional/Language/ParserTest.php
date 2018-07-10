@@ -4,27 +4,20 @@ namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\GraphQL;
-use function Digia\GraphQL\Language\dedent;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
-use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
-use Digia\GraphQL\Language\Node\NullValueNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
-use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
-use Digia\GraphQL\Language\NodeBuilderInterface;
-use Digia\GraphQL\Language\Parser;
 use Digia\GraphQL\Language\ParserInterface;
-use Digia\GraphQL\Language\Source;
-use function Digia\GraphQL\Test\readFileContents;
 use Digia\GraphQL\Test\TestCase;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\parseType;
 use function Digia\GraphQL\parseValue;
+use function Digia\GraphQL\Test\readFileContents;
 
 class ParserTest extends TestCase
 {
@@ -567,5 +560,26 @@ class ParserTest extends TestCase
                 ],
             ],
         ]);
+    }
+
+    /**
+     * The purpose of this test case is that it should *not* crash with "Syntax Error: Cannot contain the invalid character <EOF>"
+     * @throws SyntaxErrorException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
+    public function testParsesGitHubIssue253(): void
+    {
+        $document = parse(dedent('{
+  songs(first: 5, search: {name: "Vårt land"}) {
+    edges {
+      node {
+        name
+      }
+    }
+  }
+}
+        '));
+
+        $this->addToAssertionCount(1);
     }
 }
