@@ -4,9 +4,7 @@ namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Schema\Schema;
-use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
-use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
@@ -15,7 +13,6 @@ use Digia\GraphQL\Type\Definition\InputField;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
-use Digia\GraphQL\Type\Definition\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
@@ -78,90 +75,6 @@ function assertScalarType($type)
 }
 
 /**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertObjectType($type)
-{
-    invariant(
-        $type instanceof ObjectType,
-        \sprintf('Expected %s to be a GraphQL Object type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertInterfaceType($type)
-{
-    invariant(
-        $type instanceof InterfaceType,
-        \sprintf('Expected %s to be a GraphQL Interface type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertUnionType($type)
-{
-    invariant(
-        $type instanceof UnionType,
-        \sprintf('Expected %s to be a GraphQL Union type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertEnumType($type)
-{
-    invariant(
-        $type instanceof EnumType,
-        \sprintf('Expected %s to be a GraphQL Enum type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertInputObjectType($type)
-{
-    invariant(
-        $type instanceof InputObjectType,
-        \sprintf('Expected %s to be a GraphQL InputObject type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertListType($type)
-{
-    invariant(
-        $type instanceof ListType,
-        \sprintf('Expected %s to be a GraphQL List type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertNonNullType($type)
-{
-    invariant(
-        $type instanceof NonNullType,
-        \sprintf('Expected %s to be a GraphQL NonNull type.', toString($type))
-    );
-}
-
-/**
  * Whether a type is an input type cannot be determined with `instanceof`
  * because lists and non-nulls can also be output types if the wrapped type is an output type.
  *
@@ -173,18 +86,6 @@ function isInputType(?TypeInterface $type): bool
     return null !== $type &&
         ($type instanceof InputTypeInterface ||
             ($type instanceof WrappingTypeInterface && isInputType($type->getOfType())));
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertInputType($type)
-{
-    invariant(
-        isInputType($type),
-        \sprintf('Expected %s to be a GraphQL input type.', toString($type))
-    );
 }
 
 /**
@@ -203,82 +104,13 @@ function isOutputType(?TypeInterface $type): bool
 
 /**
  * @param mixed $type
- * @throws InvariantException
- */
-function assertOutputType($type)
-{
-    invariant(
-        isOutputType($type),
-        \sprintf('Expected %s to be a GraphQL output type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertLeafType($type)
-{
-    invariant(
-        $type instanceof LeafTypeInterface,
-        \sprintf('Expected %s to be a GraphQL leaf type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertCompositeType($type)
-{
-    invariant(
-        $type instanceof CompositeTypeInterface,
-        \sprintf('Expected %s to be a GraphQL composite type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertAbstractType($type)
-{
-    invariant(
-        $type instanceof AbstractTypeInterface,
-        \sprintf('Expected %s to be a GraphQL abstract type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertWrappingType($type)
-{
-    invariant(
-        $type instanceof WrappingTypeInterface,
-        \sprintf('Expected %s to be a GraphQL wrapping type.', toString($type))
-    );
-}
-
-/**
- * @param mixed $type
- * @return bool
- */
-function isNullableType($type): bool
-{
-    return !($type instanceof NonNullType);
-}
-
-/**
- * @param mixed $type
  * @return TypeInterface
  * @throws InvariantException
  */
 function assertNullableType($type): TypeInterface
 {
     invariant(
-        isNullableType($type),
+        !($type instanceof NonNullType),
         \sprintf('Expected %s to be a GraphQL nullable type.', toString($type))
     );
 
@@ -296,18 +128,6 @@ function getNullableType(?TypeInterface $type): ?TypeInterface
     }
 
     return $type instanceof NonNullType ? $type->getOfType() : $type;
-}
-
-/**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertNamedType($type)
-{
-    invariant(
-        $type instanceof NamedTypeInterface,
-        \sprintf('Expected %s to be a GraphQL named type.', toString($type))
-    );
 }
 
 /**
