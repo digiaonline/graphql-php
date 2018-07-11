@@ -10,7 +10,6 @@ use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newEnumValue;
-use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
 /**
@@ -60,7 +59,6 @@ class EnumType implements NamedTypeInterface, InputTypeInterface, LeafTypeInterf
      * @param null|string                 $description
      * @param EnumValue[]                 $rawValues
      * @param EnumTypeDefinitionNode|null $astNode
-     * @throws InvariantException
      */
     public function __construct(string $name, ?string $description, array $rawValues, ?EnumTypeDefinitionNode $astNode)
     {
@@ -183,32 +181,30 @@ class EnumType implements NamedTypeInterface, InputTypeInterface, LeafTypeInterf
      */
     protected function buildValues(array $rawValues): array
     {
-        invariant(
-            isAssocArray($rawValues),
-            \sprintf('%s values must be an associative array with value names as keys.', $this->name)
-        );
+        if (!isAssocArray($rawValues)) {
+            throw new InvariantException(\sprintf('%s values must be an associative array with value names as keys.',
+                $this->name));
+        }
 
         $values = [];
 
         foreach ($rawValues as $valueName => $valueConfig) {
-            invariant(
-                isAssocArray($valueConfig),
-                \sprintf(
+            if (!isAssocArray($valueConfig)) {
+                throw new InvariantException(\sprintf(
                     '%s.%s must refer to an object with a "value" key representing an internal value but got: %s.',
                     $this->name,
                     $valueName,
                     toString($valueConfig)
-                )
-            );
+                ));
+            }
 
-            invariant(
-                !isset($valueConfig['isDeprecated']),
-                \sprintf(
+            if (isset($valueConfig['isDeprecated'])) {
+                throw new InvariantException(\sprintf(
                     '%s.%s should provide "deprecationReason" instead of "isDeprecated".',
                     $this->name,
                     $valueName
-                )
-            );
+                ));
+            }
 
             $valueConfig['name']  = $valueName;
             $valueConfig['value'] = \array_key_exists('value', $valueConfig)

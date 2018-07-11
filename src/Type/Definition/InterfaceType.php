@@ -2,12 +2,10 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
-use function Digia\GraphQL\Util\invariant;
 
 /**
  * Interface Type Definition
@@ -44,7 +42,6 @@ class InterfaceType implements AbstractTypeInterface, CompositeTypeInterface,
      * @param callable|null                    $resolveTypeCallback
      * @param InterfaceTypeDefinitionNode|null $astNode
      * @param InterfaceTypeExtensionNode[]     $extensionASTNodes
-     * @throws InvariantException
      */
     public function __construct(
         string $name,

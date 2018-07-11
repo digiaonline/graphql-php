@@ -6,7 +6,6 @@ use Digia\GraphQL\Error\InvariantException;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newField;
 use function Digia\GraphQL\Type\resolveThunk;
-use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
 trait FieldsTrait
@@ -34,6 +33,7 @@ trait FieldsTrait
     /**
      * @param string $fieldName
      * @return Field|null
+     * @throws InvariantException
      */
     public function getField(string $fieldName): ?Field
     {
@@ -42,6 +42,7 @@ trait FieldsTrait
 
     /**
      * @return Field[]
+     * @throws InvariantException
      */
     public function getFields(): array
     {
@@ -62,42 +63,37 @@ trait FieldsTrait
     {
         $rawFields = resolveThunk($rawFieldsOrThunk);
 
-        invariant(
-            isAssocArray($rawFields),
-            \sprintf(
+        if (!isAssocArray($rawFields)) {
+            throw new InvariantException(\sprintf(
                 '%s fields must be an associative array with field names as keys or a ' .
                 'callable which returns such an array.',
                 $this->getName()
-            )
-        );
+            ));
+        }
 
         $fieldMap = [];
 
         foreach ($rawFields as $fieldName => $fieldConfig) {
-            invariant(
-                \is_array($fieldConfig),
-                \sprintf('%s.%s field config must be an associative array.', $this->getName(), $fieldName)
-            );
+            if (!\is_array($fieldConfig)) {
+                throw new InvariantException(\sprintf('%s.%s field config must be an associative array.',
+                    $this->getName(), $fieldName));
+            }
 
-            invariant(
-                !isset($fieldConfig['isDeprecated']),
-                \sprintf(
+            if (isset($fieldConfig['isDeprecated'])) {
+                throw new InvariantException(\sprintf(
                     '%s.%s should provide "deprecationReason" instead of "isDeprecated".',
                     $this->getName(),
                     $fieldName
-                )
-            );
+                ));
+            }
 
-            if (isset($fieldConfig['resolve'])) {
-                invariant(
-                    null === $fieldConfig['resolve'] || \is_callable($fieldConfig['resolve']),
-                    \sprintf(
-                        '%s.%s field resolver must be a function if provided, but got: %s.',
-                        $this->getName(),
-                        $fieldName,
-                        toString($fieldConfig['resolve'])
-                    )
-                );
+            if (isset($fieldConfig['resolve']) && !\is_callable($fieldConfig['resolve'])) {
+                throw new InvariantException(\sprintf(
+                    '%s.%s field resolver must be a function if provided, but got: %s.',
+                    $this->getName(),
+                    $fieldName,
+                    toString($fieldConfig['resolve'])
+                ));
             }
 
             $fieldConfig['name']     = $fieldName;

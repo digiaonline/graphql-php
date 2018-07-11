@@ -7,7 +7,6 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use function Digia\GraphQL\Type\resolveThunk;
-use function Digia\GraphQL\Util\invariant;
 
 /**
  * Union Type Definition
@@ -62,7 +61,6 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
      * @param array|callable               $typesOrThunk
      * @param callable|null                $resolveTypeCallback
      * @param UnionTypeDefinitionNode|null $astNode
-     * @throws InvariantException
      */
     public function __construct(
         string $name,
@@ -101,13 +99,12 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     {
         $typeMap = resolveThunk($typesOrThunk);
 
-        invariant(
-            \is_array($typeMap),
-            \sprintf(
+        if (!\is_array($typeMap)) {
+            throw new InvariantException(\sprintf(
                 'Must provide array of types or a function which returns such an array for Union %s.',
                 $this->name
-            )
-        );
+            ));
+        }
 
         return $typeMap;
     }

@@ -19,7 +19,6 @@ use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newUnionType;
 use function Digia\GraphQL\Type\String;
-use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
 class PredicateTest extends TestCase
@@ -55,6 +54,11 @@ class PredicateTest extends TestCase
      */
     protected $scalarType;
 
+    /**
+     * @inheritdoc
+     * 
+     * @throws InvariantException
+     */
     public function setUp()
     {
         $this->objectType      = newObjectType(['name' => 'Object']);
@@ -73,6 +77,9 @@ class PredicateTest extends TestCase
         ]);
     }
 
+    /**
+     * @throws InvariantException
+     */
     public function testAssertType()
     {
         assertType(String());
@@ -81,6 +88,9 @@ class PredicateTest extends TestCase
         $this->addToAssertionCount(2);
     }
 
+    /**
+     * @throws InvariantException
+     */
     public function testAssertScalarTypeWithValidTypes()
     {
         assertScalarType(String());
@@ -105,8 +115,7 @@ class PredicateTest extends TestCase
  */
 function assertScalarType($type)
 {
-    invariant(
-        $type instanceof ScalarType,
-        \sprintf('Expected %s to be a GraphQL Scalar type.', toString($type))
-    );
+    if (!($type instanceof ScalarType)) {
+        throw new InvariantException(\sprintf('Expected %s to be a GraphQL Scalar type.', toString($type)));
+    }
 }
