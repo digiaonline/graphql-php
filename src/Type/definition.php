@@ -63,18 +63,6 @@ function assertType($type)
 }
 
 /**
- * @param mixed $type
- * @throws InvariantException
- */
-function assertScalarType($type)
-{
-    invariant(
-        $type instanceof ScalarType,
-        \sprintf('Expected %s to be a GraphQL Scalar type.', toString($type))
-    );
-}
-
-/**
  * Whether a type is an input type cannot be determined with `instanceof`
  * because lists and non-nulls can also be output types if the wrapped type is an output type.
  *
