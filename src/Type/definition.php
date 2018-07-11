@@ -91,21 +91,6 @@ function isOutputType(?TypeInterface $type): bool
 }
 
 /**
- * @param mixed $type
- * @return TypeInterface
- * @throws InvariantException
- */
-function assertNullableType($type): TypeInterface
-{
-    invariant(
-        !($type instanceof NonNullType),
-        \sprintf('Expected %s to be a GraphQL nullable type.', toString($type))
-    );
-
-    return $type;
-}
-
-/**
  * @param TypeInterface|null $type
  * @return TypeInterface|null
  */
@@ -465,7 +450,9 @@ function newList($ofType): ListType
  */
 function newNonNull($ofType): NonNullType
 {
-    assertNullableType($ofType);
+    if ($ofType instanceof NonNullType) {
+        throw new InvariantException(\sprintf('Expected %s to be a GraphQL nullable type.', toString($ofType)));
+    }
 
     return new NonNullType($ofType);
 }
