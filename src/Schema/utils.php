@@ -73,6 +73,11 @@ function escapeQuote(string $line): string
  */
 function printLines(array $lines): string
 {
+    // Don't print empty lines
+    $lines = \array_filter($lines, function (string $line) {
+        return $line !== '';
+    });
+    
     return printArray("\n", $lines);
 }
 
