@@ -362,7 +362,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
         return printLines([
             $description,
             "input {$type->getName()} {",
-            $fields,
+            printLines($fields),
             '}'
         ]);
     }
