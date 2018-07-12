@@ -3,14 +3,15 @@
 namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\GraphQL;
+use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Util\TypeHelper;
 use Digia\GraphQL\Util\ValueHelper;
 
 /**
- * @param array $argumentsA
- * @param array $argumentsB
+ * @param ArgumentNode[] $argumentsA
+ * @param ArgumentNode[] $argumentsB
  * @return bool
  */
 function compareArguments(array $argumentsA, array $argumentsB): bool

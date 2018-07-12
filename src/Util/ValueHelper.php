@@ -9,8 +9,8 @@ use function Digia\GraphQL\printNode;
 class ValueHelper
 {
     /**
-     * @param array $argumentsA
-     * @param array $argumentsB
+     * @param ArgumentNode[] $argumentsA
+     * @param ArgumentNode[] $argumentsB
      * @return bool
      */
     public function compareArguments(array $argumentsA, array $argumentsB): bool
