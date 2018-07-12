@@ -283,7 +283,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     protected function printInterfaceType(InterfaceType $type): string
     {
         $description = $this->printDescription($type);
-        $fields      = $this->printMany($type->getFields());
+        $fields      = $this->printFields($type->getFields());
 
         return printLines([
             $description,
