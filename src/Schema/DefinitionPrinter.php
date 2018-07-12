@@ -167,7 +167,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
         }
 
         return printLines([
-            'schema {\n',
+            'schema {',
             printLines($operationTypes),
             '}'
         ]);
@@ -490,7 +490,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             ($firstLineLength = \strlen($lines[0])) < 70 &&
             $lines[0][$firstLineLength - 1] !== '"'
         ) {
-            return $description . escapeQuote($lines[0]) . '"""' . "\n";
+            return $description . escapeQuote($lines[0]) . '"""';
         }
 
         // Format a multi-line block quote to account for leading space.
