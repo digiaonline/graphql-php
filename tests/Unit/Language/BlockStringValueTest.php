@@ -138,6 +138,6 @@ class BlockStringValueTest extends TestCase
     {
         $actualBlockString = blockStringValue(implode("\n", $rawStringLines));
 
-        $this->assertEquals(implode("\n", $expectedBlockStringLines), $actualBlockString);
+        $this->assertSame(implode("\n", $expectedBlockStringLines), $actualBlockString);
     }
 }

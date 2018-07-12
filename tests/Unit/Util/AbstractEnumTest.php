@@ -17,7 +17,7 @@ class AbstractEnumTest extends TestCase
      */
     public function testValues()
     {
-        $this->assertEquals([
+        $this->assertSame([
             1,
             2
         ], DummyEnum::values());

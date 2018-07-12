@@ -46,7 +46,7 @@ class ValueASTConverterTest extends TestCase
     {
         $node = new StringValueNode('foo', false, null);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->converter->convert($node, newNonNull(String())));
+        $this->assertSame('foo', $this->converter->convert($node, newNonNull(String())));
     }
 
     public function testConvertNonNullWithNullValue()
@@ -55,7 +55,7 @@ class ValueASTConverterTest extends TestCase
         $this->expectException(ConversionException::class);
         $this->expectExceptionMessage('Cannot convert non-null values from null value node');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(null, $this->converter->convert($node, newNonNull(String())));
+        $this->assertSame(null, $this->converter->convert($node, newNonNull(String())));
     }
 
     public function testConvertValidListOfStrings()
@@ -69,7 +69,7 @@ class ValueASTConverterTest extends TestCase
             null
         );
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', 'B', 'C'], $this->converter->convert($node, newList(String())));
+        $this->assertSame(['A', 'B', 'C'], $this->converter->convert($node, newList(String())));
     }
 
     public function testConvertListWithMissingVariableValue()
@@ -85,7 +85,7 @@ class ValueASTConverterTest extends TestCase
         // Null-able inputs in a variable can be omitted
         $variables = ['$a' => 'A', '$c' => 'C'];
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['A', null, 'C'], $this->converter->convert($node, newList(String()), $variables));
+        $this->assertSame(['A', null, 'C'], $this->converter->convert($node, newList(String()), $variables));
     }
 
     public function testConvertValidInputObject()
@@ -104,7 +104,7 @@ class ValueASTConverterTest extends TestCase
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['a' => 1], $this->converter->convert($node, $type));
+        $this->assertSame(['a' => 1], $this->converter->convert($node, $type));
     }
 
     public function testConvertInputObjectWithNodeOfInvalidType()
@@ -122,7 +122,7 @@ class ValueASTConverterTest extends TestCase
         $this->expectException(ConversionException::class);
         $this->expectExceptionMessage('Input object values can only be converted form object value nodes.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->converter->convert($node, $type));
+        $this->assertSame(1, $this->converter->convert($node, $type));
     }
 
     public function testConvertInputObjectWithMissingNonNullField()
@@ -144,7 +144,7 @@ class ValueASTConverterTest extends TestCase
         $this->expectException(ConversionException::class);
         $this->expectExceptionMessage('Cannot convert input object value for missing non-null field.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(['a' => 1], $this->converter->convert($node, $type));
+        $this->assertSame(['a' => 1], $this->converter->convert($node, $type));
     }
 
     public function testConvertEnumWithIntValue()
@@ -158,7 +158,7 @@ class ValueASTConverterTest extends TestCase
             ],
         ]);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->converter->convert($node, $type));
+        $this->assertSame(1, $this->converter->convert($node, $type));
     }
 
     public function testConvertEnumWithNodeOfInvalidType()
@@ -171,7 +171,7 @@ class ValueASTConverterTest extends TestCase
         $this->expectException(ConversionException::class);
         $this->expectExceptionMessage('Enum values can only be converted from enum value nodes.');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->converter->convert($node, $type));
+        $this->assertSame(1, $this->converter->convert($node, $type));
     }
 
     public function testConvertEnumWithMissingValue()
@@ -187,14 +187,14 @@ class ValueASTConverterTest extends TestCase
         $this->expectException(ConversionException::class);
         $this->expectExceptionMessage('Cannot convert enum value for missing value "FOO".');
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(1, $this->converter->convert($node, $type));
+        $this->assertSame(1, $this->converter->convert($node, $type));
     }
 
     public function testConvertValidScalar()
     {
         $node = new StringValueNode('foo', false, null);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->converter->convert($node, String()));
+        $this->assertSame('foo', $this->converter->convert($node, String()));
     }
 
     public function testConvertInvalidScalar()
@@ -203,6 +203,6 @@ class ValueASTConverterTest extends TestCase
 
         $this->expectException(ConversionException::class);
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('foo', $this->converter->convert($node, String()));
+        $this->assertSame('foo', $this->converter->convert($node, String()));
     }
 }

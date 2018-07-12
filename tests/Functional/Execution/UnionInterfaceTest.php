@@ -165,7 +165,7 @@ class UnionInterfaceTest extends TestCase
             ]
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source))->getData());
+        $this->assertSame($expected, execute($this->schema, parse($source))->getData());
     }
 
     /**
@@ -232,7 +232,7 @@ class UnionInterfaceTest extends TestCase
             ]
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        $this->assertSame($expected, execute($this->schema, parse($source), $this->john)->getData());
     }
 
     /**
@@ -263,7 +263,7 @@ class UnionInterfaceTest extends TestCase
             ]
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        $this->assertSame($expected, execute($this->schema, parse($source), $this->john)->getData());
     }
 
     /**
@@ -298,7 +298,7 @@ class UnionInterfaceTest extends TestCase
             ]
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        $this->assertSame($expected, execute($this->schema, parse($source), $this->john)->getData());
     }
 
     /**
@@ -352,7 +352,7 @@ class UnionInterfaceTest extends TestCase
             ]
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        $this->assertSame($expected, execute($this->schema, parse($source), $this->john)->getData());
     }
 
     /**
@@ -404,7 +404,7 @@ class UnionInterfaceTest extends TestCase
 
         $context = ['authToken' => '123abc'];
 
-        $this->assertEquals(
+        $this->assertSame(
             ['name' => 'John', 'friends' => [['name' => 'Liz']]],
             execute($schema2, parse('{ name, friends { name } }'), $john2, $context)->getData()
         );
