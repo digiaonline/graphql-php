@@ -333,9 +333,11 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             $description = $this->printDescription($value, '  ');
             $name        = $value->getName();
             $deprecated  = $this->printDeprecated($value);
+            $enum        = empty($deprecated) ? $name : "{$name} {$deprecated}";
+
             return printLines([
                 $description,
-                "  {$name} {$deprecated}"
+                "  {$enum}"
             ]);
         }, $values));
     }
