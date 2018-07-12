@@ -24,7 +24,6 @@ use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newUnionType;
-use function Digia\GraphQL\Util\invariant;
 
 class ExtensionContext implements ExtensionContextInterface
 {
@@ -125,7 +124,9 @@ class ExtensionContext implements ExtensionContextInterface
     {
         $existingDirectives = $this->info->getSchema()->getDirectives();
 
-        invariant(!empty($existingDirectives), 'schema must have default directives');
+        if (empty($existingDirectives)) {
+            throw new InvariantException('schema must have default directives');
+        }
 
         return \array_merge(
             $existingDirectives,

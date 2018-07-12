@@ -36,7 +36,6 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Execution\coerceDirectiveValues;
-use function Digia\GraphQL\Type\assertNullableType;
 use function Digia\GraphQL\Type\introspectionTypes;
 use function Digia\GraphQL\Type\newDirective;
 use function Digia\GraphQL\Type\newEnumType;
@@ -205,8 +204,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         }
 
         if ($inputTypeNode instanceof NonNullTypeNode) {
-            $wrappedType = $this->buildWrappedTypeRecursive($innerType, $inputTypeNode->getType());
-            return newNonNull(assertNullableType($wrappedType));
+            return newNonNull($this->buildWrappedTypeRecursive($innerType, $inputTypeNode->getType()));
         }
 
         return $innerType;

@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\InvariantException;
-use function Digia\GraphQL\Util\invariant;
 
 /**
  * A representation of source input to GraphQL.
@@ -107,15 +106,13 @@ class Source
     protected function setLocationOffset(?SourceLocation $locationOffset): Source
     {
         if (null !== $locationOffset) {
-            invariant(
-                $locationOffset->getLine() > 0,
-                'line is 1-indexed and must be positive'
-            );
+            if ($locationOffset->getLine() < 1) {
+                throw new InvariantException("'line is 1-indexed and must be positive");
+            }
 
-            invariant(
-                $locationOffset->getColumn() > 0,
-                'column is 1-indexed and must be positive'
-            );
+            if ($locationOffset->getColumn() < 1) {
+                throw new InvariantException("'column is 1-indexed and must be positive'");
+            }
         }
 
         $this->locationOffset = $locationOffset ?? new SourceLocation();

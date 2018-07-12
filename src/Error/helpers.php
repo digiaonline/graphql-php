@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Error;
 
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\SourceLocation;
-use function Digia\GraphQL\Util\invariant;
 
 // Format error
 
@@ -15,7 +14,9 @@ use function Digia\GraphQL\Util\invariant;
  */
 function formatError(?GraphQLException $error): array
 {
-    invariant(null !== $error, 'Received null error.');
+    if (null === $error) {
+        throw new InvariantException('Received null error.');
+    }
 
     return [
         'message'   => $error->getMessage(),

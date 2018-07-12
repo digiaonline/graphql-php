@@ -9,7 +9,6 @@ use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newInputField;
 use function Digia\GraphQL\Type\resolveThunk;
-use function Digia\GraphQL\Util\invariant;
 
 /**
  * Input Object Type Definition
@@ -59,7 +58,6 @@ class InputObjectType implements NamedTypeInterface, InputTypeInterface, Descrip
      * @param null|string                        $description
      * @param array|callable                     $rawFieldsOrThunk
      * @param InputObjectTypeDefinitionNode|null $astNode
-     * @throws InvariantException
      */
     public function __construct(
         string $name,
@@ -105,25 +103,23 @@ class InputObjectType implements NamedTypeInterface, InputTypeInterface, Descrip
     {
         $rawFields = resolveThunk($rawFieldsOrThunk);
 
-        invariant(
-            isAssocArray($rawFields),
-            \sprintf(
+        if (!isAssocArray($rawFields)) {
+            throw new InvariantException(\sprintf(
                 '%s fields must be an associative array with field names as keys or a function which returns such an array.',
                 $this->name
-            )
-        );
+            ));
+        }
 
         $fieldMap = [];
 
         foreach ($rawFields as $fieldName => $fieldConfig) {
-            invariant(
-                !isset($fieldConfig['resolve']),
-                \sprintf(
+            if (isset($fieldConfig['resolve'])) {
+                throw new InvariantException(\sprintf(
                     '%s.%s field type has a resolve property, but Input Types cannot define resolvers.',
                     $this->name,
                     $fieldName
-                )
-            );
+                ));
+            }
 
             $fieldConfig['name'] = $fieldName;
 

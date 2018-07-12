@@ -9,7 +9,6 @@ use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\resolveThunk;
-use function Digia\GraphQL\Util\invariant;
 
 /**
  * Object Type Definition
@@ -89,7 +88,6 @@ class ObjectType implements NamedTypeInterface, CompositeTypeInterface, OutputTy
      * @param callable|null                 $isTypeOfCallback
      * @param ObjectTypeDefinitionNode|null $astNode
      * @param ObjectTypeExtensionNode[]     $extensionASTNodes
-     * @throws InvariantException
      */
     public function __construct(
         string $name,
@@ -160,10 +158,10 @@ class ObjectType implements NamedTypeInterface, CompositeTypeInterface, OutputTy
     {
         $interfaces = resolveThunk($interfacesOrThunk);
 
-        invariant(
-            \is_array($interfaces),
-            \sprintf('%s interfaces must be an array or a function which returns an array.', $this->name)
-        );
+        if (!\is_array($interfaces)) {
+            throw new InvariantException(\sprintf('%s interfaces must be an array or a function which returns an array.',
+                $this->name));
+        }
 
         return $interfaces;
     }

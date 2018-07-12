@@ -16,7 +16,6 @@ use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use function Digia\GraphQL\Type\__Schema;
 use function Digia\GraphQL\Util\find;
-use function Digia\GraphQL\Util\invariant;
 
 /**
  * Schema Definition
@@ -200,15 +199,14 @@ class Schema implements DefinitionInterface
         if (!isset($this->possibleTypesMap[$abstractTypeName])) {
             $possibleTypes = $this->getPossibleTypes($abstractType);
 
-            invariant(
-                \is_array($possibleTypes),
-                \sprintf(
+            if (!\is_array($possibleTypes)) {
+                throw new InvariantException(\sprintf(
                     'Could not find possible implementing types for %s ' .
                     'in schema. Check that schema.types is defined and is an array of ' .
                     'all possible types in the schema.',
                     $abstractTypeName
-                )
-            );
+                ));
+            }
 
             $this->possibleTypesMap[$abstractTypeName] = \array_reduce(
                 $possibleTypes,
@@ -324,13 +322,12 @@ class Schema implements DefinitionInterface
             $typeName = $type->getName();
 
             if (isset($map[$typeName])) {
-                invariant(
-                    $type === $map[$typeName],
-                    \sprintf(
+                if ($type !== $map[$typeName]) {
+                    throw new InvariantException(\sprintf(
                         'Schema must contain unique named types but contains multiple types named "%s".',
                         $type->getName()
-                    )
-                );
+                    ));
+                }
 
                 return $map;
             }

@@ -5,7 +5,6 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\Error\InvariantException;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newArgument;
-use function Digia\GraphQL\Util\invariant;
 
 trait ArgumentsTrait
 {
@@ -57,14 +56,13 @@ trait ArgumentsTrait
      */
     protected function buildArguments(string $typeName, array $rawArguments): array
     {
-        invariant(
-            isAssocArray($rawArguments),
-            \sprintf(
+        if (!isAssocArray($rawArguments)) {
+            throw new InvariantException(\sprintf(
                 '%s.%s args must be an object with argument names as keys.',
                 $typeName,
                 $this->getName()
-            )
-        );
+            ));
+        }
 
         $arguments = [];
 
