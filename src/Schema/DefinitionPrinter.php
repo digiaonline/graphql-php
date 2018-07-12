@@ -329,8 +329,8 @@ class DefinitionPrinter implements DefinitionPrinterInterface
 
     protected function printEnumValues(array $values): string
     {
-        return printLines(\array_map(function (EnumValue $value, int $i): string {
-            $description = $this->printDescription($value, '  ', 0 === $i);
+        return printLines(\array_map(function (EnumValue $value): string {
+            $description = $this->printDescription($value, '  ');
             $name        = $value->getName();
             $deprecated  = $this->printDeprecated($value);
             return printLines([
@@ -348,8 +348,8 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     protected function printInputObjectType(InputObjectType $type): string
     {
         $description = $this->printDescription($type);
-        $fields      = \array_map(function (InputField $field, int $i): string {
-            $description = $this->printDescription($field, '  ', 0 === $i);
+        $fields      = \array_map(function (InputField $field): string {
+            $description = $this->printDescription($field, '  ');
             $inputValue  = $this->printInputValue($field);
             return printLines([
                 $description,
