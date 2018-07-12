@@ -466,6 +466,11 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             return '';
         }
 
+        // Don't print anything if the type has no description
+        if ($type->getDescription() === null) {
+            return '';
+        }
+
         $lines      = descriptionLines($type->getDescription(), 120 - \strlen($indentation));
         $linesCount = \count($lines);
 
