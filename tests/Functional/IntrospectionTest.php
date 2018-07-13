@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional;
 
+use function Digia\GraphQL\buildSchema;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\graphql;
 
@@ -448,5 +449,37 @@ class IntrospectionTest extends TestCase
                 ],
             ],
         ], $result);
+    }
+
+    public function testCanIntrospectNameOnADateScalar()
+    {
+        $schema = '
+        scalar Date
+        type Query {
+            hello: String
+        }
+        ';
+        $schema = buildSchema($schema);
+
+        $query = '
+        query IntrospectionDroidDescriptionQuery {
+          __type(name: "Date") {
+            name
+          }
+        }
+        ';
+
+        $result = graphql($schema, $query);
+
+        $this->assertNull($result['errors']);
+        $this->assertEquals([
+            'data' => [
+                '__type' => [
+                    'name'        => 'Date',
+                ],
+            ],
+        ], $result);
+
+
     }
 }

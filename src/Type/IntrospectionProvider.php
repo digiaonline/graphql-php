@@ -252,7 +252,12 @@ class IntrospectionProvider extends AbstractServiceProvider
                                 throw new InvalidTypeException(sprintf('Unknown kind of type: %s', $type));
                             },
                         ],
-                        'name'          => ['type' => String()],
+                        'name'          => [
+                            'type' => String(),
+//                            'resolve' => function(TypeInterface $type): ?string {
+//                                return $type->getName();
+//                            }
+                        ],
                         'description'   => ['type' => String()],
                         'fields'        => [
                             'type'    => newList(newNonNull(__Field())),
