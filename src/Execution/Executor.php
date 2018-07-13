@@ -969,7 +969,7 @@ class Executor
             }
         }
 
-        return \is_callable($property)
+        return $property instanceof \Closure
             ? $property($rootValue, $arguments, $contextValues, $info)
             : $property;
     }

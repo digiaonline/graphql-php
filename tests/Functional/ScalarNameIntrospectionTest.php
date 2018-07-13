@@ -72,7 +72,7 @@ class ScalarNameIntrospectionTest extends TestCase
 
         $result = graphql($schema, $query);
 
-        $this->assertArrayNotHasKey('errors', $result, json_encode($result['errors']));
+        $this->assertArrayNotHasKey('errors', $result);
         $this->assertEquals([
             'data' => [
                 '__type' => [
