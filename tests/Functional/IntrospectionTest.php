@@ -2,8 +2,10 @@
 
 namespace Digia\GraphQL\Test\Functional;
 
+use function Digia\GraphQL\buildSchema;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\graphql;
+use function Digia\GraphQL\Type\newScalarType;
 
 class IntrospectionTest extends TestCase
 {
@@ -449,4 +451,77 @@ class IntrospectionTest extends TestCase
             ],
         ], $result);
     }
+
+    /**
+     * Test to check that we can introspect on a scalar, which does *not*
+     * have a name which clashes with a global PHP function or class
+     */
+    public function testCanIntrospectOnANonClashingScalar()
+    {
+        $schema = '
+        scalar Postcode
+        type Query {
+            hello: Postcode
+        }
+        ';
+
+
+        $schema = buildSchema($schema);
+
+        $query = '
+        query IntrospectionDroidDescriptionQuery {
+          __type(name: "Postcode") {
+            name
+          }
+        }
+        ';
+
+        $result = graphql($schema, $query);
+
+        $this->assertArrayNotHasKey('errors', $result);
+        $this->assertEquals([
+            'data' => [
+                '__type' => [
+                    'name'        => 'Postcode',
+                ],
+            ],
+        ], $result);
+    }
+
+    /**
+     * Test to check that we can introspect on a scalar, which *does*
+     * have a name which clashes with a global PHP function or class
+     */
+    public function testCanIntrospectOnScalarWithClashingName()
+    {
+        $schema = '
+        scalar Date
+        type Query {
+            hello: Date
+        }
+        ';
+
+
+        $schema = buildSchema($schema);
+
+        $query = '
+        query IntrospectionDroidDescriptionQuery {
+          __type(name: "Date") {
+            name
+          }
+        }
+        ';
+
+        $result = graphql($schema, $query);
+
+        $this->assertArrayNotHasKey('errors', $result);
+        $this->assertEquals([
+            'data' => [
+                '__type' => [
+                    'name'        => 'Date',
+                ],
+            ],
+        ], $result);
+    }
+
 }
