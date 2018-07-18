@@ -440,7 +440,7 @@ SRC;
                 ],
                 'c'    => 'Cherry'
             ]
-        ], $executionResult)
+        ], $executionResult);
     }
 
     /**
