@@ -79,7 +79,7 @@ class DirectivesTest extends TestCase
     {
         $result = execute($this->schema, parse('{ a, b @include(if: false) }'), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 
     /**
@@ -105,7 +105,7 @@ class DirectivesTest extends TestCase
     {
         $result = execute($this->schema, parse('{ a, b @skip(if: true) }'), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 
     // WORKS ON FRAGMENT SPREADS
@@ -128,7 +128,7 @@ class DirectivesTest extends TestCase
 
         $result = execute($this->schema, parse($source), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 
 
@@ -192,7 +192,7 @@ class DirectivesTest extends TestCase
 
         $result = execute($this->schema, parse($source), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 
     // WORKS ON INLINE FRAGMENT
@@ -214,7 +214,7 @@ class DirectivesTest extends TestCase
 
         $result = execute($this->schema, parse($source), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 
     /**
@@ -274,7 +274,7 @@ class DirectivesTest extends TestCase
 
         $result = execute($this->schema, parse($source), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 
     // WORKS ON ANONYMOUS INLINE FRAGMENT
@@ -296,7 +296,7 @@ class DirectivesTest extends TestCase
 
         $result = execute($this->schema, parse($source), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 
     /**
@@ -356,7 +356,7 @@ class DirectivesTest extends TestCase
 
         $result = execute($this->schema, parse($source), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 
     // WORKS WITH SKIP AND INCLUDE DIRECTIVES
@@ -394,7 +394,7 @@ class DirectivesTest extends TestCase
 
         $result = execute($this->schema, parse($source), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 
     /**
@@ -412,6 +412,6 @@ class DirectivesTest extends TestCase
 
         $result = execute($this->schema, parse($source), $this->data);
 
-        $this->assertEquals(['a' => 'a'], $result->getData());
+        $this->assertSame(['a' => 'a'], $result->getData());
     }
 }

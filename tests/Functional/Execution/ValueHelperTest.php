@@ -51,6 +51,6 @@ class ValueHelperTest extends TestCase
 
         $args = coerceArgumentValues($definition, $node, $context->getVariableValues());
 
-        $this->assertEquals(['name' => 'Han Solo'], $args);
+        $this->assertSame(['name' => 'Han Solo'], $args);
     }
 }

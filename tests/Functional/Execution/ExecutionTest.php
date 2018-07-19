@@ -77,7 +77,7 @@ class ExecutionTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $result = graphql($schema, $source, $rootValue);
 
-        $this->assertEquals(['data' => ['a' => $rootValue]], $result);
+        $this->assertSame(['data' => ['a' => $rootValue]], $result);
     }
 
     /**
@@ -102,7 +102,7 @@ class ExecutionTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, 'query Greeting {hello}');
 
-        $this->assertEquals(['data' => ['hello' => 'world']], $executionResult);
+        $this->assertSame(['data' => ['hello' => 'world']], $executionResult);
     }
 
     /**
@@ -312,7 +312,7 @@ class ExecutionTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, $source, '', null, $variableValues);
 
-        $this->assertEquals(['data' => ['greeting' => 'Hello Han Solo']], $executionResult);
+        $this->assertSame(['data' => ['greeting' => 'Hello Han Solo']], $executionResult);
     }
 
     /**
@@ -361,7 +361,7 @@ class ExecutionTest extends TestCase
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, 'query Human {id, type, friends, appearsIn, homePlanet}');
 
-        $this->assertEquals([
+        $this->assertSame([
             'data' => [
                 'id'         => 1000,
                 'type'       => 'Human',
@@ -426,19 +426,19 @@ SRC;
         /** @var ExecutionResult $executionResult */
         $executionResult = graphql($schema, $source);
 
-        $this->assertEquals([
+        $this->assertSame([
             'data' => [
                 'a'    => 'Apple',
                 'b'    => 'Banana',
-                'c'    => 'Cherry',
                 'deep' => [
                     'b'      => 'Banana',
-                    'c'      => 'Cherry',
                     'deeper' => [
                         'b' => 'Banana',
                         'c' => 'Cherry'
-                    ]
-                ]
+                    ],
+                    'c'      => 'Cherry',
+                ],
+                'c'    => 'Cherry'
             ]
         ], $executionResult);
     }
@@ -473,15 +473,15 @@ SRC;
         execute($schema, $ast, $rootValue, null, ['var' => 123]);
 
         /** @var ResolveInfo $info */
-        $this->assertEquals('test', $info->getFieldName());
-        $this->assertEquals(1, count($info->getFieldNodes()));
+        $this->assertSame('test', $info->getFieldName());
+        $this->assertSame(1, count($info->getFieldNodes()));
         $this->assertEquals(
             $ast->getDefinitions()[0]->getSelectionSet()->getSelections()[0],
             $info->getFieldNodes()[0]
         );
-        $this->assertEquals(String(), $info->getReturnType());
+        $this->assertSame(String(), $info->getReturnType());
         $this->assertEquals($schema->getQueryType(), $info->getParentType());
-        $this->assertEquals(["result"], $info->getPath()); // { prev: undefined, key: 'result' }
+        $this->assertSame(["result"], $info->getPath()); // { prev: undefined, key: 'result' }
         $this->assertEquals($schema, $info->getSchema());
         $this->assertEquals($rootValue, $info->getRootValue());
         $this->assertEquals($ast->getDefinitions()[0], $info->getOperation());

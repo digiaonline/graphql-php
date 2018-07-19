@@ -259,16 +259,16 @@ class DefinitionTest extends TestCase
 
         $this->assertEquals($this->blogArticle, $articleField->getType());
         $this->assertEquals($this->blogArticle->getName(), $articleField->getType()->getName());
-        $this->assertEquals('article', $articleField->getName());
+        $this->assertSame('article', $articleField->getName());
 
         /** @var ObjectType $articleFieldType */
         $articleFieldType = $articleField->getType();
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $titleField = $articleFieldType->getFields()['title'];
-        $this->assertEquals('title', $titleField->getName());
-        $this->assertEquals(String(), $titleField->getType());
-        $this->assertEquals('String', $titleField->getType()->getName());
+        $this->assertSame('title', $titleField->getName());
+        $this->assertSame(String(), $titleField->getType());
+        $this->assertSame('String', $titleField->getType()->getName());
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $authorField = $articleFieldType->getFields()['author'];
@@ -287,7 +287,7 @@ class DefinitionTest extends TestCase
         $feedFieldType = $feedField->getType();
         $this->assertEquals($this->blogArticle, $feedFieldType->getOfType());
 
-        $this->assertEquals('feed', $feedField->getName());
+        $this->assertSame('feed', $feedField->getName());
     }
 
     // defines a mutation schema
@@ -305,8 +305,8 @@ class DefinitionTest extends TestCase
         $writeArticleField = $this->blogMutation->getFields()['writeArticle'];
 
         $this->assertEquals($this->blogArticle, $writeArticleField->getType());
-        $this->assertEquals('Article', $writeArticleField->getType()->getName());
-        $this->assertEquals('writeArticle', $writeArticleField->getName());
+        $this->assertSame('Article', $writeArticleField->getType()->getName());
+        $this->assertSame('writeArticle', $writeArticleField->getName());
     }
 
     // defines a subscription schema
@@ -324,8 +324,8 @@ class DefinitionTest extends TestCase
         $articleSubscribeField = $this->blogSubscription->getFields()['articleSubscribe'];
 
         $this->assertEquals($this->blogArticle, $articleSubscribeField->getType());
-        $this->assertEquals('Article', $articleSubscribeField->getType()->getName());
-        $this->assertEquals('articleSubscribe', $articleSubscribeField->getName());
+        $this->assertSame('Article', $articleSubscribeField->getType()->getName());
+        $this->assertSame('articleSubscribe', $articleSubscribeField->getName());
     }
 
     // defines an enum type with deprecated value
@@ -341,10 +341,10 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $enumValue = $enumWithDeprecatedValue->getValues()[0];
 
-        $this->assertEquals('foo', $enumValue->getName());
+        $this->assertSame('foo', $enumValue->getName());
         $this->assertTrue($enumValue->isDeprecated());
-        $this->assertEquals('Just because', $enumValue->getDeprecationReason());
-        $this->assertEquals('foo', $enumValue->getValue());
+        $this->assertSame('Just because', $enumValue->getDeprecationReason());
+        $this->assertSame('foo', $enumValue->getValue());
     }
 
     // defines an enum type with a value of `null`
@@ -359,9 +359,9 @@ class DefinitionTest extends TestCase
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $enumValue = $enumTypeWithNullValue->getValues()[0];
-        $this->assertEquals('NULL', $enumValue->getName());
+        $this->assertSame('NULL', $enumValue->getName());
         $this->assertNull($enumValue->getDescription());
-        $this->assertEquals(false, $enumValue->isDeprecated());
+        $this->assertSame(false, $enumValue->isDeprecated());
         $this->assertNull($enumValue->getValue());
         $this->assertNull($enumValue->getAstNode());
     }
@@ -384,10 +384,10 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $field = $typeWithDeprecatedField->getFields()['bar'];
 
-        $this->assertEquals(String(), $field->getType());
-        $this->assertEquals('A terrible reason', $field->getDeprecationReason());
+        $this->assertSame(String(), $field->getType());
+        $this->assertSame('A terrible reason', $field->getDeprecationReason());
         $this->assertTrue($field->isDeprecated());
-        $this->assertEquals('bar', $field->getName());
+        $this->assertSame('bar', $field->getName());
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEmpty($field->getArguments());
     }
