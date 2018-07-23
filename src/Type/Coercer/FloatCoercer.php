@@ -9,7 +9,7 @@ class FloatCoercer extends AbstractCoercer
     /**
      * @inheritdoc
      */
-    public function coerce($value)
+    public function coerce($value): float
     {
         if ($value === '') {
             throw new InvalidTypeException('Float cannot represent non numeric value: (empty string)');

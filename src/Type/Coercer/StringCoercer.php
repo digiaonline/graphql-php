@@ -9,7 +9,7 @@ class StringCoercer extends AbstractCoercer
     /**
      * @inheritdoc
      */
-    public function coerce($value)
+    public function coerce($value): string
     {
         if ($value === null) {
             return 'null';

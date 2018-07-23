@@ -11,7 +11,7 @@ class IntCoercer extends AbstractCoercer
      *
      * @throws InvalidTypeException
      */
-    public function coerce($value)
+    public function coerce($value): int
     {
         if ($value === '') {
             throw new InvalidTypeException('Int cannot represent non 32-bit signed integer value: (empty string)');
@@ -33,6 +33,6 @@ class IntCoercer extends AbstractCoercer
             throw new InvalidTypeException(\sprintf('Int cannot represent non-integer value: %s', $value));
         }
 
-        return $value;
+        return (int)$value;
     }
 }
