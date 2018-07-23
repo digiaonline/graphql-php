@@ -16,7 +16,7 @@ class FloatCoercer extends AbstractCoercer
         }
 
         if (\is_numeric($value) || \is_bool($value)) {
-            return $value;
+            return (float)$value;
         }
 
         throw new InvalidTypeException(\sprintf('Float cannot represent non numeric value: %s', $value));
