@@ -33,6 +33,6 @@ class IntCoercer extends AbstractCoercer
             throw new InvalidTypeException(\sprintf('Int cannot represent non-integer value: %s', $value));
         }
 
-        return (int)$value;
+        return $value;
     }
 }
