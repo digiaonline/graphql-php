@@ -9,14 +9,14 @@ class FloatCoercer extends AbstractCoercer
     /**
      * @inheritdoc
      */
-    public function coerce($value)
+    public function coerce($value): float
     {
         if ($value === '') {
             throw new InvalidTypeException('Float cannot represent non numeric value: (empty string)');
         }
 
         if (\is_numeric($value) || \is_bool($value)) {
-            return (float)$value;
+            return $value;
         }
 
         throw new InvalidTypeException(\sprintf('Float cannot represent non numeric value: %s', $value));

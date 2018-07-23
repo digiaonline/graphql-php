@@ -9,7 +9,7 @@ class BooleanCoercer extends AbstractCoercer
     /**
      * @inheritdoc
      */
-    public function coerce($value)
+    public function coerce($value): bool
     {
         if (!\is_scalar($value)) {
             throw new InvalidTypeException(\sprintf('Boolean cannot represent a non-scalar value: %s', $value));
