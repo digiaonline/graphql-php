@@ -2,10 +2,12 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
@@ -48,6 +50,8 @@ class TypeHelper
      * @param TypeInterface $maybeSubtype
      * @param TypeInterface $superType
      * @return bool
+     *
+     * @throws InvariantException
      */
     public function isTypeSubtypeOf(
         Schema $schema,
@@ -108,6 +112,8 @@ class TypeHelper
      * @param TypeInterface $typeA
      * @param TypeInterface $typeB
      * @return bool
+     *
+     * @throws InvariantException
      */
     public function doTypesOverlap(Schema $schema, TypeInterface $typeA, TypeInterface $typeB): bool
     {
@@ -121,7 +127,7 @@ class TypeHelper
                 // If both types are abstract, then determine if there is any intersection
                 // between possible concrete types of each.
                 return arraySome($schema->getPossibleTypes($typeA),
-                    function (TypeInterface $type) use ($schema, $typeB) {
+                    function (NamedTypeInterface $type) use ($schema, $typeB) {
                         return $schema->isPossibleType($typeB, $type);
                     });
             }
