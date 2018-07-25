@@ -20,7 +20,11 @@ class NameHelperTest extends TestCase
     {
         $nameHelper = new NameHelper();
 
-        $nameHelper->assertInvalid('__invalid');
+        $exception = $nameHelper->isValidError('__invalid');
+
+        if ($exception !== null) {
+            throw $exception;
+        }
     }
 
     /**
@@ -31,13 +35,19 @@ class NameHelperTest extends TestCase
     {
         $nameHelper = new NameHelper();
 
-        $nameHelper->assertInvalid('-');
+        $exception = $nameHelper->isValidError('-');
+
+        if ($exception !== null) {
+            throw $exception;
+        }
     }
 
     public function testIsValidErrorNoError()
     {
         $nameHelper = new NameHelper();
 
-        $this->assertNull($nameHelper->isValidError('name'));
+        $exception = $nameHelper->isValidError('name');
+
+        $this->assertNull($exception);
     }
 }

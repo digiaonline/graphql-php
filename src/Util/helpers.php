@@ -12,15 +12,6 @@ use Digia\GraphQL\Type\Definition\TypeInterface;
 
 /**
  * @param string $name
- * @return string
- */
-function assertInvalidName(string $name): string
-{
-    return GraphQL::make(NameHelper::class)->assertInvalid($name);
-}
-
-/**
- * @param string $name
  * @param mixed  $node
  * @return ValidationException|null
  */
