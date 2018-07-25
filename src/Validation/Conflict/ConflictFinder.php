@@ -12,11 +12,11 @@ use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Util\TypeHelper;
+use Digia\GraphQL\Util\ValueHelper;
 use Digia\GraphQL\Validation\ValidationContextAwareTrait;
 use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Util\typeFromAST;
-use function Digia\GraphQL\Validation\compareArguments;
-use function Digia\GraphQL\Validation\compareTypes;
 
 /**
  * Algorithm:
@@ -547,7 +547,7 @@ class ConflictFinder
             }
 
             // Two field calls must have the same arguments.
-            if (!compareArguments($nodeA->getArguments(), $nodeB->getArguments())) {
+            if (!ValueHelper::compareArguments($nodeA->getArguments(), $nodeB->getArguments())) {
                 return new Conflict(
                     $responseName,
                     'they have differing arguments',
@@ -561,7 +561,7 @@ class ConflictFinder
         $typeA = null !== $definitionA ? $definitionA->getType() : null;
         $typeB = null !== $definitionB ? $definitionB->getType() : null;
 
-        if (null !== $typeA && null !== $typeB && compareTypes($typeA, $typeB)) {
+        if (null !== $typeA && null !== $typeB && TypeHelper::compareTypes($typeA, $typeB)) {
             return new Conflict(
                 $responseName,
                 sprintf('they return conflicting types %s and %s', (string)$typeA, (string)$typeB),

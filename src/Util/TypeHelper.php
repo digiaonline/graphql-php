@@ -150,11 +150,11 @@ class TypeHelper
      * @param TypeInterface $typeB
      * @return bool
      */
-    public function compareTypes(TypeInterface $typeA, TypeInterface $typeB): bool
+    public static function compareTypes(TypeInterface $typeA, TypeInterface $typeB): bool
     {
         if ($typeA instanceof ListType) {
             return $typeB instanceof ListType
-                ? $this->compareTypes($typeA->getOfType(), $typeB->getOfType())
+                ? self::compareTypes($typeA->getOfType(), $typeB->getOfType())
                 : true;
         }
         if ($typeB instanceof ListType) {
@@ -162,7 +162,7 @@ class TypeHelper
         }
         if ($typeA instanceof NonNullType) {
             return $typeB instanceof NonNullType
-                ? $this->compareTypes($typeA->getOfType(), $typeB->getOfType())
+                ? self::compareTypes($typeA->getOfType(), $typeB->getOfType())
                 : true;
         }
         if ($typeB instanceof NonNullType) {
