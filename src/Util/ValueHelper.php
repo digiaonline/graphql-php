@@ -37,7 +37,7 @@ class ValueHelper
      * @param ValueNodeInterface $valueB
      * @return bool
      */
-    public function compareValues($valueA, $valueB): bool
+    private function compareValues($valueA, $valueB): bool
     {
         return printNode($valueA) === printNode($valueB);
     }

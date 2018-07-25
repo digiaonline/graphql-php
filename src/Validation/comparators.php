@@ -20,16 +20,6 @@ function compareArguments(array $argumentsA, array $argumentsB): bool
 }
 
 /**
- * @param ValueNodeInterface $valueA
- * @param ValueNodeInterface $valueB
- * @return bool
- */
-function compareValues($valueA, $valueB): bool
-{
-    return GraphQL::make(ValueHelper::class)->compareValues($valueA, $valueB);
-}
-
-/**
  * @param TypeInterface $typeA
  * @param TypeInterface $typeB
  * @return bool

@@ -80,16 +80,6 @@ class ValueHelperTest extends TestCase
         $this->assertTrue($this->valueHelper->compareArguments($a, $b));
     }
 
-    public function testCompareValues(): void
-    {
-        $a = new StringValueNode('foo', false, null);
-        $b = new StringValueNode('bar', false, null);
-        $c = new StringValueNode('foo', false, null);
-
-        $this->assertTrue($this->valueHelper->compareValues($a, $c));
-        $this->assertFalse($this->valueHelper->compareValues($a, $b));
-    }
-
     /**
      * @param string $name
      * @param string $value
