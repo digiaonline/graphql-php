@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
-use function Digia\GraphQL\Util\typeFromAST;
+use Digia\GraphQL\Util\TypeASTConverter;
 use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
 use function Digia\GraphQL\Validation\inlineFragmentOnNonCompositeMessage;
 
@@ -57,7 +57,7 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
         $typeCondition = $node->getTypeCondition();
 
         if (null !== $typeCondition) {
-            $type = typeFromAST($this->context->getSchema(), $typeCondition);
+            $type = TypeASTConverter::convert($this->context->getSchema(), $typeCondition);
 
             if (null !== $type && !($type instanceof CompositeTypeInterface)) {
                 $this->context->reportError(

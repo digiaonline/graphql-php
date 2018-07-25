@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language\Visitor;
 
+use Digia\GraphQL\Error\ConversionException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\EnumValueNode;
@@ -20,13 +22,13 @@ use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\TypeInfo;
 use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Type\getNullableType;
 use function Digia\GraphQL\Type\isInputType;
 use function Digia\GraphQL\Type\isOutputType;
 use function Digia\GraphQL\Util\find;
-use function Digia\GraphQL\Util\typeFromAST;
 
 class TypeInfoVisitor implements VisitorInterface
 {
@@ -53,6 +55,9 @@ class TypeInfoVisitor implements VisitorInterface
 
     /**
      * @inheritdoc
+     *
+     * @throws ConversionException
+     * @throws InvariantException
      */
     public function enterNode(NodeInterface $node): ?NodeInterface
     {
@@ -89,11 +94,11 @@ class TypeInfoVisitor implements VisitorInterface
         } elseif ($node instanceof InlineFragmentNode || $node instanceof FragmentDefinitionNode) {
             $typeCondition = $node->getTypeCondition();
             $outputType    = null !== $typeCondition
-                ? typeFromAST($schema, $typeCondition)
+                ? TypeASTConverter::convert($schema, $typeCondition)
                 : getNamedType($this->typeInfo->getType());
             $this->typeInfo->pushType(isOutputType($outputType) ? $outputType : null);
         } elseif ($node instanceof VariableDefinitionNode) {
-            $inputType = typeFromAST($schema, $node->getType());
+            $inputType = TypeASTConverter::convert($schema, $node->getType());
             /** @noinspection PhpParamsInspection */
             $this->typeInfo->pushInputType(isInputType($inputType) ? $inputType : null);
         } elseif ($node instanceof ArgumentNode) {

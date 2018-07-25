@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
+use Digia\GraphQL\Error\ConversionException;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
@@ -13,8 +14,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
-use function Digia\GraphQL\Util\typeFromAST;
+use Digia\GraphQL\Util\TypeASTConverter;
 
 class FieldCollector
 {
@@ -125,6 +125,7 @@ class FieldCollector
      * @param ObjectType                                $type
      * @return bool
      * @throws InvariantException
+     * @throws ConversionException
      */
     protected function doesFragmentConditionMatch($fragment, ObjectType $type): bool
     {
@@ -134,8 +135,7 @@ class FieldCollector
             return true;
         }
 
-        /** @var ObjectType|TypeInterface $conditionalType */
-        $conditionalType = typeFromAST($this->context->getSchema(), $typeConditionNode);
+        $conditionalType = TypeASTConverter::convert($this->context->getSchema(), $typeConditionNode);
 
         if ($type === $conditionalType) {
             return true;

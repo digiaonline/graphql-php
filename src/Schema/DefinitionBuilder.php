@@ -34,6 +34,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
+use Digia\GraphQL\Util\ValueASTConverter;
 use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Execution\coerceDirectiveValues;
 use function Digia\GraphQL\Type\introspectionTypes;
@@ -49,7 +50,6 @@ use function Digia\GraphQL\Type\newUnionType;
 use function Digia\GraphQL\Type\specifiedScalarTypes;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\keyValueMap;
-use function Digia\GraphQL\Util\valueFromAST;
 
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
@@ -263,7 +263,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                     'type'         => $type,
                     'description'  => $value->getDescriptionValue(),
                     'defaultValue' => null !== $defaultValue
-                        ? valueFromAST($defaultValue, $type)
+                        ? ValueASTConverter::convert($defaultValue, $type)
                         : null,
                     'astNode'      => $value,
                 ];
@@ -445,6 +445,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param InputObjectTypeDefinitionNode $node
      * @return InputObjectType
+     * @throws InvariantException
      */
     protected function buildInputObjectType(InputObjectTypeDefinitionNode $node): InputObjectType
     {
@@ -464,7 +465,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
                             'type'         => $type,
                             'description'  => $value->getDescriptionValue(),
                             'defaultValue' => null !== $defaultValue
-                                ? valueFromAST($defaultValue, $type)
+                                ? ValueASTConverter::convert($defaultValue, $type)
                                 : null,
                             'astNode'      => $value,
                         ];

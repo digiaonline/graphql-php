@@ -2,15 +2,16 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\ConversionException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use function Digia\GraphQL\Util\doTypesOverlap;
-use function Digia\GraphQL\Util\typeFromAST;
+use Digia\GraphQL\Util\TypeASTConverter;
+use Digia\GraphQL\Util\TypeHelper;
 use function Digia\GraphQL\Validation\typeIncompatibleAnonymousSpreadMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
 
@@ -25,6 +26,8 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 {
     /**
      * @inheritdoc
+     *
+     * @throws InvariantException
      */
     protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
     {
@@ -33,7 +36,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
         if ($fragmentType instanceof CompositeTypeInterface &&
             $parentType instanceof CompositeTypeInterface &&
-            !doTypesOverlap($this->context->getSchema(),
+            !TypeHelper::doTypesOverlap($this->context->getSchema(),
                 $fragmentType, $parentType)) {
             $this->context->reportError(
                 new ValidationException(
@@ -48,6 +51,9 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
     /**
      * @inheritdoc
+     *
+     * @throws InvariantException
+     * @throws ConversionException
      */
     protected function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
     {
@@ -57,7 +63,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
         if (null !== $fragmentType &&
             null !== $parentType &&
-            !doTypesOverlap($this->context->getSchema(),
+            !TypeHelper::doTypesOverlap($this->context->getSchema(),
                 $fragmentType, $parentType)) {
             $this->context->reportError(
                 new ValidationException(
@@ -73,7 +79,8 @@ class PossibleFragmentSpreadsRule extends AbstractRule
     /**
      * @param string $name
      * @return TypeInterface|null
-     * @throws InvalidTypeException
+     * @throws InvariantException
+     * @throws ConversionException
      */
     protected function getFragmentType(string $name): ?TypeInterface
     {
@@ -83,7 +90,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
             return null;
         }
 
-        $type = typeFromAST($this->context->getSchema(), $fragment->getTypeCondition());
+        $type = TypeASTConverter::convert($this->context->getSchema(), $fragment->getTypeCondition());
 
         return $type instanceof CompositeTypeInterface ? $type : null;
     }

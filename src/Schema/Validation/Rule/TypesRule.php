@@ -24,13 +24,12 @@ use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\UnionType;
+use Digia\GraphQL\Util\NameHelper;
+use Digia\GraphQL\Util\TypeHelper;
 use function Digia\GraphQL\Type\isInputType;
 use function Digia\GraphQL\Type\isIntrospectionType;
 use function Digia\GraphQL\Type\isOutputType;
 use function Digia\GraphQL\Util\find;
-use function Digia\GraphQL\Util\isEqualType;
-use function Digia\GraphQL\Util\isTypeSubtypeOf;
-use function Digia\GraphQL\Util\isValidNameError;
 use function Digia\GraphQL\Util\toString;
 
 class TypesRule extends AbstractRule
@@ -274,7 +273,7 @@ class TypesRule extends AbstractRule
 
             // Assert interface field type is satisfied by object field type, by being
             // a valid subtype. (covariant)
-            if (!isTypeSubtypeOf(
+            if (!TypeHelper::isTypeSubtypeOf(
                 $this->context->getSchema(), $objectField->getType(), $interfaceField->getType())) {
                 $this->context->reportError(
                     new SchemaValidationException(
@@ -327,7 +326,7 @@ class TypesRule extends AbstractRule
                 // Assert interface field arg type matches object field arg type.
                 // (invariant)
                 // TODO: change to contravariant?
-                if (!isEqualType($interfaceArgument->getType(), $objectArgument->getType())) {
+                if (!TypeHelper::isEqualType($interfaceArgument->getType(), $objectArgument->getType())) {
                     $this->context->reportError(
                         new SchemaValidationException(
                             \sprintf(
@@ -722,7 +721,7 @@ class TypesRule extends AbstractRule
     protected function validateName($node): void
     {
         // Ensure names are valid, however introspection types opt out.
-        $error = isValidNameError($node->getName(), $node);
+        $error = NameHelper::isValidError($node->getName(), $node);
 
         if (null !== $error) {
             $this->context->reportError($error);

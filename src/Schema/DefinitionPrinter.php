@@ -20,12 +20,12 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
+use Digia\GraphQL\Util\ValueConverter;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Type\isIntrospectionType;
 use function Digia\GraphQL\Type\isSpecifiedScalarType;
 use function Digia\GraphQL\Type\String;
 use function Digia\GraphQL\Util\arrayEvery;
-use function Digia\GraphQL\Util\astFromValue;
 use function Digia\GraphQL\Util\toString;
 
 class DefinitionPrinter implements DefinitionPrinterInterface
@@ -368,12 +368,15 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     /**
      * @param InputValueInterface $inputValue
      * @return string
+     * @throws InvariantException
+     * @throws \Digia\GraphQL\Error\ConversionException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     protected function printInputValue(InputValueInterface $inputValue): string
     {
         $type         = $inputValue->getType();
         $name         = $inputValue->getName();
-        $defaultValue = printNode(astFromValue($inputValue->getDefaultValue(), $type));
+        $defaultValue = printNode(ValueConverter::convert($inputValue->getDefaultValue(), $type));
 
         return $inputValue->hasDefaultValue()
             ? "{$name}: {$type} = {$defaultValue}"
@@ -433,6 +436,9 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     /**
      * @param DeprecationAwareInterface $fieldOrEnumValue
      * @return string
+     * @throws InvariantException
+     * @throws \Digia\GraphQL\Error\ConversionException
+     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     protected function printDeprecated(DeprecationAwareInterface $fieldOrEnumValue): string
     {
@@ -446,7 +452,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             return '@deprecated';
         }
 
-        $reasonValue = printNode(astFromValue($reason, String()));
+        $reasonValue = printNode(ValueConverter::convert($reason, String()));
 
         return "@deprecated(reason: {$reasonValue})";
     }

@@ -2,12 +2,14 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
+use Digia\GraphQL\Error\ConversionException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
+use Digia\GraphQL\Util\TypeASTConverter;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Type\isInputType;
-use function Digia\GraphQL\Util\typeFromAST;
 use function Digia\GraphQL\Validation\nonInputTypeOnVariableMessage;
 
 /**
@@ -20,10 +22,13 @@ class VariablesAreInputTypesRule extends AbstractRule
 {
     /**
      * @inheritdoc
+     *
+     * @throws ConversionException
+     * @throws InvariantException
      */
     protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
     {
-        $type = typeFromAST($this->context->getSchema(), $node->getType());
+        $type = TypeASTConverter::convert($this->context->getSchema(), $node->getType());
 
         if (!isInputType($type)) {
             $variableName = $node->getVariable()->getNameValue();

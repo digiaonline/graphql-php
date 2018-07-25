@@ -28,17 +28,17 @@ class TypeASTConverter
      * @throws InvariantException
      * @throws ConversionException
      */
-    public function convert(Schema $schema, TypeNodeInterface $typeNode): ?TypeInterface
+    public static function convert(Schema $schema, TypeNodeInterface $typeNode): ?TypeInterface
     {
         $innerType = null;
 
         if ($typeNode instanceof ListTypeNode) {
-            $innerType = $this->convert($schema, $typeNode->getType());
+            $innerType = self::convert($schema, $typeNode->getType());
             return null !== $innerType ? newList($innerType) : null;
         }
 
         if ($typeNode instanceof NonNullTypeNode) {
-            $innerType = $this->convert($schema, $typeNode->getType());
+            $innerType = self::convert($schema, $typeNode->getType());
             return null !== $innerType ? newNonNull($innerType) : null;
         }
 
