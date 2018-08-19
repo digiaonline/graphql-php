@@ -115,7 +115,6 @@ class GraphQL
      */
     public static function make(string $id, array $args = [])
     {
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         return static::getInstance()
             ->getContainer()
             ->get($id, $args);
@@ -169,18 +168,23 @@ class GraphQL
      */
     public static function validateSchema(Schema $schema): array
     {
-        return static::make(SchemaValidatorInterface::class)->validate($schema);
+        /** @var SchemaValidatorInterface $schemaValidator */
+        $schemaValidator = static::make(SchemaValidatorInterface::class);
+
+        return $schemaValidator->validate($schema);
     }
 
     /**
      * @param string|Source $source
      * @param array         $options
      * @return DocumentNode
-     * @throws Error\InvariantException
      */
     public static function parse($source, array $options = []): DocumentNode
     {
-        return static::make(ParserInterface::class)->parse($source, $options);
+        /** @var ParserInterface $parser */
+        $parser = static::make(ParserInterface::class);
+
+        return $parser->parse($source, $options);
     }
 
     /**
@@ -190,7 +194,10 @@ class GraphQL
      */
     public static function parseValue($source, array $options = []): ValueNodeInterface
     {
-        return static::make(ParserInterface::class)->parseValue($source, $options);
+        /** @var ParserInterface $parser */
+        $parser = static::make(ParserInterface::class);
+
+        return $parser->parseValue($source, $options);
     }
 
     /**
@@ -200,7 +207,10 @@ class GraphQL
      */
     public static function parseType($source, array $options = []): TypeNodeInterface
     {
-        return static::make(ParserInterface::class)->parseType($source, $options);
+        /** @var ParserInterface $parser */
+        $parser = static::make(ParserInterface::class);
+
+        return $parser->parseType($source, $options);
     }
 
     /**
@@ -210,7 +220,10 @@ class GraphQL
      */
     public static function validate(Schema $schema, DocumentNode $document): array
     {
-        return static::make(ValidatorInterface::class)->validate($schema, $document);
+        /** @var ValidatorInterface $validator */
+        $validator = static::make(ValidatorInterface::class);
+
+        return $validator->validate($schema, $document);
     }
 
     /**
@@ -232,16 +245,18 @@ class GraphQL
         $operationName = null,
         callable $fieldResolver = null
     ): ExecutionResult {
-        return static::make(ExecutionInterface::class)
-            ->execute(
-                $schema,
-                $document,
-                $rootValue,
-                $contextValue,
-                $variableValues,
-                $operationName,
-                $fieldResolver
-            );
+        /** @var ExecutionInterface $execution */
+        $execution = static::make(ExecutionInterface::class);
+
+        return $execution->execute(
+            $schema,
+            $document,
+            $rootValue,
+            $contextValue,
+            $variableValues,
+            $operationName,
+            $fieldResolver
+        );
     }
 
     /**
@@ -250,7 +265,10 @@ class GraphQL
      */
     public static function print(NodeInterface $node): string
     {
-        return static::make(NodePrinterInterface::class)->print($node);
+        /** @var NodePrinterInterface $nodePrinter */
+        $nodePrinter = static::make(NodePrinterInterface::class);
+
+        return $nodePrinter->print($node);
     }
 
     /**
