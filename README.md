@@ -28,7 +28,7 @@ JavaScript [reference implementation](https://github.com/graphql/graphql-js).
 Run the following command to install the package through Composer:
 
 ```sh
-composer require digiaonline/graphql:dev-master
+composer require digiaonline/graphql
 ```
 
 ## Example
