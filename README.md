@@ -5,119 +5,25 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/digiaonline/graphql-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/digiaonline/graphql-php/?branch=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/digiaonline/graphql-php/master/LICENSE)
 
-A PHP7 implementation of the [GraphQL specification](https://facebook.github.io/graphql/).
-
-## Related packages
-
-- [Relay support](https://github.com/digiaonline/graphql-relay-php/blob/master/README.md) (WIP)
+This is a PHP implementation of the [GraphQL specification](https://facebook.github.io/graphql/) based on the 
+JavaScript [reference implementation](https://github.com/graphql/graphql-js).
 
 ## Requirements
 
 - PHP version >= 7.1
 - ext-mbstring
 
-## Motivation
+## Table of contents
 
-When we started developing this project there were two GraphQL implementations available for PHP developers; one from 
-[Webonyx](https://github.com/webonyx/graphql-php/) and one from [Youshido](https://github.com/youshido/graphql/). 
-The one from Webonyx is a direct port of the reference implementation and it does not fully use modern PHP. The other 
-implementation from Youshido has some neat ideas, but unfortunately it does not fulfill the GraphQL specification, 
-e.g. it does not come with proper query validation. After some research, we concluded that neither of these 
-implementations met our needs, so we decided to start coding and see what we would come up with.
+- [Installation](#installation)
+- [Example](#example)
+- [Creating a schema](#creating-a-schema)
+- [Execution](#execution)
+- [Scalars](#scalars)
+- [Integration](#integration)
+- [Relay support](#relay-support)
 
-## Architecture
-
-### Public API
-
-This library exposes a very simple API using namespaced functions.
-
-#### Dependency injection
-
-We noticed quite early on that wiring together this library was no easy task. Especially if we wanted to allow 
-developers to extend the library in a natural way. To solve this issue we introduced a
-[Dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) container. This container allows us to 
-register each package as a separate service and ensure that shared class instances are treated as such. A good 
-example of shared class instances are the specified GraphQL scalar types. The specification states that every type in a 
-schema must be unique and by using shared instances through the container we can ensure that this requirement is met.
-
-#### Namespaced functions
-
-This project comes "batteries-included", which means that everything is set up in a way that allows developers to take 
-this library into use quickly. We decided to use namespaced functions to keep the API simple.
-
-### Execution
-
-Takes care of executing queries against a GraphQL schema.
-
-**Package lead: [@hungneox](https://github.com/hungneox/)**
-
-#### Resolving data
-
-Resolving data is a very important part of any GraphQL implementation, so we spent quite a lot of time figuring out how 
-to solve this problem in a way that does not limit the developers and provides us with a solid foundation to build on. 
-We decided to use the [Service Locator pattern](https://en.wikipedia.org/wiki/Service_locator_pattern) to lookup 
-resolvers at runtime from a resolver registry. The default registry is map-based, and is very similar to the one in the
-[GraphQL Tools](https://www.apollographql.com/docs/graphql-tools/resolvers.html#Resolver-map) library.
-
-In practice this means that the schema builder takes the schema and the resolver registry and wires everything together 
-to build an executable schema.
-
-### Language
-
-Defines the GraphQL language and the associated abstract syntax tree (AST).
-
-**Package lead: [@crisu83](https://github.com/crisu83/)**
-
-#### Parsing
-
-We want to encourage developers to use the official GraphQL parser written in C++ through a PHP extension because its 
-performance is outstanding. However, we will also provide a shim for the parser, which will allow developers to use 
-this library without installing a custom PHP extension in their environment.
-
-The official GraphQL parser takes a GQL string as its input and returns the corresponding abstract syntax tree (AST), 
-an associative array in PHP, as its output. Most of the GraphQL implementations (across all languages) take a
-different approach where they convert the AST directly into nodes (class instances in PHP). While this approach might 
-be a little bit faster, it introduces tight coupling between the parser and the rest of the library, which we think is 
-short-sighted. Instead we decided to take a different approach, where the parser produces the AST as an associative 
-array. This will allow developers to use the C++ parser if they want more performance.
-
-#### Abstract syntax tree
-
-We introduced a builder system, using the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern),
-for converting the AST into nodes which allows developers to implement their own builders, without changing our code.
-
-### Type system
-
-Describes the GraphQL type system and schema definition.
-
-**Package lead: [@crisu83](https://github.com/crisu83/)**
-
-#### Schema definition
-
-Most of the existing GraphQL implementations encourages the developer to create the schema programmatically. However,
-GraphQL has an experimental feature which lets you define your schema using its Schema Definition Language (SDL). We 
-think that this is the natural way to define the schema, so we built our type system around this idea. This approach 
-will also allow developers to define the schema in formats native to different ecosystems, such as PHP array, YAML and 
-even XML.
-
-### Validation
-
-**Package lead: [@crisu83](https://github.com/crisu83/)**
-
-#### Schema validation
-
-Our schema validation is based on the reference implementation, but we decided to implement it using rules. We introduced three rules, one for validating root types (query, mutation and subscription), one for validating directives and one for validating all the types.
-
-#### Query validation
-
-Even though some GraphQL implementations come without any query validation we decided to include it in the first 
-version, because it is a part of the specification. Query validation is done by evaluating the query AST using a set of validation rules (27 in total). We used the [Visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) to implement query validation, but instead of using a functional approach, like the reference implementation, we decided to go with a more traditional, object-oriented apporach. 
-
-In practice this means that the query AST is visited by the each rule. Every rule takes care of validating the query against a particular part of the [Validation specification](https://facebook.github.io/graphql/October2016/#sec-Validation). This also allows developers to easily implement their own validation rules.
-
-## Usage
-
-### Installation
+## Installation
 
 Run the following command to install the package through Composer:
 
@@ -125,15 +31,18 @@ Run the following command to install the package through Composer:
 composer require digiaonline/graphql:dev-master
 ```
 
-### Example
+## Example
 
-This script demonstrates the public API:
+Here is a simple example that demonstrates how to build an executable schema from a GraphQL schema file that contains 
+the Schema Definition Language (SDL) for a Star Wars-themed schema (for the schema definition, see below). Once
+you have the executable schema you can run a query asking for the name of the hero. The result of that query is an 
+associative array with a structure that matches the query ran.
 
 ```php
 use function Digia\GraphQL\buildSchema;
 use function Digia\GraphQL\graphql;
 
-$source = file_get_contents(__DIR__ . '/star-wars.graphqls');
+$source = \file_get_contents(__DIR__ . '/star-wars.graphqls');
 
 $schema = buildSchema($source, [
     'Query' => [
@@ -153,7 +62,7 @@ query HeroNameQuery {
 print_r($result);
 ```
 
-Produces the following output:
+The script above produces the following output:
 
 ```php
 Array
@@ -170,7 +79,7 @@ Array
 )
 ```
 
-The schema definition used looks like this:
+The GraphQL schema file used in this example contains the following:
 
 ```graphql schema
 schema {
@@ -209,8 +118,254 @@ type Droid implements Character {
 enum Episode { NEWHOPE, EMPIRE, JEDI }
 ```
 
-The public API consists of many more functions that can also be used directly. Developers can also choose to not 
-use the functions at all and wire everything together themselves if they prefer.
+## Creating a schema
+
+In order to execute queries against your GraphQL API, you need to define the structure of your API. This is done by 
+creating a schema. There are two ways to do this, you can either do it using GraphQL's Schema Definition Language (SDL)
+or you can do it programmatically. We strongly encourage you to use SDL and the `buildSchema` function which takes 
+three arguments.
+
+- `$source` The schema definition as a string
+- `$resolverRegistry` An associative array or a `ResolverRegistry` instance that contains all resolvers
+- `$options` The options for building the schema, which also includes custom types and directives
+
+### Resolver registry
+
+The resolver registry is essentially a flat map with the type names as its keys and their corresponding resolver 
+instances as values. For smaller projects you can use an associative array and lambda functions to define your resolver 
+registry. However, in larger projects we suggest that you create resolvers instead. You can read more about resolvers
+below under the [Execution](#execution) section.
+
+Associative array example:
+
+```php
+$schema = buildSchema($source, [
+    'Query' => [
+        'hero' => function ($rootValue, $arguments) {
+            return getHero($arguments['episode'] ?? null);
+        },
+    ],
+]);
+```
+
+Resolver class example:
+
+```php
+$schema = buildSchema($source, [
+    'Query' => QueryResolver::class,
+]);
+```
+
+## Execution
+
+### Queries
+
+To execute a query against your schema you need to call the `graphql` function and pass it your schema and the query 
+you wish to execute.
+
+```php
+$query = '
+query HeroNameQuery {
+  hero {
+    name
+  }
+}';
+
+$result = graphql($schema, $query);
+```
+
+You can also run _mutations_ and _subscriptions_ by changing your query.
+
+#### Resolvers
+
+Each type in a schema has a resolver associated with it, that allows for resolving the actual value. Most of these 
+resolvers are lambda functions, but you can also define your own resolvers by implementing the `ResolverInterface`. A
+resolver function receives four arguments:
+
+- `$rootValue` The parent object, which can also be `null` in some cases
+- `$arguments` The arguments provided to the field in the query
+- `$context` A value that is passed to every resolver that can hold important contextual information
+- `$info` A value which holds field-specific information relevant to the current query
+
+Lambda function example:
+
+```php
+function ($rootValue, array $arguments, $context, ResolveInfo$info): string {
+    return getHero($arguments['episode'] ?? null);
+}
+``` 
+
+Resolver class example:
+
+```php
+class QueryResolver implements ResolverInterface
+{
+    public function resolveHero($rootValue, array $arguments, $context, ResolveInfo $info): string
+    {
+        return getHero($arguments['episode'] ?? null);
+    }
+}
+```
+
+### Variables
+
+You can pass in variables when executing a query by passing them to the `graphql` function.
+
+```php
+$query = '
+query HeroNameQuery($id: ID!) {
+  hero(id: $id) {
+    name
+  }
+}';
+
+$variables = ['id' => '1000'];
+
+$result = graphql($schema, $query, null, null, $variables);
+```
+
+### Context
+
+In case you need to pass in some important contextual information to your queries you can use the `$contextValues` 
+argument on `graphql` to do so. This data will be passed to all of your resolvers as the `$context` argument.
+
+```php
+$contextValues = [
+    'currentlyLoggedInUser' => $currentlyLoggedInUser,
+];
+
+$result = graphql($schema, $query, null, $contextValues, $variables);
+```
+
+## Scalars
+
+The leaf nodes in a schema are called scalars and each scalar resolves to some concrete data. The built-in, or 
+specified scalars in GraphQL are the following:
+
+- Boolean
+- Float
+- Int
+- ID
+- String
+
+### Custom scalars
+
+In addition to the specified scalars you can also define your own custom scalars and let your schema know about 
+them by passing them to the `buildSchema` function as part of its `$options` argument. 
+
+Custom Date scalar type example:
+
+```php
+$dateType = newScalarType([
+    'name'         => 'Date',
+    'serialize'    => function (DateTime $value) {
+        return $value->format('Y-m-d');
+    },
+    'parseValue'   => function (DateTime $value) {
+        return $value->format('Y-m-d');
+    },
+    'parseLiteral' => function ($node) {
+        if ($node instanceof StringValueNode) {
+            return new DateTime($node->getValue());
+        }
+        return null;
+    },
+]);
+
+$schema = buildSchema($source, [
+    'Query' => QueryResolver::class,
+    [
+        'customTypes' => [$dateType],
+    ],
+]);
+```
+
+Every scalar has to be coerced, which is done by three different functions. The `serialize` function converts a 
+PHP value into the corresponding output value. The`parseValue` function converts a variable input value into the
+corresponding PHP value and the `parseLiteral` function converts an AST literal into the corresponding PHP value.
+
+## Advanced usage
+
+If you are looking for something that isn't yet covered by this documentation your best bet is to take a look at the 
+[tests](./tests) in this project. You'll be surprised how many examples you'll find there.
+
+## Integration
+
+### Laravel
+
+In Laravel you need to create a GraphQL service provider, a GraphQL service, a GraphQL controller and map a route for
+handling the GraphQL requests.
+
+**app/GraphQL/GraphQLServiceProvider.php**
+```php
+class GraphQLServiceProvider
+{
+    public function register()
+    {
+        $this->app->singleton(GraphQLService::class, function () {
+            $schemaDef = file_get_contents(__DIR__ . '/schema.graphqls');
+
+            $executableSchema = buildSchema($schemaDef, [
+                'Query' => QueryResolver::class,
+            ]);
+
+            return new GraphQLService($executableSchema);
+        });
+    }
+}
+```
+
+**app/GraphQL/GraphQLService.php**
+```php
+class GraphQLService
+{
+    private $schema;
+
+    public function __construct(Schema $schema)
+    {
+        $this->schema = $schema;
+    }
+
+    public function executeQuery(string $query, array $variables, ?string $operationName): array
+    {
+        return graphql($this->schema, $query, null, null, $variables, $operationName);
+    }
+}
+```
+
+**app/GraphQL/GraphQLController.php**
+```php
+class GraphQLController extends Controller
+{
+    private $graphqlService;
+
+    public function __construct(GraphQLService $graphqlService)
+    {
+        $this->graphqlService = $graphqlService;
+    }
+
+    public function handle(Request $request): JsonResponse
+    {
+        $query         = $request->get('query');
+        $variables     = $request->get('variables') ?? [];
+        $operationName = $request->get('operationName');
+
+        $result = $this->graphqlService->executeQuery($query, $variables, $operationName);
+
+        return response()->json($result);
+    }
+}
+```
+
+**routes/api.php**
+```php
+Route::post('/graphql', 'app\GraphQL\GraphQLController@handle');
+```
+
+## Relay support
+
+If you want to use [Relay](https://facebook.github.io/relay/) together with this library, you can use our 
+[Relay package](https://github.com/digiaonline/graphql-relay-php) to add Relay support. 
 
 ## Contributing
 

@@ -1,4 +1,6 @@
 /.idea/dictionaries
+/.idea/deployment.xml
+/.idea/webServers.xml
 /.idea/workspace.xml
 /.idea/php-test-framework.xml
 /coverage/
@@ -7,3 +9,6 @@ clover.xml
 composer.lock
 cachegrind.out.*
 phpunit.xml
+
+# TODO: Remove this once the printer has been implemented.
+src/Language/Printer*
