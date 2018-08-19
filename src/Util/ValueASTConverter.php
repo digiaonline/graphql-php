@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Error\ConversionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\ConversionException;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
@@ -49,14 +49,14 @@ class ValueASTConverter
      * @throws InvariantException
      * @throws ConversionException
      */
-    public function convert(?NodeInterface $node, TypeInterface $type, array $variables = [])
+    public static function convert(?NodeInterface $node, TypeInterface $type, array $variables = [])
     {
         if (null === $node) {
             throw new ConversionException('Node is not defined.');
         }
 
         if ($type instanceof NonNullType) {
-            return $this->convertNonNullType($node, $type, $variables);
+            return self::convertNonNullType($node, $type, $variables);
         }
 
         if ($node instanceof NullValueNode) {
@@ -64,23 +64,23 @@ class ValueASTConverter
         }
 
         if ($node instanceof VariableNode) {
-            return $this->convertVariable($node, $variables);
+            return self::convertVariable($node, $variables);
         }
 
         if ($type instanceof ListType) {
-            return $this->convertListType($node, $type, $variables);
+            return self::convertListType($node, $type, $variables);
         }
 
         if ($type instanceof InputObjectType) {
-            return $this->convertInputObjectType($node, $type, $variables);
+            return self::convertInputObjectType($node, $type, $variables);
         }
 
         if ($type instanceof EnumType) {
-            return $this->convertEnumType($node, $type);
+            return self::convertEnumType($node, $type);
         }
 
         if ($type instanceof ScalarType) {
-            return $this->convertScalarType($node, $type, $variables);
+            return self::convertScalarType($node, $type, $variables);
         }
 
         throw new InvalidTypeException(\sprintf('Unknown type: %s', $type));
@@ -95,13 +95,13 @@ class ValueASTConverter
      * @throws InvariantException
      * @throws ConversionException
      */
-    protected function convertNonNullType(NodeInterface $node, NonNullType $type, array $variables)
+    protected static function convertNonNullType(NodeInterface $node, NonNullType $type, array $variables)
     {
         if ($node instanceof NullValueNode) {
             throw new ConversionException('Cannot convert non-null values from null value node.');
         }
 
-        return $this->convert($node, $type->getOfType(), $variables);
+        return self::convert($node, $type->getOfType(), $variables);
     }
 
     /**
@@ -110,7 +110,7 @@ class ValueASTConverter
      * @return mixed
      * @throws ConversionException
      */
-    protected function convertVariable(VariableNode $node, array $variables)
+    protected static function convertVariable(VariableNode $node, array $variables)
     {
         $variableName = $node->getNameValue();
 
@@ -129,12 +129,13 @@ class ValueASTConverter
     /**
      * @param NodeInterface|ValueNodeInterface $node
      * @param ListType                         $type
+     * @param array                            $variables
      * @return array|null
+     * @throws ConversionException
      * @throws InvalidTypeException
      * @throws InvariantException
-     * @throws ConversionException
      */
-    protected function convertListType(NodeInterface $node, ListType $type, array $variables): ?array
+    protected static function convertListType(NodeInterface $node, ListType $type, array $variables): ?array
     {
         $itemType = $type->getOfType();
 
@@ -142,7 +143,7 @@ class ValueASTConverter
             $values = [];
 
             foreach ($node->getValues() as $value) {
-                if ($this->isMissingVariable($value, $variables)) {
+                if (self::isMissingVariable($value, $variables)) {
                     if ($itemType instanceof NonNullType) {
                         // If an array contains a missing variable, it is either converted to
                         // null or if the item type is non-null, it considered invalid.
@@ -151,14 +152,14 @@ class ValueASTConverter
 
                     $values[] = null;
                 } else {
-                    $values[] = $this->convert($value, $itemType, $variables);
+                    $values[] = self::convert($value, $itemType, $variables);
                 }
             }
 
             return $values;
         }
 
-        return [$this->convert($node, $itemType, $variables)];
+        return [self::convert($node, $itemType, $variables)];
     }
 
     /**
@@ -170,8 +171,11 @@ class ValueASTConverter
      * @throws InvariantException
      * @throws ConversionException
      */
-    protected function convertInputObjectType(NodeInterface $node, InputObjectType $type, array $variables): ?array
-    {
+    protected static function convertInputObjectType(
+        NodeInterface $node,
+        InputObjectType $type,
+        array $variables
+    ): ?array {
         if (!$node instanceof ObjectValueNode) {
             throw new ConversionException('Input object values can only be converted form object value nodes.');
         }
@@ -187,7 +191,7 @@ class ValueASTConverter
             $name      = $field->getName();
             $fieldNode = $fieldNodes[$name] ?? null;
 
-            if (null === $fieldNode || $this->isMissingVariable($fieldNode->getValue(), $variables)) {
+            if (null === $fieldNode || self::isMissingVariable($fieldNode->getValue(), $variables)) {
                 if (null !== $field->getDefaultValue()) {
                     $values[$name] = $field->getDefaultValue();
                 } elseif ($field->getType() instanceof NonNullType) {
@@ -196,7 +200,7 @@ class ValueASTConverter
                 continue;
             }
 
-            $fieldValue = $this->convert($fieldNode->getValue(), $field->getType(), $variables);
+            $fieldValue = self::convert($fieldNode->getValue(), $field->getType(), $variables);
 
             $values[$name] = $fieldValue;
         }
@@ -211,7 +215,7 @@ class ValueASTConverter
      * @throws InvariantException
      * @throws ConversionException
      */
-    protected function convertEnumType(NodeInterface $node, EnumType $type)
+    protected static function convertEnumType(NodeInterface $node, EnumType $type)
     {
         if (!$node instanceof EnumValueNode) {
             throw new ConversionException('Enum values can only be converted from enum value nodes.');
@@ -235,7 +239,7 @@ class ValueASTConverter
      * @return mixed|null
      * @throws ConversionException
      */
-    protected function convertScalarType(NodeInterface $node, ScalarType $type, array $variables)
+    protected static function convertScalarType(NodeInterface $node, ScalarType $type, array $variables)
     {
         // Scalars fulfill parsing a literal value via parseLiteral().
         // Invalid values represent a failure to parse correctly, in which case
@@ -260,7 +264,7 @@ class ValueASTConverter
      * @param array              $variables
      * @return bool
      */
-    protected function isMissingVariable(ValueNodeInterface $node, array $variables): bool
+    protected static function isMissingVariable(ValueNodeInterface $node, array $variables): bool
     {
         return $node instanceof VariableNode && !isset($variables[$node->getNameValue()]);
     }

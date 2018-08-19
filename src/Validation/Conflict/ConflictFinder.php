@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Validation\Conflict;
 
+use Digia\GraphQL\Error\ConversionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\FieldNode;
@@ -12,11 +13,11 @@ use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Util\TypeASTConverter;
+use Digia\GraphQL\Util\TypeHelper;
+use Digia\GraphQL\Util\ValueHelper;
 use Digia\GraphQL\Validation\ValidationContextAwareTrait;
 use function Digia\GraphQL\Type\getNamedType;
-use function Digia\GraphQL\Util\typeFromAST;
-use function Digia\GraphQL\Validation\compareArguments;
-use function Digia\GraphQL\Validation\compareTypes;
 
 /**
  * Algorithm:
@@ -111,6 +112,7 @@ class ConflictFinder
      * @return array|Conflict[]
      * @throws InvalidTypeException
      * @throws InvariantException
+     * @throws ConversionException
      */
     public function findConflictsWithinSelectionSet(
         SelectionSetNode $selectionSet,
@@ -168,7 +170,9 @@ class ConflictFinder
      * @param array             $fieldMap
      * @param string            $fragmentName
      * @param bool              $areMutuallyExclusive
+     * @throws ConversionException
      * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function collectConflictsBetweenFieldsAndFragment(
         ComparisonContext $context,
@@ -236,7 +240,9 @@ class ConflictFinder
      * @param string            $fragmentNameA
      * @param string            $fragmentNameB
      * @param bool              $areMutuallyExclusive
+     * @throws ConversionException
      * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function collectConflictsBetweenFragments(
         ComparisonContext $context,
@@ -324,6 +330,8 @@ class ConflictFinder
      * @param bool                    $areMutuallyExclusive
      * @return Conflict[]
      * @throws InvalidTypeException
+     * @throws InvariantException
+     * @throws ConversionException
      */
     protected function findConflictsBetweenSubSelectionSets(
         ?NamedTypeInterface $parentTypeA,
@@ -408,7 +416,9 @@ class ConflictFinder
      * Collect all Conflicts "within" one collection of fields.
      *
      * @param ComparisonContext $context
+     * @throws ConversionException
      * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function collectConflictsWithin(ComparisonContext $context): void
     {
@@ -454,7 +464,9 @@ class ConflictFinder
      * @param array             $fieldMapA
      * @param array             $fieldMapB
      * @param bool              $parentFieldsAreMutuallyExclusive
+     * @throws ConversionException
      * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function collectConflictsBetween(
         ComparisonContext $context,
@@ -502,7 +514,9 @@ class ConflictFinder
      * @param FieldContext $fieldB
      * @param bool         $parentFieldsAreMutuallyExclusive
      * @return Conflict|null
+     * @throws ConversionException
      * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function findConflict(
         string $responseName,
@@ -547,7 +561,7 @@ class ConflictFinder
             }
 
             // Two field calls must have the same arguments.
-            if (!compareArguments($nodeA->getArguments(), $nodeB->getArguments())) {
+            if (!ValueHelper::compareArguments($nodeA->getArguments(), $nodeB->getArguments())) {
                 return new Conflict(
                     $responseName,
                     'they have differing arguments',
@@ -561,7 +575,7 @@ class ConflictFinder
         $typeA = null !== $definitionA ? $definitionA->getType() : null;
         $typeB = null !== $definitionB ? $definitionB->getType() : null;
 
-        if (null !== $typeA && null !== $typeB && compareTypes($typeA, $typeB)) {
+        if (null !== $typeA && null !== $typeB && TypeHelper::compareTypes($typeA, $typeB)) {
             return new Conflict(
                 $responseName,
                 sprintf('they return conflicting types %s and %s', (string)$typeA, (string)$typeB),
@@ -601,6 +615,7 @@ class ConflictFinder
      * @return ComparisonContext
      * @throws InvalidTypeException
      * @throws InvariantException
+     * @throws ConversionException
      */
     protected function getFieldsAndFragmentNames(
         SelectionSetNode $selectionSet,
@@ -624,6 +639,8 @@ class ConflictFinder
      * @param FragmentDefinitionNode $fragment
      * @return ComparisonContext
      * @throws InvalidTypeException
+     * @throws ConversionException
+     * @throws InvariantException
      */
     protected function getReferencedFieldsAndFragmentNames(FragmentDefinitionNode $fragment): ComparisonContext
     {
@@ -632,7 +649,7 @@ class ConflictFinder
         }
 
         /** @var NamedTypeInterface $fragmentType */
-        $fragmentType = typeFromAST($this->getContext()->getSchema(), $fragment->getTypeCondition());
+        $fragmentType = TypeASTConverter::convert($this->getContext()->getSchema(), $fragment->getTypeCondition());
 
         return $this->getFieldsAndFragmentNames($fragment->getSelectionSet(), $fragmentType);
     }
@@ -643,6 +660,7 @@ class ConflictFinder
      * @param NamedTypeInterface|null $parentType
      * @throws InvalidTypeException
      * @throws InvariantException
+     * @throws ConversionException
      */
     protected function collectFieldsAndFragmentNames(
         ComparisonContext $context,
@@ -662,7 +680,7 @@ class ConflictFinder
                 $typeCondition = $selection->getTypeCondition();
 
                 $inlineFragmentType = null !== $typeCondition
-                    ? typeFromAST($this->getContext()->getSchema(), $typeCondition)
+                    ? TypeASTConverter::convert($this->getContext()->getSchema(), $typeCondition)
                     : $parentType;
 
                 $this->collectFieldsAndFragmentNames($context, $selection->getSelectionSet(), $inlineFragmentType);

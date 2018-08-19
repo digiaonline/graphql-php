@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
@@ -10,9 +10,9 @@ use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Util\TypeASTConverter;
+use Digia\GraphQL\Util\TypeHelper;
 use function Digia\GraphQL\Type\newNonNull;
-use function Digia\GraphQL\Util\isTypeSubtypeOf;
-use function Digia\GraphQL\Util\typeFromAST;
 use function Digia\GraphQL\Validation\badVariablePositionMessage;
 
 /**
@@ -39,6 +39,9 @@ class VariablesInAllowedPositionRule extends AbstractRule
 
     /**
      * @inheritdoc
+     *
+     * @throws InvariantException
+     * @throws \Digia\GraphQL\Error\ConversionException
      */
     protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
     {
@@ -59,10 +62,10 @@ class VariablesInAllowedPositionRule extends AbstractRule
                 // If both are list types, the variable item type can be more strict
                 // than the expected item type (contravariant).
                 $schema       = $this->context->getSchema();
-                $variableType = typeFromAST($schema, $variableDefinition->getType());
+                $variableType = TypeASTConverter::convert($schema, $variableDefinition->getType());
 
                 if (null !== $variableType &&
-                    !isTypeSubTypeOf($schema,
+                    !TypeHelper::isTypeSubtypeOf($schema,
                         $this->getEffectiveType($variableType, $variableDefinition), $type)) {
                     $this->context->reportError(
                         new ValidationException(
@@ -93,7 +96,8 @@ class VariablesInAllowedPositionRule extends AbstractRule
      * @param TypeInterface          $variableType
      * @param VariableDefinitionNode $variableDefinition
      * @return TypeInterface
-     * @throws InvalidTypeException
+     *
+     * @throws InvariantException
      */
     protected function getEffectiveType(
         TypeInterface $variableType,

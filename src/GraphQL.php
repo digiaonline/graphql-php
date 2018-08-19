@@ -26,7 +26,6 @@ use Digia\GraphQL\Type\CoercerProvider;
 use Digia\GraphQL\Type\DirectivesProvider;
 use Digia\GraphQL\Type\IntrospectionProvider;
 use Digia\GraphQL\Type\ScalarTypesProvider;
-use Digia\GraphQL\Util\UtilityProvider;
 use Digia\GraphQL\Validation\RulesProvider;
 use Digia\GraphQL\Validation\ValidationProvider;
 use Digia\GraphQL\Validation\ValidatorInterface;
@@ -73,7 +72,6 @@ class GraphQL
         RulesProvider::class,
         ValidationProvider::class,
         ExecutionProvider::class,
-        UtilityProvider::class,
     ];
 
     /**

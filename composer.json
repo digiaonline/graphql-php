@@ -39,9 +39,7 @@
             "./src/Type/directives.php",
             "./src/Type/introspection.php",
             "./src/Type/scalars.php",
-            "./src/Util/helpers.php",
             "./src/Util/utils.php",
-            "./src/Validation/comparators.php",
             "./src/Validation/messages.php",
             "./src/api.php"
         ],

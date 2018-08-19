@@ -18,9 +18,11 @@ class NameHelperTest extends TestCase
      */
     public function testAssertInvalidReservedCharacters()
     {
-        $nameHelper = new NameHelper();
+        $exception = NameHelper::isValidError('__invalid');
 
-        $nameHelper->assertInvalid('__invalid');
+        if ($exception !== null) {
+            throw $exception;
+        }
     }
 
     /**
@@ -29,15 +31,17 @@ class NameHelperTest extends TestCase
      */
     public function testAssertInvalidRegularExpression()
     {
-        $nameHelper = new NameHelper();
+        $exception = NameHelper::isValidError('-');
 
-        $nameHelper->assertInvalid('-');
+        if ($exception !== null) {
+            throw $exception;
+        }
     }
 
     public function testIsValidErrorNoError()
     {
-        $nameHelper = new NameHelper();
+        $exception = NameHelper::isValidError('name');
 
-        $this->assertNull($nameHelper->isValidError('name'));
+        $this->assertNull($exception);
     }
 }

@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\CoercingException;
+use Digia\GraphQL\Error\ConversionException;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
@@ -24,11 +25,11 @@ use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use Digia\GraphQL\Util\TypeASTConverter;
+use Digia\GraphQL\Util\ValueASTConverter;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\suggestionList;
-use function Digia\GraphQL\Util\typeFromAST;
-use function Digia\GraphQL\Util\valueFromAST;
 
 class ValuesHelper
 {
@@ -87,7 +88,8 @@ class ValuesHelper
                 );
             } else {
                 try {
-                    $coercedValues[$argumentName] = valueFromAST($argumentNode->getValue(), $argumentType,
+                    $coercedValues[$argumentName] = ValueASTConverter::convert($argumentNode->getValue(),
+                        $argumentType,
                         $variableValues);
                 } catch (\Exception $ex) {
                     // Value nodes that cannot be resolved should be treated as invalid values
@@ -150,6 +152,7 @@ class ValuesHelper
      * @return CoercedValue
      * @throws GraphQLException
      * @throws InvariantException
+     * @throws ConversionException
      */
     public function coerceVariableValues(Schema $schema, array $variableDefinitionNodes, array $inputs): CoercedValue
     {
@@ -158,7 +161,7 @@ class ValuesHelper
 
         foreach ($variableDefinitionNodes as $variableDefinitionNode) {
             $variableName = $variableDefinitionNode->getVariable()->getNameValue();
-            $variableType = typeFromAST($schema, $variableDefinitionNode->getType());
+            $variableType = TypeASTConverter::convert($schema, $variableDefinitionNode->getType());
 
             if (!$this->isInputType($variableType)) {
                 $variableTypeName = (string)$variableType;
@@ -189,7 +192,7 @@ class ValuesHelper
                             null
                         );
                     } elseif ($variableDefinitionNode->getDefaultValue() !== null) {
-                        $coercedValues[$variableName] = valueFromAST(
+                        $coercedValues[$variableName] = ValueASTConverter::convert(
                             $variableDefinitionNode->getDefaultValue(),
                             $variableType
                         );

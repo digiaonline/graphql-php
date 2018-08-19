@@ -2,10 +2,12 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
@@ -19,7 +21,7 @@ class TypeHelper
      * @param TypeInterface $typeB
      * @return bool
      */
-    public function isEqualType(TypeInterface $typeA, TypeInterface $typeB): bool
+    public static function isEqualType(TypeInterface $typeA, TypeInterface $typeB): bool
     {
         // Equivalent types are equal.
         if ($typeA === $typeB) {
@@ -28,12 +30,12 @@ class TypeHelper
 
         // If either type is non-null, the other must also be non-null.
         if ($typeA instanceof NonNullType && $typeB instanceof NonNullType) {
-            return $this->isEqualType($typeA->getOfType(), $typeB->getOfType());
+            return self::isEqualType($typeA->getOfType(), $typeB->getOfType());
         }
 
         // If either type is a list, the other must also be a list.
         if ($typeA instanceof ListType && $typeB instanceof ListType) {
-            return $this->isEqualType($typeA->getOfType(), $typeB->getOfType());
+            return self::isEqualType($typeA->getOfType(), $typeB->getOfType());
         }
 
         // Otherwise the types are not equal.
@@ -48,8 +50,10 @@ class TypeHelper
      * @param TypeInterface $maybeSubtype
      * @param TypeInterface $superType
      * @return bool
+     *
+     * @throws InvariantException
      */
-    public function isTypeSubtypeOf(
+    public static function isTypeSubtypeOf(
         Schema $schema,
         TypeInterface $maybeSubtype,
         TypeInterface $superType
@@ -62,20 +66,20 @@ class TypeHelper
         // If superType is non-null, maybeSubType must also be non-null.
         if ($superType instanceof NonNullType) {
             if ($maybeSubtype instanceof NonNullType) {
-                return $this->isTypeSubtypeOf($schema, $maybeSubtype->getOfType(), $superType->getOfType());
+                return self::isTypeSubtypeOf($schema, $maybeSubtype->getOfType(), $superType->getOfType());
             }
             return false;
         }
 
         if ($maybeSubtype instanceof NonNullType) {
             // If superType is nullable, maybeSubType may be non-null or nullable.
-            return $this->isTypeSubtypeOf($schema, $maybeSubtype->getOfType(), $superType);
+            return self::isTypeSubtypeOf($schema, $maybeSubtype->getOfType(), $superType);
         }
 
         // If superType type is a list, maybeSubType type must also be a list.
         if ($superType instanceof ListType) {
             if ($maybeSubtype instanceof ListType) {
-                return $this->isTypeSubtypeOf($schema, $maybeSubtype->getOfType(), $superType->getOfType());
+                return self::isTypeSubtypeOf($schema, $maybeSubtype->getOfType(), $superType->getOfType());
             }
             return false;
         }
@@ -108,8 +112,10 @@ class TypeHelper
      * @param TypeInterface $typeA
      * @param TypeInterface $typeB
      * @return bool
+     *
+     * @throws InvariantException
      */
-    public function doTypesOverlap(Schema $schema, TypeInterface $typeA, TypeInterface $typeB): bool
+    public static function doTypesOverlap(Schema $schema, TypeInterface $typeA, TypeInterface $typeB): bool
     {
         // Equivalent types overlap
         if ($typeA === $typeB) {
@@ -121,7 +127,7 @@ class TypeHelper
                 // If both types are abstract, then determine if there is any intersection
                 // between possible concrete types of each.
                 return arraySome($schema->getPossibleTypes($typeA),
-                    function (TypeInterface $type) use ($schema, $typeB) {
+                    function (NamedTypeInterface $type) use ($schema, $typeB) {
                         return $schema->isPossibleType($typeB, $type);
                     });
             }
@@ -150,11 +156,11 @@ class TypeHelper
      * @param TypeInterface $typeB
      * @return bool
      */
-    public function compareTypes(TypeInterface $typeA, TypeInterface $typeB): bool
+    public static function compareTypes(TypeInterface $typeA, TypeInterface $typeB): bool
     {
         if ($typeA instanceof ListType) {
             return $typeB instanceof ListType
-                ? $this->compareTypes($typeA->getOfType(), $typeB->getOfType())
+                ? self::compareTypes($typeA->getOfType(), $typeB->getOfType())
                 : true;
         }
         if ($typeB instanceof ListType) {
@@ -162,7 +168,7 @@ class TypeHelper
         }
         if ($typeA instanceof NonNullType) {
             return $typeB instanceof NonNullType
-                ? $this->compareTypes($typeA->getOfType(), $typeB->getOfType())
+                ? self::compareTypes($typeA->getOfType(), $typeB->getOfType())
                 : true;
         }
         if ($typeB instanceof NonNullType) {

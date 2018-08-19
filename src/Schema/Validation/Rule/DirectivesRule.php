@@ -4,11 +4,11 @@ namespace Digia\GraphQL\Schema\Validation\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\SchemaValidationException;
-use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
+use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Type\Definition\Directive;
+use Digia\GraphQL\Util\NameHelper;
 use function Digia\GraphQL\Type\isInputType;
-use function Digia\GraphQL\Util\isValidNameError;
 
 class DirectivesRule extends AbstractRule
 {
@@ -109,12 +109,11 @@ class DirectivesRule extends AbstractRule
 
     /**
      * @param mixed $node
-     * @throws InvariantException
      */
     protected function validateName($node): void
     {
         // Ensure names are valid, however introspection types opt out.
-        $error = isValidNameError($node->getName(), $node);
+        $error = NameHelper::isValidError($node->getName(), $node);
 
         if (null !== $error) {
             $this->context->reportError($error);

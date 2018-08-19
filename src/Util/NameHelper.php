@@ -7,23 +7,6 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 
 class NameHelper
 {
-    /**
-     * Upholds the spec rules about naming.
-     *
-     * @param string $name
-     * @return string
-     * @throws ValidationException
-     */
-    public function assertInvalid(string $name): string
-    {
-        $error = $this->isValidError($name);
-
-        if ($error) {
-            throw $error;
-        }
-
-        return $name;
-    }
 
     /**
      * Returns an Error if a name is invalid.
@@ -32,7 +15,7 @@ class NameHelper
      * @param mixed|null $node
      * @return ValidationException
      */
-    public function isValidError(string $name, $node = null): ?ValidationException
+    public static function isValidError(string $name, $node = null): ?ValidationException
     {
         if (\strlen($name) > 1 && $name{0} === '_' && $name{1} === '_') {
             return new ValidationException(

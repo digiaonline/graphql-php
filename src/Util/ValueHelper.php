@@ -3,17 +3,16 @@
 namespace Digia\GraphQL\Util;
 
 use Digia\GraphQL\Language\Node\ArgumentNode;
-use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use function Digia\GraphQL\printNode;
 
 class ValueHelper
 {
     /**
-     * @param array $argumentsA
-     * @param array $argumentsB
+     * @param ArgumentNode[] $argumentsA
+     * @param ArgumentNode[] $argumentsB
      * @return bool
      */
-    public function compareArguments(array $argumentsA, array $argumentsB): bool
+    public static function compareArguments(array $argumentsA, array $argumentsB): bool
     {
         if (\count($argumentsA) !== \count($argumentsB)) {
             return false;
@@ -28,17 +27,7 @@ class ValueHelper
                 return false;
             }
 
-            return $this->compareValues($argumentA->getValue(), $argumentB->getValue());
+            return printNode($argumentA->getValue()) === printNode($argumentB->getValue());
         });
-    }
-
-    /**
-     * @param ValueNodeInterface $valueA
-     * @param ValueNodeInterface $valueB
-     * @return bool
-     */
-    public function compareValues($valueA, $valueB): bool
-    {
-        return printNode($valueA) === printNode($valueB);
     }
 }

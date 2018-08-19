@@ -53,10 +53,10 @@ class ValueConverter
      * @throws SyntaxErrorException
      * @throws ConversionException
      */
-    public function convert($value, TypeInterface $type): ?ValueNodeInterface
+    public static function convert($value, TypeInterface $type): ?ValueNodeInterface
     {
         if ($type instanceof NonNullType) {
-            $node = $this->convert($value, $type->getOfType());
+            $node = self::convert($value, $type->getOfType());
 
             return null !== $node && $node->getKind() === NodeKindEnum::NULL ? null : $node;
         }
@@ -68,17 +68,17 @@ class ValueConverter
         // Convert PHP array to GraphQL list. If the GraphQLType is a list, but
         // the value is not an array, convert the value using the list's item type.
         if ($type instanceof ListType) {
-            return $this->convertListType($value, $type);
+            return self::convertListType($value, $type);
         }
 
         // Populate the fields of the input object by creating ASTs from each value
         // in the PHP object according to the fields in the input type.
         if ($type instanceof InputObjectType) {
-            return $this->convertInputObjectType($value, $type);
+            return self::convertInputObjectType($value, $type);
         }
 
         if ($type instanceof ScalarType || $type instanceof EnumType) {
-            return $this->convertScalarOrEnum($value, $type);
+            return self::convertScalarOrEnum($value, $type);
         }
 
         throw new ConversionException(\sprintf('Unknown type: %s.', (string)$type));
@@ -92,18 +92,18 @@ class ValueConverter
      * @throws SyntaxErrorException
      * @throws ConversionException
      */
-    protected function convertListType($value, ListType $type): ValueNodeInterface
+    protected static function convertListType($value, ListType $type): ValueNodeInterface
     {
         $itemType = $type->getOfType();
 
         if (!\is_iterable($value)) {
-            return $this->convert($value, $itemType);
+            return self::convert($value, $itemType);
         }
 
         $nodes = [];
 
         foreach ($value as $item) {
-            $itemNode = $this->convert($item, $itemType);
+            $itemNode = self::convert($item, $itemType);
             if (null !== $itemNode) {
                 $nodes[] = $itemNode;
             }
@@ -120,7 +120,7 @@ class ValueConverter
      * @throws SyntaxErrorException
      * @throws ConversionException
      */
-    protected function convertInputObjectType($value, InputObjectType $type): ?ObjectValueNode
+    protected static function convertInputObjectType($value, InputObjectType $type): ?ObjectValueNode
     {
         if (null === $value || !\is_object($value)) {
             return null;
@@ -133,7 +133,7 @@ class ValueConverter
 
         foreach ($fields as $field) {
             $fieldName  = $field->getName();
-            $fieldValue = $this->convert($value[$fieldName], $field->getType());
+            $fieldValue = self::convert($value[$fieldName], $field->getType());
 
             if (null !== $fieldValue) {
                 $valueNode = parseValue($fieldValue);
@@ -150,7 +150,7 @@ class ValueConverter
      * @return ValueNodeInterface|null
      * @throws ConversionException
      */
-    protected function convertScalarOrEnum($value, SerializableTypeInterface $type): ?ValueNodeInterface
+    protected static function convertScalarOrEnum($value, SerializableTypeInterface $type): ?ValueNodeInterface
     {
         // Since value is an internally represented value, it must be serialized
         // to an externally represented value before converting into an AST.
