@@ -64,7 +64,7 @@ function breakLine(string $line, int $maxLength): array
  */
 function escapeQuote(string $line): string
 {
-    return \preg_replace('/"""/g', '\\"""', $line);
+    return \preg_replace('/"""/', '\\"""', $line);
 }
 
 /**
@@ -73,6 +73,11 @@ function escapeQuote(string $line): string
  */
 function printLines(array $lines): string
 {
+    // Don't print empty lines
+    $lines = \array_filter($lines, function (string $line) {
+        return $line !== '';
+    });
+    
     return printArray("\n", $lines);
 }
 

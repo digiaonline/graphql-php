@@ -167,7 +167,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
         }
 
         return printLines([
-            'schema {\n',
+            'schema {',
             printLines($operationTypes),
             '}'
         ]);
@@ -283,7 +283,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     protected function printInterfaceType(InterfaceType $type): string
     {
         $description = $this->printDescription($type);
-        $fields      = $this->printMany($type->getFields());
+        $fields      = $this->printFields($type->getFields());
 
         return printLines([
             $description,
@@ -329,13 +329,15 @@ class DefinitionPrinter implements DefinitionPrinterInterface
 
     protected function printEnumValues(array $values): string
     {
-        return printLines(\array_map(function (EnumValue $value, int $i): string {
-            $description = $this->printDescription($value, '  ', 0 === $i);
+        return printLines(\array_map(function (EnumValue $value): string {
+            $description = $this->printDescription($value, '  ');
             $name        = $value->getName();
             $deprecated  = $this->printDeprecated($value);
+            $enum        = empty($deprecated) ? $name : "{$name} {$deprecated}";
+
             return printLines([
                 $description,
-                "  {$name} {$deprecated}"
+                "  {$enum}"
             ]);
         }, $values));
     }
@@ -348,8 +350,8 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     protected function printInputObjectType(InputObjectType $type): string
     {
         $description = $this->printDescription($type);
-        $fields      = \array_map(function (InputField $field, int $i): string {
-            $description = $this->printDescription($field, '  ', 0 === $i);
+        $fields      = \array_map(function (InputField $field): string {
+            $description = $this->printDescription($field, '  ');
             $inputValue  = $this->printInputValue($field);
             return printLines([
                 $description,
@@ -360,7 +362,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
         return printLines([
             $description,
             "input {$type->getName()} {",
-            $fields,
+            printLines($fields),
             '}'
         ]);
     }
@@ -466,6 +468,11 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             return '';
         }
 
+        // Don't print anything if the type has no description
+        if ($type->getDescription() === null) {
+            return '';
+        }
+
         $lines      = descriptionLines($type->getDescription(), 120 - \strlen($indentation));
         $linesCount = \count($lines);
 
@@ -483,7 +490,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             ($firstLineLength = \strlen($lines[0])) < 70 &&
             $lines[0][$firstLineLength - 1] !== '"'
         ) {
-            return $description . escapeQuote($lines[0]) . '"""' . "\n";
+            return $description . escapeQuote($lines[0]) . '"""';
         }
 
         // Format a multi-line block quote to account for leading space.
