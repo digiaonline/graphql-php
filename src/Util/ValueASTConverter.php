@@ -83,7 +83,7 @@ class ValueASTConverter
             return self::convertScalarType($node, $type, $variables);
         }
 
-        throw new InvalidTypeException(\sprintf('Unknown type: %s', $type));
+        throw new InvalidTypeException(\sprintf('Unknown type: %s', (string)$type));
     }
 
     /**
@@ -244,15 +244,13 @@ class ValueASTConverter
         // Scalars fulfill parsing a literal value via parseLiteral().
         // Invalid values represent a failure to parse correctly, in which case
         // no value is returned.
-        $result = null;
-
         try {
             $result = $type->parseLiteral($node, $variables);
         } catch (\Exception $e) {
-
+            // This will be handled by the next if-statement.
         }
 
-        if (null === $result) {
+        if (!isset($result)) {
             throw new ConversionException(\sprintf('Failed to parse literal for scalar type "%s".', (string)$type));
         }
 

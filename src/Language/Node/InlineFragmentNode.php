@@ -4,7 +4,8 @@ namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
 
-class InlineFragmentNode extends AbstractNode implements FragmentNodeInterface, SelectionNodeInterface
+class InlineFragmentNode extends AbstractNode implements FragmentNodeInterface, SelectionNodeInterface,
+    SelectionSetAwareInterface
 {
     use DirectivesTrait;
     use TypeConditionTrait;

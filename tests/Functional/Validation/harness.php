@@ -9,20 +9,20 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
-use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\booleanType;
 use function Digia\GraphQL\Type\newDirective;
 use function Digia\GraphQL\Type\newEnumType;
-use function Digia\GraphQL\Type\Float;
-use function Digia\GraphQL\Type\ID;
+use function Digia\GraphQL\Type\floatType;
+use function Digia\GraphQL\Type\idType;
 use function Digia\GraphQL\Type\newInputObjectType;
-use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 use function Digia\GraphQL\Type\newUnionType;
 
 function Being(): InterfaceType
@@ -34,8 +34,8 @@ function Being(): InterfaceType
             'fields' => function () {
                 return [
                     'name' => [
-                        'type' => String(),
-                        'args' => ['surname' => ['type' => Boolean()]],
+                        'type' => stringType(),
+                        'args' => ['surname' => ['type' => booleanType()]],
                     ],
                 ];
             },
@@ -51,8 +51,8 @@ function Pet(): InterfaceType
             'fields' => function () {
                 return [
                     'name' => [
-                        'type' => String(),
-                        'args' => ['surname' => ['type' => Boolean()]],
+                        'type' => stringType(),
+                        'args' => ['surname' => ['type' => booleanType()]],
                     ],
                 ];
             },
@@ -68,8 +68,8 @@ function Canine(): InterfaceType
             'fields' => function () {
                 return [
                     'name' => [
-                        'type' => String(),
-                        'args' => ['surname' => ['type' => Boolean()]],
+                        'type' => stringType(),
+                        'args' => ['surname' => ['type' => booleanType()]],
                     ],
                 ];
             },
@@ -99,30 +99,30 @@ function Dog(): ObjectType
             'fields'     => function () {
                 return [
                     'name'            => [
-                        'type' => String(),
-                        'args' => ['surname' => ['type' => Boolean()]],
+                        'type' => stringType(),
+                        'args' => ['surname' => ['type' => booleanType()]],
                     ],
-                    'nickname'        => ['type' => String()],
-                    'barkVolume'      => ['type' => Int()],
-                    'barks'           => ['type' => Boolean()],
+                    'nickname'        => ['type' => stringType()],
+                    'barkVolume'      => ['type' => intType()],
+                    'barks'           => ['type' => booleanType()],
                     'doesKnowCommand' => [
-                        'type' => Boolean(),
+                        'type' => booleanType(),
                         'args' => [
                             'dogCommand' => ['type' => DogCommand()],
                         ],
                     ],
                     'isHouseTrained'  => [
-                        'type' => Boolean(),
+                        'type' => booleanType(),
                         'args' => [
                             'atOtherHomes' => [
-                                'type'         => Boolean(),
+                                'type'         => booleanType(),
                                 'defaultValue' => true,
                             ],
                         ],
                     ],
                     'isAtLocation'    => [
-                        'type' => Boolean(),
-                        'args' => ['x' => ['type' => Int()], 'y' => ['type' => Int()]],
+                        'type' => booleanType(),
+                        'args' => ['x' => ['type' => intType()], 'y' => ['type' => intType()]],
                     ],
                 ];
             },
@@ -139,12 +139,12 @@ function Cat(): ObjectType
             'fields'     => function () {
                 return [
                     'name'       => [
-                        'type' => String(),
-                        'args' => ['surname' => ['type' => Boolean()]],
+                        'type' => stringType(),
+                        'args' => ['surname' => ['type' => booleanType()]],
                     ],
-                    'nickname'   => ['type' => String()],
-                    'meows'      => ['type' => Boolean()],
-                    'meowVolume' => ['type' => Int()],
+                    'nickname'   => ['type' => stringType()],
+                    'meows'      => ['type' => booleanType()],
+                    'meowVolume' => ['type' => intType()],
                     'furColor'   => ['type' => FurColor()],
                 ];
             },
@@ -169,7 +169,7 @@ function Intelligent(): InterfaceType
         $instance = newInterfaceType([
             'name'   => 'Intelligent',
             'fields' => [
-                'iq' => ['type' => Int()],
+                'iq' => ['type' => intType()],
             ],
         ]);
 }
@@ -184,12 +184,12 @@ function Human(): ObjectType
             'fields'     => function () {
                 return [
                     'name'      => [
-                        'type' => String(),
-                        'args' => ['surname' => ['type' => Boolean()]],
+                        'type' => stringType(),
+                        'args' => ['surname' => ['type' => booleanType()]],
                     ],
                     'pets'      => ['type' => newList(Pet())],
                     'relatives' => ['type' => newList(Human())],
-                    'iq'        => ['type' => Int()],
+                    'iq'        => ['type' => intType()],
                 ];
             },
         ]);
@@ -204,12 +204,12 @@ function Alien(): ObjectType
             'interfaces' => [Being(), Intelligent()],
             'fields'     => function () {
                 return [
-                    'iq'      => ['type' => Int()],
+                    'iq'      => ['type' => intType()],
                     'name'    => [
-                        'type' => String(),
-                        'args' => ['surname' => ['type' => Boolean()]],
+                        'type' => stringType(),
+                        'args' => ['surname' => ['type' => booleanType()]],
                     ],
-                    'numEyes' => ['type' => Int()],
+                    'numEyes' => ['type' => intType()],
                 ];
             },
         ]);
@@ -259,11 +259,11 @@ function ComplexInput(): InputObjectType
         $instance = newInputObjectType([
             'name'   => 'ComplexInput',
             'fields' => [
-                'requiredField'   => ['type' => newNonNull(Boolean())],
-                'intField'        => ['type' => Int()],
-                'stringField'     => ['type' => String()],
-                'booleanField'    => ['type' => Boolean()],
-                'stringListField' => ['type' => newList(String())],
+                'requiredField'   => ['type' => newNonNull(booleanType())],
+                'intField'        => ['type' => intType()],
+                'stringField'     => ['type' => stringType()],
+                'booleanField'    => ['type' => booleanType()],
+                'stringListField' => ['type' => newList(stringType())],
             ],
         ]);
 }
@@ -280,66 +280,66 @@ function ComplicatedArgs(): ObjectType
             'fields' => function () {
                 return [
                     'intArgField'               => [
-                        'type' => String(),
-                        'args' => ['intArg' => ['type' => Int()]],
+                        'type' => stringType(),
+                        'args' => ['intArg' => ['type' => intType()]],
                     ],
                     'nonNullIntArgField'        => [
-                        'type' => String(),
-                        'args' => ['nonNullIntArg' => ['type' => newNonNull(Int())]],
+                        'type' => stringType(),
+                        'args' => ['nonNullIntArg' => ['type' => newNonNull(intType())]],
                     ],
                     'stringArgField'            => [
-                        'type' => String(),
-                        'args' => ['stringArg' => ['type' => String()]],
+                        'type' => stringType(),
+                        'args' => ['stringArg' => ['type' => stringType()]],
                     ],
                     'booleanArgField'           => [
-                        'type' => String(),
-                        'args' => ['booleanArg' => ['type' => Boolean()]],
+                        'type' => stringType(),
+                        'args' => ['booleanArg' => ['type' => booleanType()]],
                     ],
                     'enumArgField'              => [
-                        'type' => String(),
+                        'type' => stringType(),
                         'args' => ['enumArg' => ['type' => FurColor()]],
                     ],
                     'floatArgField'             => [
-                        'type' => String(),
-                        'args' => ['floatArg' => ['type' => Float()]],
+                        'type' => stringType(),
+                        'args' => ['floatArg' => ['type' => floatType()]],
                     ],
                     'idArgField'                => [
-                        'type' => String(),
-                        'args' => ['idArg' => ['type' => ID()]],
+                        'type' => stringType(),
+                        'args' => ['idArg' => ['type' => idType()]],
                     ],
                     'stringListArgField'        => [
-                        'type' => String(),
-                        'args' => ['stringListArg' => ['type' => newList(String())]],
+                        'type' => stringType(),
+                        'args' => ['stringListArg' => ['type' => newList(stringType())]],
                     ],
                     'stringListNonNullArgField' => [
-                        'type' => String(),
-                        'args' => ['stringListNonNullArg' => ['type' => newList(newNonNull(String()))]],
+                        'type' => stringType(),
+                        'args' => ['stringListNonNullArg' => ['type' => newList(newNonNull(stringType()))]],
                     ],
                     'complexArgField'           => [
-                        'type' => String(),
+                        'type' => stringType(),
                         'args' => ['complexArg' => ['type' => ComplexInput()]],
                     ],
                     'multipleReqs'              => [
-                        'type' => String(),
+                        'type' => stringType(),
                         'args' => [
-                            'req1' => ['type' => newNonNull(Int())],
-                            'req2' => ['type' => newNonNull(Int())],
+                            'req1' => ['type' => newNonNull(intType())],
+                            'req2' => ['type' => newNonNull(intType())],
                         ],
                     ],
                     'multipleOpts'              => [
-                        'type' => String(),
+                        'type' => stringType(),
                         'args' => [
-                            'opt1' => ['type' => Int(), 'defaultValue' => 0],
-                            'opt2' => ['type' => Int(), 'defaultValue' => 0],
+                            'opt1' => ['type' => intType(), 'defaultValue' => 0],
+                            'opt2' => ['type' => intType(), 'defaultValue' => 0],
                         ],
                     ],
                     'multipleOptsAndReq'        => [
-                        'type' => String(),
+                        'type' => stringType(),
                         'args' => [
-                            'req1' => ['type' => newNonNull(Int())],
-                            'req2' => ['type' => newNonNull(Int())],
-                            'opt1' => ['type' => Int(), 'defaultValue' => 0],
-                            'opt2' => ['type' => Int(), 'defaultValue' => 0],
+                            'req1' => ['type' => newNonNull(intType())],
+                            'req2' => ['type' => newNonNull(intType())],
+                            'opt1' => ['type' => intType(), 'defaultValue' => 0],
+                            'opt2' => ['type' => intType(), 'defaultValue' => 0],
                         ],
                     ],
                 ];
@@ -392,7 +392,7 @@ function QueryRoot(): ObjectType
             'fields' => function () {
                 return [
                     'human'           => [
-                        'args' => ['id' => ['type' => ID()]],
+                        'args' => ['id' => ['type' => idType()]],
                         'type' => Human(),
                     ],
                     'alien'           => ['type' => Alien()],
@@ -405,11 +405,11 @@ function QueryRoot(): ObjectType
                     'complicatedArgs' => ['type' => ComplicatedArgs()],
                     'invalidArg'      => [
                         'args' => ['arg' => ['type' => InvalidScalar()]],
-                        'type' => String(),
+                        'type' => stringType(),
                     ],
                     'anyArg'          => [
                         'args' => ['arg' => ['type' => AnyScalar()]],
-                        'type' => String(),
+                        'type' => stringType(),
                     ],
                 ];
             },

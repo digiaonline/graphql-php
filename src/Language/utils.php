@@ -14,7 +14,7 @@ function printCharCode(int $code): string
 
     return $code < 0x007F
         // Trust JSON for ASCII.
-        ? \json_encode(\mb_chr($code))
+        ? \json_encode(\mb_chr($code, 'UTF-8'))
         // Otherwise print the escaped form.
         : '"\\u' . \dechex($code) . '"';
 }
@@ -159,9 +159,9 @@ function dedent(string $str): string
 /**
  * @param mixed $value
  * @param bool  $isDescription
- * @return null|string|string[]
+ * @return string
  */
-function printBlockString($value, bool $isDescription)
+function printBlockString($value, bool $isDescription): string
 {
     $escaped = \preg_replace('/"""/g', '\\"""', $value);
     return $value{0} === ' ' || ($value{0} === "\t" && false === strpos($value, "\n"))

@@ -187,9 +187,11 @@ class GraphQLException extends AbstractException implements SerializationInterfa
      */
     protected function resolveNodes(?array $nodes)
     {
-        $nodes = \is_array($nodes)
-            ? (!empty($nodes) ? $nodes : [])
-            : (null !== $nodes ? [$nodes] : []);
+        if (\is_array($nodes)) {
+            $nodes = !empty($nodes) ? $nodes : [];
+        } else {
+            $nodes = [$nodes];
+        }
 
         $this->nodes = \array_filter($nodes, function ($node) {
             return null !== $node;

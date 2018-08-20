@@ -6,7 +6,7 @@ use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Util\ValueConverter;
-use function Digia\GraphQL\Type\ID;
+use function Digia\GraphQL\Type\idType;
 
 class ValueConverterTest extends TestCase
 {
@@ -34,7 +34,7 @@ class ValueConverterTest extends TestCase
     public function testIdType(): void
     {
         // Ensure numerical IDs become Ints
-        $this->assertInstanceOf(IntValueNode::class, $this->valueConverter->convert('45', ID()));
-        $this->assertInstanceOf(StringValueNode::class, $this->valueConverter->convert('abc123', ID()));
+        $this->assertInstanceOf(IntValueNode::class, $this->valueConverter->convert('45', idType()));
+        $this->assertInstanceOf(StringValueNode::class, $this->valueConverter->convert('abc123', idType()));
     }
 }

@@ -19,7 +19,7 @@ use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
  *     $EntityType = newInterfaceType([
  *       'name' => 'Entity',
  *       'fields' => [
- *         'name' => ['type' => String()]
+ *         'name' => ['type' => stringType()]
  *       ]
  *     ]);
  */

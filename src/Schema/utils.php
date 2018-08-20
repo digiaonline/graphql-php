@@ -43,6 +43,7 @@ function breakLine(string $line, int $maxLength): array
 
     $pos        = $maxLength - 40;
     $parts      = \preg_split("/((?: |^).{15,{$pos}}(?= |$))/", $line);
+    $parts      = false === $parts ? [] : $parts;
     $partsCount = \count($parts);
 
     if ($partsCount < 4) {
@@ -52,7 +53,7 @@ function breakLine(string $line, int $maxLength): array
     $subLines = [$parts[0] . $parts[1] . $parts[2]];
 
     for ($i = 3; $i < $partsCount; $i++) {
-        $subLines[] = \array_slice($parts[$i], 1) . $parts[$i + 1];
+        $subLines[] = \substr($parts[$i], 1) . $parts[$i + 1];
     }
 
     return $subLines;
@@ -77,7 +78,7 @@ function printLines(array $lines): string
     $lines = \array_filter($lines, function (string $line) {
         return $line !== '';
     });
-    
+
     return printArray("\n", $lines);
 }
 

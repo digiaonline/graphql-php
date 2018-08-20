@@ -5,13 +5,12 @@ namespace Digia\GraphQL\Type;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\Util\arraySome;
 
 /**
  * @return ScalarType
  */
-function Boolean(): ScalarType
+function booleanType(): ScalarType
 {
     return GraphQL::make('GraphQLBoolean');
 }
@@ -19,7 +18,7 @@ function Boolean(): ScalarType
 /**
  * @return ScalarType
  */
-function Float(): ScalarType
+function floatType(): ScalarType
 {
     return GraphQL::make('GraphQLFloat');
 }
@@ -27,7 +26,7 @@ function Float(): ScalarType
 /**
  * @return ScalarType
  */
-function Int(): ScalarType
+function intType(): ScalarType
 {
     return GraphQL::make('GraphQLInt');
 }
@@ -35,7 +34,7 @@ function Int(): ScalarType
 /**
  * @return ScalarType
  */
-function ID(): ScalarType
+function idType(): ScalarType
 {
     return GraphQL::make('GraphQLID');
 }
@@ -43,7 +42,7 @@ function ID(): ScalarType
 /**
  * @return ScalarType
  */
-function String(): ScalarType
+function stringType(): ScalarType
 {
     return GraphQL::make('GraphQLString');
 }
@@ -54,11 +53,11 @@ function String(): ScalarType
 function specifiedScalarTypes(): array
 {
     return [
-        String(),
-        Int(),
-        Float(),
-        Boolean(),
-        ID(),
+        stringType(),
+        intType(),
+        floatType(),
+        booleanType(),
+        idType(),
     ];
 }
 

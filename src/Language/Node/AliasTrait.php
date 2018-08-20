@@ -11,6 +11,11 @@ trait AliasTrait
     protected $alias;
 
     /**
+     * @return null|string
+     */
+    abstract public function getNameValue(): ?string;
+
+    /**
      * @return NameNode|null
      */
     public function getAlias(): ?NameNode

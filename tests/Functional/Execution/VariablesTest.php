@@ -14,7 +14,7 @@ use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 
 /**
@@ -60,9 +60,9 @@ class VariablesTest extends TestCase
         $TestInputObject = newInputObjectType([
             'name'   => 'TestInputObject',
             'fields' => [
-                'a' => ['type' => String()],
-                'b' => ['type' => newList(String())],
-                'c' => ['type' => newNonNull(String())],
+                'a' => ['type' => stringType()],
+                'b' => ['type' => newList(stringType())],
+                'c' => ['type' => newNonNull(stringType())],
                 'd' => ['type' => $TestComplexScalar]
             ]
         ]);
@@ -71,7 +71,7 @@ class VariablesTest extends TestCase
             'name'   => 'TestNestedInputObject',
             'fields' => [
                 'na' => ['type' => newNonNull($TestInputObject)],
-                'nb' => ['type' => newNonNull(String())]
+                'nb' => ['type' => newNonNull(stringType())]
             ]
         ]);
 
@@ -79,12 +79,12 @@ class VariablesTest extends TestCase
             'name'   => 'TestType',
             'fields' => [
                 'fieldWithObjectInput'            => $this->fieldWithInputArg(['type' => $TestInputObject]),
-                'fieldWithNullableStringInput'    => $this->fieldWithInputArg(['type' => String()]),
+                'fieldWithNullableStringInput'    => $this->fieldWithInputArg(['type' => stringType()]),
                 'fieldWithNonNullableStringInput' => $this->fieldWithInputArg([
-                    'type' => newNonNull(String())
+                    'type' => newNonNull(stringType())
                 ]),
                 'fieldWithDefaultArgumentValue'   => $this->fieldWithInputArg([
-                    'type'         => String(),
+                    'type'         => stringType(),
                     'defaultValue' => 'Hello World'
                 ]),
                 'fieldWithNestedInputObject'      => $this->fieldWithInputArg([
@@ -92,16 +92,16 @@ class VariablesTest extends TestCase
                     'defaultValue' => 'Hello World'
                 ]),
                 'list'                            => $this->fieldWithInputArg([
-                    'type' => newList(String())
+                    'type' => newList(stringType())
                 ]),
                 'nnList'                          => $this->fieldWithInputArg([
-                    'type' => newNonNull(newList(String())),
+                    'type' => newNonNull(newList(stringType())),
                 ]),
                 'listNN'                          => $this->fieldWithInputArg([
-                    'type' => newList(newNonNull(String())),
+                    'type' => newList(newNonNull(stringType())),
                 ]),
                 'nnListNN'                        => $this->fieldWithInputArg([
-                    'type' => newNonNull(newList(newNonNull(String()))),
+                    'type' => newNonNull(newList(newNonNull(stringType()))),
                 ]),
             ]
         ]);
@@ -118,7 +118,7 @@ class VariablesTest extends TestCase
     function fieldWithInputArg(array $inputArg): array
     {
         return [
-            'type'    => String(),
+            'type'    => stringType(),
             'args'    => [
                 'input' => $inputArg
             ],
@@ -781,7 +781,7 @@ class VariablesTest extends TestCase
     {
         $this->expectException(InvalidTypeException::class);
 
-        String()->serialize([1, 2, 3]);
+        stringType()->serialize([1, 2, 3]);
     }
 
 
@@ -1259,9 +1259,9 @@ class VariablesTest extends TestCase
         $TestInputObject = newInputObjectType([
             'name'   => 'TestInputObject',
             'fields' => [
-                'a' => ['type' => String()],
-                'b' => ['type' => newList(String())],
-                'c' => ['type' => newNonNull(String())],
+                'a' => ['type' => stringType()],
+                'b' => ['type' => newList(stringType())],
+                'c' => ['type' => newNonNull(stringType())],
                 'd' => ['type' => $dateType]
             ]
         ]);

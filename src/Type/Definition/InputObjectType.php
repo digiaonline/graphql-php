@@ -23,9 +23,9 @@ use function Digia\GraphQL\Type\resolveThunk;
  *     $GeoPoint = newInputObjectType([
  *       'name': 'GeoPoint',
  *       'fields': [
- *         'lat': ['type' => newNonNull(Float())],
- *         'lon': ['type' => newNonNull(Float())],
- *         'alt': ['type' => Float(), 'defaultValue' => 0],
+ *         'lat': ['type' => newNonNull(floatType())],
+ *         'lon': ['type' => newNonNull(floatType())],
+ *         'alt': ['type' => floatType(), 'defaultValue' => 0],
  *       ]
  *     ]);
  */
@@ -47,7 +47,7 @@ class InputObjectType implements NamedTypeInterface, InputTypeInterface, Descrip
     /**
      * A key-value map over field names and their corresponding field instances.
      *
-     * @var null|InputField[]
+     * @var InputField[]
      */
     protected $fieldMap;
 

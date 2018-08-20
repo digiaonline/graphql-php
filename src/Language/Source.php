@@ -71,9 +71,9 @@ class Source
     }
 
     /**
-     * @return SourceLocation
+     * @return SourceLocation|null
      */
-    public function getLocationOffset(): SourceLocation
+    public function getLocationOffset(): ?SourceLocation
     {
         return $this->locationOffset;
     }

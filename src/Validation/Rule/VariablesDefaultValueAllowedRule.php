@@ -47,7 +47,7 @@ class VariablesDefaultValueAllowedRule extends AbstractRule
         if (null !== $defaultValue && $type instanceof NonNullType) {
             $this->context->reportError(
                 new ValidationException(
-                    variableDefaultValueNotAllowedMessage($variableName, $type, $type->getOfType()),
+                    variableDefaultValueNotAllowedMessage($variableName, $type, (string)$type->getOfType()),
                     [$defaultValue]
                 )
             );

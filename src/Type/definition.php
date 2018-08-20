@@ -26,8 +26,8 @@ use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
 /**
- * @param callable|array|null $maybeThunk
- * @return null|array
+ * @param mixed $maybeThunk
+ * @return mixed
  */
 function resolveThunk($maybeThunk)
 {
@@ -105,9 +105,9 @@ function getNullableType(?TypeInterface $type): ?TypeInterface
 
 /**
  * @param TypeInterface|null $type
- * @return NamedTypeInterface|null
+ * @return TypeInterface|null
  */
-function getNamedType(?TypeInterface $type): ?NamedTypeInterface
+function getNamedType(?TypeInterface $type): ?TypeInterface
 {
     if (!$type) {
         return null;

@@ -6,10 +6,9 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\FieldNode;
-use Digia\GraphQL\Language\Node\NameAwareInterface;
-use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
+use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Util\suggestionList;
 use function Digia\GraphQL\Validation\unknownArgumentMessage;
 use function Digia\GraphQL\Validation\unknownDirectiveArgumentMessage;
@@ -54,20 +53,21 @@ class KnownArgumentNamesRule extends AbstractRule
         $parentType      = $this->context->getParentType();
 
         if (null !== $fieldDefinition && null !== $parentType) {
-            $options = array_map(function (Argument $argument) {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            $options = \array_map(function (Argument $argument) {
                 return $argument->getName();
             }, $fieldDefinition->getArguments());
 
-            $suggestions = suggestionList(
-                $node instanceof NameAwareInterface
-                    ? $node->getNameValue()
-                    : 'unknown',
-                $options
-            );
+            $suggestions = suggestionList(printNode($node), $options);
 
             $this->context->reportError(
                 new ValidationException(
-                    unknownArgumentMessage((string)$node, (string)$fieldDefinition, (string)$parentType, $suggestions),
+                    unknownArgumentMessage(
+                        (string)$node,
+                        (string)$fieldDefinition,
+                        (string)$parentType,
+                        $suggestions
+                    ),
                     [$node]
                 )
             );
@@ -85,7 +85,8 @@ class KnownArgumentNamesRule extends AbstractRule
         $directive = $this->context->getDirective();
 
         if (null !== $directive) {
-            $options = array_map(function (Argument $argument) {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            $options = \array_map(function (Argument $argument) {
                 return $argument->getName();
             }, $directive->getArguments());
 

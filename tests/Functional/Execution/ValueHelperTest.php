@@ -10,7 +10,7 @@ use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class ValueHelperTest extends TestCase
 {
@@ -28,10 +28,10 @@ class ValueHelperTest extends TestCase
                     'name'   => 'Greeting',
                     'fields' => [
                         'greeting' => [
-                            'type' => String(),
+                            'type' => stringType(),
                             'args' => [
                                 'name' => [
-                                    'type' => String(),
+                                    'type' => stringType(),
                                 ]
                             ]
                         ]

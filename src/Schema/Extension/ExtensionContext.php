@@ -316,14 +316,12 @@ class ExtensionContext implements ExtensionContextInterface
         // If there are any extensions to the interfaces, apply those here.
         $extensions = $this->info->getTypeExtensions($typeName);
 
-        if (null !== $extensions) {
-            foreach ($extensions as $extension) {
-                foreach ($extension->getInterfaces() as $namedType) {
-                    // Note: While this could make early assertions to get the correctly
-                    // typed values, that would throw immediately while type system
-                    // validation with validateSchema() will produce more actionable results.
-                    $interfaces[] = $this->definitionBuilder->buildType($namedType);
-                }
+        foreach ($extensions as $extension) {
+            foreach ($extension->getInterfaces() as $namedType) {
+                // Note: While this could make early assertions to get the correctly
+                // typed values, that would throw immediately while type system
+                // validation with validateSchema() will produce more actionable results.
+                $interfaces[] = $this->definitionBuilder->buildType($namedType);
             }
         }
 
@@ -331,14 +329,14 @@ class ExtensionContext implements ExtensionContextInterface
     }
 
     /**
-     * @param NamedTypeInterface|FieldsAwareInterface $type
+     * @param FieldsAwareInterface $type
      * @return array
      * @throws InvalidTypeException
      * @throws InvariantException
      * @throws ExtensionException
      * @throws InvalidArgumentException
      */
-    protected function extendFieldMap($type): array
+    protected function extendFieldMap(FieldsAwareInterface $type): array
     {
         $typeName    = $type->getName();
         $newFieldMap = [];
@@ -360,24 +358,22 @@ class ExtensionContext implements ExtensionContextInterface
         // If there are any extensions to the fields, apply those here.
         $extensions = $this->info->getTypeExtensions($typeName);
 
-        if (null !== $extensions) {
-            foreach ($extensions as $extension) {
-                foreach ($extension->getFields() as $field) {
-                    $fieldName = $field->getNameValue();
+        foreach ($extensions as $extension) {
+            foreach ($extension->getFields() as $field) {
+                $fieldName = $field->getNameValue();
 
-                    if (isset($oldFieldMap[$fieldName])) {
-                        throw new ExtensionException(
-                            \sprintf(
-                                'Field "%s.%s" already exists in the schema. ' .
-                                'It cannot also be defined in this type extension.',
-                                $typeName, $fieldName
-                            ),
-                            [$field]
-                        );
-                    }
-
-                    $newFieldMap[$fieldName] = $this->definitionBuilder->buildField($field);
+                if (isset($oldFieldMap[$fieldName])) {
+                    throw new ExtensionException(
+                        \sprintf(
+                            'Field "%s.%s" already exists in the schema. ' .
+                            'It cannot also be defined in this type extension.',
+                            $typeName, $fieldName
+                        ),
+                        [$field]
+                    );
                 }
+
+                $newFieldMap[$fieldName] = $this->definitionBuilder->buildField($field);
             }
         }
 

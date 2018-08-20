@@ -114,10 +114,14 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     /**
      * @inheritdoc
-     * @param NamedTypeNode|TypeDefinitionNodeInterface $node
      */
     public function buildType(NodeInterface $node): NamedTypeInterface
     {
+        if (!$node instanceof NamedTypeNode && !$node instanceof TypeDefinitionNodeInterface) {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            throw new LanguageException('Cannot build type.');
+        }
+
         $typeName = $node->getNameValue();
 
         if (isset($this->types[$typeName])) {
@@ -127,10 +131,12 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         if ($node instanceof NamedTypeNode) {
             $definition = $this->getTypeDefinition($typeName);
 
+            /** @noinspection PhpUnhandledExceptionInspection */
             $type = null !== $definition
                 ? $this->buildNamedType($definition)
                 : $this->resolveType($node);
         } else {
+            /** @noinspection PhpUnhandledExceptionInspection */
             $type = $this->buildNamedType($node);
         }
 
@@ -148,6 +154,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             return $this->directives[$directiveName];
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $directive = newDirective([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
@@ -166,6 +173,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     public function buildField($node, ?callable $resolve = null): array
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return [
             'type'              => $this->buildWrappedType($node->getType()),
             'description'       => $node->getDescriptionValue(),
@@ -184,6 +192,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildWrappedType(TypeNodeInterface $typeNode): TypeInterface
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $typeDefinition = $this->buildType($this->getNamedTypeNode($typeNode));
         return $this->buildWrappedTypeRecursive($typeDefinition, $typeNode);
     }
@@ -293,6 +302,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             return $this->buildScalarType($node);
         }
         if ($node instanceof InputObjectTypeDefinitionNode) {
+            /** @noinspection PhpUnhandledExceptionInspection */
             return $this->buildInputObjectType($node);
         }
 
@@ -305,6 +315,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildObjectType(ObjectTypeDefinitionNode $node): ObjectType
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newObjectType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
@@ -361,6 +372,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildInterfaceType(InterfaceTypeDefinitionNode $node): InterfaceType
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newInterfaceType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
@@ -378,12 +390,13 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildEnumType(EnumTypeDefinitionNode $node): EnumType
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newEnumType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
             'values'      => $node->hasValues() ? keyValueMap(
                 $node->getValues(),
-                function (EnumValueDefinitionNode $value): string {
+                function (EnumValueDefinitionNode $value): ?string {
                     return $value->getNameValue();
                 },
                 function (EnumValueDefinitionNode $value): array {
@@ -404,10 +417,11 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildUnionType(UnionTypeDefinitionNode $node): UnionType
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newUnionType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'types'       => $node->hasTypes() ? \array_map(function (TypeNodeInterface $type) {
+            'types'       => $node->hasTypes() ? \array_map(function (NodeInterface $type) {
                 return $this->buildType($type);
             }, $node->getTypes()) : [],
             'resolveType' => $this->getTypeResolver($node->getNameValue()),
@@ -432,6 +446,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     protected function buildScalarType(ScalarTypeDefinitionNode $node): ScalarType
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newScalarType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
@@ -455,7 +470,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             'fields'      => $node->hasFields() ? function () use ($node) {
                 return keyValueMap(
                     $node->getFields(),
-                    function (InputValueDefinitionNode $value): string {
+                    function (InputValueDefinitionNode $value): ?string {
                         return $value->getNameValue();
                     },
                     function (InputValueDefinitionNode $value): array {
@@ -506,9 +521,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     /**
      * @param TypeNodeInterface $typeNode
-     * @return NamedTypeNode
+     * @return TypeNodeInterface
      */
-    protected function getNamedTypeNode(TypeNodeInterface $typeNode): NamedTypeNode
+    protected function getNamedTypeNode(TypeNodeInterface $typeNode): TypeNodeInterface
     {
         $namedType = $typeNode;
 

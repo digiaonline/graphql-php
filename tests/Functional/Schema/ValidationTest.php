@@ -20,7 +20,7 @@ use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newSchema;
 use function Digia\GraphQL\Type\newUnionType;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 use function Digia\GraphQL\Util\toString;
 
 class ValidationTest extends TestCase
@@ -59,7 +59,7 @@ class ValidationTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->someObjectType = newObjectType([
             'name'   => 'SomeObject',
-            'fields' => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -71,7 +71,7 @@ class ValidationTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->someInterfaceType = newInterfaceType([
             'name'   => 'SomeInterface',
-            'fields' => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -84,12 +84,12 @@ class ValidationTest extends TestCase
         $this->someInputObjectType = newInputObjectType([
             'name'   => 'SomeInputObject',
             'fields' => [
-                'val' => ['type' => String(), 'defaultValue' => 'hello'],
+                'val' => ['type' => stringType(), 'defaultValue' => 'hello'],
             ],
         ]);
 
         $this->outputTypes = $this->withModifiers([
-            String(),
+            stringType(),
             $this->someScalarType,
             $this->someEnumType,
             $this->someObjectType,
@@ -100,7 +100,7 @@ class ValidationTest extends TestCase
         $this->noOutputTypes = $this->withModifiers([$this->someInputObjectType]);
 
         $this->inputTypes = $this->withModifiers([
-            String(),
+            stringType(),
             $this->someScalarType,
             $this->someEnumType,
             $this->someInputObjectType,
@@ -352,7 +352,7 @@ class ValidationTest extends TestCase
             newObjectType([
                 'name'   => 'SomeObject',
                 'fields' => [
-                    'bad-name-with-dashes' => ['type' => String()],
+                    'bad-name-with-dashes' => ['type' => stringType()],
                 ],
             ])
         );
@@ -380,9 +380,9 @@ class ValidationTest extends TestCase
                 'name'   => 'SomeObject',
                 'fields' => [
                     'goodField' => [
-                        'type' => String(),
+                        'type' => stringType(),
                         'args' => [
-                            'goodArg' => ['type' => String()],
+                            'goodArg' => ['type' => stringType()],
                         ],
                     ],
                 ],
@@ -402,9 +402,9 @@ class ValidationTest extends TestCase
                 'name'   => 'SomeObject',
                 'fields' => [
                     'badField' => [
-                        'type' => String(),
+                        'type' => stringType(),
                         'args' => [
-                            'bad-name-with-dashes' => ['type' => String()],
+                            'bad-name-with-dashes' => ['type' => stringType()],
                         ],
                     ],
                 ],
@@ -532,7 +532,7 @@ class ValidationTest extends TestCase
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $badUnionMemberTypes = [
-            String(),
+            stringType(),
             newNonNull($this->someObjectType),
             newList($this->someObjectType),
             $this->someInterfaceType,
@@ -797,7 +797,7 @@ class ValidationTest extends TestCase
         $schema = newSchema([
             'query' => newObjectType([
                 'name'       => 'BadObject',
-                'fields'     => ['f' => ['type' => String()]],
+                'fields'     => ['f' => ['type' => stringType()]],
                 'interfaces' => [null],
             ]),
         ]);
@@ -1779,7 +1779,7 @@ class ValidationTest extends TestCase
             'name'   => 'BadObject',
             'fields' => [
                 'badField' => [
-                    'type' => String(),
+                    'type' => stringType(),
                     'args' => [
                         'badArg' => ['type' => $argumentType],
                     ],
@@ -1795,7 +1795,7 @@ class ValidationTest extends TestCase
             'name'   => 'BadObject',
             'fields' => [
                 'badField' => [
-                    'type' => String(),
+                    'type' => stringType(),
                     'args' => [
                         'badArg' => [
                             'type' => newInputObjectType([

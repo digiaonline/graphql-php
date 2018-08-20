@@ -18,7 +18,7 @@ use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newUnionType;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 use function Digia\GraphQL\Util\toString;
 
 class PredicateTest extends TestCase
@@ -82,7 +82,7 @@ class PredicateTest extends TestCase
      */
     public function testAssertType()
     {
-        assertType(String());
+        assertType(stringType());
         assertType($this->objectType);
 
         $this->addToAssertionCount(2);
@@ -93,7 +93,7 @@ class PredicateTest extends TestCase
      */
     public function testAssertScalarTypeWithValidTypes()
     {
-        assertScalarType(String());
+        assertScalarType(stringType());
         assertScalarType($this->scalarType);
 
         $this->addToAssertionCount(2);

@@ -14,8 +14,8 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
 use Digia\GraphQL\Type\Definition\UnionType;
-use function Digia\GraphQL\Type\Boolean;
-use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\booleanType;
+use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\isOutputType;
 use function Digia\GraphQL\Type\newEnumType;
 use function Digia\GraphQL\Type\newInputObjectType;
@@ -26,7 +26,7 @@ use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newSchema;
 use function Digia\GraphQL\Type\newUnionType;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class DefinitionTest extends TestCase
 {
@@ -99,9 +99,9 @@ class DefinitionTest extends TestCase
         $this->blogImage = newObjectType([
             'name'   => 'Image',
             'fields' => [
-                'url'    => ['type' => String()],
-                'width'  => ['type' => Int()],
-                'height' => ['type' => Int()],
+                'url'    => ['type' => stringType()],
+                'width'  => ['type' => intType()],
+                'height' => ['type' => intType()],
             ],
         ]);
 
@@ -110,13 +110,13 @@ class DefinitionTest extends TestCase
             'name'   => 'Author',
             'fields' => function () {
                 return [
-                    'id'            => ['type' => String()],
-                    'name'          => ['type' => String()],
+                    'id'            => ['type' => stringType()],
+                    'name'          => ['type' => stringType()],
                     'pic'           => [
                         'type' => $this->blogImage,
                         'args' => [
-                            'width'  => ['type' => Int()],
-                            'height' => ['type' => Int()],
+                            'width'  => ['type' => intType()],
+                            'height' => ['type' => intType()],
                         ],
                     ],
                     'recentArticle' => ['type' => $this->blogArticle],
@@ -128,11 +128,11 @@ class DefinitionTest extends TestCase
         $this->blogArticle = newObjectType([
             'name'   => 'Article',
             'fields' => [
-                'id'          => ['type' => String()],
-                'isPublished' => ['type' => Boolean()],
+                'id'          => ['type' => stringType()],
+                'isPublished' => ['type' => booleanType()],
                 'author'      => ['type' => $this->blogAuthor],
-                'title'       => ['type' => String()],
-                'body'        => ['type' => String()],
+                'title'       => ['type' => stringType()],
+                'body'        => ['type' => stringType()],
             ],
         ]);
 
@@ -141,7 +141,7 @@ class DefinitionTest extends TestCase
             'name'   => 'Query',
             'fields' => [
                 'article' => [
-                    'args' => ['id' => ['type' => String()]],
+                    'args' => ['id' => ['type' => stringType()]],
                     'type' => $this->blogArticle,
                 ],
                 'feed'    => [
@@ -165,7 +165,7 @@ class DefinitionTest extends TestCase
             'name'   => 'Subscription',
             'fields' => [
                 'articleSubscribe' => [
-                    'args' => ['id' => ['type' => String()]],
+                    'args' => ['id' => ['type' => stringType()]],
                     'type' => $this->blogArticle,
                 ],
             ],
@@ -224,7 +224,7 @@ class DefinitionTest extends TestCase
             'name'   => 'BadResolver',
             'fields' => [
                 'badField' => [
-                    'type'    => String(),
+                    'type'    => stringType(),
                     'resolve' => $resolveValue
                 ],
             ],
@@ -267,7 +267,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $titleField = $articleFieldType->getFields()['title'];
         $this->assertSame('title', $titleField->getName());
-        $this->assertSame(String(), $titleField->getType());
+        $this->assertSame(stringType(), $titleField->getType());
         $this->assertSame('String', $titleField->getType()->getName());
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -375,7 +375,7 @@ class DefinitionTest extends TestCase
             'name'   => 'foo',
             'fields' => [
                 'bar' => [
-                    'type'              => String(),
+                    'type'              => stringType(),
                     'deprecationReason' => 'A terrible reason',
                 ],
             ],
@@ -384,7 +384,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $field = $typeWithDeprecatedField->getFields()['bar'];
 
-        $this->assertSame(String(), $field->getType());
+        $this->assertSame(stringType(), $field->getType());
         $this->assertSame('A terrible reason', $field->getDeprecationReason());
         $this->assertTrue($field->isDeprecated());
         $this->assertSame('bar', $field->getName());
@@ -399,7 +399,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $nestedInputObject = newInputObjectType([
             'name'   => 'NestedInputObject',
-            'fields' => ['value' => ['type' => String()]],
+            'fields' => ['value' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -448,7 +448,7 @@ class DefinitionTest extends TestCase
         $someInterface = newInterfaceType([
             'name'   => 'SomeInterface',
             'fields' => [
-                'f' => ['type' => Int()],
+                'f' => ['type' => intType()],
             ],
         ]);
 
@@ -456,7 +456,7 @@ class DefinitionTest extends TestCase
         $someSubtype = newObjectType([
             'name'       => 'SomeSubtype',
             'fields'     => [
-                'f' => ['type' => Int()],
+                'f' => ['type' => intType()],
             ],
             'interfaces' => [$someInterface],
         ]);
@@ -482,13 +482,13 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $someInterface = newInterfaceType([
             'name'   => 'SomeInterface',
-            'fields' => ['f' => ['type' => Int()]],
+            'fields' => ['f' => ['type' => intType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $someSubtype = newObjectType([
             'name'       => 'SomeSubtype',
-            'fields'     => ['f' => ['type' => Int()]],
+            'fields'     => ['f' => ['type' => intType()]],
             'interfaces' => function () use ($someInterface) {
                 return [$someInterface];
             },
@@ -510,7 +510,7 @@ class DefinitionTest extends TestCase
 
     public function testStringifySimpleTypes()
     {
-        $this->assertEquals(TypeNameEnum::INT, (string)Int());
+        $this->assertEquals(TypeNameEnum::INT, (string)intType());
         $this->assertEquals('Article', (string)$this->blogArticle);
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals('Interface', (string)newInterfaceType(['name' => 'Interface']));
@@ -518,14 +518,14 @@ class DefinitionTest extends TestCase
         $this->assertEquals('Union', (string)newUnionType(['name' => 'Union']));
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals('Enum', (string)newEnumType(['name' => 'Enum']));
-        $this->assertEquals(TypeNameEnum::INT, (string)Int());
+        $this->assertEquals(TypeNameEnum::INT, (string)intType());
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('Int!', (string)newNonNull(Int()));
+        $this->assertEquals('Int!', (string)newNonNull(intType()));
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('[Int]!', (string)newNonNull(newList(Int())));
+        $this->assertEquals('[Int]!', (string)newNonNull(newList(intType())));
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals('[Int!]', (string)newList(newNonNull(Int())));
-        $this->assertEquals('[[Int]]', (string)newList(newList(Int())));
+        $this->assertEquals('[Int!]', (string)newList(newNonNull(intType())));
+        $this->assertEquals('[[Int]]', (string)newList(newList(intType())));
     }
 
     // identifies input types
@@ -549,7 +549,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         // We cannot use the class fields here because they do not get instantiated for data providers.
         return [
-            [Int(), true],
+            [intType(), true],
             [newObjectType(['name' => 'Object']), true],
             [newInterfaceType(['name' => 'Interface']), true],
             [newUnionType(['name' => 'Union']), true],
@@ -566,7 +566,7 @@ class DefinitionTest extends TestCase
         $this->expectExceptionMessage('Expected Int! to be a GraphQL nullable type.');
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        newNonNull(newNonNull(Int()));
+        newNonNull(newNonNull(intType()));
 
         $this->addToAssertionCount(1);
     }
@@ -595,11 +595,11 @@ class DefinitionTest extends TestCase
     public function testDoesNotMutatePassedFieldDefinitions()
     {
         $fields = [
-            'field1' => ['type' => String()],
+            'field1' => ['type' => stringType()],
             'field2' => [
-                'type' => String(),
+                'type' => stringType(),
                 'args' => [
-                    'id' => ['type' => String()],
+                    'id' => ['type' => stringType()],
                 ],
             ],
         ];
@@ -634,9 +634,9 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals($testInputObject2->getFields(), $testInputObject1->getFields());
 
-        $this->assertEquals(String(), $fields['field1']['type']);
-        $this->assertEquals(String(), $fields['field2']['type']);
-        $this->assertEquals(String(), $fields['field2']['args']['id']['type']);
+        $this->assertEquals(stringType(), $fields['field1']['type']);
+        $this->assertEquals(stringType(), $fields['field2']['type']);
+        $this->assertEquals(stringType(), $fields['field2']['args']['id']['type']);
     }
 
     // Field config must be object
@@ -649,12 +649,12 @@ class DefinitionTest extends TestCase
         $objectType = newObjectType([
             'name'   => 'SomeObject',
             'fields' => function () {
-                return ['f' => ['type' => String()]];
+                return ['f' => ['type' => stringType()]];
             }
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(String(), $objectType->getField('f')->getType());
+        $this->assertEquals(stringType(), $objectType->getField('f')->getType());
     }
 
     // rejects an Object type field with undefined config
@@ -733,9 +733,9 @@ class DefinitionTest extends TestCase
             'name'   => 'SomeObject',
             'fields' => [
                 'goodField' => [
-                    'type' => String(),
+                    'type' => stringType(),
                     'args' => [
-                        'goodArg' => ['type' => String()],
+                        'goodArg' => ['type' => stringType()],
                     ],
                 ],
             ],
@@ -756,8 +756,8 @@ class DefinitionTest extends TestCase
             'name'   => 'SomeObject',
             'fields' => [
                 'badField' => [
-                    'type' => String(),
-                    'args' => [['badArg' => String()]],
+                    'type' => stringType(),
+                    'args' => [['badArg' => stringType()]],
                 ],
             ],
         ]);
@@ -780,7 +780,7 @@ class DefinitionTest extends TestCase
             'name'   => 'OldObject',
             'fields' => [
                 'field' => [
-                    'type'         => String(),
+                    'type'         => stringType(),
                     'isDeprecated' => true,
                 ],
             ],
@@ -805,7 +805,7 @@ class DefinitionTest extends TestCase
         $objType = newObjectType([
             'name'       => 'SomeObject',
             'interfaces' => [$this->interfaceType],
-            'fields'     => ['f' => ['type' => String()]],
+            'fields'     => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -822,7 +822,7 @@ class DefinitionTest extends TestCase
             'interfaces' => [$this->interfaceType],
             'fields'     => [
                 'f' => function () {
-                    return ['type' => String()];
+                    return ['type' => stringType()];
                 },
             ],
         ]);
@@ -839,7 +839,7 @@ class DefinitionTest extends TestCase
         $objType = newObjectType([
             'name'       => 'SomeObject',
             'interfaces' => '',
-            'fields'     => ['f' => ['type' => String()]],
+            'fields'     => ['f' => ['type' => stringType()]],
         ]);
 
         $this->expectException(InvariantException::class);
@@ -859,7 +859,7 @@ class DefinitionTest extends TestCase
             'interfaces' => function () {
                 return '';
             },
-            'fields'     => ['f' => ['type' => String()]],
+            'fields'     => ['f' => ['type' => stringType()]],
         ]);
 
         $this->expectException(InvariantException::class);
@@ -922,7 +922,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $anotherInterfaceType = newInterfaceType([
             'name'        => 'AnotherInterface',
-            'fields'      => ['f' => ['type' => String()]],
+            'fields'      => ['f' => ['type' => stringType()]],
             'resolveType' => function () {
                 return '';
             }
@@ -933,7 +933,7 @@ class DefinitionTest extends TestCase
             newObjectType([
                 'name'       => 'SomeObject',
                 'interfaces' => [$anotherInterfaceType],
-                'fields'     => ['f' => ['type' => String()]],
+                'fields'     => ['f' => ['type' => stringType()]],
             ])
         );
 
@@ -947,7 +947,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $anotherInterfaceType = newInterfaceType([
             'name'   => 'AnotherInterface',
-            'fields' => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -955,7 +955,7 @@ class DefinitionTest extends TestCase
             newObjectType([
                 'name'       => 'SomeObject',
                 'interfaces' => [$anotherInterfaceType],
-                'fields'     => ['f' => ['type' => String()]],
+                'fields'     => ['f' => ['type' => stringType()]],
                 'isTypeOf'   => function () {
                     return true;
                 },
@@ -972,7 +972,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $anotherInterfaceType = newInterfaceType([
             'name'        => 'AnotherInterface',
-            'fields'      => ['f' => ['type' => String()]],
+            'fields'      => ['f' => ['type' => stringType()]],
             'resolveType' => function () {
                 return '';
             }
@@ -983,7 +983,7 @@ class DefinitionTest extends TestCase
             newObjectType([
                 'name'       => 'SomeObject',
                 'interfaces' => [$anotherInterfaceType],
-                'fields'     => ['f' => ['type' => String()]],
+                'fields'     => ['f' => ['type' => stringType()]],
                 'isTypeOf'   => function () {
                     return true;
                 },
@@ -1003,7 +1003,7 @@ class DefinitionTest extends TestCase
         newInterfaceType([
             'name'        => 'AnotherInterface',
             'resolveType' => '',
-            'fields'      => ['f' => ['type' => String()]],
+            'fields'      => ['f' => ['type' => stringType()]],
         ]);
     }
 
@@ -1031,7 +1031,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $objectWithIsTypeOf = newObjectType([
             'name'     => 'ObjectWithIsTypeOf',
-            'fields'   => ['f' => ['type' => String()]],
+            'fields'   => ['f' => ['type' => stringType()]],
             'isTypeOf' => function () {
                 return true;
             }
@@ -1055,7 +1055,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $objectWithIsTypeOf = newObjectType([
             'name'     => 'ObjectWithIsTypeOf',
-            'fields'   => ['f' => ['type' => String()]],
+            'fields'   => ['f' => ['type' => stringType()]],
             'isTypeOf' => function () {
                 return true;
             }
@@ -1082,7 +1082,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $objectWithIsTypeOf = newObjectType([
             'name'     => 'ObjectWithIsTypeOf',
-            'fields'   => ['f' => ['type' => String()]],
+            'fields'   => ['f' => ['type' => stringType()]],
             'isTypeOf' => function () {
                 return true;
             }
@@ -1266,7 +1266,7 @@ class DefinitionTest extends TestCase
         $this->schemaWithField(
             newObjectType([
                 'name'     => 'AnotherObject',
-                'fields'   => ['f' => ['type' => String()]],
+                'fields'   => ['f' => ['type' => stringType()]],
                 'isTypeOf' => function () {
                     return true;
                 },
@@ -1287,7 +1287,7 @@ class DefinitionTest extends TestCase
         $this->schemaWithField(
             newObjectType([
                 'name'     => 'AnotherObject',
-                'fields'   => ['f' => ['type' => String()]],
+                'fields'   => ['f' => ['type' => stringType()]],
                 'isTypeOf' => '',
             ])
         );
@@ -1372,12 +1372,12 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $inputObjectType = newInputObjectType([
             'name'   => 'SomeInputObject',
-            'fields' => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $field = $inputObjectType->getField('f');
-        $this->assertEquals(String(), $field->getType());
+        $this->assertEquals(stringType(), $field->getType());
     }
 
     // accepts an Input Object type with a field function
@@ -1388,13 +1388,13 @@ class DefinitionTest extends TestCase
         $inputObjectType = newInputObjectType([
             'name'   => 'SomeInputObject',
             'fields' => function () {
-                return ['f' => ['type' => String()]];
+                return ['f' => ['type' => stringType()]];
             },
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $field = $inputObjectType->getField('f');
-        $this->assertEquals(String(), $field->getType());
+        $this->assertEquals(stringType(), $field->getType());
     }
 
     // rejects an Input Object type with incorrect fields
@@ -1450,7 +1450,7 @@ class DefinitionTest extends TestCase
             'name'   => 'SomeInputObject',
             'fields' => [
                 'f' => [
-                    'type'    => String(),
+                    'type'    => stringType(),
                     'resolve' => function () {
                         return 0;
                     }
@@ -1479,7 +1479,7 @@ class DefinitionTest extends TestCase
             'name'   => 'SomeInputObject',
             'fields' => [
                 'f' => [
-                    'type'    => String(),
+                    'type'    => stringType(),
                     'resolve' => ''
                 ],
             ],
@@ -1629,15 +1629,15 @@ class DefinitionTest extends TestCase
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $types = [
-            String(),
+            stringType(),
             $this->scalarType,
             $this->objectType,
             $this->unionType,
             $this->interfaceType,
             $this->enumType,
             $this->inputObjectType,
-            newList(String()),
-            newNonNull(String()),
+            newList(stringType()),
+            newNonNull(stringType()),
         ];
 
         foreach ($types as $type) {
@@ -1682,15 +1682,15 @@ class DefinitionTest extends TestCase
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $types = [
-            String(),
+            stringType(),
             $this->scalarType,
             $this->objectType,
             $this->unionType,
             $this->interfaceType,
             $this->enumType,
             $this->inputObjectType,
-            newList(String()),
-            newList(newNonNull(String())),
+            newList(stringType()),
+            newList(newNonNull(stringType())),
         ];
 
         foreach ($types as $type) {
@@ -1706,7 +1706,7 @@ class DefinitionTest extends TestCase
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $nonTypes = [
-            'String!'        => newNonNull(String()),
+            'String!'        => newNonNull(stringType()),
             'Object'         => new \stdClass(),
             'Array'          => [],
             'Function'       => function () {
@@ -1747,7 +1747,7 @@ class DefinitionTest extends TestCase
         $queryType = newObjectType([
             'name'   => 'Query',
             'fields' => [
-                'normal' => ['type' => String()],
+                'normal' => ['type' => stringType()],
                 'fake'   => ['type' => $fakeString],
             ]
         ]);
@@ -1770,13 +1770,13 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $a = newObjectType([
             'name'   => 'SameName',
-            'fields' => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $b = newObjectType([
             'name'   => 'SameName',
-            'fields' => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -1806,21 +1806,21 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $anotherInterface = newInterfaceType([
             'name'   => 'AnotherInterface',
-            'fields' => ['f' => ['type' => String()]],
+            'fields' => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $firstBadObject = newObjectType([
             'name'       => 'BadObject',
             'interfaces' => [$anotherInterface],
-            'fields'     => ['f' => ['type' => String()]],
+            'fields'     => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $secondBadObject = newObjectType([
             'name'       => 'BadObject',
             'interfaces' => [$anotherInterface],
-            'fields'     => ['f' => ['type' => String()]],
+            'fields'     => ['f' => ['type' => stringType()]],
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */

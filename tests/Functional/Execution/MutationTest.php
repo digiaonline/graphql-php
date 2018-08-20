@@ -9,10 +9,10 @@ use Digia\GraphQL\Test\TestCase;
 use React\Promise\Promise;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class MutationTest extends TestCase
 {
@@ -29,13 +29,13 @@ class MutationTest extends TestCase
                     'name'   => 'M',
                     'fields' => [
                         'greeting' => [
-                            'type'    => String(),
+                            'type'    => stringType(),
                             'resolve' => function ($source, $args, $context, $info) {
                                 return sprintf('Hello %s.', $args['name']);
                             },
                             'args'    => [
                                 'name' => [
-                                    'type' => String()
+                                    'type' => stringType()
                                 ]
                             ]
                         ]
@@ -250,7 +250,7 @@ function rootSchema(): Schema
 {
     $numberHolderType = newObjectType([
         'fields' => [
-            'theNumber' => ['type' => Int()],
+            'theNumber' => ['type' => intType()],
         ],
         'name'   => 'NumberHolder',
     ]);
@@ -266,28 +266,28 @@ function rootSchema(): Schema
             'fields' => [
                 'immediatelyChangeTheNumber'      => [
                     'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => Int()]],
+                    'args'    => ['newNumber' => ['type' => intType()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->immediatelyChangeTheNumber($args['newNumber']);
                     }
                 ],
                 'promiseToChangeTheNumber'        => [
                     'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => Int()]],
+                    'args'    => ['newNumber' => ['type' => intType()]],
                     'resolve' => function (Root $obj, $args) {
                         return $obj->promiseToChangeTheNumber($args['newNumber']);
                     }
                 ],
                 'failToChangeTheNumber'           => [
                     'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => Int()]],
+                    'args'    => ['newNumber' => ['type' => intType()]],
                     'resolve' => function (Root $obj) {
                         return $obj->failToChangeTheNumber();
                     }
                 ],
                 'promiseAndFailToChangeTheNumber' => [
                     'type'    => $numberHolderType,
-                    'args'    => ['newNumber' => ['type' => Int()]],
+                    'args'    => ['newNumber' => ['type' => intType()]],
                     'resolve' => function (Root $obj) {
                         return $obj->promiseAndFailToChangeTheNumber();
                     }

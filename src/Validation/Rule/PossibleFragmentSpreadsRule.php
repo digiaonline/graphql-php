@@ -36,11 +36,11 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
         if ($fragmentType instanceof CompositeTypeInterface &&
             $parentType instanceof CompositeTypeInterface &&
-            !TypeHelper::doTypesOverlap($this->context->getSchema(),
-                $fragmentType, $parentType)) {
+            !TypeHelper::doTypesOverlap($this->context->getSchema(), $fragmentType, $parentType)
+        ) {
             $this->context->reportError(
                 new ValidationException(
-                    typeIncompatibleAnonymousSpreadMessage($parentType, $fragmentType),
+                    typeIncompatibleAnonymousSpreadMessage((string)$parentType, (string)$fragmentType),
                     [$node]
                 )
             );
@@ -63,11 +63,11 @@ class PossibleFragmentSpreadsRule extends AbstractRule
 
         if (null !== $fragmentType &&
             null !== $parentType &&
-            !TypeHelper::doTypesOverlap($this->context->getSchema(),
-                $fragmentType, $parentType)) {
+            !TypeHelper::doTypesOverlap($this->context->getSchema(), $fragmentType, $parentType)
+        ) {
             $this->context->reportError(
                 new ValidationException(
-                    typeIncompatibleSpreadMessage($fragmentName, $parentType, $fragmentType),
+                    typeIncompatibleSpreadMessage($fragmentName, (string)$parentType, (string)$fragmentType),
                     [$node]
                 )
             );

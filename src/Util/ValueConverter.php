@@ -25,8 +25,7 @@ use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
-use function Digia\GraphQL\parseValue;
-use function Digia\GraphQL\Type\ID;
+use function Digia\GraphQL\Type\idType;
 
 class ValueConverter
 {
@@ -87,12 +86,12 @@ class ValueConverter
     /**
      * @param mixed    $value
      * @param ListType $type
-     * @return ValueNodeInterface
+     * @return ValueNodeInterface|null
      * @throws InvariantException
      * @throws SyntaxErrorException
      * @throws ConversionException
      */
-    protected static function convertListType($value, ListType $type): ValueNodeInterface
+    protected static function convertListType($value, ListType $type): ?ValueNodeInterface
     {
         $itemType = $type->getOfType();
 
@@ -136,8 +135,7 @@ class ValueConverter
             $fieldValue = self::convert($value[$fieldName], $field->getType());
 
             if (null !== $fieldValue) {
-                $valueNode = parseValue($fieldValue);
-                $nodes[]   = new ObjectFieldNode(new NameNode($fieldName, null), $valueNode, null);
+                $nodes[] = new ObjectFieldNode(new NameNode($fieldName, null), $fieldValue, null);
             }
         }
 
@@ -179,8 +177,8 @@ class ValueConverter
                 return new EnumValueNode($serialized, null);
             }
 
-            // ID types can use Int literals.)
-            if (\is_numeric($serialized) && $type === ID()) {
+            // ID types can use Int literals.
+            if (idType() === $type && \is_numeric($serialized)) {
                 return new IntValueNode($serialized, null);
             }
 

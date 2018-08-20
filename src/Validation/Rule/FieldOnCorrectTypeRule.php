@@ -6,11 +6,14 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\InterfacesTrait;
+use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\FieldsAwareInterface;
 use Digia\GraphQL\Type\Definition\FieldsTrait;
 use Digia\GraphQL\Type\Definition\InterfaceType;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NameTrait;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
@@ -83,18 +86,30 @@ class FieldOnCorrectTypeRule extends AbstractRule
         $suggestedObjectTypes = [];
         $interfaceUsageCount  = [];
 
-        /** @var FieldsTrait|NameTrait|InterfacesTrait $possibleType */
         foreach ($schema->getPossibleTypes($type) as $possibleType) {
+            if (!$possibleType instanceof FieldsAwareInterface) {
+                continue;
+            }
+
             $typeFields = $possibleType->getFields();
+
             if (!isset($typeFields[$fieldName])) {
                 break;
             }
 
+            if (!$possibleType instanceof NamedTypeInterface) {
+                continue;
+            }
+
             $suggestedObjectTypes[] = $possibleType->getName();
 
-            /** @var InterfaceType $possibleInterface */
+            if (!$possibleType instanceof ObjectType) {
+                continue;
+            }
+
             foreach ($possibleType->getInterfaces() as $possibleInterface) {
                 $interfaceFields = $possibleInterface->getFields();
+
                 if (!isset($interfaceFields[$fieldName])) {
                     break;
                 }
@@ -129,8 +144,8 @@ class FieldOnCorrectTypeRule extends AbstractRule
             return [];
         }
 
-        /** @var FieldsTrait $type */
         $possibleFieldNames = \array_keys($type->getFields());
+
         return suggestionList($fieldName, $possibleFieldNames);
     }
 }

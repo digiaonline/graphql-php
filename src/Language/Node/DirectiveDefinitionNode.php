@@ -18,11 +18,11 @@ class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInte
     /**
      * DirectiveDefinitionNode constructor.
      *
-     * @param StringValueNode|null $description
-     * @param NameNode             $name
-     * @param ArgumentNode[]       $arguments
-     * @param NameNode[]           $locations
-     * @param Location|null        $location
+     * @param StringValueNode|null       $description
+     * @param NameNode                   $name
+     * @param InputValueDefinitionNode[] $arguments
+     * @param NameNode[]                 $locations
+     * @param Location|null              $location
      */
     public function __construct(
         ?StringValueNode $description,

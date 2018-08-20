@@ -5,11 +5,12 @@ namespace Digia\GraphQL\Validation\Conflict;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Field;
+use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 
 class FieldContext
 {
     /**
-     * @var CompositeTypeInterface|null
+     * @var NamedTypeInterface|null
      */
     protected $parentType;
 
@@ -25,12 +26,12 @@ class FieldContext
 
     /**
      * FieldContext constructor.
-     * @param CompositeTypeInterface|null $parentType
+     * @param NamedTypeInterface|null $parentType
      * @param FieldNode                   $node
      * @param Field|null                  $definition
      */
     public function __construct(
-        ?CompositeTypeInterface $parentType,
+        ?NamedTypeInterface $parentType,
         FieldNode $node,
         ?Field $definition = null
     ) {
@@ -40,9 +41,9 @@ class FieldContext
     }
 
     /**
-     * @return CompositeTypeInterface|null
+     * @return NamedTypeInterface|null
      */
-    public function getParentType(): ?CompositeTypeInterface
+    public function getParentType(): ?NamedTypeInterface
     {
         return $this->parentType;
     }
