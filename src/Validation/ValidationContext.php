@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Node\SelectionSetAwareInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
@@ -195,11 +196,10 @@ class ValidationContext implements ValidationContextInterface
                 /** @var SelectionSetNode $set */
                 $set = array_pop($setsToVisit);
 
-                /** @var FieldNode|FragmentSpreadNode $selection */
                 foreach ($set->getSelections() as $selection) {
                     if ($selection instanceof FragmentSpreadNode) {
                         $spreads[] = $selection;
-                    } elseif ($selection->hasSelectionSet()) {
+                    } elseif ($selection instanceof SelectionSetAwareInterface && $selection->hasSelectionSet()) {
                         $setsToVisit[] = $selection->getSelectionSet();
                     }
                 }

@@ -6,12 +6,12 @@ use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Schema\Schema;
-use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\booleanType;
 use function Digia\GraphQL\Type\newEnumType;
-use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class EnumTypeTest extends TestCase
 {
@@ -91,18 +91,18 @@ class EnumTypeTest extends TestCase
                     'type'    => $this->colorType,
                     'args'    => [
                         'fromEnum'   => ['type' => $this->colorType],
-                        'fromInt'    => ['type' => Int()],
-                        'fromString' => ['type' => String()],
+                        'fromInt'    => ['type' => intType()],
+                        'fromString' => ['type' => stringType()],
                     ],
                     'resolve' => function ($value, $args) {
                         return $args['fromInt'] ?? $args['fromString'] ?? $args['fromEnum'];
                     },
                 ],
                 'colorInt'    => [
-                    'type'    => Int(),
+                    'type'    => intType(),
                     'args'    => [
                         'fromEnum' => ['type' => $this->colorType],
-                        'fromInt'  => ['type' => Int()],
+                        'fromInt'  => ['type' => intType()],
                     ],
                     'resolve' => function ($value, $args) {
                         return $args['fromInt'] ?? $args['fromEnum'];
@@ -115,8 +115,8 @@ class EnumTypeTest extends TestCase
                             'type'         => $this->complexEnum,
                             'defaultValue' => $this->complex1,
                         ],
-                        'providedGoodValue' => ['type' => Boolean()],
-                        'providedBadValue'  => ['type' => Boolean()],
+                        'providedGoodValue' => ['type' => booleanType()],
+                        'providedBadValue'  => ['type' => booleanType()],
                     ],
                     'resolve' => function ($value, $args) {
                         if ($args['providedGoodValue']) {

@@ -137,7 +137,7 @@ class Schema implements DefinitionInterface
     /**
      * @return ObjectType|null
      */
-    public function getMutationType(): ?TypeInterface
+    public function getMutationType(): ?ObjectType
     {
         return $this->mutationType;
     }
@@ -145,7 +145,7 @@ class Schema implements DefinitionInterface
     /**
      * @return ObjectType|null
      */
-    public function getSubscriptionType(): ?TypeInterface
+    public function getSubscriptionType(): ?ObjectType
     {
         return $this->subscriptionType;
     }
@@ -256,7 +256,7 @@ class Schema implements DefinitionInterface
             __Schema(), // Introspection schema
         ];
 
-        if ($this->types) {
+        if (!empty($this->types)) {
             $initialTypes = \array_merge($initialTypes, $this->types);
         }
 

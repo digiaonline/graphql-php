@@ -6,12 +6,12 @@ use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\booleanType;
 use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 use function Digia\GraphQL\Type\newUnionType;
 
 
@@ -34,7 +34,7 @@ class UnionInterfaceTest extends TestCase
         $NamedType = newInterfaceType([
             'name'   => 'Named',
             'fields' => [
-                'name' => ['type' => String()]
+                'name' => ['type' => stringType()]
             ]
         ]);
 
@@ -42,8 +42,8 @@ class UnionInterfaceTest extends TestCase
             'name'       => 'Dog',
             'interfaces' => [$NamedType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'woofs' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'woofs' => ['type' => booleanType()],
             ],
             'isTypeOf'   => function ($obj) {
                 return $obj instanceof Dog;
@@ -54,8 +54,8 @@ class UnionInterfaceTest extends TestCase
             'name'       => 'Cat',
             'interfaces' => [$NamedType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'meows' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'meows' => ['type' => booleanType()],
             ],
             'isTypeOf'   => function ($obj) {
                 return $obj instanceof Cat;
@@ -82,7 +82,7 @@ class UnionInterfaceTest extends TestCase
             'name'       => 'Person',
             'interfaces' => [$NamedType],
             'fields'     => [
-                'name'    => ['type' => String()],
+                'name'    => ['type' => stringType()],
                 'pets'    => ['type' => newList($PetType)],
                 'friends' => ['type' => newList($NamedType)],
             ],
@@ -372,7 +372,7 @@ class UnionInterfaceTest extends TestCase
         $NamedType2 = newInterfaceType([
             'name'        => 'Named',
             'fields'      => [
-                'name' => ['type' => String()]
+                'name' => ['type' => stringType()]
             ],
             'resolveType' => function ($obj, $context, ResolveInfo $info) use (
                 &$encounteredContext,
@@ -391,7 +391,7 @@ class UnionInterfaceTest extends TestCase
             'name'       => 'Person',
             'interfaces' => [$NamedType2],
             'fields'     => [
-                'name'    => ['type' => String()],
+                'name'    => ['type' => stringType()],
                 'friends' => ['type' => newList($NamedType2)],
             ],
         ]);

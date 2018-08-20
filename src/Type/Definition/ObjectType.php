@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use React\Promise\PromiseInterface;
@@ -21,10 +22,10 @@ use function Digia\GraphQL\Type\resolveThunk;
  *     $AddressType = newObjectType([
  *       'name'   => 'Address',
  *       'fields' => [
- *         'street'    => ['type' => String()],
- *         'number'    => ['type' => LInt()],
+ *         'street'    => ['type' => stringType()],
+ *         'number'    => ['type' => intType()],
  *         'formatted' => [
- *           'type'    => String(),
+ *           'type'    => stringType(),
  *           'resolve' => function ($obj) {
  *             return $obj->number . ' ' . $obj->street
  *           }
@@ -42,7 +43,7 @@ use function Digia\GraphQL\Type\resolveThunk;
  *       'name' => 'Person',
  *       'fields' => function () {
  *         return [
- *           'name'       => ['type' => String()],
+ *           'name'       => ['type' => stringType()],
  *           'bestFriend' => ['type' => $PersonType],
  *         ];
  *       }

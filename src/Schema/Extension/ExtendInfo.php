@@ -69,9 +69,9 @@ class ExtendInfo
 
     /**
      * @param string $typeName
-     * @return InterfaceTypeExtensionNode[]|ObjectTypeExtensionNode[]|null
+     * @return ObjectTypeExtensionNode[]|InterfaceTypeExtensionNode[]
      */
-    public function getTypeExtensions(string $typeName): ?array
+    public function getTypeExtensions(string $typeName): array
     {
         return $this->typeExtensionsMap[$typeName] ?? [];
     }

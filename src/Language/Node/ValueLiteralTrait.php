@@ -18,9 +18,9 @@ trait ValueLiteralTrait
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getValueAST(): array
+    public function getValueAST(): ?array
     {
         return null !== $this->value ? $this->value->toAST() : null;
     }

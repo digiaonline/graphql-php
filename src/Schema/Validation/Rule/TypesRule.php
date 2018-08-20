@@ -96,10 +96,10 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param NamedTypeInterface|FieldsAwareInterface $type
+     * @param FieldsAwareInterface $type
      * @throws InvariantException
      */
-    protected function validateFields($type): void
+    protected function validateFields(FieldsAwareInterface $type): void
     {
         $fields = $type->getFields();
 
@@ -533,11 +533,11 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param ObjectType|InterfaceType $type
+     * @param FieldsAwareInterface $type
      * @return ObjectTypeDefinitionNode[]|ObjectTypeExtensionNode[]|InterfaceTypeDefinitionNode[]
      * |InterfaceTypeExtensionNode[]
      */
-    protected function getAllObjectOrInterfaceNodes($type): array
+    protected function getAllObjectOrInterfaceNodes(FieldsAwareInterface $type): array
     {
         $node              = $type->getAstNode();
         $extensionASTNodes = $type->getExtensionAstNodes();
@@ -552,32 +552,32 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param NamedTypeInterface|ObjectType|InterfaceType $type
-     * @param string                                      $fieldName
+     * @param FieldsAwareInterface $type
+     * @param string               $fieldName
      * @return TypeNodeInterface|null
      */
-    protected function getFieldTypeNode(NamedTypeInterface $type, string $fieldName): ?TypeNodeInterface
+    protected function getFieldTypeNode(FieldsAwareInterface $type, string $fieldName): ?TypeNodeInterface
     {
         $fieldNode = $this->getFieldNode($type, $fieldName);
         return null !== $fieldNode ? $fieldNode->getType() : null;
     }
 
     /**
-     * @param NamedTypeInterface $type
-     * @param string             $fieldName
+     * @param FieldsAwareInterface $type
+     * @param string               $fieldName
      * @return FieldDefinitionNode|null
      */
-    protected function getFieldNode(NamedTypeInterface $type, string $fieldName): ?FieldDefinitionNode
+    protected function getFieldNode(FieldsAwareInterface $type, string $fieldName): ?FieldDefinitionNode
     {
         return $this->getAllFieldNodes($type, $fieldName)[0] ?? null;
     }
 
     /**
-     * @param NamedTypeInterface|ObjectType|InterfaceType $type
-     * @param string                                      $fieldName
+     * @param FieldsAwareInterface $type
+     * @param string               $fieldName
      * @return FieldDefinitionNode[]
      */
-    protected function getAllFieldNodes(NamedTypeInterface $type, string $fieldName): array
+    protected function getAllFieldNodes(FieldsAwareInterface $type, string $fieldName): array
     {
         $nodes = [];
 
@@ -593,13 +593,13 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param NamedTypeInterface $type
-     * @param string             $fieldName
-     * @param string             $argumentName
+     * @param FieldsAwareInterface $type
+     * @param string               $fieldName
+     * @param string               $argumentName
      * @return InputValueDefinitionNode|null
      */
     protected function getFieldArgumentNode(
-        NamedTypeInterface $type,
+        FieldsAwareInterface $type,
         string $fieldName,
         string $argumentName
     ): ?InputValueDefinitionNode {
@@ -607,13 +607,13 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param NamedTypeInterface|ObjectType|InterfaceType $type
-     * @param string                                      $fieldName
-     * @param string                                      $argumentName
+     * @param FieldsAwareInterface $type
+     * @param string               $fieldName
+     * @param string               $argumentName
      * @return InputValueDefinitionNode[]
      */
     protected function getAllFieldArgumentNodes(
-        NamedTypeInterface $type,
+        FieldsAwareInterface $type,
         string $fieldName,
         string $argumentName
     ): array {
@@ -663,13 +663,13 @@ class TypesRule extends AbstractRule
     }
 
     /**
-     * @param NamedTypeInterface $type
-     * @param string             $fieldName
-     * @param string             $argumentName
+     * @param FieldsAwareInterface $type
+     * @param string               $fieldName
+     * @param string               $argumentName
      * @return TypeNodeInterface|null
      */
     protected function getFieldArgumentTypeNode(
-        NamedTypeInterface $type,
+        FieldsAwareInterface $type,
         string $fieldName,
         string $argumentName
     ): ?TypeNodeInterface {

@@ -5,16 +5,16 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\Boolean;
-use function Digia\GraphQL\Type\ID;
-use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\booleanType;
+use function Digia\GraphQL\Type\idType;
+use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newInputObjectType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newScalarType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 
 class SchemaTest extends TestCase
@@ -33,9 +33,9 @@ class SchemaTest extends TestCase
         $BlogImage = newObjectType([
             'name'   => 'Image',
             'fields' => [
-                'url'    => ['type' => String()],
-                'height' => ['type' => Int()],
-                'width'  => ['type' => Int()],
+                'url'    => ['type' => stringType()],
+                'height' => ['type' => intType()],
+                'width'  => ['type' => intType()],
             ]
         ]);
 
@@ -43,13 +43,13 @@ class SchemaTest extends TestCase
             'name'   => 'Author',
             'fields' => function () use (&$BlogArticle, &$BlogImage) {
                 return [
-                    'id'            => ['type' => String()],
-                    'name'          => ['type' => String()],
+                    'id'            => ['type' => stringType()],
+                    'name'          => ['type' => stringType()],
                     'pic'           => [
                         'type'    => $BlogImage,
                         'args'    => [
-                            'width'  => ['type' => Int()],
-                            'height' => ['type' => Int()]
+                            'width'  => ['type' => intType()],
+                            'height' => ['type' => intType()]
                         ],
                         'resolve' => function ($root, $args) {
                             ['width' => $width, 'height' => $height] = $args;
@@ -65,12 +65,12 @@ class SchemaTest extends TestCase
         $BlogArticle = newObjectType([
             'name'   => 'Article',
             'fields' => [
-                'id'          => ['type' => newNonNull(String())],
-                'isPublished' => ['type' => Boolean()],
+                'id'          => ['type' => newNonNull(stringType())],
+                'isPublished' => ['type' => booleanType()],
                 'author'      => ['type' => $BlogAuthor],
-                'title'       => ['type' => String()],
-                'body'        => ['type' => String()],
-                'keywords'    => ['type' => newList(String())],
+                'title'       => ['type' => stringType()],
+                'body'        => ['type' => stringType()],
+                'keywords'    => ['type' => newList(stringType())],
             ]
         ]);
 
@@ -80,7 +80,7 @@ class SchemaTest extends TestCase
                 'article' => [
                     'type'    => $BlogArticle,
                     'args'    => [
-                        'id' => ['type' => ID()]
+                        'id' => ['type' => idType()]
                     ],
                     'resolve' => function ($root, $args) use (&$article) {
                         return $article($args['id']);
@@ -270,7 +270,7 @@ class SchemaTest extends TestCase
         $TestInputObject = newInputObjectType([
             'name'   => 'TestInputObject',
             'fields' => [
-                'c' => ['type' => newNonNull(String())],
+                'c' => ['type' => newNonNull(stringType())],
                 'd' => ['type' => $dateType]
             ]
         ]);
@@ -279,9 +279,9 @@ class SchemaTest extends TestCase
         $blogArticle = newObjectType([
             'name'   => 'Article',
             'fields' => [
-                'id'        => ['type' => newNonNull(String())],
-                'title'     => ['type' => String()],
-                'body'      => ['type' => String()],
+                'id'        => ['type' => newNonNull(stringType())],
+                'title'     => ['type' => stringType()],
+                'body'      => ['type' => stringType()],
                 'createdAt' => ['type' => $dateType],
             ]
         ]);

@@ -51,9 +51,9 @@ class NodePrinter implements NodePrinterInterface
 
     /**
      * @param NameNode $node
-     * @return string
+     * @return null|string
      */
-    protected function printName(NameNode $node): string
+    protected function printName(NameNode $node): ?string
     {
         return $node->getValue();
     }
@@ -222,7 +222,7 @@ class NodePrinter implements NodePrinterInterface
      */
     protected function printIntValue(IntValueNode $node): string
     {
-        return $node->getValue();
+        return (string)$node->getValue();
     }
 
     /**
@@ -231,7 +231,7 @@ class NodePrinter implements NodePrinterInterface
      */
     protected function printFloatValue(FloatValueNode $node): string
     {
-        return $node->getValue();
+        return (string)$node->getValue();
     }
 
     /**
@@ -271,7 +271,7 @@ class NodePrinter implements NodePrinterInterface
      */
     protected function printEnumValue(EnumValueNode $node): string
     {
-        return $node->getValue();
+        return (string)$node->getValue();
     }
 
     /**

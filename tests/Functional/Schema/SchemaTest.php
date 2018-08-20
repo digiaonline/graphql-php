@@ -14,7 +14,7 @@ use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class SchemaTest extends TestCase
 {
@@ -58,7 +58,7 @@ class SchemaTest extends TestCase
             'name'   => 'Interface',
             'fields' => [
                 'fieldName' => [
-                    'type' => String(),
+                    'type' => stringType(),
                 ],
             ],
         ]);
@@ -68,7 +68,7 @@ class SchemaTest extends TestCase
             'interfaces' => [$this->interfaceType],
             'fields'     => [
                 'fieldName' => [
-                    'type'    => String(),
+                    'type'    => stringType(),
                     'resolve' => function () {
                         return '';
                     },
@@ -80,7 +80,7 @@ class SchemaTest extends TestCase
             'name'   => 'DirInput',
             'fields' => [
                 'field' => [
-                    'type' => String(),
+                    'type' => stringType(),
                 ]
             ],
         ]);
@@ -89,7 +89,7 @@ class SchemaTest extends TestCase
             'name'   => 'WrappedDirInput',
             'fields' => [
                 'field' => [
-                    'type' => String(),
+                    'type' => stringType(),
                 ],
             ],
         ]);
@@ -107,7 +107,7 @@ class SchemaTest extends TestCase
             ],
             'fields'    => [
                 'field' => [
-                    'type' => String(),
+                    'type' => stringType(),
                 ],
             ],
         ]);

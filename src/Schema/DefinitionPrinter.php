@@ -18,13 +18,12 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Util\ValueConverter;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Type\isIntrospectionType;
 use function Digia\GraphQL\Type\isSpecifiedScalarType;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 use function Digia\GraphQL\Util\arrayEvery;
 use function Digia\GraphQL\Util\toString;
 
@@ -49,7 +48,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             function (Directive $directive): bool {
                 return !isSpecifiedDirective($directive);
             },
-            function (TypeInterface $type): bool {
+            function (NamedTypeInterface $type): bool {
                 return !isSpecifiedScalarType($type) && !isIntrospectionType($type);
             }
         );
@@ -69,7 +68,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             function (Directive $directive): bool {
                 return isSpecifiedDirective($directive);
             },
-            function (TypeInterface $type): bool {
+            function (NamedTypeInterface $type): bool {
                 return isIntrospectionType($type);
             }
         );
@@ -86,6 +85,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
         if ($definition instanceof Schema) {
             return $this->printSchemaDefinition($definition);
         }
+
         if ($definition instanceof NamedTypeInterface) {
             return $this->printType($definition);
         }
@@ -454,7 +454,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             return '@deprecated';
         }
 
-        $reasonValue = printNode(ValueConverter::convert($reason, String()));
+        $reasonValue = printNode(ValueConverter::convert($reason, stringType()));
 
         return "@deprecated(reason: {$reasonValue})";
     }

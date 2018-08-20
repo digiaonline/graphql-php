@@ -8,12 +8,12 @@ use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class ExecutionTest extends TestCase
 {
@@ -30,7 +30,7 @@ class ExecutionTest extends TestCase
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => String()
+                        'type' => stringType()
                     ]
                 ]
             ])
@@ -62,7 +62,7 @@ class ExecutionTest extends TestCase
                 'name'   => 'Greeting',
                 'fields' => [
                     'a' => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function ($source, $args, $context, $info) {
                             return $source;
                         }
@@ -90,7 +90,7 @@ class ExecutionTest extends TestCase
                 'name'   => 'Greeting',
                 'fields' => [
                     'hello' => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'world';
                         }
@@ -116,19 +116,19 @@ class ExecutionTest extends TestCase
             'fields' => function () use (&$dataType) {
                 return [
                     'a'      => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Already Been Done';
                         }
                     ],
                     'b'      => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Boring';
                         }
                     ],
                     'c'      => [
-                        'type'    => newList(String()),
+                        'type'    => newList(stringType()),
                         'resolve' => function () {
                             return ['Contrived', null, 'Confusing'];
                         }
@@ -159,49 +159,49 @@ class ExecutionTest extends TestCase
             'fields' => function () use (&$dataType, &$deep) {
                 return [
                     'a'       => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Apple';
                         }
                     ],
                     'b'       => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Banana';
                         }
                     ],
                     'c'       => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Cookie';
                         }
                     ],
                     'd'       => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Donut';
                         }
                     ],
                     'e'       => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Egg';
                         }
                     ],
                     'f'       => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Fish';
                         }
                     ],
                     'pic'     => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function ($src, $args) {
                             return 'Pic of size: ' . ($args['size'] ?? 50);
                         },
                         'args'    => [
                             'size' => [
-                                'type' => Int(),
+                                'type' => intType(),
                             ]
                         ],
                     ],
@@ -292,13 +292,13 @@ class ExecutionTest extends TestCase
                 'name'   => 'Greeting',
                 'fields' => [
                     'greeting' => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function ($source, $args, $context, $info) {
                             return sprintf('Hello %s', $args['name']);
                         },
                         'args'    => [
                             'name' => [
-                                'type' => String(),
+                                'type' => stringType(),
                             ]
                         ]
                     ]
@@ -325,31 +325,31 @@ class ExecutionTest extends TestCase
                 'name'   => 'Human',
                 'fields' => [
                     'id'         => [
-                        'type'    => Int(),
+                        'type'    => intType(),
                         'resolve' => function () {
                             return 1000;
                         }
                     ],
                     'type'       => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Human';
                         }
                     ],
                     'friends'    => [
-                        'type'    => newList(String()),
+                        'type'    => newList(stringType()),
                         'resolve' => function () {
                             return ['1002', '1003', '2000', '2001'];
                         }
                     ],
                     'appearsIn'  => [
-                        'type'    => newList(Int()),
+                        'type'    => newList(intType()),
                         'resolve' => function () {
                             return [4, 5, 6];
                         }
                     ],
                     'homePlanet' => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Tatooine';
                         }
@@ -394,19 +394,19 @@ SRC;
             'fields' => function () use (&$type) {
                 return [
                     'a'    => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Apple';
                         }
                     ],
                     'b'    => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Banana';
                         }
                     ],
                     'c'    => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function () {
                             return 'Cherry';
                         }
@@ -456,7 +456,7 @@ SRC;
                 'name'   => 'Test',
                 'fields' => [
                     'test' => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function ($source, $args, $context, $_info) use (&$info) {
                             $info = $_info;
                         }
@@ -479,7 +479,7 @@ SRC;
             $ast->getDefinitions()[0]->getSelectionSet()->getSelections()[0],
             $info->getFieldNodes()[0]
         );
-        $this->assertSame(String(), $info->getReturnType());
+        $this->assertSame(stringType(), $info->getReturnType());
         $this->assertEquals($schema->getQueryType(), $info->getParentType());
         $this->assertSame(["result"], $info->getPath()); // { prev: undefined, key: 'result' }
         $this->assertEquals($schema, $info->getSchema());
@@ -503,7 +503,7 @@ SRC;
                 'name'   => 'Test',
                 'fields' => [
                     'a' => [
-                        'type'    => String(),
+                        'type'    => stringType(),
                         'resolve' => function ($rootValue) use (&$resolvedRootValue) {
                             $resolvedRootValue = $rootValue;
                         }
@@ -536,10 +536,10 @@ SRC;
                 'name'   => 'Type',
                 'fields' => [
                     'b' => [
-                        'type'    => Int(),
+                        'type'    => intType(),
                         'args'    => [
-                            'numArg'    => ['type' => Int()],
-                            'stringArg' => ['type' => String()]
+                            'numArg'    => ['type' => intType()],
+                            'stringArg' => ['type' => stringType()]
                         ],
                         'resolve' => function ($source, $args) use (&$resolvedArgs) {
                             $resolvedArgs = $args;
@@ -631,18 +631,18 @@ SRC;
             'query' => newObjectType([
                 'name'   => 'Type',
                 'fields' => [
-                    'sync'                => ['type' => String()],
-                    'syncError'           => ['type' => String()],
-                    'syncRawError'        => ['type' => String()],
-                    'syncReturnError'     => ['type' => String()],
-                    'syncReturnErrorList' => ['type' => newList(String())],
-                    'async'               => ['type' => String()],
-                    'asyncReject'         => ['type' => String()],
-                    'asyncRawReject'      => ['type' => String()],
-                    'asyncEmptyReject'    => ['type' => String()],
-                    'asyncError'          => ['type' => String()],
-                    'asyncRawError'       => ['type' => String()],
-                    'asyncReturnError'    => ['type' => String()],
+                    'sync'                => ['type' => stringType()],
+                    'syncError'           => ['type' => stringType()],
+                    'syncRawError'        => ['type' => stringType()],
+                    'syncReturnError'     => ['type' => stringType()],
+                    'syncReturnErrorList' => ['type' => newList(stringType())],
+                    'async'               => ['type' => stringType()],
+                    'asyncReject'         => ['type' => stringType()],
+                    'asyncRawReject'      => ['type' => stringType()],
+                    'asyncEmptyReject'    => ['type' => stringType()],
+                    'asyncError'          => ['type' => stringType()],
+                    'asyncRawError'       => ['type' => stringType()],
+                    'asyncReturnError'    => ['type' => stringType()],
                 ]
             ]),
         ]);
@@ -794,7 +794,7 @@ SRC;
                             'name'   => 'Food',
                             'fields' => [
                                 'name' => [
-                                    'type' => String()
+                                    'type' => stringType()
                                 ]
                             ]
                         ])),
@@ -852,7 +852,7 @@ SRC;
                         }
                     ],
                     'throws'    => [
-                        'type'    => newNonNull(String()),
+                        'type'    => newNonNull(stringType()),
                         'resolve' => function () {
                             throw new \Exception('Catch me if you can!');
                         }
@@ -934,7 +934,7 @@ SRC;
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -964,7 +964,7 @@ SRC;
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -995,7 +995,7 @@ SRC;
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -1032,7 +1032,7 @@ SRC;
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -1068,7 +1068,7 @@ SRC;
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -1105,7 +1105,7 @@ SRC;
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ]),
@@ -1113,7 +1113,7 @@ SRC;
                 'name'   => 'M',
                 'fields' => [
                     'c' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ]),
@@ -1121,7 +1121,7 @@ SRC;
                 'name'   => 'S',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -1152,7 +1152,7 @@ SRC;
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ]),
@@ -1160,7 +1160,7 @@ SRC;
                 'name'   => 'M',
                 'fields' => [
                     'c' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -1191,7 +1191,7 @@ SRC;
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ]),
@@ -1199,7 +1199,7 @@ SRC;
                 'name'   => 'S',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -1239,11 +1239,11 @@ SRC;
             'query' => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
-                    'a' => ['type' => String()],
-                    'b' => ['type' => String()],
-                    'c' => ['type' => String()],
-                    'd' => ['type' => String()],
-                    'e' => ['type' => String()],
+                    'a' => ['type' => stringType()],
+                    'b' => ['type' => stringType()],
+                    'c' => ['type' => stringType()],
+                    'd' => ['type' => stringType()],
+                    'e' => ['type' => stringType()],
                 ]
             ])
         ]);
@@ -1277,7 +1277,7 @@ SRC;
                 'name'   => 'Type',
                 'fields' => [
                     'a' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -1314,13 +1314,13 @@ SRC;
             'query'    => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
-                    'a' => ['type' => String()],
+                    'a' => ['type' => stringType()],
                 ]
             ]),
             'mutation' => newObjectType([
                 'name'   => 'M',
                 'fields' => [
-                    'c' => ['type' => String()],
+                    'c' => ['type' => stringType()],
                 ]
             ])
         ]);
@@ -1346,7 +1346,7 @@ SRC;
             'name'     => 'SpecialType',
             'fields'   => [
                 'value' => [
-                    'type' => String()
+                    'type' => stringType()
                 ]
             ],
             'isTypeOf' => function ($obj) {
@@ -1411,7 +1411,7 @@ SRC;
                 'name'   => 'Query',
                 'fields' => [
                     'foo' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])
@@ -1441,7 +1441,7 @@ SRC;
                 'name'   => 'Query',
                 'fields' => [
                     'foo' => [
-                        'type' => String(),
+                        'type' => stringType(),
                     ]
                 ]
             ])

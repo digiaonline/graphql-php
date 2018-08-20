@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Schema\Resolver;
 
+use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Schema\Resolver\AbstractResolver;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistry;
 use Digia\GraphQL\Test\TestCase;
@@ -119,5 +120,10 @@ class QueryResolver extends AbstractResolver
     public function resolveDroid($_, $args)
     {
         return getDroid($args['id']);
+    }
+
+    public function resolveType($rootValue, $contextValues, ResolveInfo $info): ?callable
+    {
+        return null;
     }
 }

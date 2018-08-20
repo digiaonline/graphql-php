@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Util\NameHelper;
 use function Digia\GraphQL\Type\isInputType;
+use function Digia\GraphQL\Util\toString;
 
 class DirectivesRule extends AbstractRule
 {
@@ -24,10 +25,8 @@ class DirectivesRule extends AbstractRule
             if (!($directive instanceof Directive)) {
                 $this->context->reportError(
                     new SchemaValidationException(
-                        \sprintf(
-                            'Expected directive but got: %s.',
-                            $directive instanceof ASTNodeAwareInterface ? $directive->getAstNode() : $directive
-                        )
+                        \sprintf('Expected directive but got: %s.', toString($directive)),
+                        $directive instanceof ASTNodeAwareInterface ? [$directive->getAstNode()] : null
                     )
                 );
 

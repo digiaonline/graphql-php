@@ -71,7 +71,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                             'description' => 'A list of all types supported by this server.',
                             'type'        => newNonNull(newList(newNonNull(__Type()))),
                             'resolve'     => function (Schema $schema): array {
-                                return array_values($schema->getTypeMap());
+                                return \array_values($schema->getTypeMap());
                             },
                         ],
                         'queryType'        => [
@@ -124,8 +124,8 @@ class IntrospectionProvider extends AbstractServiceProvider
                     'describing additional information to the executor.',
                 'fields'          => function () {
                     return [
-                        'name'        => ['type' => newNonNull(String())],
-                        'description' => ['type' => String()],
+                        'name'        => ['type' => newNonNull(stringType())],
+                        'description' => ['type' => stringType()],
                         'locations'   => [
                             'type' => newNonNull(newList(newNonNull(__DirectiveLocation()))),
                         ],
@@ -249,25 +249,25 @@ class IntrospectionProvider extends AbstractServiceProvider
                                     return TypeKindEnum::NON_NULL;
                                 }
 
-                                throw new InvalidTypeException(sprintf('Unknown kind of type: %s', $type));
+                                throw new InvalidTypeException(\sprintf('Unknown kind of type: %s', (string)$type));
                             },
                         ],
-                        'name'          => ['type' => String()],
-                        'description'   => ['type' => String()],
+                        'name'          => ['type' => stringType()],
+                        'description'   => ['type' => stringType()],
                         'fields'        => [
                             'type'    => newList(newNonNull(__Field())),
                             'args'    => [
-                                'includeDeprecated' => ['type' => Boolean(), 'defaultValue' => false],
+                                'includeDeprecated' => ['type' => booleanType(), 'defaultValue' => false],
                             ],
                             'resolve' => function (TypeInterface $type, array $args):
                             ?array {
                                 ['includeDeprecated' => $includeDeprecated] = $args;
 
                                 if ($type instanceof ObjectType || $type instanceof InterfaceType) {
-                                    $fields = array_values($type->getFields());
+                                    $fields = \array_values($type->getFields());
 
                                     if (!$includeDeprecated) {
-                                        $fields = array_filter($fields, function (Field $field) {
+                                        $fields = \array_filter($fields, function (Field $field) {
                                             return !$field->isDeprecated();
                                         });
                                     }
@@ -302,16 +302,16 @@ class IntrospectionProvider extends AbstractServiceProvider
                         'enumValues'    => [
                             'type'    => newList(newNonNull(__EnumValue())),
                             'args'    => [
-                                'includeDeprecated' => ['type' => Boolean(), 'defaultValue' => false],
+                                'includeDeprecated' => ['type' => booleanType(), 'defaultValue' => false],
                             ],
                             'resolve' => function (TypeInterface $type, array $args): ?array {
                                 ['includeDeprecated' => $includeDeprecated] = $args;
 
                                 if ($type instanceof EnumType) {
-                                    $values = array_values($type->getValues());
+                                    $values = \array_values($type->getValues());
 
                                     if (!$includeDeprecated) {
-                                        $values = array_filter($values, function (Field $field) {
+                                        $values = \array_filter($values, function (Field $field) {
                                             return !$field->isDeprecated();
                                         });
                                     }
@@ -343,8 +343,8 @@ class IntrospectionProvider extends AbstractServiceProvider
                     'which has a name, potentially a list of arguments, and a return type.',
                 'fields'          => function () {
                     return [
-                        'name'              => ['type' => newNonNull(String())],
-                        'description'       => ['type' => String()],
+                        'name'              => ['type' => newNonNull(stringType())],
+                        'description'       => ['type' => stringType()],
                         'args'              => [
                             'type'    => newNonNull(newList(newNonNull(__InputValue()))),
                             'resolve' => function (ArgumentsAwareInterface $directive): array {
@@ -352,8 +352,8 @@ class IntrospectionProvider extends AbstractServiceProvider
                             },
                         ],
                         'type'              => ['type' => newNonNull(__Type())],
-                        'isDeprecated'      => ['type' => newNonNull(Boolean())],
-                        'deprecationReason' => ['type' => String()],
+                        'isDeprecated'      => ['type' => newNonNull(booleanType())],
+                        'deprecationReason' => ['type' => stringType()],
                     ];
                 }
             ]);
@@ -369,15 +369,15 @@ class IntrospectionProvider extends AbstractServiceProvider
                     'and optionally a default value.',
                 'fields'          => function () {
                     return [
-                        'name'         => ['type' => newNonNull(String())],
-                        'description'  => ['type' => String()],
+                        'name'         => ['type' => newNonNull(stringType())],
+                        'description'  => ['type' => stringType()],
                         'type'         => ['type' => newNonNull(__Type())],
                         'defaultValue' => [
-                            'type'        => String(),
+                            'type'        => stringType(),
                             'description' =>
                                 'A GraphQL-formatted string representing the default value for this ' .
                                 'input value.',
-                            'resolve'     => function ($inputValue) {
+                            'resolve'     => function (/*$inputValue*/) {
                                 // TODO: Implement this when we have support for printing AST.
                                 return null;
                             }
@@ -397,10 +397,10 @@ class IntrospectionProvider extends AbstractServiceProvider
                     'returned in a JSON response as a string.',
                 'fields'          => function () {
                     return [
-                        'name'              => ['type' => newNonNull(String())],
-                        'description'       => ['type' => String()],
-                        'isDeprecated'      => ['type' => newNonNull(Boolean())],
-                        'deprecationReason' => ['type' => String()],
+                        'name'              => ['type' => newNonNull(stringType())],
+                        'description'       => ['type' => stringType()],
+                        'isDeprecated'      => ['type' => newNonNull(booleanType())],
+                        'deprecationReason' => ['type' => stringType()],
                     ];
                 }
             ]);
@@ -463,8 +463,8 @@ class IntrospectionProvider extends AbstractServiceProvider
                 'name'        => '__type',
                 'description' => 'Request the type information of a single type.',
                 'type'        => $__Type,
-                'args'        => ['name' => ['type' => newNonNull(String())]],
-                'resolve'     => function ($source, $args, $context, ResolveInfo $info): TypeInterface {
+                'args'        => ['name' => ['type' => newNonNull(stringType())]],
+                'resolve'     => function ($source, $args, $context, ResolveInfo $info): ?TypeInterface {
                     ['name' => $name] = $args;
                     return $info->getSchema()->getType($name);
                 },
@@ -476,7 +476,7 @@ class IntrospectionProvider extends AbstractServiceProvider
             return newField([
                 'name'        => '__typename',
                 'description' => 'The name of the current Object type at runtime.',
-                'type'        => newNonNull(String()),
+                'type'        => newNonNull(stringType()),
                 'resolve'     => function ($source, $args, $context, ResolveInfo $info): string {
                     return $info->getParentType()->getName();
                 },

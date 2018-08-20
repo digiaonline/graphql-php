@@ -9,7 +9,7 @@ use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class DirectivesTest extends TestCase
 {
@@ -34,8 +34,8 @@ class DirectivesTest extends TestCase
             'query' => newObjectType([
                 'name'   => 'TestType',
                 'fields' => [
-                    'a' => ['type' => String()],
-                    'b' => ['type' => String()]
+                    'a' => ['type' => stringType()],
+                    'b' => ['type' => stringType()]
                 ]
             ])
         ]);

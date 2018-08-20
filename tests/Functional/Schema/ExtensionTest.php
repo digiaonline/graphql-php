@@ -13,8 +13,8 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use function Digia\GraphQL\graphql;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\ID;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\idType;
+use function Digia\GraphQL\Type\stringType;
 use function Digia\GraphQL\Type\newEnumType;
 use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
@@ -47,7 +47,7 @@ class ExtensionTest extends TestCase
             'name'   => 'SomeInterface',
             'fields' => function () {
                 return [
-                    'name' => ['type' => String()],
+                    'name' => ['type' => stringType()],
                     'some' => ['type' => $this->someInterfaceType],
                 ];
             },
@@ -58,7 +58,7 @@ class ExtensionTest extends TestCase
             'interfaces' => [$this->someInterfaceType],
             'fields'     => function () {
                 return [
-                    'name' => ['type' => String()],
+                    'name' => ['type' => stringType()],
                     'some' => ['type' => $this->someInterfaceType],
                     'tree' => ['type' => newNonNull(newList($this->fooType))],
                 ];
@@ -70,7 +70,7 @@ class ExtensionTest extends TestCase
             'interfaces' => [$this->someInterfaceType],
             'fields'     => function () {
                 return [
-                    'name' => ['type' => String()],
+                    'name' => ['type' => stringType()],
                     'some' => ['type' => $this->someInterfaceType],
                     'foo'  => ['type' => $this->fooType],
                 ];
@@ -81,7 +81,7 @@ class ExtensionTest extends TestCase
             'name'   => 'Biz',
             'fields' => function () {
                 return [
-                    'fizz' => ['type' => String()]
+                    'fizz' => ['type' => stringType()]
                 ];
             },
         ]);
@@ -109,7 +109,7 @@ class ExtensionTest extends TestCase
                         'someEnum'      => ['type' => $this->someEnumType],
                         'someInterface' => [
                             'type' => $this->someInterfaceType,
-                            'args' => ['id' => ['type' => newNonNull(ID())]],
+                            'args' => ['id' => ['type' => newNonNull(idType())]],
                         ],
                     ];
                 },
@@ -342,7 +342,7 @@ class ExtensionTest extends TestCase
                 'name'   => 'Query',
                 'fields' => function () {
                     return [
-                        'queryField' => ['type' => String()],
+                        'queryField' => ['type' => stringType()],
                     ];
                 },
             ]),
@@ -350,7 +350,7 @@ class ExtensionTest extends TestCase
                 'name'   => 'Mutation',
                 'fields' => function () {
                     return [
-                        'mutationField' => ['type' => String()],
+                        'mutationField' => ['type' => stringType()],
                     ];
                 },
             ]),
@@ -358,7 +358,7 @@ class ExtensionTest extends TestCase
                 'name'   => 'Subscription',
                 'fields' => function () {
                     return [
-                        'subscriptionField' => ['type' => String()],
+                        'subscriptionField' => ['type' => stringType()],
                     ];
                 },
             ]),

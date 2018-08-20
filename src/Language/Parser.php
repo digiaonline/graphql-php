@@ -81,7 +81,7 @@ class Parser implements ParserInterface
         $lexCallback = \str_replace('parse', 'lex', $name);
 
         if (\method_exists($this, $lexCallback)) {
-            return $this->parsePartial([$this, $lexCallback], ...$arguments);
+            return $this->parsePartial([$this, $lexCallback], $arguments[0], $arguments[1] ?? []);
         }
 
         return $this;
@@ -107,11 +107,11 @@ class Parser implements ParserInterface
      * @param callable      $lexCallback
      * @param Source|string $source
      * @param array         $options
-     * @return mixed
+     * @return NodeInterface
      * @throws InvariantException
      * @throws SyntaxErrorException
      */
-    protected function parsePartial(callable $lexCallback, $source, array $options = [])
+    protected function parsePartial(callable $lexCallback, $source, array $options = []): NodeInterface
     {
         $this->lexer = $this->createLexer($source, $options);
 
@@ -274,10 +274,10 @@ class Parser implements ParserInterface
     /**
      * OperationType : one of query mutation subscription
      *
-     * @return string
+     * @return null|string
      * @throws SyntaxErrorException
      */
-    protected function lexOperationType(): string
+    protected function lexOperationType(): ?string
     {
         $token = $this->expect(TokenKindEnum::NAME);
         $value = $token->getValue();

@@ -8,12 +8,12 @@ use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\booleanType;
 use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 use function Digia\GraphQL\Type\newUnionType;
 
 class AbstractPromiseTest extends TestCase
@@ -31,7 +31,7 @@ class AbstractPromiseTest extends TestCase
         $PetInterfaceType = newInterfaceType([
             'name'   => 'Pet',
             'fields' => [
-                'name' => ['type' => String()]
+                'name' => ['type' => stringType()]
             ]
         ]);
 
@@ -39,8 +39,8 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'woofs' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'woofs' => ['type' => booleanType()],
             ],
             'isTypeOf'   => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Dog);
@@ -51,8 +51,8 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'meows' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'meows' => ['type' => booleanType()],
             ],
             'isTypeOf'   => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Cat);
@@ -119,7 +119,7 @@ class AbstractPromiseTest extends TestCase
         $PetInterfaceType = newInterfaceType([
             'name'   => 'Pet',
             'fields' => [
-                'name' => ['type' => String()]
+                'name' => ['type' => stringType()]
             ]
         ]);
 
@@ -127,8 +127,8 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'woofs' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'woofs' => ['type' => booleanType()],
             ],
             'isTypeOf'   => function ($obj) {
                 return \React\Promise\reject(new ExecutionException('We are testing this error'));
@@ -139,8 +139,8 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'meows' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'meows' => ['type' => booleanType()],
             ],
             'isTypeOf'   => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Cat);
@@ -215,8 +215,8 @@ class AbstractPromiseTest extends TestCase
         $DogType = newObjectType([
             'name'     => 'Dog',
             'fields'   => [
-                'name'  => ['type' => String()],
-                'woofs' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'woofs' => ['type' => booleanType()],
             ],
             'isTypeOf' => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Dog);
@@ -226,8 +226,8 @@ class AbstractPromiseTest extends TestCase
         $CatType = newObjectType([
             'name'     => 'Cat',
             'fields'   => [
-                'name'  => ['type' => String()],
-                'meows' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'meows' => ['type' => booleanType()],
             ],
             'isTypeOf' => function ($obj) {
                 return \React\Promise\resolve($obj instanceof Cat);
@@ -321,8 +321,8 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'woofs' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'woofs' => ['type' => booleanType()],
             ]
         ]);
 
@@ -330,15 +330,15 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'meows' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'meows' => ['type' => booleanType()],
             ]
         ]);
 
         $HumanType = newObjectType([
             'name'   => 'Human',
             'fields' => [
-                'name' => ['type' => String()]
+                'name' => ['type' => stringType()]
             ]
         ]);
 
@@ -413,8 +413,8 @@ class AbstractPromiseTest extends TestCase
         $DogType = newObjectType([
             'name'     => 'Dog',
             'fields'   => [
-                'name'  => ['type' => String()],
-                'woofs' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'woofs' => ['type' => booleanType()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Dog;
@@ -424,8 +424,8 @@ class AbstractPromiseTest extends TestCase
         $CatType = newObjectType([
             'name'     => 'Cat',
             'fields'   => [
-                'name'  => ['type' => String()],
-                'meows' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'meows' => ['type' => booleanType()],
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Cat;
@@ -435,7 +435,7 @@ class AbstractPromiseTest extends TestCase
         $HumanType = newObjectType([
             'name'     => 'Human',
             'fields'   => [
-                'name' => ['type' => String()]
+                'name' => ['type' => stringType()]
             ],
             'isTypeOf' => function ($obj) {
                 return $obj instanceof Human;
@@ -544,8 +544,8 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'woofs' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'woofs' => ['type' => booleanType()],
             ],
             'isTypeOf'   => function ($obj) {
                 return $obj instanceof Dog;
@@ -556,8 +556,8 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'meows' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'meows' => ['type' => booleanType()],
             ],
             'isTypeOf'   => function ($obj) {
                 return $obj instanceof Cat;
@@ -632,8 +632,8 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'woofs' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'woofs' => ['type' => booleanType()],
             ]
         ]);
 
@@ -641,8 +641,8 @@ class AbstractPromiseTest extends TestCase
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
             'fields'     => [
-                'name'  => ['type' => String()],
-                'meows' => ['type' => Boolean()],
+                'name'  => ['type' => stringType()],
+                'meows' => ['type' => booleanType()],
             ]
         ]);
 

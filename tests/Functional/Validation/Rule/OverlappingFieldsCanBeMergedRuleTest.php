@@ -5,14 +5,14 @@ namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 use Digia\GraphQL\Validation\Rule\OverlappingFieldsCanBeMergedRule;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\fieldConflict;
-use function Digia\GraphQL\Type\ID;
-use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\idType;
+use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
 {
@@ -40,7 +40,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             'fields' => function () {
                 return [
                     'deepBox'        => ['type' => $this->someBox],
-                    'unrelatedField' => ['type' => String()],
+                    'unrelatedField' => ['type' => stringType()],
                 ];
             },
         ]);
@@ -50,9 +50,9 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             'interfaces' => [$this->someBox],
             'fields'     => function () {
                 return [
-                    'scalar'         => ['type' => String()],
+                    'scalar'         => ['type' => stringType()],
                     'deepBox'        => ['type' => $this->stringBox],
-                    'unrelatedField' => ['type' => String()],
+                    'unrelatedField' => ['type' => stringType()],
                     'listStringBox'  => ['type' => newList($this->stringBox)],
                     'stringBox'      => ['type' => $this->stringBox],
                     'intBox'         => ['type' => $this->intBox],
@@ -65,9 +65,9 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             'interfaces' => [$this->someBox],
             'fields'     => function () {
                 return [
-                    'scalar'         => ['type' => Int()],
+                    'scalar'         => ['type' => intType()],
                     'deepBox'        => ['type' => $this->intBox],
-                    'unrelatedField' => ['type' => String()],
+                    'unrelatedField' => ['type' => stringType()],
                     'listStringBox'  => ['type' => newList($this->stringBox)],
                     'stringBox'      => ['type' => $this->stringBox],
                     'intBox'         => ['type' => $this->intBox],
@@ -78,7 +78,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
         $this->nonNullStringBox1 = newInterfaceType([
             'name'   => 'NonNullStringBox1',
             'fields' => [
-                'scalar' => ['type' => newNonNull(String())],
+                'scalar' => ['type' => newNonNull(stringType())],
             ],
         ]);
 
@@ -86,8 +86,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             'name'       => 'NonNullStringBox1Impl',
             'interfaces' => [$this->someBox, $this->nonNullStringBox1],
             'fields'     => [
-                'scalar'         => ['type' => newNonNull(String())],
-                'unrelatedField' => ['type' => String()],
+                'scalar'         => ['type' => newNonNull(stringType())],
+                'unrelatedField' => ['type' => stringType()],
                 'deepBox'        => ['type' => $this->someBox],
             ],
         ]);
@@ -95,7 +95,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
         $this->nonNullStringBox2 = newInterfaceType([
             'name'   => 'NonNullStringBox2',
             'fields' => [
-                'scalar' => ['type' => newNonNull(String())],
+                'scalar' => ['type' => newNonNull(stringType())],
             ],
         ]);
 
@@ -103,8 +103,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
             'name'       => 'NonNullStringBox2Impl',
             'interfaces' => [$this->someBox, $this->nonNullStringBox2],
             'fields'     => [
-                'scalar'         => ['type' => newNonNull(String())],
-                'unrelatedField' => ['type' => String()],
+                'scalar'         => ['type' => newNonNull(stringType())],
+                'unrelatedField' => ['type' => stringType()],
                 'deepBox'        => ['type' => $this->someBox],
             ],
         ]);
@@ -122,8 +122,8 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                                         'type' => newObjectType([
                                             'name'   => 'Node',
                                             'fields' => [
-                                                'id'   => ['type' => ID()],
-                                                'name' => ['type' => String()],
+                                                'id'   => ['type' => idType()],
+                                                'name' => ['type' => stringType()],
                                             ],
                                         ])
                                     ],

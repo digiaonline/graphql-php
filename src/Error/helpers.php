@@ -75,6 +75,7 @@ function highlightSourceAtLocation(Source $source, SourceLocation $location): st
     $nextLineNum    = (string)($contextLine + 1);
     $padLen         = \mb_strlen($nextLineNum);
     $lines          = \preg_split("/\r\n|[\n\r]/", $source->getBody());
+    $lines          = false === $lines ? [] : $lines;
     $lines[0]       = whitespace($locationOffset->getColumn() - 1) . $lines[0];
     $outputLines    = [
         \sprintf('%s (%s:%s)', $source->getName(), $contextLine, $contextColumn),

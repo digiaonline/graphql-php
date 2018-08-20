@@ -791,10 +791,10 @@ class NodeBuilder implements NodeBuilderInterface
      *
      * @param array  $ast
      * @param string $propertyName
-     * @return mixed|null
+     * @return NodeInterface|null
      * @throws LanguageException
      */
-    protected function buildNode(array $ast, string $propertyName)
+    protected function buildNode(array $ast, string $propertyName): ?NodeInterface
     {
         return isset($ast[$propertyName]) ? $this->build($ast[$propertyName]) : null;
     }
@@ -804,7 +804,7 @@ class NodeBuilder implements NodeBuilderInterface
      *
      * @param array  $ast
      * @param string $propertyName
-     * @return array
+     * @return NodeInterface[]
      * @throws LanguageException
      */
     protected function buildNodes(array $ast, string $propertyName): array

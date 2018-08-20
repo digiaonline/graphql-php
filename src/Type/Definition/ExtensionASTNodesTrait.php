@@ -2,12 +2,13 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 
 trait ExtensionASTNodesTrait
 {
     /**
-     * @var ObjectTypeExtensionNode[]
+     * @var ObjectTypeExtensionNode[]|InterfaceTypeExtensionNode[]
      */
     protected $extensionAstNodes = [];
 
@@ -20,7 +21,7 @@ trait ExtensionASTNodesTrait
     }
 
     /**
-     * @return ObjectTypeExtensionNode[]
+     * @return ObjectTypeExtensionNode[]|InterfaceTypeExtensionNode[]
      */
     public function getExtensionAstNodes(): array
     {

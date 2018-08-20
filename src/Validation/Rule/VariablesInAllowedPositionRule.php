@@ -65,11 +65,15 @@ class VariablesInAllowedPositionRule extends AbstractRule
                 $variableType = TypeASTConverter::convert($schema, $variableDefinition->getType());
 
                 if (null !== $variableType &&
-                    !TypeHelper::isTypeSubtypeOf($schema,
-                        $this->getEffectiveType($variableType, $variableDefinition), $type)) {
+                    !TypeHelper::isTypeSubtypeOf(
+                        $schema,
+                        $this->getEffectiveType($variableType, $variableDefinition),
+                        $type
+                    )
+                ) {
                     $this->context->reportError(
                         new ValidationException(
-                            badVariablePositionMessage($variableName, $variableType, $type),
+                            badVariablePositionMessage($variableName, (string)$variableType, (string)$type),
                             [$variableDefinition, $variableNode]
                         )
                     );

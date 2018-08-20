@@ -357,23 +357,20 @@ class ValuesHelper
         NodeInterface $blameNode,
         ?Path $path
     ): CoercedValue {
-        if (is_string($value)) {
-            $enumValue = $type->getValue($value);
-            if ($enumValue !== null) {
-                return new CoercedValue($enumValue, null);
-            }
+        if (\is_string($value) && null !== ($enumValue = $type->getValue($value))) {
+            return new CoercedValue($enumValue, null);
         }
 
-        $suggestions = suggestionList((string)$value, array_map(function (EnumValue $enumValue) {
+        $suggestions = suggestionList((string)$value, \array_map(function (EnumValue $enumValue) {
             return $enumValue->getName();
         }, $type->getValues()));
 
         $didYouMean = (!empty($suggestions))
-            ? 'did you mean' . implode(',', $suggestions)
+            ? 'did you mean' . \implode(',', $suggestions)
             : null;
 
         return new CoercedValue(null, [
-            $this->buildCoerceException(sprintf('Expected type %s', $type->getName()), $blameNode, $path, $didYouMean)
+            $this->buildCoerceException(\sprintf('Expected type %s', $type->getName()), $blameNode, $path, $didYouMean)
         ]);
     }
 
@@ -398,15 +395,17 @@ class ValuesHelper
 
         // Ensure every defined field is valid.
         foreach ($fields as $field) {
+            $fieldType = $field->getType();
+
             if (empty($value[$field->getName()])) {
                 if (!empty($field->getDefaultValue())) {
                     $coercedValue[$field->getName()] = $field->getDefaultValue();
-                } elseif ($field->getType() instanceof NonNullType) {
+                } elseif ($fieldType instanceof NonNullType) {
                     $errors[] = new GraphQLException(
-                        sprintf(
+                        \sprintf(
                             "Field %s of required type %s! was not provided.",
                             $this->printPath(new Path($path, $field->getName())),
-                            $field->getType()->getOfType()
+                            (string)$fieldType->getOfType()
                         )
                     );
                 }
@@ -414,13 +413,13 @@ class ValuesHelper
                 $fieldValue   = $value[$field->getName()];
                 $coercedValue = $this->coerceValue(
                     $fieldValue,
-                    $field->getType(),
+                    $fieldType,
                     $blameNode,
                     new Path($path, $field->getName())
                 );
 
                 if ($coercedValue->hasErrors()) {
-                    $errors = array_merge($errors, $coercedValue->getErrors());
+                    $errors = \array_merge($errors, $coercedValue->getErrors());
                 } elseif (empty($errors)) {
                     $coercedValues[$field->getName()] = $coercedValue->getValue();
                 }
@@ -430,13 +429,13 @@ class ValuesHelper
         // Ensure every provided field is defined.
         foreach ($value as $fieldName => $fieldValue) {
             if (!isset($fields[$fieldName])) {
-                $suggestions = suggestionList($fieldName, array_keys($fields));
+                $suggestions = suggestionList($fieldName, \array_keys($fields));
                 $didYouMean  = (!empty($suggestions))
-                    ? 'did you mean' . implode(',', $suggestions)
+                    ? 'did you mean' . \implode(',', $suggestions)
                     : null;
 
                 $errors[] = $this->buildCoerceException(
-                    sprintf('Field "%s" is not defined by type %s', $fieldName, $type->getName()),
+                    \sprintf('Field "%s" is not defined by type %s', $fieldName, $type->getName()),
                     $blameNode,
                     $path,
                     $didYouMean
@@ -464,14 +463,14 @@ class ValuesHelper
     ): CoercedValue {
         $itemType = $type->getOfType();
 
-        if (is_array($value) || $value instanceof \Traversable) {
+        if (\is_array($value) || $value instanceof \Traversable) {
             $errors        = [];
             $coercedValues = [];
             foreach ($value as $index => $itemValue) {
                 $coercedValue = $this->coerceValue($itemValue, $itemType, $blameNode, new Path($path, $index));
 
                 if ($coercedValue->hasErrors()) {
-                    $errors = array_merge($errors, $coercedValue->getErrors());
+                    $errors = \array_merge($errors, $coercedValue->getErrors());
                 } else {
                     $coercedValues[] = $coercedValue->getValue();
                 }
@@ -525,7 +524,7 @@ class ValuesHelper
         $currentPath = $path;
 
         while ($currentPath !== null) {
-            if (is_string($currentPath->getKey())) {
+            if (\is_string($currentPath->getKey())) {
                 $stringPath = '.' . $currentPath->getKey() . $stringPath;
             } else {
                 $stringPath = '[' . (string)$currentPath->getKey() . ']' . $stringPath;

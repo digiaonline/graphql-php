@@ -12,16 +12,16 @@ namespace Digia\GraphQL\Language;
  */
 function blockStringValue(string $rawString): string
 {
-    $lines     = preg_split("/\r\n|[\n\r]/", $rawString);
-    $lineCount = count($lines);
-
+    $lines        = \preg_split("/\r\n|[\n\r]/", $rawString);
+    $lines        = false === $lines ? [] : $lines;
+    $lineCount    = \count($lines);
     $commonIndent = null;
 
     for ($i = 1; $i < $lineCount; $i++) {
         $line   = $lines[$i];
         $indent = leadingWhitespace($line);
 
-        if ($indent < mb_strlen($line) && ($commonIndent === null || $indent < $commonIndent)) {
+        if ($indent < \mb_strlen($line) && (null === $commonIndent || $indent < $commonIndent)) {
             $commonIndent = $indent;
 
             if ($commonIndent === 0) {
@@ -30,21 +30,21 @@ function blockStringValue(string $rawString): string
         }
     }
 
-    if ($commonIndent > 0) {
+    if (null !== $commonIndent && $commonIndent > 0) {
         for ($i = 1; $i < $lineCount; $i++) {
             $lines[$i] = sliceString($lines[$i], $commonIndent);
         }
     }
 
-    while (count($lines) > 0 && isBlank($lines[0])) {
-        array_shift($lines);
+    while (\count($lines) > 0 && isBlank($lines[0])) {
+        \array_shift($lines);
     }
 
-    while (($lineCount = count($lines)) > 0 && isBlank($lines[$lineCount - 1])) {
-        array_pop($lines);
+    while (($lineCount = \count($lines)) > 0 && isBlank($lines[$lineCount - 1])) {
+        \array_pop($lines);
     }
 
-    return implode("\n", $lines);
+    return \implode("\n", $lines);
 }
 
 /**
@@ -54,10 +54,12 @@ function blockStringValue(string $rawString): string
 function leadingWhitespace(string $string): int
 {
     $i      = 0;
-    $length = mb_strlen($string);
+    $length = \mb_strlen($string);
+
     while ($i < $length && ($string[$i] === ' ' || $string[$i] === "\t")) {
         $i++;
     }
+
     return $i;
 }
 
@@ -67,5 +69,5 @@ function leadingWhitespace(string $string): int
  */
 function isBlank(string $string): bool
 {
-    return leadingWhitespace($string) === mb_strlen($string);
+    return leadingWhitespace($string) === \mb_strlen($string);
 }

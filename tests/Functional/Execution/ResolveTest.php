@@ -4,10 +4,10 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\graphql;
-use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class ResolveTest extends TestCase
 {
@@ -34,7 +34,7 @@ class ResolveTest extends TestCase
      */
     public function testDefaultFunctionAccessProperties()
     {
-        $schema = $this->createTestSchema(['type' => String()]);
+        $schema = $this->createTestSchema(['type' => stringType()]);
 
         $source = ['test' => 'testValue'];
 
@@ -54,7 +54,7 @@ class ResolveTest extends TestCase
      */
     public function testDefaultFunctionCallsMethods()
     {
-        $schema = $this->createTestSchema(['type' => String()]);
+        $schema = $this->createTestSchema(['type' => stringType()]);
 
         $source = [
             'test' => function () {
@@ -79,8 +79,8 @@ class ResolveTest extends TestCase
     public function testDefaultFunctionPassesArgsAndContext()
     {
         $schema = $this->createTestSchema([
-            'type' => Int(),
-            'args' => ['addend1' => ['type' => Int()]],
+            'type' => intType(),
+            'args' => ['addend1' => ['type' => intType()]],
         ]);
 
         $source = new class(700)
@@ -115,10 +115,10 @@ class ResolveTest extends TestCase
     public function testUsesProviedResolveFunction()
     {
         $schema = $this->createTestSchema([
-            'type'    => String(),
+            'type'    => stringType(),
             'args'    => [
-                'aStr' => ['type' => String()],
-                'aInt' => ['type' => Int()],
+                'aStr' => ['type' => stringType()],
+                'aInt' => ['type' => intType()],
             ],
             'resolve' => function ($source, $args) {
                 return json_encode([$source, $args]);

@@ -40,9 +40,9 @@ class ExecutableDefinitionsRule extends AbstractRule
 
     /**
      * @param NodeInterface $node
-     * @return string
+     * @return null|string
      */
-    protected function getDefinitionName(NodeInterface $node): string
+    protected function getDefinitionName(NodeInterface $node): ?string
     {
         if ($node instanceof SchemaDefinitionNode) {
             return 'schema';
@@ -50,6 +50,6 @@ class ExecutableDefinitionsRule extends AbstractRule
 
         return $node instanceof NameAwareInterface
             ? $node->getNameValue()
-            : 'unknown';
+            : null;
     }
 }

@@ -7,11 +7,11 @@ use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\parse;
-use function Digia\GraphQL\Type\Int;
+use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class ListTest extends TestCase
 {
@@ -62,7 +62,7 @@ class ListTest extends TestCase
      */
     public function testAcceptAnArrayObjectAsListValue()
     {
-        $this->makeTest(newList(String()),
+        $this->makeTest(newList(stringType()),
             new \ArrayObject(['apple', 'banana', 'coconut']),
             [
                 'data' => [
@@ -81,7 +81,7 @@ class ListTest extends TestCase
      */
     public function testAcceptsAGeneratorAsFunctionValue()
     {
-        $this->makeTest(newList(String()),
+        $this->makeTest(newList(stringType()),
             function () {
                 yield 'one';
                 yield 2;
@@ -103,7 +103,7 @@ class ListTest extends TestCase
      */
     public function testDoesNotAcceptStringAsIterable()
     {
-        $this->makeTest(newList(String()),
+        $this->makeTest(newList(stringType()),
             'Singluar',
             [
                 'data'   => [
@@ -134,7 +134,7 @@ class ListTest extends TestCase
      */
     public function testArrayContainsValues()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             [1, 2],
             [
                 'data' => [
@@ -153,7 +153,7 @@ class ListTest extends TestCase
      */
     public function testArrayContainsNull()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             [1, null, 2],
             [
                 'data' => [
@@ -171,7 +171,7 @@ class ListTest extends TestCase
      */
     public function testArrayReturnsNull()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             null,
             [
                 'data' => [
@@ -189,7 +189,7 @@ class ListTest extends TestCase
      */
     public function testPromiseContainsValues()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             \React\Promise\resolve([1, 2]),
             [
                 'data' => [
@@ -208,7 +208,7 @@ class ListTest extends TestCase
      */
     public function testPromiseContainsNull()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             \React\Promise\resolve([1, null, 2]),
             [
                 'data' => [
@@ -226,7 +226,7 @@ class ListTest extends TestCase
      */
     public function testPromiseReturnsNull()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             \React\Promise\resolve(null),
             [
                 'data' => [
@@ -244,7 +244,7 @@ class ListTest extends TestCase
      */
     public function testPromiseReject()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             \React\Promise\reject(new \Exception('Bad')),
             [
                 'data'   => [
@@ -274,7 +274,7 @@ class ListTest extends TestCase
      */
     public function testArrayPromiseContainsValues()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             [
                 \React\Promise\resolve(1),
                 \React\Promise\resolve(2)
@@ -296,7 +296,7 @@ class ListTest extends TestCase
      */
     public function testArrayPromiseContainsNull()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             [
                 \React\Promise\resolve(1),
                 \React\Promise\resolve(null),
@@ -318,7 +318,7 @@ class ListTest extends TestCase
      */
     public function testArrayPromiseContainsReject()
     {
-        $this->makeTest(newList(Int()),
+        $this->makeTest(newList(intType()),
             [
                 \React\Promise\resolve(1),
                 \React\Promise\reject(new \Exception('Bad')),

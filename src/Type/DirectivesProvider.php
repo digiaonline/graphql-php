@@ -5,10 +5,10 @@ namespace Digia\GraphQL\Type;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use function Digia\GraphQL\Type\Boolean;
+use function Digia\GraphQL\Type\booleanType;
 use function Digia\GraphQL\Type\newDirective;
 use function Digia\GraphQL\Type\newNonNull;
-use function Digia\GraphQL\Type\String;
+use function Digia\GraphQL\Type\stringType;
 
 class DirectivesProvider extends AbstractServiceProvider
 {
@@ -39,7 +39,7 @@ class DirectivesProvider extends AbstractServiceProvider
                 ],
                 'args'        => [
                     'if' => [
-                        'type'        => newNonNull(Boolean()),
+                        'type'        => newNonNull(booleanType()),
                         'description' => 'Included when true.',
                     ],
                 ],
@@ -59,7 +59,7 @@ class DirectivesProvider extends AbstractServiceProvider
                 ],
                 'args'        => [
                     'if' => [
-                        'type'        => newNonNull(Boolean()),
+                        'type'        => newNonNull(booleanType()),
                         'description' => 'Skipped when true.',
                     ],
                 ],
@@ -76,7 +76,7 @@ class DirectivesProvider extends AbstractServiceProvider
                 ],
                 'args'        => [
                     'reason' => [
-                        'type'         => String(),
+                        'type'         => stringType(),
                         'description'  =>
                             'Explains why this element was deprecated, usually also including a ' .
                             'suggestion for how to access supported similar data. Formatted ' .
