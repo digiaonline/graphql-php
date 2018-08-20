@@ -34,9 +34,9 @@ composer require digiaonline/graphql
 ## Example
 
 Here is a simple example that demonstrates how to build an executable schema from a GraphQL schema file that contains 
-the Schema Definition Language (SDL) for a Star Wars-themed schema (for the schema definition, see below). Once
-you have the executable schema you can run a query asking for the name of the hero. The result of that query is an 
-associative array with a structure that matches the query ran.
+the Schema Definition Language (SDL) for a Star Wars-themed schema (for the schema definition itself, see below). In 
+this example we use that SDL to build an executable schema and use it to query for the name of the hero. The result 
+of that query is an associative array with a structure that resembles the query we ran.
 
 ```php
 use function Digia\GraphQL\buildSchema;
@@ -59,7 +59,7 @@ query HeroNameQuery {
   }
 }');
 
-print_r($result);
+\print_r($result);
 ```
 
 The script above produces the following output:
@@ -120,21 +120,23 @@ enum Episode { NEWHOPE, EMPIRE, JEDI }
 
 ## Creating a schema
 
-In order to execute queries against your GraphQL API, you need to define the structure of your API. This is done by 
-creating a schema. There are two ways to do this, you can either do it using GraphQL's Schema Definition Language (SDL)
-or you can do it programmatically. We strongly encourage you to use SDL and the `buildSchema` function which takes 
-three arguments.
+In order to execute queries against your GraphQL API, you first need to define the structure of your API. This is done
+by creating a schema. There are two ways to do this, you can either do it using SDL or you can do it programmatically. 
+However, we strongly encourage you to use SDL, because it is easier to work with. To make an executable schema from 
+SDL you need to call the `buildSchema` function.
+ 
+The `buildSchema` function takes three arguments:
 
-- `$source` The schema definition as a string
+- `$source` The schema definition (SDL) as a string
 - `$resolverRegistry` An associative array or a `ResolverRegistry` instance that contains all resolvers
 - `$options` The options for building the schema, which also includes custom types and directives
 
 ### Resolver registry
 
 The resolver registry is essentially a flat map with the type names as its keys and their corresponding resolver 
-instances as values. For smaller projects you can use an associative array and lambda functions to define your resolver 
-registry. However, in larger projects we suggest that you create resolvers instead. You can read more about resolvers
-below under the [Execution](#execution) section.
+instances as its values. For smaller projects you can use an associative array and lambda functions to define your 
+resolver registry. However, in larger projects we suggest that you implement your own resolvers instead. You can read 
+more about resolvers under the [Resolvers](#resolvers) section.
 
 Associative array example:
 
@@ -156,12 +158,14 @@ $schema = buildSchema($source, [
 ]);
 ```
 
+If you want to learn more about schemas you can refer to the [specification](https://graphql.org/learn/schema/).
+
 ## Execution
 
 ### Queries
 
 To execute a query against your schema you need to call the `graphql` function and pass it your schema and the query 
-you wish to execute.
+you wish to execute. You can also run _mutations_ and _subscriptions_ by changing your query.
 
 ```php
 $query = '
@@ -174,13 +178,15 @@ query HeroNameQuery {
 $result = graphql($schema, $query);
 ```
 
-You can also run _mutations_ and _subscriptions_ by changing your query.
+If you want to learn more about queries you can refer to the [specification](https://graphql.org/learn/queries/).
 
-#### Resolvers
+### Resolvers
 
-Each type in a schema has a resolver associated with it, that allows for resolving the actual value. Most of these 
-resolvers are lambda functions, but you can also define your own resolvers by implementing the `ResolverInterface`. A
-resolver function receives four arguments:
+Each type in a schema has a resolver associated with it that allows for resolving the actual value. However, most 
+types do not need a custom resolver, because they can be resolved using the default resolver. Usually these resolvers 
+are lambda functions, but you can also define your own resolvers by implementing the `ResolverInterface`. 
+
+A resolver function receives four arguments:
 
 - `$rootValue` The parent object, which can also be `null` in some cases
 - `$arguments` The arguments provided to the field in the query
@@ -190,8 +196,15 @@ resolver function receives four arguments:
 Lambda function example:
 
 ```php
-function ($rootValue, array $arguments, $context, ResolveInfo$info): string {
-    return getHero($arguments['episode'] ?? null);
+function ($rootValue, array $arguments, $context, ResolveInfo $info): string {
+    return [
+        'type'       => 'Human',
+        'id'         => '1000',
+        'name'       => 'Luke Skywalker',
+        'friends'    => ['1002', '1003', '2000', '2001'],
+        'appearsIn'  => ['NEWHOPE', 'EMPIRE', 'JEDI'],
+        'homePlanet' => 'Tatooine',
+    ];
 }
 ``` 
 
@@ -202,7 +215,14 @@ class QueryResolver implements ResolverInterface
 {
     public function resolveHero($rootValue, array $arguments, $context, ResolveInfo $info): string
     {
-        return getHero($arguments['episode'] ?? null);
+       return [
+           'type'       => 'Human',
+           'id'         => '1000',
+           'name'       => 'Luke Skywalker',
+           'friends'    => ['1002', '1003', '2000', '2001'],
+           'appearsIn'  => ['NEWHOPE', 'EMPIRE', 'JEDI'],
+           'homePlanet' => 'Tatooine',
+       ];
     }
 }
 ```
@@ -275,7 +295,7 @@ $dateType = newScalarType([
 $schema = buildSchema($source, [
     'Query' => QueryResolver::class,
     [
-        'customTypes' => [$dateType],
+        'types' => [$dateType],
     ],
 ]);
 ```
@@ -293,27 +313,9 @@ If you are looking for something that isn't yet covered by this documentation yo
 
 ### Laravel
 
-In Laravel you need to create a GraphQL service provider, a GraphQL service, a GraphQL controller and map a route for
-handling the GraphQL requests.
-
-**app/GraphQL/GraphQLServiceProvider.php**
-```php
-class GraphQLServiceProvider
-{
-    public function register()
-    {
-        $this->app->singleton(GraphQLService::class, function () {
-            $schemaDef = file_get_contents(__DIR__ . '/schema.graphqls');
-
-            $executableSchema = buildSchema($schemaDef, [
-                'Query' => QueryResolver::class,
-            ]);
-
-            return new GraphQLService($executableSchema);
-        });
-    }
-}
-```
+Here is an example that demonstrates how you can use this library in your Laravel project. You need an application 
+service to expose this library to your application, a service provider to register that service, a controller and a 
+route for handling the GraphQL POST requests.
 
 **app/GraphQL/GraphQLService.php**
 ```php
@@ -329,6 +331,25 @@ class GraphQLService
     public function executeQuery(string $query, array $variables, ?string $operationName): array
     {
         return graphql($this->schema, $query, null, null, $variables, $operationName);
+    }
+}
+```
+
+**app/GraphQL/GraphQLServiceProvider.php**
+```php
+class GraphQLServiceProvider
+{
+    public function register()
+    {
+        $this->app->singleton(GraphQLService::class, function () {
+            $schemaDef = \file_get_contents(__DIR__ . '/schema.graphqls');
+
+            $executableSchema = buildSchema($schemaDef, [
+                'Query' => QueryResolver::class,
+            ]);
+
+            return new GraphQLService($executableSchema);
+        });
     }
 }
 ```
