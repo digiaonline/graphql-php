@@ -6,7 +6,8 @@ use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
-use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
+use Digia\GraphQL\Language\Node\SchemaExtensionNode;
+use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
 use Digia\GraphQL\Schema\Schema;
 
 class ExtendInfo
@@ -22,7 +23,7 @@ class ExtendInfo
     protected $document;
 
     /**
-     * @var TypeDefinitionNodeInterface[]
+     * @var TypeSystemDefinitionNodeInterface[]
      */
     protected $typeDefinitionMap;
 
@@ -37,25 +38,33 @@ class ExtendInfo
     protected $directiveDefinitions;
 
     /**
+     * @var SchemaExtensionNode[]
+     */
+    protected $schemaExtensions;
+
+    /**
      * ExtensionInfo constructor.
      * @param Schema                                                     $schema
      * @param DocumentNode                                               $document
-     * @param TypeDefinitionNodeInterface[]                              $typeDefinitionMap
+     * @param TypeSystemDefinitionNodeInterface[]                        $typeDefinitionMap
      * @param InterfaceTypeExtensionNode[][]|ObjectTypeExtensionNode[][] $typeExtensionsMap
      * @param DirectiveDefinitionNode[]                                  $directiveDefinitions
+     * @param SchemaExtensionNode[]                                      $schemaExtensions
      */
     public function __construct(
         Schema $schema,
         DocumentNode $document,
         array $typeDefinitionMap,
         array $typeExtensionsMap,
-        array $directiveDefinitions
+        array $directiveDefinitions,
+        array $schemaExtensions
     ) {
         $this->schema               = $schema;
         $this->document             = $document;
         $this->typeDefinitionMap    = $typeDefinitionMap;
         $this->typeExtensionsMap    = $typeExtensionsMap;
         $this->directiveDefinitions = $directiveDefinitions;
+        $this->schemaExtensions     = $schemaExtensions;
     }
 
     /**
@@ -101,7 +110,7 @@ class ExtendInfo
     }
 
     /**
-     * @return TypeDefinitionNodeInterface[]
+     * @return TypeSystemDefinitionNodeInterface[]
      */
     public function getTypeDefinitionMap(): array
     {
@@ -138,5 +147,21 @@ class ExtendInfo
     public function getDirectiveDefinitions(): array
     {
         return $this->directiveDefinitions;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSchemaExtensions(): bool
+    {
+        return !empty($this->schemaExtensions);
+    }
+
+    /**
+     * @return SchemaExtensionNode[]
+     */
+    public function getSchemaExtensions(): array
+    {
+        return $this->schemaExtensions;
     }
 }

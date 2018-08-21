@@ -43,6 +43,7 @@ use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeExtensionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
+use Digia\GraphQL\Language\Node\SchemaExtensionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
@@ -139,6 +140,8 @@ class NodeBuilder implements NodeBuilderInterface
                 return $this->buildScalarTypeExtension($ast);
             case NodeKindEnum::SCHEMA_DEFINITION:
                 return $this->buildSchemaDefinition($ast);
+            case NodeKindEnum::SCHEMA_EXTENSION:
+                return $this->buildSchemaExtension($ast);
             case NodeKindEnum::SELECTION_SET:
                 return $this->buildSelectionSet($ast);
             case NodeKindEnum::STRING:
@@ -669,6 +672,20 @@ class NodeBuilder implements NodeBuilderInterface
     protected function buildSchemaDefinition(array $ast): SchemaDefinitionNode
     {
         return new SchemaDefinitionNode(
+            $this->buildNodes($ast, 'directives'),
+            $this->buildNodes($ast, 'operationTypes'),
+            $this->createLocation($ast)
+        );
+    }
+
+    /**
+     * @param array $ast
+     * @return SchemaExtensionNode
+     * @throws LanguageException
+     */
+    protected function buildSchemaExtension(array $ast): SchemaExtensionNode
+    {
+        return new SchemaExtensionNode(
             $this->buildNodes($ast, 'directives'),
             $this->buildNodes($ast, 'operationTypes'),
             $this->createLocation($ast)

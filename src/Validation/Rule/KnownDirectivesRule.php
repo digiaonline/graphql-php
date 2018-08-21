@@ -25,6 +25,7 @@ use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeExtensionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
+use Digia\GraphQL\Language\Node\SchemaExtensionNode;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\UnionTypeExtensionNode;
 use Digia\GraphQL\Language\Visitor\AcceptsVisitorsInterface;
@@ -109,7 +110,7 @@ class KnownDirectivesRule extends AbstractRule
         if ($appliedTo instanceof FragmentDefinitionNode) {
             return DirectiveLocationEnum::FRAGMENT_DEFINITION;
         }
-        if ($appliedTo instanceof SchemaDefinitionNode) {
+        if ($appliedTo instanceof SchemaDefinitionNode || $appliedTo instanceof SchemaExtensionNode) {
             return DirectiveLocationEnum::SCHEMA;
         }
         if ($appliedTo instanceof ScalarTypeDefinitionNode || $appliedTo instanceof ScalarTypeExtensionNode) {

@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
 
-class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionNodeInterface, DirectivesAwareInterface
+class SchemaExtensionNode extends AbstractNode implements TypeSystemExtensionNodeInterface, DirectivesAwareInterface
 {
     use DirectivesTrait;
 
@@ -14,15 +14,14 @@ class SchemaDefinitionNode extends AbstractNode implements TypeSystemDefinitionN
     protected $operationTypes;
 
     /**
-     * SchemaDefinitionNode constructor.
-     *
+     * SchemaExtensionNode constructor.
      * @param DirectiveNode[]               $directives
      * @param OperationTypeDefinitionNode[] $operationTypes
      * @param Location|null                 $location
      */
     public function __construct(array $directives, array $operationTypes, ?Location $location)
     {
-        parent::__construct(NodeKindEnum::SCHEMA_DEFINITION, $location);
+        parent::__construct(NodeKindEnum::SCHEMA_EXTENSION, $location);
 
         $this->directives     = $directives;
         $this->operationTypes = $operationTypes;

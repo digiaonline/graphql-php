@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\ExecutableDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
+use Digia\GraphQL\Language\Node\SchemaExtensionNode;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
 
 /**
@@ -44,7 +45,7 @@ class ExecutableDefinitionsRule extends AbstractRule
      */
     protected function getDefinitionName(NodeInterface $node): ?string
     {
-        if ($node instanceof SchemaDefinitionNode) {
+        if ($node instanceof SchemaDefinitionNode || $node instanceof SchemaExtensionNode) {
             return 'schema';
         }
 

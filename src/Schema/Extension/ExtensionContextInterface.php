@@ -13,19 +13,9 @@ interface ExtensionContextInterface
     public function isSchemaExtended(): bool;
 
     /**
-     * @return TypeInterface|null
+     * @return array
      */
-    public function getExtendedQueryType(): ?TypeInterface;
-
-    /**
-     * @return TypeInterface|null
-     */
-    public function getExtendedMutationType(): ?TypeInterface;
-
-    /**
-     * @return TypeInterface|null
-     */
-    public function getExtendedSubscriptionType(): ?TypeInterface;
+    public function getExtendedOperationTypes(): array;
 
     /**
      * @return TypeInterface[]

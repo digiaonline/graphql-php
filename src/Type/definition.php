@@ -397,7 +397,8 @@ function newSchema(array $config = []): Schema
         $config['types'] ?? [],
         $config['directives'] ?? [],
         $config['assumeValid'] ?? false,
-        $config['astNode'] ?? null
+        $config['astNode'] ?? null,
+        $config['extensionASTNodes'] ?? []
     );
 }
 

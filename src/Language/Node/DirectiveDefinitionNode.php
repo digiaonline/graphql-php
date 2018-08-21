@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
 
-class DirectiveDefinitionNode extends AbstractNode implements DefinitionNodeInterface, NameAwareInterface
+class DirectiveDefinitionNode extends AbstractNode implements TypeSystemDefinitionNodeInterface, NameAwareInterface
 {
     use DescriptionTrait;
     use NameTrait;

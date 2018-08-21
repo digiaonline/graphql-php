@@ -4,9 +4,12 @@ namespace Digia\GraphQL\Schema;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
+use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
+use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
+use Digia\GraphQL\Type\Definition\ExtensionASTNodesTrait;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
@@ -44,6 +47,7 @@ use function Digia\GraphQL\Util\find;
  */
 class Schema implements DefinitionInterface
 {
+    use ExtensionASTNodesTrait;
     use ASTNodeTrait;
 
     /**
@@ -94,13 +98,14 @@ class Schema implements DefinitionInterface
     /**
      * Schema constructor.
      *
-     * @param ObjectType|null           $queryType
-     * @param ObjectType|null           $mutationType
-     * @param ObjectType|null           $subscriptionType
-     * @param TypeInterface[]           $types
-     * @param Directive[]               $directives
-     * @param bool                      $assumeValid
-     * @param SchemaDefinitionNode|null $astNode
+     * @param ObjectType|null                                        $queryType
+     * @param ObjectType|null                                        $mutationType
+     * @param ObjectType|null                                        $subscriptionType
+     * @param TypeInterface[]                                        $types
+     * @param Directive[]                                            $directives
+     * @param bool                                                   $assumeValid
+     * @param SchemaDefinitionNode|null                              $astNode
+     * @param ObjectTypeExtensionNode[]|InterfaceTypeExtensionNode[] $extensionASTNodes
      * @throws InvariantException
      */
     public function __construct(
@@ -110,17 +115,19 @@ class Schema implements DefinitionInterface
         array $types,
         array $directives,
         bool $assumeValid,
-        ?SchemaDefinitionNode $astNode
+        ?SchemaDefinitionNode $astNode,
+        array $extensionASTNodes
     ) {
-        $this->queryType        = $queryType;
-        $this->mutationType     = $mutationType;
-        $this->subscriptionType = $subscriptionType;
-        $this->types            = $types;
-        $this->directives       = !empty($directives)
+        $this->queryType         = $queryType;
+        $this->mutationType      = $mutationType;
+        $this->subscriptionType  = $subscriptionType;
+        $this->types             = $types;
+        $this->directives        = !empty($directives)
             ? $directives
             : specifiedDirectives();
-        $this->assumeValid      = $assumeValid;
-        $this->astNode          = $astNode;
+        $this->assumeValid       = $assumeValid;
+        $this->astNode           = $astNode;
+        $this->extensionAstNodes = $extensionASTNodes;
 
         $this->buildTypeMap();
         $this->buildImplementations();

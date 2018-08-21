@@ -5,9 +5,10 @@ namespace Digia\GraphQL\Schema\Building;
 use Digia\GraphQL\Error\BuildingException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
+use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
+use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Schema\DefinitionBuilder;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
@@ -25,8 +26,10 @@ class SchemaBuilder implements SchemaBuilderInterface
         ResolverRegistryInterface $resolverRegistry,
         array $options = []
     ): Schema {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $context = $this->createContext($document, $resolverRegistry, $options);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         return newSchema([
             'query'        => $context->buildQueryType(),
             'mutation'     => $context->buildMutationType(),
@@ -86,7 +89,13 @@ class SchemaBuilder implements SchemaBuilderInterface
                 continue;
             }
 
-            if ($definition instanceof TypeDefinitionNodeInterface) {
+            if ($definition instanceof DirectiveDefinitionNode) {
+                $directiveDefinitions[] = $definition;
+
+                continue;
+            }
+
+            if ($definition instanceof TypeSystemDefinitionNodeInterface && $definition instanceof NameAwareInterface) {
                 $typeName = $definition->getNameValue();
 
                 if (isset($typeDefinitionMap[$typeName])) {
@@ -94,12 +103,6 @@ class SchemaBuilder implements SchemaBuilderInterface
                 }
 
                 $typeDefinitionMap[$typeName] = $definition;
-
-                continue;
-            }
-
-            if ($definition instanceof DirectiveDefinitionNode) {
-                $directiveDefinitions[] = $definition;
 
                 continue;
             }

@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\Location;
 class DocumentNode extends AbstractNode
 {
     /**
-     * @var DefinitionNodeInterface[]|TypeExtensionNodeInterface[]
+     * @var DefinitionNodeInterface[]|TypeSystemExtensionNodeInterface[]
      */
     protected $definitions;
 
@@ -25,7 +25,7 @@ class DocumentNode extends AbstractNode
     }
 
     /**
-     * @return DefinitionNodeInterface[]|TypeExtensionNodeInterface[]
+     * @return DefinitionNodeInterface[]|TypeSystemExtensionNodeInterface[]
      */
     public function getDefinitions(): array
     {

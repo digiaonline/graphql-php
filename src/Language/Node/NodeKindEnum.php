@@ -56,6 +56,12 @@ class NodeKindEnum
     public const ENUM_VALUE_DEFINITION        = 'EnumValueDefinition';
     public const INPUT_OBJECT_TYPE_DEFINITION = 'InputObjectTypeDefinition';
 
+    // Directive Definitions
+    public const DIRECTIVE_DEFINITION = 'DirectiveDefinition';
+
+    // Type System Extensions
+    public const SCHEMA_EXTENSION = 'SchemaExtension';
+
     // Type Extensions
     public const SCALAR_TYPE_EXTENSION       = 'ScalarTypeExtension';
     public const OBJECT_TYPE_EXTENSION       = 'ObjectTypeExtension';
@@ -63,9 +69,6 @@ class NodeKindEnum
     public const UNION_TYPE_EXTENSION        = 'UnionTypeExtension';
     public const ENUM_TYPE_EXTENSION         = 'EnumTypeExtension';
     public const INPUT_OBJECT_TYPE_EXTENSION = 'InputObjectTypeExtension';
-
-    // Directive Definitions
-    public const DIRECTIVE_DEFINITION = 'DirectiveDefinition';
 
     /**
      * @return array

@@ -168,6 +168,8 @@ class KnownDirectivesRuleTest extends RuleTestCase
             schema @onSchema {
               query: MyQuery
             }
+            
+            extend schema @onSchema
             ')
         );
     }
@@ -200,6 +202,8 @@ class KnownDirectivesRuleTest extends RuleTestCase
             schema @onObject {
               query: MyQuery
             }
+            
+            extend schema @onObject
             '),
             [
                 misplacedDirective('onInterface', 'OBJECT', [1, 35]),
@@ -235,6 +239,7 @@ class KnownDirectivesRuleTest extends RuleTestCase
                     [18, 16]
                 ),
                 misplacedDirective('onObject', 'SCHEMA', [21, 8]),
+                misplacedDirective('onObject', 'SCHEMA', [25, 15]),
             ]
         );
     }
