@@ -16,12 +16,12 @@ use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ListTypeNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Language\Node\NamedTypeNodeInterface;
 use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NonNullTypeNode;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
-use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
@@ -54,7 +54,7 @@ use function Digia\GraphQL\Util\keyValueMap;
 class DefinitionBuilder implements DefinitionBuilderInterface
 {
     /**
-     * @var array
+     * @var NamedTypeNodeInterface[]
      */
     protected $typeDefinitionsMap;
 
@@ -107,7 +107,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     public function buildTypes(array $nodes): array
     {
-        return \array_map(function (NodeInterface $node) {
+        return \array_map(function (NamedTypeNodeInterface $node) {
             return $this->buildType($node);
         }, $nodes);
     }
@@ -115,13 +115,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @inheritdoc
      */
-    public function buildType(NodeInterface $node): NamedTypeInterface
+    public function buildType(NamedTypeNodeInterface $node): NamedTypeInterface
     {
-        if (!$node instanceof NamedTypeNode && !$node instanceof TypeSystemDefinitionNodeInterface) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw new LanguageException('Cannot build type.');
-        }
-
         $typeName = $node->getNameValue();
 
         if (isset($this->types[$typeName])) {
@@ -280,11 +275,11 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @param TypeSystemDefinitionNodeInterface $node
+     * @param TypeNodeInterface $node
      * @return NamedTypeInterface
      * @throws LanguageException
      */
-    protected function buildNamedType(TypeSystemDefinitionNodeInterface $node): NamedTypeInterface
+    protected function buildNamedType(TypeNodeInterface $node): NamedTypeInterface
     {
         if ($node instanceof ObjectTypeDefinitionNode) {
             return $this->buildObjectType($node);
@@ -326,7 +321,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             // typed values, that would throw immediately while type system
             // validation with validateSchema() will produce more actionable results.
             'interfaces'  => function () use ($node) {
-                return $node->hasInterfaces() ? \array_map(function (NodeInterface $interface) {
+                return $node->hasInterfaces() ? \array_map(function (NamedTypeNodeInterface $interface) {
                     return $this->buildType($interface);
                 }, $node->getInterfaces()) : [];
             },
@@ -421,7 +416,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
         return newUnionType([
             'name'        => $node->getNameValue(),
             'description' => $node->getDescriptionValue(),
-            'types'       => $node->hasTypes() ? \array_map(function (NodeInterface $type) {
+            'types'       => $node->hasTypes() ? \array_map(function (NamedTypeNodeInterface $type) {
                 return $this->buildType($type);
             }, $node->getTypes()) : [],
             'resolveType' => $this->getTypeResolver($node->getNameValue()),
@@ -512,18 +507,18 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     /**
      * @param string $typeName
-     * @return TypeSystemDefinitionNodeInterface|null
+     * @return NamedTypeNodeInterface|null
      */
-    protected function getTypeDefinition(string $typeName): ?TypeSystemDefinitionNodeInterface
+    protected function getTypeDefinition(string $typeName): ?NamedTypeNodeInterface
     {
         return $this->typeDefinitionsMap[$typeName] ?? null;
     }
 
     /**
      * @param TypeNodeInterface $typeNode
-     * @return TypeNodeInterface
+     * @return NamedTypeNodeInterface
      */
-    protected function getNamedTypeNode(TypeNodeInterface $typeNode): TypeNodeInterface
+    protected function getNamedTypeNode(TypeNodeInterface $typeNode): NamedTypeNodeInterface
     {
         $namedType = $typeNode;
 
@@ -531,6 +526,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
             $namedType = $namedType->getType();
         }
 
+        /** @var NamedTypeNodeInterface $namedType */
         return $namedType;
     }
 
