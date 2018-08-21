@@ -5,9 +5,8 @@ namespace Digia\GraphQL\Schema;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\FieldDefinitionNode;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
-use Digia\GraphQL\Language\Node\NamedTypeNode;
+use Digia\GraphQL\Language\Node\NamedTypeNodeInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
@@ -21,10 +20,10 @@ interface DefinitionBuilderInterface
     public function buildTypes(array $nodes): array;
 
     /**
-     * @param NodeInterface $node
+     * @param NamedTypeNodeInterface $node
      * @return NamedTypeInterface
      */
-    public function buildType(NodeInterface $node): NamedTypeInterface;
+    public function buildType(NamedTypeNodeInterface $node): NamedTypeInterface;
 
     /**
      * @param DirectiveDefinitionNode $node
