@@ -21,7 +21,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NonNullTypeNode;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
-use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
+use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
@@ -117,7 +117,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      */
     public function buildType(NodeInterface $node): NamedTypeInterface
     {
-        if (!$node instanceof NamedTypeNode && !$node instanceof TypeDefinitionNodeInterface) {
+        if (!$node instanceof NamedTypeNode && !$node instanceof TypeSystemDefinitionNodeInterface) {
             /** @noinspection PhpUnhandledExceptionInspection */
             throw new LanguageException('Cannot build type.');
         }
@@ -280,11 +280,11 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     }
 
     /**
-     * @param TypeDefinitionNodeInterface $node
+     * @param TypeSystemDefinitionNodeInterface $node
      * @return NamedTypeInterface
      * @throws LanguageException
      */
-    protected function buildNamedType(TypeDefinitionNodeInterface $node): NamedTypeInterface
+    protected function buildNamedType(TypeSystemDefinitionNodeInterface $node): NamedTypeInterface
     {
         if ($node instanceof ObjectTypeDefinitionNode) {
             return $this->buildObjectType($node);
@@ -512,9 +512,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
     /**
      * @param string $typeName
-     * @return TypeDefinitionNodeInterface|null
+     * @return TypeSystemDefinitionNodeInterface|null
      */
-    protected function getTypeDefinition(string $typeName): ?TypeDefinitionNodeInterface
+    protected function getTypeDefinition(string $typeName): ?TypeSystemDefinitionNodeInterface
     {
         return $this->typeDefinitionsMap[$typeName] ?? null;
     }

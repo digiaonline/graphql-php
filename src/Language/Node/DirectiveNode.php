@@ -33,7 +33,7 @@ class DirectiveNode extends AbstractNode implements ArgumentsAwareInterface, Nam
             'kind'      => $this->kind,
             'name'      => $this->getNameAST(),
             'arguments' => $this->getArgumentsAST(),
-            'location'  => $this->getLocationAST(),
+            'loc'       => $this->getLocationAST(),
         ];
     }
 }

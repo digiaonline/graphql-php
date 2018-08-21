@@ -146,7 +146,7 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-        ], $node->toArray());
+        ], $node->toAST());
     }
 
     public function testParsesKitchenSink()
@@ -328,7 +328,7 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-        ], $actual->toArray());
+        ], $actual->toAST());
     }
 
     public function testCreatesAstFromNamelessQueryWithoutVariables()
@@ -392,7 +392,7 @@ class ParserTest extends TestCase
                     ],
                 ],
             ],
-        ], $actual->toArray());
+        ], $actual->toAST());
     }
 
     // TODO: Consider adding test for 'allows parsing without source location information'
@@ -410,7 +410,7 @@ class ParserTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseValue('null');
 
-        $this->assertEquals($node->toArray(), [
+        $this->assertEquals($node->toAST(), [
             'kind' => NodeKindEnum::NULL,
             'loc'  => ['start' => 0, 'end' => 4],
         ]);
@@ -421,7 +421,7 @@ class ParserTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseValue('[123 "abc"]');
 
-        $this->assertEquals($node->toArray(), [
+        $this->assertEquals($node->toAST(), [
             'kind'   => NodeKindEnum::LIST,
             'loc'    => ['start' => 0, 'end' => 11],
             'values' => [
@@ -445,7 +445,7 @@ class ParserTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseValue('["""long""" "short"]');
 
-        $this->assertEquals($node->toArray(), [
+        $this->assertEquals($node->toAST(), [
             'kind'   => NodeKindEnum::LIST,
             'loc'    => ['start' => 0, 'end' => 20],
             'values' => [
@@ -471,7 +471,7 @@ class ParserTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('String');
 
-        $this->assertEquals($node->toArray(), [
+        $this->assertEquals($node->toAST(), [
             'kind' => NodeKindEnum::NAMED_TYPE,
             'loc'  => ['start' => 0, 'end' => 6],
             'name' => [
@@ -487,7 +487,7 @@ class ParserTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('MyType');
 
-        $this->assertEquals($node->toArray(), [
+        $this->assertEquals($node->toAST(), [
             'kind' => NodeKindEnum::NAMED_TYPE,
             'loc'  => ['start' => 0, 'end' => 6],
             'name' => [
@@ -503,7 +503,7 @@ class ParserTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('[MyType]');
 
-        $this->assertEquals($node->toArray(), [
+        $this->assertEquals($node->toAST(), [
             'kind' => NodeKindEnum::LIST_TYPE,
             'loc'  => ['start' => 0, 'end' => 8],
             'type' => [
@@ -523,7 +523,7 @@ class ParserTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('MyType!');
 
-        $this->assertEquals($node->toArray(), [
+        $this->assertEquals($node->toAST(), [
             'kind' => NodeKindEnum::NON_NULL_TYPE,
             'loc'  => ['start' => 0, 'end' => 7],
             'type' => [
@@ -543,7 +543,7 @@ class ParserTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $node = parseType('[MyType!]');
 
-        $this->assertEquals($node->toArray(), [
+        $this->assertEquals($node->toAST(), [
             'kind' => NodeKindEnum::LIST_TYPE,
             'loc'  => ['start' => 0, 'end' => 9],
             'type' => [

@@ -43,10 +43,11 @@ use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ScalarTypeExtensionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
+use Digia\GraphQL\Language\Node\SchemaExtensionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\StringValueNode;
-use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
-use Digia\GraphQL\Language\Node\TypeExtensionNodeInterface;
+use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
+use Digia\GraphQL\Language\Node\TypeSystemExtensionNodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\UnionTypeExtensionNode;
@@ -186,9 +187,11 @@ class Parser implements ParserInterface
                 case KeywordEnum::UNION:
                 case KeywordEnum::ENUM:
                 case KeywordEnum::INPUT:
-                case KeywordEnum::EXTEND:
                 case KeywordEnum::DIRECTIVE:
                     return $this->lexTypeSystemDefinition();
+                case KeywordEnum::EXTEND:
+                    return $this->lexTypeSystemExtension();
+
             }
         } elseif ($this->peek(TokenKindEnum::BRACE_L)) {
             return $this->lexExecutableDefinition();
@@ -823,11 +826,11 @@ class Parser implements ParserInterface
      *   - EnumTypeDefinition
      *   - InputObjectTypeDefinition
      *
-     * @return NodeInterface|TypeDefinitionNodeInterface|TypeExtensionNodeInterface
+     * @return TypeSystemDefinitionNodeInterface
      * @throws SyntaxErrorException
      * @throws \ReflectionException
      */
-    protected function lexTypeSystemDefinition(): NodeInterface
+    protected function lexTypeSystemDefinition(): TypeSystemDefinitionNodeInterface
     {
         // Many definitions begin with a description and require a lookahead.
         $token = $this->peekDescription()
@@ -852,8 +855,6 @@ class Parser implements ParserInterface
                     return $this->lexInputObjectTypeDefinition();
                 case KeywordEnum::DIRECTIVE:
                     return $this->lexDirectiveDefinition();
-                case KeywordEnum::EXTEND:
-                    return $this->lexTypeSystemExtension();
             }
         }
 
@@ -1280,15 +1281,17 @@ class Parser implements ParserInterface
      *   - EnumTypeExtension
      *   - InputObjectTypeDefinition
      *
-     * @return TypeExtensionNodeInterface
+     * @return TypeSystemExtensionNodeInterface
      * @throws SyntaxErrorException
      */
-    protected function lexTypeSystemExtension(): TypeExtensionNodeInterface
+    protected function lexTypeSystemExtension(): TypeSystemExtensionNodeInterface
     {
         $token = $this->lexer->lookahead();
 
         if (TokenKindEnum::NAME === $token->getKind()) {
             switch ($token->getValue()) {
+                case KeywordEnum::SCHEMA:
+                    return $this->lexSchemaExtension();
                 case KeywordEnum::SCALAR:
                     return $this->lexScalarTypeExtension(false);
                 case KeywordEnum::TYPE:
@@ -1305,6 +1308,42 @@ class Parser implements ParserInterface
         }
 
         throw $this->unexpected($token);
+    }
+
+    /**
+     * SchemaExtension :
+     *  - extend schema Directives[Const]? { OperationTypeDefinition+ }
+     *  - extend schema Directives[Const]
+     *
+     * @return SchemaExtensionNode
+     * @throws SyntaxErrorException
+     */
+    protected function lexSchemaExtension(): SchemaExtensionNode
+    {
+        $start = $this->lexer->getToken();
+
+        $this->expectKeyword(KeywordEnum::EXTEND);
+        $this->expectKeyword(KeywordEnum::SCHEMA);
+
+        $directives = $this->lexDirectives(true);
+
+        $parseFunction = function (): OperationTypeDefinitionNode {
+            return $this->lexOperationTypeDefinition();
+        };
+
+        $operationTypes = $this->peek(TokenKindEnum::BRACE_L)
+            ? $this->many(
+                TokenKindEnum::BRACE_L,
+                $parseFunction,
+                TokenKindEnum::BRACE_R
+            )
+            : [];
+
+        if (empty($directives) && empty($operationTypes)) {
+            $this->unexpected();
+        }
+
+        return new SchemaExtensionNode($directives, $operationTypes, $this->createLocation($start));
     }
 
     /**

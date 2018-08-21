@@ -3,10 +3,10 @@
 namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Test\jsonEncode;
 
@@ -215,6 +215,62 @@ extend type Hello {
 extend "Description" type Hello {
   world: String
 }');
+    }
+
+    public function testSchemaExtension()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse(dedent('
+        extend schema {
+          mutation: Mutation
+        }
+        '));
+
+        $this->assertEquals(jsonEncode([
+            'kind'        => NodeKindEnum::DOCUMENT,
+            'definitions' => [
+                [
+                    'kind'           => NodeKindEnum::SCHEMA_EXTENSION,
+                    'directives'     => [],
+                    'operationTypes' => [
+                        [
+                            'kind'      => NodeKindEnum::OPERATION_TYPE_DEFINITION,
+                            'operation' => 'mutation',
+                            'type'      => $this->typeNode('Mutation', ['start' => 28, 'end' => 36]),
+                            'loc'       => ['start' => 18, 'end' => 36],
+                        ],
+                    ],
+                    'loc'            => ['start' => 0, 'end' => 38],
+                ],
+            ],
+            'loc'         => ['start' => 0, 'end' => 39],
+        ]), $node->toJSON());
+    }
+
+    public function testSchemaExtensionWithOnlyDirectives()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse('extend schema @directive');
+
+        $this->assertEquals(jsonEncode([
+            'kind'        => NodeKindEnum::DOCUMENT,
+            'definitions' => [
+                [
+                    'kind'           => NodeKindEnum::SCHEMA_EXTENSION,
+                    'directives'     => [
+                        [
+                            'kind'      => NodeKindEnum::DIRECTIVE,
+                            'name'      => $this->nameNode('directive', ['start' => 15, 'end' => 24]),
+                            'arguments' => [],
+                            'loc'       => ['start' => 14, 'end' => 24],
+                        ],
+                    ],
+                    'operationTypes' => [],
+                    'loc'            => ['start' => 0, 'end' => 24],
+                ],
+            ],
+            'loc'         => ['start' => 0, 'end' => 24],
+        ]), $node->toJSON());
     }
 
     public function testSimpleNonNullType()

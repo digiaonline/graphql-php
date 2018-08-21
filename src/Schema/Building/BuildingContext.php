@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Schema\Building;
 
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use Digia\GraphQL\Language\Node\TypeDefinitionNodeInterface;
+use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
 use Digia\GraphQL\Schema\DefinitionBuilderInterface;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -76,7 +76,7 @@ class BuildingContext implements BuildingContextInterface
      */
     public function buildTypes(): array
     {
-        return \array_map(function (TypeDefinitionNodeInterface $definition) {
+        return \array_map(function (TypeSystemDefinitionNodeInterface $definition) {
             return $this->definitionBuilder->buildType($definition);
         }, \array_values($this->info->getTypeDefinitionMap()));
     }

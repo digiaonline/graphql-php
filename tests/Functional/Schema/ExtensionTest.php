@@ -43,6 +43,7 @@ class ExtensionTest extends TestCase
     {
         $this->extender = GraphQL::make(SchemaExtenderInterface::class);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->someInterfaceType = newInterfaceType([
             'name'   => 'SomeInterface',
             'fields' => function () {
@@ -53,6 +54,7 @@ class ExtensionTest extends TestCase
             },
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->fooType = newObjectType([
             'name'       => 'Foo',
             'interfaces' => [$this->someInterfaceType],
@@ -65,6 +67,7 @@ class ExtensionTest extends TestCase
             },
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->barType = newObjectType([
             'name'       => 'Bar',
             'interfaces' => [$this->someInterfaceType],
@@ -77,6 +80,7 @@ class ExtensionTest extends TestCase
             },
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->bizType = newObjectType([
             'name'   => 'Biz',
             'fields' => function () {
@@ -86,11 +90,13 @@ class ExtensionTest extends TestCase
             },
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->someUnionType = newUnionType([
             'name'  => 'SomeUnion',
             'types' => [$this->fooType, $this->bizType],
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->someEnumType = newEnumType([
             'name'   => 'SomeEnum',
             'values' => [
@@ -99,6 +105,7 @@ class ExtensionTest extends TestCase
             ],
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->testSchema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -337,6 +344,7 @@ class ExtensionTest extends TestCase
 
     public function testMayExtendMutationsAndSubscriptions()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $mutationSchema = newSchema([
             'query'        => newObjectType([
                 'name'   => 'Query',
@@ -427,6 +435,7 @@ class ExtensionTest extends TestCase
         $this->assertContains('QUERY', $extendedDirective->getLocations());
         $this->assertContains('FIELD', $extendedDirective->getLocations());
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $arguments = $extendedDirective->getArguments();
         $argument0 = $arguments[0];
         $argument1 = $arguments[1];
@@ -569,6 +578,193 @@ class ExtensionTest extends TestCase
           baz: String
         }
         '));
+    }
+
+    // can add additional root operation types
+
+    // does not automatically include common root type names
+
+    public function testDoesNotAutomaticallyIncludeCommonRootTypeNames()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse('
+        type Mutation {
+          doSomething: String
+        }
+        ');
+
+        $schema = $this->extendSchema($this->testSchema, $node);
+
+        $this->assertNull($schema->getMutationType());
+    }
+
+    // does not allow new schema within an extension
+
+    public function testDoesNotAllowNewSchemaWithinAnExtension()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse('
+        schema {
+          mutation: Mutation
+        }
+        
+        type Mutation {
+          doSomething: String
+        }
+        ');
+
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('Cannot define a new schema within a schema extension.');
+        $this->extendSchema($this->testSchema, $node);
+    }
+
+    // adds new root types via schema extension
+
+    public function testAddsNewRootTypesViaSchemaExtension()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse('
+        extend schema {
+          mutation: Mutation
+        }
+        
+        type Mutation {
+          doSomething: String
+        }
+        ');
+
+        $schema = $this->extendSchema($this->testSchema, $node);
+
+        $this->assertEquals('Mutation', $schema->getMutationType()->getName());
+    }
+
+    // adds multiple new root types via schema extension
+
+    public function testAddsMultipleNewRootTypesViaSchemaExtension()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse('
+        extend schema {
+          mutation: Mutation
+          subscription: Subscription
+        }
+        
+        type Mutation {
+          doSomething: String
+        }
+        
+        type Subscription {
+          hearSomething: String
+        }
+        ');
+
+        $schema = $this->extendSchema($this->testSchema, $node);
+
+        $this->assertEquals('Mutation', $schema->getMutationType()->getName());
+        $this->assertEquals('Subscription', $schema->getSubscriptionType()->getName());
+    }
+
+    // applies multiple schema extensions
+
+    public function testAppliesMultipleSchemaExtension()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse('
+        extend schema {
+          mutation: Mutation
+        }
+        
+        extend schema {
+          subscription: Subscription
+        }
+        
+        type Mutation {
+          doSomething: String
+        }
+        
+        type Subscription {
+          hearSomething: String
+        }
+        ');
+
+        $schema = $this->extendSchema($this->testSchema, $node);
+
+        $this->assertEquals('Mutation', $schema->getMutationType()->getName());
+        $this->assertEquals('Subscription', $schema->getSubscriptionType()->getName());
+    }
+
+    // TODO: schema extension AST are available from schema object
+
+    // does not allow redefining an existing root type
+
+    public function testDoesNotAllowRedefiningAnExistingRootType()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse('
+        extend schema {
+          query: SomeType
+        }
+        
+        type SomeType {
+          seeSomething: String
+        }
+        ');
+
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('Must provide only one query type in schema.');
+        $this->extendSchema($this->testSchema, $node);
+    }
+
+    // does not allow defining a root operation type twice
+
+    public function testDoesNotAllowDefiningARootTypeTwice()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse('
+        extend schema {
+          mutation: Mutation
+        }
+        
+        extend schema {
+          mutation: Mutation
+        }
+        
+        type Mutation {
+          doSomething: String
+        }
+        ');
+
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('Must provide only one mutation type in schema.');
+        $this->extendSchema($this->testSchema, $node);
+    }
+    
+    // does not allow defining a root operation type with different types
+
+    public function testDoesNotAllowDefiningARootTypeWithDifferentTypes()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $node = parse('
+        extend schema {
+          mutation: Mutation
+        }
+        
+        extend schema {
+          mutation: SomethingElse
+        }
+        
+        type Mutation {
+          doSomething: String
+        }
+        
+        type SomethingElse {
+          doSomethingElse: String
+        }
+        ');
+
+        $this->expectException(ExtensionException::class);
+        $this->expectExceptionMessage('Must provide only one mutation type in schema.');
+        $this->extendSchema($this->testSchema, $node);
     }
 
     protected function extendSchema($schema, $document)

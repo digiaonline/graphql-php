@@ -84,10 +84,13 @@ class ExecutableDefinitionsRuleTest extends RuleTestCase
             type Query {
               test: String
             }
+            
+            extend schema @directive
             '),
             [
                 nonExecutableDefinition('schema', [1, 1]),
                 nonExecutableDefinition('Query', [5, 1]),
+                nonExecutableDefinition('schema', [9, 1]),
             ]
         );
     }

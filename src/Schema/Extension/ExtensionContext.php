@@ -59,14 +59,44 @@ class ExtensionContext implements ExtensionContextInterface
         return
             $this->info->hasTypeExtensionsMap() ||
             $this->info->hasTypeDefinitionMap() ||
-            $this->info->hasDirectiveDefinitions();
+            $this->info->hasDirectiveDefinitions() ||
+            $this->info->hasSchemaExtensions();
+    }
+
+    /**
+     * @return ObjectType[]
+     * @throws ExtensionException
+     * @throws InvariantException
+     */
+    public function getExtendedOperationTypes(): array
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $operationTypes = [
+            'query'        => $this->getExtendedQueryType(),
+            'mutation'     => $this->getExtendedMutationType(),
+            'subscription' => $this->getExtendedSubscriptionType(),
+        ];
+
+        foreach ($this->info->getSchemaExtensions() as $schemaExtension) {
+            foreach ($schemaExtension->getOperationTypes() as $operationType) {
+                $operation = $operationType->getOperation();
+
+                if (isset($operationTypes[$operation])) {
+                    throw new ExtensionException(\sprintf('Must provide only one %s type in schema.', $operation));
+                }
+
+                $operationTypes[$operation] = $this->definitionBuilder->buildType($operationType->getType());
+            }
+        }
+
+        return $operationTypes;
     }
 
     /**
      * @return TypeInterface|null
      * @throws InvariantException
      */
-    public function getExtendedQueryType(): ?TypeInterface
+    protected function getExtendedQueryType(): ?TypeInterface
     {
         $existingQueryType = $this->info->getSchema()->getQueryType();
 
@@ -79,7 +109,7 @@ class ExtensionContext implements ExtensionContextInterface
      * @return TypeInterface|null
      * @throws InvariantException
      */
-    public function getExtendedMutationType(): ?TypeInterface
+    protected function getExtendedMutationType(): ?TypeInterface
     {
         $existingMutationType = $this->info->getSchema()->getMutationType();
 
@@ -92,7 +122,7 @@ class ExtensionContext implements ExtensionContextInterface
      * @return TypeInterface|null
      * @throws InvariantException
      */
-    public function getExtendedSubscriptionType(): ?TypeInterface
+    protected function getExtendedSubscriptionType(): ?TypeInterface
     {
         $existingSubscriptionType = $this->info->getSchema()->getSubscriptionType();
 
@@ -180,11 +210,11 @@ class ExtensionContext implements ExtensionContextInterface
     {
         $typeName = $type->getName();
 
-        if (!isset($this->extendTypeCache[$typeName])) {
-            $this->extendTypeCache[$typeName] = $this->extendType($type);
+        if (isset($this->extendTypeCache[$typeName])) {
+            return $this->extendTypeCache[$typeName];
         }
 
-        return $this->extendTypeCache[$typeName];
+        return $this->extendTypeCache[$typeName] = $this->extendType($type);
     }
 
     /**
