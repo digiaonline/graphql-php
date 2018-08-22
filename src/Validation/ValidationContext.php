@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Validation;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
@@ -13,7 +12,6 @@ use Digia\GraphQL\Language\Node\SelectionSetAwareInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
-use Digia\GraphQL\Language\Visitor\AcceptsVisitorsInterface;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\Visitor;
 use Digia\GraphQL\Schema\Schema;
@@ -237,7 +235,7 @@ class ValidationContext implements ValidationContextInterface
     /**
      * @inheritdoc
      */
-    public function getVariableUsages($node): array
+    public function getVariableUsages(NodeInterface $node): array
     {
         $usages = $this->variableUsages[(string)$node] ?? null;
 

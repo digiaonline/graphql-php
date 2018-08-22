@@ -8,7 +8,6 @@ use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
-use Digia\GraphQL\Language\Visitor\AcceptsVisitorsInterface;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -23,7 +22,7 @@ interface ValidationContextInterface
     public function reportError(ValidationException $error): void;
 
     /**
-     * @return array|ValidationException[]
+     * @return ValidationException[]
      */
     public function getErrors(): array;
 
@@ -75,7 +74,7 @@ interface ValidationContextInterface
 
     /**
      * @param SelectionSetNode $selectionSet
-     * @return array|FragmentSpreadNode[]
+     * @return FragmentSpreadNode[]
      */
     public function getFragmentSpreads(SelectionSetNode $selectionSet): array;
 
@@ -86,14 +85,14 @@ interface ValidationContextInterface
     public function getRecursiveVariableUsages(OperationDefinitionNode $operation): array;
 
     /**
-     * @param NodeInterface|OperationDefinitionNode|FragmentDefinitionNode|AcceptsVisitorsInterface $node
+     * @param NodeInterface $node
      * @return array
      */
-    public function getVariableUsages($node): array;
+    public function getVariableUsages(NodeInterface $node): array;
 
     /**
      * @param OperationDefinitionNode $operation
-     * @return array|FragmentDefinitionNode[]
+     * @return FragmentDefinitionNode[]
      */
     public function getRecursivelyReferencedFragments(OperationDefinitionNode $operation): array;
 }

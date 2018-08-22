@@ -28,7 +28,6 @@ use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaExtensionNode;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\UnionTypeExtensionNode;
-use Digia\GraphQL\Language\Visitor\AcceptsVisitorsInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Validation\misplacedDirectiveMessage;
@@ -78,12 +77,8 @@ class KnownDirectivesRule extends AbstractRule
      * @param NodeInterface $node
      * @return string|null
      */
-    protected function getDirectiveLocationFromASTPath($node): ?string
+    protected function getDirectiveLocationFromASTPath(NodeInterface $node): ?string
     {
-        if (!$node instanceof AcceptsVisitorsInterface) {
-            return null;
-        }
-
         $appliedTo = $node->getAncestor();
 
         if ($appliedTo instanceof OperationDefinitionNode) {
