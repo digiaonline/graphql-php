@@ -4,8 +4,12 @@ namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
 
-class FragmentDefinitionNode extends AbstractNode implements ExecutableDefinitionNodeInterface,
-    DirectivesAwareInterface, NameAwareInterface, SelectionSetAwareInterface
+class FragmentDefinitionNode extends AbstractNode implements
+    ExecutableDefinitionNodeInterface,
+    NameAwareInterface,
+    VariableDefinitionsAwareInterface,
+    DirectivesAwareInterface,
+    SelectionSetAwareInterface
 {
     use NameTrait;
     use VariableDefinitionsTrait;
