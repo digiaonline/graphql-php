@@ -55,6 +55,14 @@ class Location implements SerializationInterface
     }
 
     /**
+     * @return bool
+     */
+    public function hasSource(): bool
+    {
+        return null !== $this->source;
+    }
+
+    /**
      * @return Source|null
      */
     public function getSource(): ?Source
@@ -68,8 +76,8 @@ class Location implements SerializationInterface
     public function toArray(): array
     {
         return [
-            'start' => $this->start,
-            'end'   => $this->end,
+            'start'  => $this->start,
+            'end'    => $this->end,
         ];
     }
 

@@ -84,6 +84,14 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
     }
 
     /**
+     * @return bool
+     */
+    public function hasLocation(): bool
+    {
+        return null !== $this->location;
+    }
+
+    /**
      * @return Location|null
      */
     public function getLocation(): ?Location
@@ -96,7 +104,9 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
      */
     public function getLocationAST(): ?array
     {
-        return null !== $this->location ? $this->location->toArray() : null;
+        return null !== $this->location
+            ? $this->location->toArray()
+            : null;
     }
 
     /**
@@ -121,7 +131,7 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
      * @param NodeInterface|null $parent
      * @param string[]           $path
      * @param NodeInterface[]    $ancestors
-     * @return NodeInterface|SerializationInterface|null
+     * @return NodeInterface|null
      */
     public function acceptVisitor(
         VisitorInterface $visitor,
@@ -147,6 +157,12 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
         }
 
         $newAst = $newNode->toAST();
+
+        // We have to manually copy the source, because it's not included in the AST.
+        // The reason for this is because then it would also be included when the node is serialized.
+        $newAst['loc']['source'] = $newNode->hasLocation()
+            ? $newNode->getLocation()->getSource()
+            : null;
 
         foreach (self::$kindToNodesToVisitMap[$this->kind] as $propertyName) {
             $nodeOrNodes = $this->{$propertyName};

@@ -14,6 +14,11 @@ interface NodeInterface
     public function getKind(): string;
 
     /**
+     * @return bool
+     */
+    public function hasLocation(): bool;
+
+    /**
      * @return Location|null
      */
     public function getLocation(): ?Location;

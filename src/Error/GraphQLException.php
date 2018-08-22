@@ -258,7 +258,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
         } elseif (!empty($this->nodes)) {
             $locations = \array_reduce($this->nodes, function (array $list, NodeInterface $node) {
                 $location = $node->getLocation();
-                if (null !== $location) {
+                if (null !== $location && $location->hasSource()) {
                     $list[] = SourceLocation::fromSource($location->getSource(), $location->getStart());
                 }
                 return $list;
