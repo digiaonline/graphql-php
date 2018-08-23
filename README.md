@@ -39,12 +39,13 @@ this example we use that SDL to build an executable schema and use it to query f
 of that query is an associative array with a structure that resembles the query we ran.
 
 ```php
+use Digia\GraphQL\Language\FileSourceBuilder;
 use function Digia\GraphQL\buildSchema;
 use function Digia\GraphQL\graphql;
 
-$source = \file_get_contents(__DIR__ . '/star-wars.graphqls');
+$sourceBuilder = new FileSourceBuilder(__DIR__ . '/star-wars.graphqls');
 
-$schema = buildSchema($source, [
+$schema = buildSchema($sourceBuilder->build(), [
     'Query' => [
         'hero' => function ($rootValue, $arguments) {
             return getHero($arguments['episode'] ?? null);
@@ -127,9 +128,11 @@ SDL you need to call the `buildSchema` function.
  
 The `buildSchema` function takes three arguments:
 
-- `$source` The schema definition (SDL) as a string
+- `$source` The schema definition (SDL) as a `Source` instance
 - `$resolverRegistry` An associative array or a `ResolverRegistry` instance that contains all resolvers
 - `$options` The options for building the schema, which also includes custom types and directives
+
+To create the `Source` instance you can use the provided `FileSourceBuilder` or `MultiFileSourceBuilder` classes.
 
 ### Resolver registry
 
