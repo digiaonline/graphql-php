@@ -4,8 +4,10 @@ namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
 
-class InputValueDefinitionNode extends AbstractNode implements DefinitionNodeInterface, DirectivesAwareInterface,
-    NameAwareInterface
+class InputValueDefinitionNode extends AbstractNode implements
+    DefinitionNodeInterface,
+    NameAwareInterface,
+    DirectivesAwareInterface
 {
     use DescriptionTrait;
     use NameTrait;

@@ -30,7 +30,7 @@ trait NameTrait
      */
     public function getNameAST(): ?array
     {
-        return null !== $this->name ? $this->name->toArray() : null;
+        return null !== $this->name ? $this->name->toAST() : null;
     }
 
     /**
