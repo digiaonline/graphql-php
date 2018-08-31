@@ -400,6 +400,7 @@ Please read our [guidelines](.github/CONTRIBUTING.md).
 ## Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](.github/CONTRIBUTING.md)].
+
 <a href="graphs/contributors"><img src="https://opencollective.com/graphql-php/contributors.svg?width=890&button=false" /></a>
 
 
