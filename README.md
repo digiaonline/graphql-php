@@ -405,14 +405,13 @@ This project exists thanks to all the people who contribute. [[Contribute](.gith
 
 ## Backers
 
-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/graphql-php#backer)]
+Thank you to all our backers! 🙏 [Become a backer](https://opencollective.com/graphql-php#backer)
 
 <a href="https://opencollective.com/graphql-php#backers" target="_blank"><img src="https://opencollective.com/graphql-php/backers.svg?width=890"></a>
 
-
 ## Sponsors
 
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/graphql-php#sponsor)]
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [Become a sponsor](https://opencollective.com/graphql-php#sponsor)
 
 <a href="https://opencollective.com/graphql-php/sponsor/0/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/graphql-php/sponsor/1/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/1/avatar.svg"></a>
@@ -424,8 +423,6 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://opencollective.com/graphql-php/sponsor/7/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/7/avatar.svg"></a>
 <a href="https://opencollective.com/graphql-php/sponsor/8/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/graphql-php/sponsor/9/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/9/avatar.svg"></a>
-
-
 
 ## License
 
