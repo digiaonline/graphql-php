@@ -18,7 +18,6 @@ use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
@@ -104,7 +103,7 @@ class Executor
             $result = $operation->getOperation() === 'mutation'
                 ? $this->executeFieldsSerially($objectType, $rootValue, $path, $fields)
                 : $this->executeFields($objectType, $rootValue, $path, $fields);
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             $this->context->addError(new ExecutionException($ex->getMessage()));
 
             return [null];
@@ -208,6 +207,8 @@ class Executor
 
         $promise->then(function ($resolvedResults) use (&$finalResults) {
             $finalResults = $resolvedResults ?? [];
+        })->otherwise(function ($ex) {
+            $this->context->addError($ex);
         });
 
         return $finalResults;
@@ -301,7 +302,7 @@ class Executor
             }
 
             return $completed;
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             $this->context->addError($this->buildLocatedError($ex, $fieldNodes, $path));
             return null;
         }
@@ -376,6 +377,7 @@ class Executor
         if ($doesContainPromise) {
             $keys    = \array_keys($finalResults);
             $promise = promiseAll(\array_values($finalResults));
+
             $promise->then(function ($values) use ($keys, &$finalResults) {
                 /** @noinspection ForeachSourceInspection */
                 foreach ($values as $i => $value) {
