@@ -281,11 +281,17 @@ Custom Date scalar type example:
 ```php
 $dateType = newScalarType([
     'name'         => 'Date',
-    'serialize'    => function (DateTime $value) {
-        return $value->format('Y-m-d');
+    'serialize'    => function ($value) {
+        if ($value instanceof DateTime) {
+            return $value->format('Y-m-d');
+        }
+        return null;
     },
-    'parseValue'   => function (DateTime $value) {
-        return $value->format('Y-m-d');
+    'parseValue'   => function ($value) {
+        if (\is_string($value)){
+            return new DateTime($value);
+        }
+        return null;
     },
     'parseLiteral' => function ($node) {
         if ($node instanceof StringValueNode) {
