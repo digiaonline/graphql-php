@@ -4,6 +4,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/digiaonline/graphql-php/badge.svg?branch=master)](https://coveralls.io/github/digiaonline/graphql-php?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/digiaonline/graphql-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/digiaonline/graphql-php/?branch=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/digiaonline/graphql-php/master/LICENSE)
+[![Backers on Open Collective](https://opencollective.com/graphql-php/backers/badge.svg)](#backers) 
+[![Sponsors on Open Collective](https://opencollective.com/graphql-php/sponsors/badge.svg)](#sponsors) 
 
 This is a PHP implementation of the [GraphQL specification](https://facebook.github.io/graphql/) based on the 
 JavaScript [reference implementation](https://github.com/graphql/graphql-js).
@@ -397,9 +399,34 @@ Route::post('/graphql', 'app\GraphQL\GraphQLController@handle');
 If you want to use [Relay](https://facebook.github.io/relay/) together with this library, you can use our 
 [Relay package](https://github.com/digiaonline/graphql-relay-php) to add Relay support. 
 
-## Contributing
 
-Please read our [guidelines](.github/CONTRIBUTING.md).
+## Contributors
+
+This project exists thanks to all the people who contribute. [Contribute](.github/CONTRIBUTING.md).
+
+<a href="graphs/contributors"><img src="https://opencollective.com/graphql-php/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [Become a backer](https://opencollective.com/graphql-php#backer)
+
+<a href="https://opencollective.com/graphql-php#backers" target="_blank"><img src="https://opencollective.com/graphql-php/backers.svg?width=890"></a>
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [Become a sponsor](https://opencollective.com/graphql-php#sponsor)
+
+<a href="https://opencollective.com/graphql-php/sponsor/0/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/graphql-php/sponsor/1/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/graphql-php/sponsor/2/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/graphql-php/sponsor/3/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/graphql-php/sponsor/4/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/graphql-php/sponsor/5/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/graphql-php/sponsor/6/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/graphql-php/sponsor/7/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/graphql-php/sponsor/8/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/graphql-php/sponsor/9/website" target="_blank"><img src="https://opencollective.com/graphql-php/sponsor/9/avatar.svg"></a>
 
 ## License
 
