@@ -393,13 +393,10 @@ Route::post('/graphql', 'app\GraphQL\GraphQLController@handle');
 If you want to use [Relay](https://facebook.github.io/relay/) together with this library, you can use our 
 [Relay package](https://github.com/digiaonline/graphql-relay-php) to add Relay support. 
 
-## Contributing
-
-Please read our [guidelines](.github/CONTRIBUTING.md).
 
 ## Contributors
 
-This project exists thanks to all the people who contribute. [[Contribute](.github/CONTRIBUTING.md)].
+This project exists thanks to all the people who contribute. [Contribute](.github/CONTRIBUTING.md).
 
 <a href="graphs/contributors"><img src="https://opencollective.com/graphql-php/contributors.svg?width=890&button=false" /></a>
 
