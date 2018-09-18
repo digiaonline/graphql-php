@@ -293,7 +293,7 @@ class ValuesHelper
         NodeInterface $blameNode,
         ?Path $path
     ): CoercedValue {
-        if (empty($value)) {
+        if (null === $value) {
             return new CoercedValue(null, [
                 $this->buildCoerceException(
                     sprintf('Expected non-nullable type %s not to be null', (string)$type),
