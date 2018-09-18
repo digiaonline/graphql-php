@@ -4,8 +4,6 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\ExecutionContext;
 use function Digia\GraphQL\Execution\coerceArgumentValues;
-use Digia\GraphQL\Execution\ValuesHelper;
-use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\newObjectType;
@@ -15,8 +13,6 @@ use function Digia\GraphQL\Type\stringType;
 class ValueHelperTest extends TestCase
 {
     /**
-     * @throws \Digia\GraphQL\Error\ExecutionException
-     * @throws \Digia\GraphQL\Error\InvalidTypeException
      * @throws \Digia\GraphQL\Error\InvariantException
      * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
