@@ -10,7 +10,7 @@ use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
 use function Digia\GraphQL\Type\stringType;
 
-class ValueHelperTest extends TestCase
+class ValuesHelperTest extends TestCase
 {
     /**
      * @throws \Digia\GraphQL\Error\InvariantException
@@ -34,7 +34,6 @@ class ValueHelperTest extends TestCase
                     ]
                 ])
         ]);
-
 
         $documentNode = parse('query Hello($name: String) { Greeting(name: $name) }');
         $operation  = $documentNode->getDefinitions()[0];
