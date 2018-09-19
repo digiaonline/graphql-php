@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FieldNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\LeafTypeInterface;
 use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Validation\noSubselectionAllowedMessage;
@@ -21,7 +21,7 @@ class ScalarLeafsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterField(FieldNode $node): ?NodeInterface
+    protected function enterField(FieldNode $node): VisitorResult
     {
         $type         = $this->context->getType();
         $selectionSet = $node->getSelectionSet();
@@ -46,6 +46,6 @@ class ScalarLeafsRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

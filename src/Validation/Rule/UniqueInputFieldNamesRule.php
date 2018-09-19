@@ -4,9 +4,9 @@ namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\NameNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\Node\ObjectValueNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\duplicateInputFieldMessage;
 
 /**
@@ -30,18 +30,18 @@ class UniqueInputFieldNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterObjectValue(ObjectValueNode $node): ?NodeInterface
+    protected function enterObjectValue(ObjectValueNode $node): VisitorResult
     {
         $this->knownInputNamesStack[] = $this->knownInputNames;
         $this->knownInputNames        = [];
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterObjectField(ObjectFieldNode $node): ?NodeInterface
+    protected function enterObjectField(ObjectFieldNode $node): VisitorResult
     {
         $fieldName = $node->getNameValue();
 
@@ -56,16 +56,16 @@ class UniqueInputFieldNamesRule extends AbstractRule
             $this->knownInputNames[$fieldName] = $node->getName();
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function leaveObjectValue(ObjectValueNode $node): ?NodeInterface
+    protected function leaveObjectValue(ObjectValueNode $node): VisitorResult
     {
         $this->knownInputNames = \array_pop($this->knownInputNamesStack);
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

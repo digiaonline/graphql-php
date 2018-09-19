@@ -11,10 +11,10 @@ use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetAwareInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
-use Digia\GraphQL\Language\Node\VariableDefinitionsAwareInterface;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\Visitor;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
@@ -243,19 +243,20 @@ class ValidationContext implements ValidationContextInterface
         if (null === $usages) {
             $usages   = [];
             $typeInfo = new TypeInfo($this->schema);
-            $visitor  = new TypeInfoVisitor($typeInfo, new Visitor(
-                function (NodeInterface $node) use (&$usages, $typeInfo): ?NodeInterface {
-                    if ($node instanceof VariableDefinitionNode) {
-                        return null;
-                    }
 
-                    if ($node instanceof VariableNode) {
-                        $usages[] = ['node' => $node, 'type' => $typeInfo->getInputType()];
-                    }
-
-                    return $node;
+            $enterCallback = function (NodeInterface $node) use (&$usages, $typeInfo): VisitorResult {
+                if ($node instanceof VariableDefinitionNode) {
+                    return new VisitorResult(null);
                 }
-            ));
+
+                if ($node instanceof VariableNode) {
+                    $usages[] = ['node' => $node, 'type' => $typeInfo->getInputType()];
+                }
+
+                return new VisitorResult($node);
+            };
+
+            $visitor = new TypeInfoVisitor($typeInfo, new Visitor($enterCallback));
 
             $node->acceptVisitor($visitor);
 

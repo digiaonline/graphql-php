@@ -7,7 +7,7 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\InlineFragmentNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Util\TypeASTConverter;
@@ -29,7 +29,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
      *
      * @throws InvariantException
      */
-    protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    protected function enterInlineFragment(InlineFragmentNode $node): VisitorResult
     {
         $fragmentType = $this->context->getType();
         $parentType   = $this->context->getParentType();
@@ -46,7 +46,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
@@ -55,7 +55,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
      * @throws InvariantException
      * @throws ConversionException
      */
-    protected function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
+    protected function enterFragmentSpread(FragmentSpreadNode $node): VisitorResult
     {
         $fragmentName = $node->getNameValue();
         $fragmentType = $this->getFragmentType($fragmentName);
@@ -73,7 +73,7 @@ class PossibleFragmentSpreadsRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**

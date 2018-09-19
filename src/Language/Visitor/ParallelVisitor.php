@@ -28,43 +28,39 @@ class ParallelVisitor implements VisitorInterface
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    public function enterNode(NodeInterface $node): VisitorResult
     {
-        $newNode = null;
-
         foreach ($this->visitors as $i => $visitor) {
             if (!isset($this->skipping[$i])) {
-                try {
-                    $newNode = $visitor->enterNode($node);
-                } catch (VisitorBreak $break) {
-                    $this->skipping[$i] = $break;
+                $VisitorResult = $visitor->enterNode($node);
+
+                if ($VisitorResult->getAction() === VisitorResult::ACTION_BREAK) {
+                    $this->skipping[$i] = true;
                     continue;
                 }
 
-                if (null === $newNode) {
+                if (null === $VisitorResult->getValue()) {
                     $this->skipping[$i] = $node;
 
-                    $newNode = $node;
+                    $VisitorResult = new VisitorResult($node);
                 }
             }
         }
 
-        return $newNode;
+        return $VisitorResult ?? new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface
+    public function leaveNode(NodeInterface $node): VisitorResult
     {
-        $newNode = null;
-
         foreach ($this->visitors as $i => $visitor) {
             if (!isset($this->skipping[$i])) {
-                try {
-                    $newNode = $visitor->leaveNode($node);
-                } catch (VisitorBreak $break) {
-                    $this->skipping[$i] = $break;
+                $VisitorResult = $visitor->leaveNode($node);
+
+                if ($VisitorResult->getAction() === VisitorResult::ACTION_BREAK) {
+                    $this->skipping[$i] = true;
                     continue;
                 }
             } elseif ($this->skipping[$i] === $node) {
@@ -72,6 +68,6 @@ class ParallelVisitor implements VisitorInterface
             }
         }
 
-        return $newNode;
+        return $VisitorResult ?? new VisitorResult(null);
     }
 }

@@ -3,13 +3,13 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\Node\DefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\ExecutableDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaExtensionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
 
 /**
@@ -23,7 +23,7 @@ class ExecutableDefinitionsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterDocument(DocumentNode $node): ?NodeInterface
+    protected function enterDocument(DocumentNode $node): VisitorResult
     {
         foreach ($node->getDefinitions() as $definition) {
             if (!$definition instanceof ExecutableDefinitionNodeInterface) {
@@ -36,7 +36,7 @@ class ExecutableDefinitionsRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**

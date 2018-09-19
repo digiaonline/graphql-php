@@ -5,7 +5,9 @@ namespace Digia\GraphQL\Language\Node;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\NodeBuilderInterface;
+use Digia\GraphQL\Language\Visitor\VisitorBreak;
 use Digia\GraphQL\Language\Visitor\VisitorInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Util\ArrayToJsonTrait;
 use Digia\GraphQL\Util\SerializationInterface;
 
@@ -126,12 +128,7 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
     }
 
     /**
-     * @param VisitorInterface   $visitor
-     * @param mixed              $key
-     * @param NodeInterface|null $parent
-     * @param string[]           $path
-     * @param NodeInterface[]    $ancestors
-     * @return NodeInterface|null
+     * @inheritdoc
      */
     public function acceptVisitor(
         VisitorInterface $visitor,
@@ -146,10 +143,16 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
         $this->path      = $path;
         $this->ancestors = $ancestors;
 
-        $newNode = clone $this;
+        $VisitorResult = $visitor->enterNode(clone $this);
+        $newNode       = $VisitorResult->getValue();
+
+        // Handle early exit while entering
+        if ($VisitorResult->getAction() === VisitorResult::ACTION_BREAK) {
+            throw new VisitorBreak();
+        }
 
         // If the result was null, it means that we should not traverse this branch.
-        if (null === ($newNode = $visitor->enterNode($newNode))) {
+        if (null === $newNode) {
             return null;
         }
 
@@ -178,7 +181,14 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
             }
         }
 
-        return $visitor->leaveNode($newNode);
+        $VisitorResult = $visitor->leaveNode($newNode);
+
+        // Handle early exit while leaving
+        if ($VisitorResult->getAction() === VisitorResult::ACTION_BREAK) {
+            throw new VisitorBreak();
+        }
+
+        return $VisitorResult->getValue();
     }
 
     /**
@@ -324,8 +334,8 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
     }
 
     /**
-     * @param NodeInterface[]    $nodes
-     * @param string|int         $key
+     * @param NodeInterface[] $nodes
+     * @param string|int      $key
      * @return NodeInterface[]
      */
     protected function visitNodes(array $nodes, $key): array

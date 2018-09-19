@@ -28,6 +28,7 @@ use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaExtensionNode;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\UnionTypeExtensionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\Directive;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Validation\misplacedDirectiveMessage;
@@ -44,7 +45,7 @@ class KnownDirectivesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterDirective(DirectiveNode $node): ?NodeInterface
+    protected function enterDirective(DirectiveNode $node): VisitorResult
     {
         /** @var Directive $directiveDefinition */
         $directiveDefinition = find(
@@ -59,7 +60,7 @@ class KnownDirectivesRule extends AbstractRule
                 new ValidationException(unknownDirectiveMessage((string)$node), [$node])
             );
 
-            return $node;
+            return new VisitorResult($node);
         }
 
         $location = $this->getDirectiveLocationFromASTPath($node);
@@ -70,7 +71,7 @@ class KnownDirectivesRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**

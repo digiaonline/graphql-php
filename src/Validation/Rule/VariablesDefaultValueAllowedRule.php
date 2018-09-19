@@ -4,9 +4,9 @@ namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use function Digia\GraphQL\Validation\variableDefaultValueNotAllowedMessage;
 
@@ -21,23 +21,23 @@ class VariablesDefaultValueAllowedRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterSelectionSet(SelectionSetNode $node): ?NodeInterface
+    protected function enterSelectionSet(SelectionSetNode $node): VisitorResult
     {
-        return null;
+        return new VisitorResult(null);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): VisitorResult
     {
-        return null;
+        return new VisitorResult(null);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node): VisitorResult
     {
         $variable     = $node->getVariable();
         $variableName = $variable->getNameValue();
@@ -53,6 +53,6 @@ class VariablesDefaultValueAllowedRule extends AbstractRule
             );
         }
 
-        return null; // do not traverse further.
+        return new VisitorResult(null); // do not traverse further.
     }
 }

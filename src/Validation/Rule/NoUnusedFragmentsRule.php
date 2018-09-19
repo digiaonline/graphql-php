@@ -5,8 +5,8 @@ namespace Digia\GraphQL\Validation\Rule;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\unusedFragmentMessage;
 
 /**
@@ -30,27 +30,27 @@ class NoUnusedFragmentsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
         $this->operationDefinitions[] = $node;
 
-        return null;
+        return new VisitorResult(null);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): VisitorResult
     {
         $this->fragmentDefinitions[] = $node;
 
-        return null;
+        return new VisitorResult(null);
     }
 
     /**
      * @inheritdoc
      */
-    protected function leaveDocument(DocumentNode $node): ?NodeInterface
+    protected function leaveDocument(DocumentNode $node): VisitorResult
     {
         $fragmentNamesUsed = [];
 
@@ -70,6 +70,6 @@ class NoUnusedFragmentsRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

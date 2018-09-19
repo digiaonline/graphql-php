@@ -4,9 +4,9 @@ namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\NameNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\duplicateVariableMessage;
 
 /**
@@ -24,17 +24,17 @@ class UniqueVariableNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
         $this->knownVariableNames = [];
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node): VisitorResult
     {
         $variable     = $node->getVariable();
         $variableName = $variable->getNameValue();
@@ -50,6 +50,6 @@ class UniqueVariableNamesRule extends AbstractRule
             $this->knownVariableNames[$variableName] = $variable->getName();
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

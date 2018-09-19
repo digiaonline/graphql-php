@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\NameNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 
 /**
@@ -26,27 +26,27 @@ class UniqueArgumentNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterField(FieldNode $node): ?NodeInterface
+    protected function enterField(FieldNode $node): VisitorResult
     {
         $this->knownArgumentNames = [];
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterDirective(DirectiveNode $node): ?NodeInterface
+    protected function enterDirective(DirectiveNode $node): VisitorResult
     {
         $this->knownArgumentNames = [];
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterArgument(ArgumentNode $node): ?NodeInterface
+    protected function enterArgument(ArgumentNode $node): VisitorResult
     {
         $argumentName = $node->getNameValue();
 
@@ -61,6 +61,6 @@ class UniqueArgumentNamesRule extends AbstractRule
             $this->knownArgumentNames[$argumentName] = $node->getName();
         }
 
-        return null;
+        return new VisitorResult(null);
     }
 }

@@ -4,10 +4,10 @@ namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Util\TypeASTConverter;
@@ -30,11 +30,11 @@ class VariablesInAllowedPositionRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
         $this->variableDefinitionMap = [];
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
@@ -43,7 +43,7 @@ class VariablesInAllowedPositionRule extends AbstractRule
      * @throws InvariantException
      * @throws \Digia\GraphQL\Error\ConversionException
      */
-    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function leaveOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
         $usages = $this->context->getRecursiveVariableUsages($node);
 
@@ -81,17 +81,17 @@ class VariablesInAllowedPositionRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node): VisitorResult
     {
         $this->variableDefinitionMap[$node->getVariable()->getNameValue()] = $node;
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**

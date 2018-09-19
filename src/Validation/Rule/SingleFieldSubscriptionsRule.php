@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\singleFieldOnlyMessage;
 
 /**
@@ -17,10 +17,10 @@ class SingleFieldSubscriptionsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
         if ($node->getOperation() !== 'subscription') {
-            return $node;
+            return new VisitorResult($node);
         }
 
         $selectionSet = $node->getSelectionSet();
@@ -34,6 +34,6 @@ class SingleFieldSubscriptionsRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

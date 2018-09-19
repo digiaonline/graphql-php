@@ -13,6 +13,7 @@ use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\Visitor;
 use Digia\GraphQL\Language\Visitor\VisitorBreak;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Util\TypeInfo;
@@ -31,13 +32,15 @@ class VisitorTest extends TestCase
         $ast = parse('{ a }');
 
         $visitor = new Visitor(
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['enter', array_slice($node->getPath(), 0)];
-                return $node;
+
+                return new VisitorResult($node);
             },
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['leave', array_slice($node->getPath(), 0)];
-                return $node;
+
+                return new VisitorResult($node);
             }
         );
 
@@ -63,11 +66,12 @@ class VisitorTest extends TestCase
         $document = parse('{ a, b, c { a, b, c } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node): ?NodeInterface {
+            function (NodeInterface $node): VisitorResult {
                 if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
-                    return null;
+                    return new VisitorResult(null, VisitorResult::ACTION_REPLACE);
                 }
-                return $node;
+
+                return new VisitorResult($node);
             }
         );
 
@@ -93,11 +97,12 @@ class VisitorTest extends TestCase
 
         $visitor = new Visitor(
             null,
-            function (NodeInterface $node): ?NodeInterface {
+            function (NodeInterface $node): VisitorResult {
                 if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
-                    return null;
+                    return new VisitorResult(null, VisitorResult::ACTION_REPLACE);
                 }
-                return $node;
+
+                return new VisitorResult($node);
             }
         );
 
@@ -133,16 +138,16 @@ class VisitorTest extends TestCase
         $ast = parse('{ a { x } }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node) use (&$didVisitEditedNode, $addedField): ?NodeInterface {
+            function (NodeInterface $node) use (&$didVisitEditedNode, $addedField): VisitorResult {
                 if ($node instanceof FieldNode && $node->getNameValue() === 'a') {
-                    return $addedField;
+                    return new VisitorResult($addedField);
                 }
 
                 if ($node instanceof AddedFieldNode) {
                     $didVisitEditedNode = true;
                 }
 
-                return $node;
+                return new VisitorResult($node);
             }
         );
 
@@ -159,19 +164,19 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
-                    return null;
+                    return new VisitorResult(null);
                 }
 
-                return $node;
+                return new VisitorResult($node);
             },
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
-                return $node;
+                return new VisitorResult($node);
             }
         );
 
@@ -204,26 +209,25 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 if ($node instanceof NameNode && $node->getValue() === 'x') {
-                    throw new VisitorBreak();
+                    return new VisitorResult($node, VisitorResult::ACTION_BREAK);
                 }
 
-                return $node;
+                return new VisitorResult($node);
             },
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
-                return $node;
+                return new VisitorResult($node);
             }
         );
 
         try {
             $ast->acceptVisitor($visitor);
-        } catch (VisitorBreak $break) {
-
+        } catch (VisitorBreak $e) {
         }
 
         $this->assertEquals([
@@ -251,27 +255,25 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
-                return $node;
+                return new VisitorResult($node);
             },
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                 if ($node instanceof NameNode && $node->getValue() === 'x') {
-                    throw new VisitorBreak();
+                    return new VisitorResult($node, VisitorResult::ACTION_BREAK);
                 }
 
-                return $node;
+                return new VisitorResult($node);
             }
         );
 
-        // TODO: Find an alternative solution for this.
         try {
             $ast->acceptVisitor($visitor);
-        } catch (VisitorBreak $break) {
-
+        } catch (VisitorBreak $e) {
         }
 
         $this->assertEquals([
@@ -300,23 +302,26 @@ class VisitorTest extends TestCase
         $ast = parse('{ a, b { x }, c }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 if ($node instanceof NameNode || $node instanceof SelectionSetNode) {
                     $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
                 }
 
-                return $node;
+                return new VisitorResult($node);
             },
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 if ($node instanceof SelectionSetNode) {
                     $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
                 }
 
-                return $node;
+                return new VisitorResult($node);
             }
         );
 
-        $ast->acceptVisitor($visitor);
+        try {
+            $ast->acceptVisitor($visitor);
+        } catch (VisitorBreak $e) {
+        }
 
         $this->assertEquals([
             ['enter', 'SelectionSet', null],
@@ -338,19 +343,22 @@ class VisitorTest extends TestCase
         $ast = parse('fragment a($v: Boolean = false) on t { f }', ['noLocation' => true]);
 
         $visitor = new Visitor(
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
-                return $node;
+                return new VisitorResult($node);
             },
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
-                return $node;
+                return new VisitorResult($node);
             }
         );
 
-        $ast->acceptVisitor($visitor);
+        try {
+            $ast->acceptVisitor($visitor);
+        } catch (VisitorBreak $e) {
+        }
 
         $this->assertEquals([
             ['enter', 'Document', null],
@@ -394,19 +402,24 @@ class VisitorTest extends TestCase
         $ast = parse($kitchenSink);
 
         $visitor = new Visitor(
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $parent    = $node->getParent();
                 $visited[] = ['enter', $node->getKind(), $node->getKey(), $parent ? $parent->getKind() : null];
-                return $node;
+
+                return new VisitorResult($node);
             },
-            function (NodeInterface $node) use (&$visited): ?NodeInterface {
+            function (NodeInterface $node) use (&$visited): VisitorResult {
                 $parent    = $node->getParent();
                 $visited[] = ['leave', $node->getKind(), $node->getKey(), $parent ? $parent->getKind() : null];
-                return $node;
+
+                return new VisitorResult($node);
             }
         );
 
-        $ast->acceptVisitor($visitor);
+        try {
+            $ast->acceptVisitor($visitor);
+        } catch (VisitorBreak $e) {
+        }
 
         $this->assertEquals([
             ['enter', 'Document', null, null],
@@ -731,24 +744,27 @@ class VisitorTest extends TestCase
 
         $visitor = new ParallelVisitor([
             new Visitor(
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                     if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
-                        return null;
+                        return new VisitorResult(null);
                     }
 
-                    return $node;
+                    return new VisitorResult($node);
                 },
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
-                    return $node;
+                    return new VisitorResult($node);
                 }
             ),
         ]);
 
-        $ast->acceptVisitor($visitor);
+        try {
+            $ast->acceptVisitor($visitor);
+        } catch (VisitorBreak $e) {
+        }
 
         $this->assertEquals([
             ['enter', 'Document', null],
@@ -778,7 +794,7 @@ class VisitorTest extends TestCase
 
         $visitor = new ParallelVisitor([
             new Visitor(
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = [
                         'no-a',
                         'enter',
@@ -787,12 +803,12 @@ class VisitorTest extends TestCase
                     ];
 
                     if ($node instanceof FieldNode && $node->getNameValue() === 'a') {
-                        return null;
+                        return new VisitorResult(null);
                     }
 
-                    return $node;
+                    return new VisitorResult($node);
                 },
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = [
                         'no-a',
                         'leave',
@@ -800,11 +816,11 @@ class VisitorTest extends TestCase
                         $node instanceof NameNode ? $node->getValue() : null
                     ];
 
-                    return $node;
+                    return new VisitorResult($node);
                 }
             ),
             new Visitor(
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = [
                         'no-b',
                         'enter',
@@ -813,12 +829,12 @@ class VisitorTest extends TestCase
                     ];
 
                     if ($node instanceof FieldNode && $node->getNameValue() === 'b') {
-                        return null;
+                        return new VisitorResult(null);
                     }
 
-                    return $node;
+                    return new VisitorResult($node);
                 },
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = [
                         'no-b',
                         'leave',
@@ -826,12 +842,15 @@ class VisitorTest extends TestCase
                         $node instanceof NameNode ? $node->getValue() : null
                     ];
 
-                    return $node;
+                    return new VisitorResult($node);
                 }
             ),
         ]);
 
-        $ast->acceptVisitor($visitor);
+        try {
+            $ast->acceptVisitor($visitor);
+        } catch (VisitorBreak $e) {
+        }
 
         $this->assertEquals([
             ['no-a', 'enter', 'Document', null],
@@ -880,27 +899,26 @@ class VisitorTest extends TestCase
 
         $visitor = new ParallelVisitor([
             new Visitor(
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                     if ($node instanceof NameNode && $node->getValue() === 'x') {
-                        throw new VisitorBreak();
+                        return new VisitorResult($node, VisitorResult::ACTION_BREAK);
                     }
 
-                    return $node;
+                    return new VisitorResult($node);
                 },
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
-                    return $node;
+                    return new VisitorResult($node);
                 }
             ),
         ]);
 
         try {
             $ast->acceptVisitor($visitor);
-        } catch (VisitorBreak $break) {
-
+        } catch (VisitorBreak $e) {
         }
 
         $this->assertEquals([
@@ -929,27 +947,26 @@ class VisitorTest extends TestCase
 
         $visitor = new ParallelVisitor([
             new Visitor(
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = ['enter', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
-                    return $node;
+                    return new VisitorResult($node);
                 },
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = ['leave', $node->getKind(), $node instanceof NameNode ? $node->getValue() : null];
 
                     if ($node instanceof NameNode && $node->getValue() === 'x') {
-                        throw new VisitorBreak();
+                        return new VisitorResult($node, VisitorResult::ACTION_BREAK);
                     }
 
-                    return $node;
+                    return new VisitorResult($node);
                 }
             ),
         ]);
 
         try {
             $ast->acceptVisitor($visitor);
-        } catch (VisitorBreak $break) {
-
+        } catch (VisitorBreak $e) {
         }
 
         $this->assertEquals([
@@ -979,7 +996,7 @@ class VisitorTest extends TestCase
 
         $visitor = new ParallelVisitor([
             new Visitor(
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = [
                         'break-a',
                         'enter',
@@ -988,12 +1005,12 @@ class VisitorTest extends TestCase
                     ];
 
                     if ($node instanceof NameNode && $node->getValue() === 'a') {
-                        throw new VisitorBreak();
+                        return new VisitorResult($node, VisitorResult::ACTION_BREAK);
                     }
 
-                    return $node;
+                    return new VisitorResult($node);
                 },
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = [
                         'break-a',
                         'leave',
@@ -1001,11 +1018,11 @@ class VisitorTest extends TestCase
                         $node instanceof NameNode ? $node->getValue() : null
                     ];
 
-                    return $node;
+                    return new VisitorResult($node);
                 }
             ),
             new Visitor(
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = [
                         'break-b',
                         'enter',
@@ -1014,12 +1031,12 @@ class VisitorTest extends TestCase
                     ];
 
                     if ($node instanceof NameNode && $node->getValue() === 'b') {
-                        throw new VisitorBreak();
+                        return new VisitorResult($node, VisitorResult::ACTION_BREAK);
                     }
 
-                    return $node;
+                    return new VisitorResult($node);
                 },
-                function (NodeInterface $node) use (&$visited): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited): VisitorResult {
                     $visited[] = [
                         'break-b',
                         'leave',
@@ -1027,15 +1044,14 @@ class VisitorTest extends TestCase
                         $node instanceof NameNode ? $node->getValue() : null
                     ];
 
-                    return $node;
+                    return new VisitorResult($node);
                 }
             ),
         ]);
 
         try {
             $ast->acceptVisitor($visitor);
-        } catch (VisitorBreak $break) {
-
+        } catch (VisitorBreak $e) {
         }
 
         $this->assertEquals([
@@ -1073,7 +1089,7 @@ class VisitorTest extends TestCase
         $visitor  = new TypeInfoVisitor(
             $typeInfo,
             new Visitor(
-                function (NodeInterface $node) use (&$visited, $typeInfo): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited, $typeInfo): VisitorResult {
                     $parentType = $typeInfo->getParentType();
                     $type       = $typeInfo->getType();
                     $inputType  = $typeInfo->getInputType();
@@ -1086,9 +1102,9 @@ class VisitorTest extends TestCase
                         $inputType ? (string)$inputType : null,
                     ];
 
-                    return $node;
+                    return new VisitorResult($node);
                 },
-                function (NodeInterface $node) use (&$visited, $typeInfo): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited, $typeInfo): VisitorResult {
                     $parentType = $typeInfo->getParentType();
                     $type       = $typeInfo->getType();
                     $inputType  = $typeInfo->getInputType();
@@ -1101,12 +1117,15 @@ class VisitorTest extends TestCase
                         $inputType ? (string)$inputType : null,
                     ];
 
-                    return $node;
+                    return new VisitorResult($node);
                 }
             )
         );
 
-        $ast->acceptVisitor($visitor);
+        try {
+            $ast->acceptVisitor($visitor);
+        } catch (VisitorBreak $e) {
+        }
 
         $this->assertEquals([
             ['enter', 'Document', null, null, null, null],
@@ -1165,7 +1184,7 @@ class VisitorTest extends TestCase
         $visitor  = new TypeInfoVisitor(
             $typeInfo,
             new Visitor(
-                function (NodeInterface $node) use (&$visited, $typeInfo, $nodeBuilder): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited, $typeInfo, $nodeBuilder): VisitorResult {
                     $parentType = $typeInfo->getParentType();
                     $type       = $typeInfo->getType();
                     $inputType  = $typeInfo->getInputType();
@@ -1183,7 +1202,7 @@ class VisitorTest extends TestCase
                         && null === $node->getSelectionSet()
                         && getNamedType($type) instanceof CompositeTypeInterface
                     ) {
-                        return $nodeBuilder->build([
+                        return new VisitorResult($nodeBuilder->build([
                             'kind'         => NodeKindEnum::FIELD,
                             'alias'        => $node->getAliasAST(),
                             'name'         => $node->getNameAST(),
@@ -1198,12 +1217,12 @@ class VisitorTest extends TestCase
                                     ]
                                 ]
                             ],
-                        ]);
+                        ]), VisitorResult::ACTION_REPLACE);
                     }
 
-                    return $node;
+                    return new VisitorResult($node);
                 },
-                function (NodeInterface $node) use (&$visited, $typeInfo): ?NodeInterface {
+                function (NodeInterface $node) use (&$visited, $typeInfo): VisitorResult {
                     $parentType = $typeInfo->getParentType();
                     $type       = $typeInfo->getType();
                     $inputType  = $typeInfo->getInputType();
@@ -1217,12 +1236,15 @@ class VisitorTest extends TestCase
                         $inputType ? (string)$inputType : null,
                     ];
 
-                    return $node;
+                    return new VisitorResult($node);
                 }
             )
         );
 
-        $ast->acceptVisitor($visitor);
+        try {
+            $ast->acceptVisitor($visitor);
+        } catch (VisitorBreak $e) {
+        }
 
         // TODO: Add asserts for print once the printer is implemented
 

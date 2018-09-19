@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Validation\Conflict\ConflictFinder;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
 
@@ -33,7 +33,7 @@ class OverlappingFieldsCanBeMergedRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterSelectionSet(SelectionSetNode $node): ?NodeInterface
+    protected function enterSelectionSet(SelectionSetNode $node): VisitorResult
     {
         $this->conflictFinder->setContext($this->context);
 
@@ -49,6 +49,6 @@ class OverlappingFieldsCanBeMergedRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

@@ -5,8 +5,8 @@ namespace Digia\GraphQL\Validation\Rule;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\fragmentCycleMessage;
 
 /**
@@ -42,21 +42,21 @@ class NoFragmentCyclesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
-        return null; // Operations cannot contain fragments.
+        return new VisitorResult(null); // Operations cannot contain fragments.
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): VisitorResult
     {
         if (!isset($this->visitedFragments[$node->getNameValue()])) {
             $this->detectFragmentCycle($node);
         }
 
-        return null;
+        return new VisitorResult(null);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Validation\Rule;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\DirectivesAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\duplicateDirectiveMessage;
 
 /**
@@ -18,7 +19,7 @@ class UniqueDirectivesPerLocationRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    public function enterNode(NodeInterface $node): VisitorResult
     {
         if ($node instanceof DirectivesAwareInterface) {
             $directives      = $node->getDirectives();
@@ -40,6 +41,6 @@ class UniqueDirectivesPerLocationRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

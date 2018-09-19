@@ -5,16 +5,12 @@ namespace Digia\GraphQL\Validation\Rule;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FieldNode;
-use Digia\GraphQL\Language\Node\InterfacesTrait;
-use Digia\GraphQL\Language\Node\NameAwareInterface;
-use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\FieldsAwareInterface;
-use Digia\GraphQL\Type\Definition\FieldsTrait;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
-use Digia\GraphQL\Type\Definition\NameTrait;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
@@ -32,7 +28,7 @@ class FieldOnCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterField(FieldNode $node): ?NodeInterface
+    protected function enterField(FieldNode $node): VisitorResult
     {
         $type = $this->context->getParentType();
 
@@ -61,7 +57,7 @@ class FieldOnCorrectTypeRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**

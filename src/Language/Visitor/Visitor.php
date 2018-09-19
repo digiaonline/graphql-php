@@ -31,20 +31,20 @@ class Visitor implements VisitorInterface
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    public function enterNode(NodeInterface $node): VisitorResult
     {
         return null !== $this->enterCallback
             ? \call_user_func($this->enterCallback, $node)
-            : $node;
+            : new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface
+    public function leaveNode(NodeInterface $node): VisitorResult
     {
         return null !== $this->leaveCallback
             ? \call_user_func($this->leaveCallback, $node)
-            : $node;
+            : new VisitorResult($node);
     }
 }
