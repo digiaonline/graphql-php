@@ -116,7 +116,7 @@ class Parser implements ParserInterface
         $this->lexer = $this->createLexer($source, $options);
 
         $this->expect(TokenKindEnum::SOF);
-        $node = $lexCallback($source, $options);
+        $node = $lexCallback();
         $this->expect(TokenKindEnum::EOF);
 
         return $node;
@@ -750,7 +750,7 @@ class Parser implements ParserInterface
      * @return DirectiveNode
      * @throws SyntaxErrorException
      */
-    protected function lexDirective(bool $isConst): DirectiveNode
+    protected function lexDirective(bool $isConst = false): DirectiveNode
     {
         $start = $this->lexer->getToken();
 
