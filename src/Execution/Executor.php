@@ -669,6 +669,10 @@ class Executor
         $possibleTypes           = $info->getSchema()->getPossibleTypes($abstractType);
         $promisedIsTypeOfResults = [];
 
+        if (is_array($value) && isset($value['__typename'])) {
+            return $value['__typename'];
+        }
+
         foreach ($possibleTypes as $index => $type) {
             $isTypeOfResult = $type->isTypeOf($value, $context, $info);
 
