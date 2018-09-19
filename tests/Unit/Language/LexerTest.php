@@ -553,8 +553,10 @@ EOD;
     }
 
     /**
-     * @param Source|string $source
+     * @param string|Source $source
+     * @param array         $options
      * @return LexerInterface
+     * @throws \Digia\GraphQL\Error\InvariantException
      */
     private function getLexer($source, array $options = []): LexerInterface
     {

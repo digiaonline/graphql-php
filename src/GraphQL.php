@@ -121,12 +121,12 @@ class GraphQL
     }
 
     /**
-     * @param string|Source                   $source
+     * @param Source                          $source
      * @param array|ResolverRegistryInterface $resolverRegistry
      * @param array                           $options
      * @return Schema
      */
-    public static function buildSchema($source, $resolverRegistry, array $options = []): Schema
+    public static function buildSchema(Source $source, $resolverRegistry, array $options = []): Schema
     {
         return static::make(SchemaBuilderInterface::class)
             ->build(
@@ -140,14 +140,14 @@ class GraphQL
 
     /**
      * @param Schema                          $schema
-     * @param string|Source                   $source
+     * @param Source                          $source
      * @param array|ResolverRegistryInterface $resolverRegistry
      * @param array                           $options
      * @return Schema
      */
     public static function extendSchema(
         Schema $schema,
-        $source,
+        Source $source,
         $resolverRegistry,
         array $options = []
     ): Schema {
@@ -175,11 +175,11 @@ class GraphQL
     }
 
     /**
-     * @param string|Source $source
-     * @param array         $options
+     * @param Source $source
+     * @param array  $options
      * @return DocumentNode
      */
-    public static function parse($source, array $options = []): DocumentNode
+    public static function parse(Source $source, array $options = []): DocumentNode
     {
         /** @var ParserInterface $parser */
         $parser = static::make(ParserInterface::class);
@@ -188,11 +188,11 @@ class GraphQL
     }
 
     /**
-     * @param string|Source $source
-     * @param array         $options
+     * @param Source $source
+     * @param array  $options
      * @return ValueNodeInterface
      */
-    public static function parseValue($source, array $options = []): ValueNodeInterface
+    public static function parseValue(Source $source, array $options = []): ValueNodeInterface
     {
         /** @var ParserInterface $parser */
         $parser = static::make(ParserInterface::class);
@@ -201,11 +201,11 @@ class GraphQL
     }
 
     /**
-     * @param string|Source $source
-     * @param array         $options
+     * @param Source $source
+     * @param array  $options
      * @return TypeNodeInterface
      */
-    public static function parseType($source, array $options = []): TypeNodeInterface
+    public static function parseType(Source $source, array $options = []): TypeNodeInterface
     {
         /** @var ParserInterface $parser */
         $parser = static::make(ParserInterface::class);

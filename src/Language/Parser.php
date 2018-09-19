@@ -46,9 +46,9 @@ use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaExtensionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\StringValueNode;
+use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\TypeSystemExtensionNodeInterface;
-use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\UnionTypeExtensionNode;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
@@ -97,7 +97,7 @@ class Parser implements ParserInterface
      * @throws \ReflectionException
      * @throws InvariantException
      */
-    public function parse($source, array $options = []): DocumentNode
+    public function parse(Source $source, array $options = []): DocumentNode
     {
         $this->lexer = $this->createLexer($source, $options);
 
@@ -105,14 +105,13 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @param callable      $lexCallback
-     * @param Source|string $source
-     * @param array         $options
+     * @param callable $lexCallback
+     * @param Source   $source
+     * @param array    $options
      * @return NodeInterface
-     * @throws InvariantException
      * @throws SyntaxErrorException
      */
-    protected function parsePartial(callable $lexCallback, $source, array $options = []): NodeInterface
+    protected function parsePartial(callable $lexCallback, Source $source, array $options = []): NodeInterface
     {
         $this->lexer = $this->createLexer($source, $options);
 
@@ -1629,14 +1628,13 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @param string|Source $source
-     * @param array         $options
+     * @param Source $source
+     * @param array  $options
      * @return LexerInterface
-     * @throws InvariantException
      */
     protected function createLexer($source, array $options): LexerInterface
     {
-        return new Lexer($source instanceof Source ? $source : new Source($source), $options);
+        return new Lexer($source, $options);
     }
 
     /**
