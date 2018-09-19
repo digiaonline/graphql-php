@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\ArgumentNode;
@@ -12,6 +13,7 @@ use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Language\ParserInterface;
+use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\parse;
@@ -22,26 +24,29 @@ use function Digia\GraphQL\Test\readFileContents;
 class ParserTest extends TestCase
 {
 
+    /**
+     * @throws InvariantException
+     */
     public function testParsePartial()
     {
         /** @var ParserInterface $parser */
         $parser = GraphQL::make(ParserInterface::class);
 
         /** @var NameNode $nameNode */
-        $nameNode = $parser->parseName('foo');
+        $nameNode = $parser->parseName(new Source('foo'));
 
         $this->assertInstanceOf(NameNode::class, $nameNode);
         $this->assertEquals('foo', $nameNode->getValue());
 
         /** @var OperationDefinitionNode $operationDefinition */
-        $operationDefinition = $parser->parseOperationDefinition('query FooQuery { foo }');
+        $operationDefinition = $parser->parseOperationDefinition(new Source('query FooQuery { foo }'));
 
         $this->assertInstanceOf(OperationDefinitionNode::class, $operationDefinition);
         $this->assertEquals('query', $operationDefinition->getOperation());
         $this->assertEquals('FooQuery', $operationDefinition->getNameValue());
 
         /** @var VariableDefinitionNode $variableDefinitionNode */
-        $variableDefinitionNode = $parser->parseVariableDefinition('$foo: String = "bar"');
+        $variableDefinitionNode = $parser->parseVariableDefinition(new Source('$foo: String = "bar"'));
 
         $this->assertInstanceOf(VariableDefinitionNode::class, $variableDefinitionNode);
         $this->assertEquals('foo', $variableDefinitionNode->getVariable()->getNameValue());
@@ -51,19 +56,19 @@ class ParserTest extends TestCase
         $this->assertEquals('bar', $variableDefinitionNode->getDefaultValue()->getValue());
 
         /** @var VariableNode $variableNode */
-        $variableNode = $parser->parseVariable('$foo');
+        $variableNode = $parser->parseVariable(new Source('$foo'));
 
         $this->assertInstanceOf(VariableNode::class, $variableNode);
         $this->assertEquals('foo', $variableNode->getNameValue());
 
         /** @var ArgumentNode $argumentNode */
-        $argumentNode = $parser->parseArgument('foo: String');
+        $argumentNode = $parser->parseArgument(new Source('foo: String'));
 
         $this->assertInstanceOf(ArgumentNode::class, $argumentNode);
         $this->assertEquals('foo', $argumentNode->getNameValue());
 
         /** @var DirectiveNode $directiveNode */
-        $directiveNode = $parser->parseDirective('@foo(bar: String, baz: Int)');
+        $directiveNode = $parser->parseDirective(new Source('@foo(bar: String, baz: Int)'));
         $directiveArgs = $directiveNode->getArguments();
 
         $this->assertInstanceOf(DirectiveNode::class, $directiveNode);

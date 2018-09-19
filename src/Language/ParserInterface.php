@@ -46,9 +46,9 @@ interface ParserInterface
     /**
      * Given a GraphQL source, parses it into a Document.
      *
-     * @param Source|string $source
-     * @param array         $options
+     * @param Source $source
+     * @param array  $options
      * @return DocumentNode
      */
-    public function parse($source, array $options = []): DocumentNode;
+    public function parse(Source $source, array $options = []): DocumentNode;
 }

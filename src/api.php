@@ -12,6 +12,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\Source;
+use Digia\GraphQL\Language\StringSourceBuilder;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\Schema;
 
@@ -24,6 +25,10 @@ use Digia\GraphQL\Schema\Schema;
  */
 function buildSchema($source, $resolverRegistry = [], array $options = []): Schema
 {
+    if (\is_string($source)) {
+        $source = (new StringSourceBuilder($source))->build();
+    }
+    
     return GraphQL::buildSchema($source, $resolverRegistry, $options);
 }
 
@@ -37,6 +42,10 @@ function buildSchema($source, $resolverRegistry = [], array $options = []): Sche
  */
 function extendSchema(Schema $schema, $source, $resolverRegistry = [], array $options = []): Schema
 {
+    if (\is_string($source)) {
+        $source = (new StringSourceBuilder($source))->build();
+    }
+    
     return GraphQL::extendSchema($schema, $source, $resolverRegistry, $options);
 }
 
@@ -58,6 +67,10 @@ function validateSchema(Schema $schema): array
  */
 function parse($source, array $options = []): DocumentNode
 {
+    if (\is_string($source)) {
+        $source = (new StringSourceBuilder($source))->build();
+    }
+    
     return GraphQL::parse($source, $options);
 }
 
@@ -70,6 +83,10 @@ function parse($source, array $options = []): DocumentNode
  */
 function parseValue($source, array $options = []): ValueNodeInterface
 {
+    if (\is_string($source)) {
+        $source = (new StringSourceBuilder($source))->build();
+    }
+    
     return GraphQL::parseValue($source, $options);
 }
 
@@ -82,6 +99,10 @@ function parseValue($source, array $options = []): ValueNodeInterface
  */
 function parseType($source, array $options = []): TypeNodeInterface
 {
+    if (\is_string($source)) {
+        $source = (new StringSourceBuilder($source))->build();
+    }
+    
     return GraphQL::parseType($source, $options);
 }
 
