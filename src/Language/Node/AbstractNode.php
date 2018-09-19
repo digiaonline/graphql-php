@@ -395,7 +395,7 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
      */
     protected function removeOneFromPath()
     {
-        $this->path = \array_slice($this->path, 0, -1);
+        \array_pop($this->path);
     }
 
     /**
