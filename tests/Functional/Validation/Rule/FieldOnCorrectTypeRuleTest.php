@@ -245,10 +245,6 @@ class FieldOnCorrectTypeRuleTest extends RuleTestCase
 
     public function testDefinedOnImplementorsQueriedOnUnion()
     {
-        $this->markTestIncomplete(
-            'POTENTIAL BUG: Test taken from the reference implementation goes against all logic because Cat is defined before Dog.'
-        );
-
         $this->expectFailsRule(
             $this->rule,
             dedent('

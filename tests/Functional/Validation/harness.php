@@ -158,7 +158,7 @@ function CatOrDog(): UnionType
     return $instance ??
         $instance = newUnionType([
             'name'  => 'CatOrDog',
-            'types' => [Cat(), Dog()],
+            'types' => [Dog(), Cat()],
         ]);
 }
 
