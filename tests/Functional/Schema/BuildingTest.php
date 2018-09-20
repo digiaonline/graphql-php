@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Test\Functional\Schema;
 
-use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Schema\Schema;
+use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\buildSchema;
 use function Digia\GraphQL\Test\readFileContents;
 
