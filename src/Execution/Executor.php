@@ -665,13 +665,13 @@ class Executor
         ResolveInfo $info,
         AbstractTypeInterface $abstractType
     ) {
-        /** @var ObjectType[] $possibleTypes */
-        $possibleTypes           = $info->getSchema()->getPossibleTypes($abstractType);
-        $promisedIsTypeOfResults = [];
-
         if (\is_array($value) && isset($value['__typename'])) {
             return $value['__typename'];
         }
+
+        /** @var ObjectType[] $possibleTypes */
+        $possibleTypes           = $info->getSchema()->getPossibleTypes($abstractType);
+        $promisedIsTypeOfResults = [];
 
         foreach ($possibleTypes as $index => $type) {
             $isTypeOfResult = $type->isTypeOf($value, $context, $info);
