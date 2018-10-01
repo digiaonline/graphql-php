@@ -17,7 +17,6 @@ use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Type\isIntrospectionType;
 use function Digia\GraphQL\Type\newInterfaceType;
 use function Digia\GraphQL\Type\newList;
@@ -364,7 +363,6 @@ class ExtensionContext implements ExtensionContextInterface
      * @throws InvalidTypeException
      * @throws InvariantException
      * @throws ExtensionException
-     * @throws InvalidArgumentException
      */
     protected function extendFieldMap(FieldsAwareInterface $type): array
     {
@@ -413,7 +411,6 @@ class ExtensionContext implements ExtensionContextInterface
     /**
      * @param TypeInterface $typeDefinition
      * @return TypeInterface
-     * @throws InvalidArgumentException
      * @throws InvalidTypeException
      * @throws InvariantException
      */
