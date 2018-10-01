@@ -51,7 +51,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 },
             ]);
         }, true/* $shared */)
-            ->withArgument(BooleanCoercer::class);
+            ->addArgument(BooleanCoercer::class);
 
         $this->container->add(GraphQL::FLOAT, function (FloatCoercer $coercer) {
             return newScalarType([
@@ -74,7 +74,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 },
             ]);
         }, true/* $shared */)
-            ->withArgument(FloatCoercer::class);
+            ->addArgument(FloatCoercer::class);
 
         $this->container->add(GraphQL::INT, function (IntCoercer $coercer) {
             return newScalarType([
@@ -100,7 +100,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 },
             ]);
         }, true/* $shared */)
-            ->withArgument(IntCoercer::class);
+            ->addArgument(IntCoercer::class);
 
         $this->container->add(GraphQL::ID, function (StringCoercer $coercer) {
             return newScalarType([
@@ -125,7 +125,7 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 },
             ]);
         }, true/* $shared */)
-            ->withArgument(StringCoercer::class);
+            ->addArgument(StringCoercer::class);
 
         $this->container->add(GraphQL::STRING, function (StringCoercer $coercer) {
             return newScalarType([
@@ -148,6 +148,6 @@ class ScalarTypesProvider extends AbstractServiceProvider
                 },
             ]);
         }, true/* $shared */)
-            ->withArgument(StringCoercer::class);
+            ->addArgument(StringCoercer::class);
     }
 }

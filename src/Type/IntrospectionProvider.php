@@ -456,7 +456,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                 },
             ]);
         })
-            ->withArgument(GraphQL::SCHEMA_INTROSPECTION);
+            ->addArgument(GraphQL::SCHEMA_INTROSPECTION);
 
         $this->container->add(GraphQL::TYPE_META_FIELD_DEFINITION, function ($__Type) {
             return newField([
@@ -470,7 +470,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                 },
             ]);
         })
-            ->withArgument(GraphQL::TYPE_INTROSPECTION);
+            ->addArgument(GraphQL::TYPE_INTROSPECTION);
 
         $this->container->add(GraphQL::TYPE_NAME_META_FIELD_DEFINITION, function () {
             return newField([

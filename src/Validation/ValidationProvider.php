@@ -20,6 +20,6 @@ class ValidationProvider extends AbstractServiceProvider
     public function register()
     {
         $this->container->add(ValidatorInterface::class, Validator::class, true/* $shared */)
-            ->withArgument(SchemaValidatorInterface::class);
+            ->addArgument(SchemaValidatorInterface::class);
     }
 }
