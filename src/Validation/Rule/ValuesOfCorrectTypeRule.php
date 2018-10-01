@@ -245,6 +245,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
                     null,
                     null,
                     null,
+                    null,
                     $ex
                 )
             );

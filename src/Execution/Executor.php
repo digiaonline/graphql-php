@@ -2,11 +2,13 @@
 
 namespace Digia\GraphQL\Execution;
 
+use Digia\GraphQL\Error\ErrorHandlerInterface;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\UndefinedException;
+use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
@@ -104,9 +106,9 @@ class Executor
                 ? $this->executeFieldsSerially($objectType, $rootValue, $path, $fields)
                 : $this->executeFields($objectType, $rootValue, $path, $fields);
         } catch (\Throwable $ex) {
-            $this->context->addError(new ExecutionException($ex->getMessage()));
-
-            return [null];
+            $error = new ExecutionException($ex->getMessage(), $fields, null, null, null, null, $ex);
+            $this->handleError($error);
+            return null;
         }
 
         return $result;
@@ -303,7 +305,8 @@ class Executor
 
             return $completed;
         } catch (\Throwable $ex) {
-            $this->context->addError($this->buildLocatedError($ex, $fieldNodes, $path));
+            $error = $this->buildLocatedError($ex, $fieldNodes, $path);
+            $this->handleError($error);
             return null;
         }
     }
@@ -911,6 +914,7 @@ class Executor
             $originalException instanceof GraphQLException
                 ? ($originalException->getPath() ?? $path)
                 : $path,
+            null,
             $originalException
         );
     }
@@ -944,6 +948,23 @@ class Executor
             $context->getOperation(),
             $context->getVariableValues()
         );
+    }
+
+    /**
+     * @param ExecutionException $error
+     */
+    protected function handleError(ExecutionException $error)
+    {
+        $this->getErrorHandler()->handleError($error);
+        $this->context->addError($error);
+    }
+
+    /**
+     * @return ErrorHandlerInterface
+     */
+    protected function getErrorHandler(): ErrorHandlerInterface
+    {
+        return GraphQL::make(ErrorHandlerInterface::class);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL;
 
+use Digia\GraphQL\Error\ErrorProvider;
 use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionProvider;
 use Digia\GraphQL\Execution\ExecutionResult;
@@ -60,6 +61,7 @@ class GraphQL
      * @var array
      */
     private static $providers = [
+        ErrorProvider::class,
         LanguageProvider::class,
         SchemaBuildingProvider::class,
         SchemaExtensionProvider::class,

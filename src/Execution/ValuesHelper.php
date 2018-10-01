@@ -100,7 +100,11 @@ class ValuesHelper
                             $argumentName,
                             (string)$argumentNode->getValue()),
                         [$argumentNode->getValue()],
-                        null, null, null, $ex
+                        null,
+                        null,
+                        null,
+                        null,
+                        $ex
                     );
                 }
             }
@@ -509,7 +513,9 @@ class ValuesHelper
             [$blameNode],
             null,
             null,
+            // TODO: Change this to null?
             [],
+            null,
             $originalException
         );
     }
