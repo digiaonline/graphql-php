@@ -20,10 +20,8 @@ class LanguageProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(NodeBuilderInterface::class, NodeBuilder::class, true/* $shared */);
-
+        $this->container->share(NodeBuilderInterface::class, NodeBuilder::class);
+        $this->container->share(NodePrinterInterface::class, NodePrinter::class);
         $this->container->add(ParserInterface::class, Parser::class);
-
-        $this->container->add(NodePrinterInterface::class, NodePrinter::class, true/* $shared */);
     }
 }

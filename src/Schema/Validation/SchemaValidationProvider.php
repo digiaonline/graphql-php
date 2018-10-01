@@ -24,7 +24,7 @@ class SchemaValidationProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(SchemaValidatorInterface::class, SchemaValidator::class, true);
+        $this->container->share(SchemaValidatorInterface::class, SchemaValidator::class);
 
         // Rules
         $this->container->add(RootTypesRule::class, RootTypesRule::class);
