@@ -35,7 +35,6 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Util\ValueASTConverter;
-use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Execution\coerceDirectiveValues;
 use function Digia\GraphQL\Type\introspectionTypes;
 use function Digia\GraphQL\Type\newDirective;
@@ -85,7 +84,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @param array                          $types
      * @param array                          $directives
      * @param callable|null                  $resolveTypeFunction
-     * @throws InvalidArgumentException
      */
     public function __construct(
         array $typeDefinitionsMap,
@@ -498,7 +496,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param NamedTypeNode $node
      * @return NamedTypeInterface|null
-     * @throws InvalidArgumentException
      */
     public function defaultTypeResolver(NamedTypeNode $node): ?NamedTypeInterface
     {

@@ -9,11 +9,9 @@ use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
-use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Schema\DefinitionBuilder;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\Schema;
-use Psr\SimpleCache\InvalidArgumentException;
 use function Digia\GraphQL\Type\newSchema;
 
 class SchemaBuilder implements SchemaBuilderInterface
@@ -47,7 +45,6 @@ class SchemaBuilder implements SchemaBuilderInterface
      * @param array                     $options
      * @return BuildingContextInterface
      * @throws BuildingException
-     * @throws InvalidArgumentException
      */
     protected function createContext(
         DocumentNode $document,
@@ -133,8 +130,8 @@ class SchemaBuilder implements SchemaBuilderInterface
                 continue; // TODO: Throw exception?
             }
 
-            $typeName      = $operationType->getNameValue();
-            $operation     = $operationTypeDefinition->getOperation();
+            $typeName  = $operationType->getNameValue();
+            $operation = $operationTypeDefinition->getOperation();
 
             if (isset($definitions[$typeName])) {
                 throw new BuildingException(

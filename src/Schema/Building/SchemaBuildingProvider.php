@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Schema\Building;
 
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use Psr\SimpleCache\CacheInterface;
 
 class SchemaBuildingProvider extends AbstractServiceProvider
 {
