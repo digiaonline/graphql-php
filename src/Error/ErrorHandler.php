@@ -9,6 +9,6 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     public function handleError(ExecutionException $exception)
     {
-        // Default error handler does not need to do anything.
+        // The default error handler does not need to do anything.
     }
 }

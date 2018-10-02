@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Error;
 interface ErrorHandlerInterface
 {
     /**
-     * @param ExecutionException $error
+     * @param ExecutionException $exception
      */
-    public function handleError(ExecutionException $error);
+    public function handleError(ExecutionException $exception);
 }

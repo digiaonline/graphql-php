@@ -18,6 +18,6 @@ class ErrorProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(ErrorHandlerInterface::class, ErrorHandler::class, true/* $shared */);
+        $this->container->share(ErrorHandlerInterface::class, ErrorHandler::class);
     }
 }
