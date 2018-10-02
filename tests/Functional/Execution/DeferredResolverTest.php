@@ -76,6 +76,7 @@ class DeferredResolverTest extends ResolveTest
                     'type'    => $directorType,
                     'resolve' => function ($movie, $args) {
                         DirectoryBuffer::add($movie['directorId']);
+
                         return new Promise(function (callable $resolve, callable $reject) use ($movie) {
                             DirectoryBuffer::loadBuffered();
                             $resolve(DirectoryBuffer::get($movie['directorId']));
