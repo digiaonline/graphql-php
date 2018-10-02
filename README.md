@@ -28,7 +28,6 @@ JavaScript [reference implementation](https://github.com/graphql/graphql-js).
 - [Execution](#execution)
 - [Scalars](#scalars)
 - [Integration](#integration)
-- [Relay support](#relay-support)
 
 ## Installation
 
@@ -398,12 +397,6 @@ class GraphQLController extends Controller
 ```php
 Route::post('/graphql', 'app\GraphQL\GraphQLController@handle');
 ```
-
-## Relay support
-
-If you want to use [Relay](https://facebook.github.io/relay/) together with this library, you can use our 
-[Relay package](https://github.com/digiaonline/graphql-relay-php) to add Relay support. 
-
 
 ## Contributors
 
