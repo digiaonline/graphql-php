@@ -191,7 +191,7 @@ Each type in a schema has a resolver associated with it that allows for resolvin
 types do not need a custom resolver, because they can be resolved using the default resolver. Usually these resolvers 
 are lambda functions, but you can also define your own resolvers by implementing the `ResolverInterface`. The resolver 
 function can return a value, a [promise](https://github.com/reactphp/promise) or an array of promises. An 
-example of how using promise to solve N+1 problem can be found in this [test case](/tests/Functional/Execution/PromiseResolverTest.php).
+example of how to use promise to solve N+1 problem can be found in this [test case](/tests/Functional/Execution/PromiseResolverTest.php).
 
 A resolver function receives four arguments:
 
