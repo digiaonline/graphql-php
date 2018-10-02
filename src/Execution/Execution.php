@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
+use Digia\GraphQL\Error\ErrorHandlerInterface;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
@@ -11,6 +12,20 @@ use Digia\GraphQL\Schema\Schema;
 
 class Execution implements ExecutionInterface
 {
+    /**
+     * @var ErrorHandlerInterface
+     */
+    private $errorHandler;
+
+    /**
+     * Execution constructor.
+     * @param ErrorHandlerInterface $errorHandler
+     */
+    public function __construct(ErrorHandlerInterface $errorHandler)
+    {
+        $this->errorHandler = $errorHandler;
+    }
+
     /**
      * @param Schema        $schema
      * @param DocumentNode  $documentNode
@@ -141,6 +156,6 @@ class Execution implements ExecutionInterface
      */
     protected function createExecutor(ExecutionContext $context): Executor
     {
-        return new Executor($context, new FieldCollector($context));
+        return new Executor($context, new FieldCollector($context), $this->errorHandler);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
+use Digia\GraphQL\Error\ErrorHandlerInterface;
 use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
@@ -60,19 +61,29 @@ class Executor
     protected $finalResult;
 
     /**
+     * @var ErrorHandlerInterface
+     */
+    protected $errorHandler;
+
+    /**
      * @var array
      */
     private static $defaultFieldResolver = [__CLASS__, 'defaultFieldResolver'];
 
     /**
      * Executor constructor.
-     * @param ExecutionContext $context
-     * @param FieldCollector   $fieldCollector
+     * @param ExecutionContext      $context
+     * @param FieldCollector        $fieldCollector
+     * @param ErrorHandlerInterface $errorHandler
      */
-    public function __construct(ExecutionContext $context, FieldCollector $fieldCollector)
-    {
+    public function __construct(
+        ExecutionContext $context,
+        FieldCollector $fieldCollector,
+        ErrorHandlerInterface $errorHandler
+    ) {
         $this->context        = $context;
         $this->fieldCollector = $fieldCollector;
+        $this->errorHandler   = $errorHandler;
     }
 
     /**
@@ -104,9 +115,8 @@ class Executor
                 ? $this->executeFieldsSerially($objectType, $rootValue, $path, $fields)
                 : $this->executeFields($objectType, $rootValue, $path, $fields);
         } catch (\Throwable $ex) {
-            $this->context->addError(new ExecutionException($ex->getMessage()));
-
-            return [null];
+            $this->handleError(new ExecutionException($ex->getMessage(), $fields, null, null, null, null, $ex));
+            return null;
         }
 
         return $result;
@@ -303,7 +313,7 @@ class Executor
 
             return $completed;
         } catch (\Throwable $ex) {
-            $this->context->addError($this->buildLocatedError($ex, $fieldNodes, $path));
+            $this->handleError($this->buildLocatedError($ex, $fieldNodes, $path));
             return null;
         }
     }
@@ -911,6 +921,7 @@ class Executor
             $originalException instanceof GraphQLException
                 ? ($originalException->getPath() ?? $path)
                 : $path,
+            null,
             $originalException
         );
     }
@@ -944,6 +955,15 @@ class Executor
             $context->getOperation(),
             $context->getVariableValues()
         );
+    }
+
+    /**
+     * @param ExecutionException $error
+     */
+    protected function handleError(ExecutionException $error)
+    {
+        $this->errorHandler->handleError($error);
+        $this->context->addError($error);
     }
 
     /**

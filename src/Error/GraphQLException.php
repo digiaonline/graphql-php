@@ -66,7 +66,12 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     /**
      * Extension fields to add to the formatted error.
      *
-     * @var \Throwable|null
+     * @var array|null
+     */
+    protected $extensions;
+
+    /**
+     * @var null|\Throwable
      */
     protected $originalException;
 
@@ -78,6 +83,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
      * @param Source|null     $source
      * @param array|null      $positions
      * @param array|null      $path
+     * @param array|null      $extensions
      * @param \Throwable|null $originalException
      */
     public function __construct(
@@ -86,6 +92,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
         ?Source $source = null,
         ?array $positions = null,
         ?array $path = null,
+        ?array $extensions = null,
         ?\Throwable $originalException = null
     ) {
         parent::__construct($message);
@@ -96,6 +103,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
         $this->resolveLocations($positions, $source);
 
         $this->path              = $path;
+        $this->extensions        = $extensions;
         $this->originalException = $originalException;
     }
 
@@ -166,6 +174,24 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     }
 
     /**
+     * @return array|null
+     */
+    public function getExtensions(): ?array
+    {
+        return $this->extensions;
+    }
+
+    /**
+     * @param array|null $extensions
+     * @return self
+     */
+    public function setExtensions(?array $extensions): self
+    {
+        $this->extensions = $extensions;
+        return $this;
+    }
+
+    /**
      * @return \Throwable|null
      */
     public function getOriginalException(): ?\Throwable
@@ -179,6 +205,32 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     public function getOriginalErrorMessage(): ?string
     {
         return null !== $this->originalException ? $this->originalException->getMessage() : null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray(): array
+    {
+        $result = [
+            'message'    => $this->message,
+            'locations'  => $this->getLocationsAsArray(),
+            'path'       => $this->path,
+        ];
+
+        if (null !== $this->extensions) {
+            $result['extensions'] = $this->extensions;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString(): string
+    {
+        return printError($this);
     }
 
     /**
@@ -270,25 +322,5 @@ class GraphQLException extends AbstractException implements SerializationInterfa
         }
 
         return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function toArray(): array
-    {
-        return [
-            'message'   => $this->message,
-            'locations' => $this->getLocationsAsArray(),
-            'path'      => $this->path,
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function __toString(): string
-    {
-        return printError($this);
     }
 }
