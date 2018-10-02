@@ -218,7 +218,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
             'path'       => $this->path,
         ];
 
-        if (!empty($this->extensions)) {
+        if (null !== $this->extensions) {
             $result['extensions'] = $this->extensions;
         }
 
