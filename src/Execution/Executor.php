@@ -8,7 +8,6 @@ use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\UndefinedException;
-use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
@@ -62,19 +61,29 @@ class Executor
     protected $finalResult;
 
     /**
+     * @var ErrorHandlerInterface
+     */
+    protected $errorHandler;
+
+    /**
      * @var array
      */
     private static $defaultFieldResolver = [__CLASS__, 'defaultFieldResolver'];
 
     /**
      * Executor constructor.
-     * @param ExecutionContext $context
-     * @param FieldCollector   $fieldCollector
+     * @param ExecutionContext      $context
+     * @param FieldCollector        $fieldCollector
+     * @param ErrorHandlerInterface $errorHandler
      */
-    public function __construct(ExecutionContext $context, FieldCollector $fieldCollector)
-    {
+    public function __construct(
+        ExecutionContext $context,
+        FieldCollector $fieldCollector,
+        ErrorHandlerInterface $errorHandler
+    ) {
         $this->context        = $context;
         $this->fieldCollector = $fieldCollector;
+        $this->errorHandler   = $errorHandler;
     }
 
     /**
@@ -955,16 +964,8 @@ class Executor
      */
     protected function handleError(ExecutionException $error)
     {
-        $this->getErrorHandler()->handleError($error);
+        $this->errorHandler->handleError($error);
         $this->context->addError($error);
-    }
-
-    /**
-     * @return ErrorHandlerInterface
-     */
-    protected function getErrorHandler(): ErrorHandlerInterface
-    {
-        return GraphQL::make(ErrorHandlerInterface::class);
     }
 
     /**
