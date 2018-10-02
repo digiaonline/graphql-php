@@ -10,6 +10,11 @@
 This is a PHP implementation of the [GraphQL specification](https://facebook.github.io/graphql/) based on the 
 JavaScript [reference implementation](https://github.com/graphql/graphql-js).
 
+## Related projects
+
+- [DateTime scalar](https://github.com/digiaonline/graphql-datetime-scalar-php)
+- [Relay support](https://github.com/digiaonline/graphql-relay-php)
+
 ## Requirements
 
 - PHP version >= 7.1
