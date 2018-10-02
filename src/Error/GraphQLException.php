@@ -212,11 +212,17 @@ class GraphQLException extends AbstractException implements SerializationInterfa
      */
     public function toArray(): array
     {
-        return [
-            'message'   => $this->message,
-            'locations' => $this->getLocationsAsArray(),
-            'path'      => $this->path,
+        $result = [
+            'message'    => $this->message,
+            'locations'  => $this->getLocationsAsArray(),
+            'path'       => $this->path,
         ];
+
+        if (!empty($this->extensions)) {
+            $result['extensions'] = $this->extensions;
+        }
+
+        return $result;
     }
 
     /**

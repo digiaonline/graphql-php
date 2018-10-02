@@ -14,6 +14,6 @@ trait ArrayToJsonTrait
      */
     public function toJSON(): string
     {
-        return json_encode($this->toArray(), JSON_UNESCAPED_UNICODE);
+        return \json_encode($this->toArray(), JSON_UNESCAPED_UNICODE);
     }
 }
