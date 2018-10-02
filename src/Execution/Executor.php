@@ -115,8 +115,7 @@ class Executor
                 ? $this->executeFieldsSerially($objectType, $rootValue, $path, $fields)
                 : $this->executeFields($objectType, $rootValue, $path, $fields);
         } catch (\Throwable $ex) {
-            $error = new ExecutionException($ex->getMessage(), $fields, null, null, null, null, $ex);
-            $this->handleError($error);
+            $this->handleError(new ExecutionException($ex->getMessage(), $fields, null, null, null, null, $ex));
             return null;
         }
 
@@ -314,8 +313,7 @@ class Executor
 
             return $completed;
         } catch (\Throwable $ex) {
-            $error = $this->buildLocatedError($ex, $fieldNodes, $path);
-            $this->handleError($error);
+            $this->handleError($this->buildLocatedError($ex, $fieldNodes, $path));
             return null;
         }
     }
