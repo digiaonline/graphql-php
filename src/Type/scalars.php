@@ -12,7 +12,7 @@ use function Digia\GraphQL\Util\arraySome;
  */
 function booleanType(): ScalarType
 {
-    return GraphQL::make('GraphQLBoolean');
+    return GraphQL::make(GraphQL::BOOLEAN);
 }
 
 /**
@@ -20,7 +20,7 @@ function booleanType(): ScalarType
  */
 function floatType(): ScalarType
 {
-    return GraphQL::make('GraphQLFloat');
+    return GraphQL::make(GraphQL::FLOAT);
 }
 
 /**
@@ -28,7 +28,7 @@ function floatType(): ScalarType
  */
 function intType(): ScalarType
 {
-    return GraphQL::make('GraphQLInt');
+    return GraphQL::make(GraphQL::INT);
 }
 
 /**
@@ -36,7 +36,7 @@ function intType(): ScalarType
  */
 function idType(): ScalarType
 {
-    return GraphQL::make('GraphQLID');
+    return GraphQL::make(GraphQL::ID);
 }
 
 /**
@@ -44,7 +44,7 @@ function idType(): ScalarType
  */
 function stringType(): ScalarType
 {
-    return GraphQL::make('GraphQLString');
+    return GraphQL::make(GraphQL::STRING);
 }
 
 /**

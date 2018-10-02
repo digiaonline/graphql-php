@@ -19,7 +19,7 @@ class ExecutionProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(ExecutionInterface::class, Execution::class, true/* $shared */);
-        $this->container->add(ValuesHelper::class, ValuesHelper::class, true/* $shared */);
+        $this->container->share(ExecutionInterface::class, Execution::class);
+        $this->container->share(ValuesHelper::class, ValuesHelper::class);
     }
 }

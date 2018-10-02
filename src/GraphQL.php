@@ -30,7 +30,6 @@ use Digia\GraphQL\Validation\RulesProvider;
 use Digia\GraphQL\Validation\ValidationProvider;
 use Digia\GraphQL\Validation\ValidatorInterface;
 use League\Container\Container;
-use League\Container\ContainerInterface;
 
 class GraphQL
 {
@@ -110,14 +109,13 @@ class GraphQL
 
     /**
      * @param string $id
-     * @param array  $args
      * @return mixed
      */
-    public static function make(string $id, array $args = [])
+    public static function make(string $id)
     {
         return static::getInstance()
             ->getContainer()
-            ->get($id, $args);
+            ->get($id);
     }
 
     /**
@@ -282,9 +280,9 @@ class GraphQL
     /**
      * Registers the service provides with the container.
      *
-     * @param ContainerInterface $container
+     * @param Container $container
      */
-    protected function registerProviders(ContainerInterface $container): void
+    protected function registerProviders(Container $container): void
     {
         foreach (self::$providers as $className) {
             $container->addServiceProvider($className);

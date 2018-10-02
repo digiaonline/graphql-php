@@ -20,7 +20,7 @@
     "require": {
         "php": ">=7.1",
         "ext-mbstring": "*",
-        "league/container": "^2.4",
+        "league/container": "^3.2",
         "react/promise": "^2.5"
     },
     "require-dev": {

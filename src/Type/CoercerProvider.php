@@ -25,9 +25,9 @@ class CoercerProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container->add(BooleanCoercer::class, BooleanCoercer::class, true/* $shared */);
-        $this->container->add(FloatCoercer::class, FloatCoercer::class, true/* $shared */);
-        $this->container->add(IntCoercer::class, IntCoercer::class, true/* $shared */);
-        $this->container->add(StringCoercer::class, StringCoercer::class, true/* $shared */);
+        $this->container->share(BooleanCoercer::class, BooleanCoercer::class);
+        $this->container->share(FloatCoercer::class, FloatCoercer::class);
+        $this->container->share(IntCoercer::class, IntCoercer::class);
+        $this->container->share(StringCoercer::class, StringCoercer::class);
     }
 }
