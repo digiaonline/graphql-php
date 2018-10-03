@@ -12,19 +12,6 @@ use Digia\GraphQL\Schema\Schema;
 
 class Execution implements ExecutionInterface
 {
-    /**
-     * @var ErrorHandlerInterface
-     */
-    private $errorHandler;
-
-    /**
-     * Execution constructor.
-     * @param ErrorHandlerInterface $errorHandler
-     */
-    public function __construct(ErrorHandlerInterface $errorHandler)
-    {
-        $this->errorHandler = $errorHandler;
-    }
 
     /**
      * @param Schema        $schema
@@ -44,7 +31,8 @@ class Execution implements ExecutionInterface
         $contextValue = null,
         array $variableValues = [],
         ?string $operationName = null,
-        ?callable $fieldResolver = null
+        ?callable $fieldResolver = null,
+        ?ErrorHandlerInterface $errorHandler = null
     ): ExecutionResult {
         try {
             $context = $this->createContext(
@@ -65,7 +53,7 @@ class Execution implements ExecutionInterface
             return new ExecutionResult(null, [$error]);
         }
 
-        $data   = $this->createExecutor($context)->execute();
+        $data   = $this->createExecutor($context, $errorHandler)->execute();
         $errors = $context->getErrors();
 
         return new ExecutionResult($data, $errors);
@@ -151,11 +139,12 @@ class Execution implements ExecutionInterface
     }
 
     /**
-     * @param ExecutionContext $context
+     * @param ExecutionContext           $context
+     * @param ErrorHandlerInterface|null $errorHandler
      * @return Executor
      */
-    protected function createExecutor(ExecutionContext $context): Executor
+    protected function createExecutor(ExecutionContext $context, ?ErrorHandlerInterface $errorHandler = null): Executor
     {
-        return new Executor($context, new FieldCollector($context), $this->errorHandler);
+        return new Executor($context, new FieldCollector($context), $errorHandler);
     }
 }

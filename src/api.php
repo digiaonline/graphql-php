@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL;
 
+use Digia\GraphQL\Error\ErrorHandlerInterface;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Error\SyntaxErrorException;
@@ -28,7 +29,7 @@ function buildSchema($source, $resolverRegistry = [], array $options = []): Sche
     if (\is_string($source)) {
         $source = (new StringSourceBuilder($source))->build();
     }
-    
+
     return GraphQL::buildSchema($source, $resolverRegistry, $options);
 }
 
@@ -45,7 +46,7 @@ function extendSchema(Schema $schema, $source, $resolverRegistry = [], array $op
     if (\is_string($source)) {
         $source = (new StringSourceBuilder($source))->build();
     }
-    
+
     return GraphQL::extendSchema($schema, $source, $resolverRegistry, $options);
 }
 
@@ -70,7 +71,7 @@ function parse($source, array $options = []): DocumentNode
     if (\is_string($source)) {
         $source = (new StringSourceBuilder($source))->build();
     }
-    
+
     return GraphQL::parse($source, $options);
 }
 
@@ -86,7 +87,7 @@ function parseValue($source, array $options = []): ValueNodeInterface
     if (\is_string($source)) {
         $source = (new StringSourceBuilder($source))->build();
     }
-    
+
     return GraphQL::parseValue($source, $options);
 }
 
@@ -102,7 +103,7 @@ function parseType($source, array $options = []): TypeNodeInterface
     if (\is_string($source)) {
         $source = (new StringSourceBuilder($source))->build();
     }
-    
+
     return GraphQL::parseType($source, $options);
 }
 
@@ -117,13 +118,14 @@ function validate(Schema $schema, DocumentNode $document): array
 }
 
 /**
- * @param Schema        $schema
- * @param DocumentNode  $document
- * @param mixed|null    $rootValue
- * @param mixed|null    $contextValue
- * @param array         $variableValues
- * @param mixed|null    $operationName
- * @param callable|null $fieldResolver
+ * @param Schema                              $schema
+ * @param DocumentNode                        $document
+ * @param mixed|null                          $rootValue
+ * @param mixed|null                          $contextValue
+ * @param array                               $variableValues
+ * @param mixed|null                          $operationName
+ * @param callable|null                       $fieldResolver
+ * @param ErrorHandlerInterface|callable|null $errorHandler
  * @return ExecutionResult
  */
 function execute(
@@ -133,7 +135,8 @@ function execute(
     $contextValue = null,
     array $variableValues = [],
     $operationName = null,
-    callable $fieldResolver = null
+    callable $fieldResolver = null,
+    $errorHandler = null
 ): ExecutionResult {
     return GraphQL::execute(
         $schema,
@@ -142,7 +145,8 @@ function execute(
         $contextValue,
         $variableValues,
         $operationName,
-        $fieldResolver
+        $fieldResolver,
+        $errorHandler
     );
 }
 
@@ -156,13 +160,14 @@ function printNode(NodeInterface $node): string
 }
 
 /**
- * @param Schema        $schema
- * @param string        $source
- * @param mixed|null    $rootValue
- * @param mixed|null    $contextValue
- * @param array         $variableValues
- * @param mixed|null    $operationName
- * @param callable|null $fieldResolver
+ * @param Schema                              $schema
+ * @param string                              $source
+ * @param mixed|null                          $rootValue
+ * @param mixed|null                          $contextValue
+ * @param array                               $variableValues
+ * @param mixed|null                          $operationName
+ * @param callable|null                       $fieldResolver
+ * @param ErrorHandlerInterface|callable|null $errorHandler
  * @return array
  * @throws InvariantException
  */
@@ -173,7 +178,8 @@ function graphql(
     $contextValue = null,
     array $variableValues = [],
     $operationName = null,
-    callable $fieldResolver = null
+    callable $fieldResolver = null,
+    $errorHandler = null
 ): array {
     $schemaValidationErrors = validateSchema($schema);
     if (!empty($schemaValidationErrors)) {
@@ -198,7 +204,8 @@ function graphql(
         $contextValue,
         $variableValues,
         $operationName,
-        $fieldResolver
+        $fieldResolver,
+        $errorHandler
     );
 
     return $result->toArray();

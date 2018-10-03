@@ -5,10 +5,24 @@ namespace Digia\GraphQL\Error;
 class ErrorHandler implements ErrorHandlerInterface
 {
     /**
-     * @inheritdoc
+     * @var callable
+     */
+    protected $handleCallback;
+
+    /**
+     * CallbackErrorHandler constructor.
+     * @param callable $handleCallback
+     */
+    public function __construct(callable $handleCallback)
+    {
+        $this->handleCallback = $handleCallback;
+    }
+
+    /**
+     * @param ExecutionException $exception
      */
     public function handleError(ExecutionException $exception)
     {
-        // The default error handler does not need to do anything.
+        \call_user_func($this->handleCallback, $exception);
     }
 }
