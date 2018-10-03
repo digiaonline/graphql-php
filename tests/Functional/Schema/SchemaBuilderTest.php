@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: hunguyen
- * Date: 20/09/2018
- * Time: 10.55
- */
 
 namespace Digia\GraphQL\Test\Functional\Schema;
 
