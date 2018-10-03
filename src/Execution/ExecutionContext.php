@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
@@ -45,7 +46,7 @@ class ExecutionContext
     protected $operation;
 
     /**
-     * @var ExecutionException[]
+     * @var GraphQLException[]
      */
     protected $errors;
 
@@ -178,17 +179,17 @@ class ExecutionContext
     }
 
     /**
-     * @param ExecutionException $error
+     * @param GraphQLException $error
      * @return ExecutionContext
      */
-    public function addError(ExecutionException $error): ExecutionContext
+    public function addError(GraphQLException $error): ExecutionContext
     {
         $this->errors[] = $error;
         return $this;
     }
 
     /**
-     * @return ExecutionException[]
+     * @return GraphQLException[]
      */
     public function getErrors(): array
     {

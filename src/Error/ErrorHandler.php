@@ -19,9 +19,9 @@ class ErrorHandler implements ErrorHandlerInterface
     }
 
     /**
-     * @param ExecutionException $exception
+     * @param GraphQLException $exception
      */
-    public function handleError(ExecutionException $exception)
+    public function handleError(GraphQLException $exception)
     {
         \call_user_func($this->handleCallback, $exception);
     }

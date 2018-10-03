@@ -115,7 +115,7 @@ class Executor
                 ? $this->executeFieldsSerially($objectType, $rootValue, $path, $fields)
                 : $this->executeFields($objectType, $rootValue, $path, $fields);
         } catch (\Throwable $ex) {
-            $this->handleError(new ExecutionException($ex->getMessage(), $fields, null, null, null, null, $ex));
+            $this->handleError(new GraphQLException($ex->getMessage(), $fields, null, null, null, null, $ex));
             return null;
         }
 
@@ -229,6 +229,7 @@ class Executor
      * @param ObjectType $parentType
      * @param string     $fieldName
      * @return Field|null
+     * @throws InvariantException
      */
     public function getFieldDefinition(
         Schema $schema,
@@ -958,9 +959,9 @@ class Executor
     }
 
     /**
-     * @param ExecutionException $error
+     * @param GraphQLException $error
      */
-    protected function handleError(ExecutionException $error)
+    protected function handleError(GraphQLException $error)
     {
         if (null !== $this->errorHandler) {
             $this->errorHandler->handleError($error);
