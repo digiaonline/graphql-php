@@ -237,7 +237,7 @@ class QueryResolver implements ResolverInterface
 ```
 
 The resolver function can return a value, a [promise](https://github.com/reactphp/promise) or an array of promises. 
-This resolver function below illustrate how to use promise to solve **N+1** problem, the full example can be found in 
+This resolver function below illustrates how to use promise to solve **N+1** problem, the full example can be found in 
 this [test case](/tests/Functional/Execution/DeferredResolverTest.php).
 
 ```php
@@ -247,11 +247,11 @@ $movieType = newObjectType([
         'director' => [
             'type'    => $directorType,
             'resolve' => function ($movie, $args) {
-                DirectoryBuffer::add($movie['directorId']);
+                DirectorBuffer::add($movie['directorId']);
                 
                 return new Promise(function (callable $resolve, callable $reject) use ($movie) {
-                    DirectoryBuffer::loadBuffered();
-                    $resolve(DirectoryBuffer::get($movie['directorId']));
+                    DirectorBuffer::loadBuffered();
+                    $resolve(DirectorBuffer::get($movie['directorId']));
                 });
             }
         ]

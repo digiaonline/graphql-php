@@ -9,7 +9,7 @@ use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
 use function Digia\GraphQL\Type\stringType;
 
-class DirectoryBuffer
+class DirectorBuffer
 {
     protected static $directorsIds = [];
 
@@ -75,11 +75,11 @@ class DeferredResolverTest extends ResolveTest
                 'director' => [
                     'type'    => $directorType,
                     'resolve' => function ($movie, $args) {
-                        DirectoryBuffer::add($movie['directorId']);
+                        DirectorBuffer::add($movie['directorId']);
 
                         return new Promise(function (callable $resolve, callable $reject) use ($movie) {
-                            DirectoryBuffer::loadBuffered();
-                            $resolve(DirectoryBuffer::get($movie['directorId']));
+                            DirectorBuffer::loadBuffered();
+                            $resolve(DirectorBuffer::get($movie['directorId']));
                         });
                     }
                 ]
