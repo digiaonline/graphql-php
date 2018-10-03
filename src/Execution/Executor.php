@@ -61,7 +61,7 @@ class Executor
     protected $finalResult;
 
     /**
-     * @var ErrorHandlerInterface
+     * @var ErrorHandlerInterface|null
      */
     protected $errorHandler;
 
@@ -72,14 +72,14 @@ class Executor
 
     /**
      * Executor constructor.
-     * @param ExecutionContext      $context
-     * @param FieldCollector        $fieldCollector
-     * @param ErrorHandlerInterface $errorHandler
+     * @param ExecutionContext           $context
+     * @param FieldCollector             $fieldCollector
+     * @param ErrorHandlerInterface|null $errorHandler
      */
     public function __construct(
         ExecutionContext $context,
         FieldCollector $fieldCollector,
-        ErrorHandlerInterface $errorHandler
+        ?ErrorHandlerInterface $errorHandler = null
     ) {
         $this->context        = $context;
         $this->fieldCollector = $fieldCollector;
@@ -962,7 +962,10 @@ class Executor
      */
     protected function handleError(ExecutionException $error)
     {
-        $this->errorHandler->handleError($error);
+        if (null !== $this->errorHandler) {
+            $this->errorHandler->handleError($error);
+        }
+
         $this->context->addError($error);
     }
 

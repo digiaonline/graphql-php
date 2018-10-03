@@ -2,7 +2,8 @@
 
 namespace Digia\GraphQL;
 
-use Digia\GraphQL\Error\ErrorProvider;
+use Digia\GraphQL\Error\ErrorHandler;
+use Digia\GraphQL\Error\ErrorHandlerInterface;
 use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionProvider;
 use Digia\GraphQL\Execution\ExecutionResult;
@@ -61,7 +62,6 @@ class GraphQL
      * @var array
      */
     private static $providers = [
-        ErrorProvider::class,
         LanguageProvider::class,
         SchemaBuildingProvider::class,
         SchemaExtensionProvider::class,
@@ -128,14 +128,16 @@ class GraphQL
      */
     public static function buildSchema(Source $source, $resolverRegistry, array $options = []): Schema
     {
-        return static::make(SchemaBuilderInterface::class)
-            ->build(
-                static::parse($source, $options),
-                $resolverRegistry instanceof ResolverRegistryInterface
-                    ? $resolverRegistry
-                    : new ResolverRegistry($resolverRegistry),
-                $options
-            );
+        /** @var SchemaBuilderInterface $schemaBuilder */
+        $schemaBuilder = static::make(SchemaBuilderInterface::class);
+
+        return $schemaBuilder->build(
+            static::parse($source, $options),
+            $resolverRegistry instanceof ResolverRegistryInterface
+                ? $resolverRegistry
+                : new ResolverRegistry($resolverRegistry),
+            $options
+        );
     }
 
     /**
@@ -151,15 +153,17 @@ class GraphQL
         $resolverRegistry,
         array $options = []
     ): Schema {
-        return static::make(SchemaExtenderInterface::class)
-            ->extend(
-                $schema,
-                static::parse($source, $options),
-                $resolverRegistry instanceof ResolverRegistryInterface
-                    ? $resolverRegistry
-                    : new ResolverRegistry($resolverRegistry),
-                $options
-            );
+        /** @var SchemaExtenderInterface $schemaExtender */
+        $schemaExtender = static::make(SchemaExtenderInterface::class);
+
+        return $schemaExtender->extend(
+            $schema,
+            static::parse($source, $options),
+            $resolverRegistry instanceof ResolverRegistryInterface
+                ? $resolverRegistry
+                : new ResolverRegistry($resolverRegistry),
+            $options
+        );
     }
 
     /**
@@ -227,13 +231,14 @@ class GraphQL
     }
 
     /**
-     * @param Schema        $schema
-     * @param DocumentNode  $document
-     * @param mixed         $rootValue
-     * @param mixed         $contextValue
-     * @param array         $variableValues
-     * @param string|null   $operationName
-     * @param callable|null $fieldResolver
+     * @param Schema                              $schema
+     * @param DocumentNode                        $document
+     * @param mixed                               $rootValue
+     * @param mixed                               $contextValue
+     * @param array                               $variableValues
+     * @param string|null                         $operationName
+     * @param callable|null                       $fieldResolver
+     * @param ErrorHandlerInterface|callable|null $errorHandler
      * @return ExecutionResult
      */
     public static function execute(
@@ -243,10 +248,17 @@ class GraphQL
         $contextValue = null,
         array $variableValues = [],
         $operationName = null,
-        callable $fieldResolver = null
+        callable $fieldResolver = null,
+        $errorHandler = null
     ): ExecutionResult {
         /** @var ExecutionInterface $execution */
         $execution = static::make(ExecutionInterface::class);
+
+        if (null !== $errorHandler) {
+            $errorHandler = $errorHandler instanceof ErrorHandlerInterface
+                ? $errorHandler
+                : new ErrorHandler($errorHandler);
+        }
 
         return $execution->execute(
             $schema,
@@ -255,7 +267,8 @@ class GraphQL
             $contextValue,
             $variableValues,
             $operationName,
-            $fieldResolver
+            $fieldResolver,
+            $errorHandler
         );
     }
 
