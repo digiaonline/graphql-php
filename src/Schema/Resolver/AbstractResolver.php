@@ -7,25 +7,30 @@ use Digia\GraphQL\Execution\ResolveInfo;
 abstract class AbstractResolver implements ResolverInterface
 {
     /**
-     * @param mixed       $rootValue
-     * @param mixed       $contextValues
-     * @param ResolveInfo $info
-     * @return callable|null
+     * @param mixed            $rootValue
+     * @param array            $arguments
+     * @param mixed            $context
+     * @param ResolveInfo|null $info
+     * @return mixed
      */
-    abstract public function resolveType($rootValue, $contextValues, ResolveInfo $info): ?callable;
+    abstract public function resolve($rootValue, array $arguments, $context = null, ?ResolveInfo $info = null);
+
+    /**
+     * @return mixed
+     */
+    public function __invoke()
+    {
+        return $this->resolve(...\func_get_args());
+    }
 
     /**
      * @inheritdoc
      */
-    public function getResolveMethod(string $fieldName): ?callable
+    public function getResolveCallback(): ?callable
     {
-        $resolveMethod = 'resolve' . \ucfirst($fieldName);
-
-        if (\method_exists($this, $resolveMethod)) {
-            return [$this, $resolveMethod];
-        }
-
-        return null;
+        return function ($rootValue, array $arguments, $context = null, ?ResolveInfo $info = null) {
+            return $this->resolve($rootValue, $arguments, $context, $info);
+        };
     }
 
     /**
@@ -33,8 +38,20 @@ abstract class AbstractResolver implements ResolverInterface
      */
     public function getTypeResolver(): ?callable
     {
-        return function ($rootValue, $contextValues, ResolveInfo $info) {
-            return $this->resolveType($rootValue, $contextValues, $info);
+        return function ($rootValue, $context = null, ?ResolveInfo $info = null) {
+            return $this->resolveType($rootValue, $context, $info);
         };
+    }
+
+    /**
+     * @param mixed            $rootValue
+     * @param mixed            $context
+     * @param ResolveInfo|null $info
+     * @return callable|null
+     */
+    public function resolveType($rootValue, $context = null, ?ResolveInfo $info = null): ?callable
+    {
+        // Override this method when your resolver returns an interface or an union type.
+        return null;
     }
 }
