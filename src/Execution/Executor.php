@@ -192,8 +192,7 @@ class Executor
                 return null;
             }
 
-            if ($this->isPromise($result)) {
-                /** @var ExtendedPromiseInterface $result */
+            if ($result instanceof ExtendedPromiseInterface) {
                 return $result->then(function ($resolvedResult) use ($fieldName, $results) {
                     $results[$fieldName] = $resolvedResult;
 
@@ -388,7 +387,7 @@ class Executor
                 continue;
             }
 
-            $doesContainPromise = $doesContainPromise || $this->isPromise($result);
+            $doesContainPromise = $doesContainPromise || $result instanceof ExtendedPromiseInterface;
 
             $finalResults[$fieldName] = $result;
         }
@@ -496,7 +495,7 @@ class Executor
         array $path,
         &$result
     ) {
-        if ($this->isPromise($result)) {
+        if ($result instanceof ExtendedPromiseInterface) {
             /** @var ExtendedPromiseInterface $result */
             return $result->then(function (&$value) use ($returnType, $fieldNodes, $info, $path) {
                 return $this->completeValue($returnType, $fieldNodes, $info, $path, $value);
@@ -585,8 +584,7 @@ class Executor
             $runtimeType = $this->defaultTypeResolver($result, $this->context->getContextValue(), $info, $returnType);
         }
 
-        if ($this->isPromise($runtimeType)) {
-            /** @var ExtendedPromiseInterface $runtimeType */
+        if ($runtimeType instanceof ExtendedPromiseInterface) {
             return $runtimeType->then(function ($resolvedRuntimeType) use (
                 $returnType,
                 $fieldNodes,
@@ -701,7 +699,7 @@ class Executor
         foreach ($possibleTypes as $index => $type) {
             $isTypeOfResult = $type->isTypeOf($value, $context, $info);
 
-            if ($this->isPromise($isTypeOfResult)) {
+            if ($isTypeOfResult instanceof ExtendedPromiseInterface) {
                 $promisedIsTypeOfResults[$index] = $isTypeOfResult;
                 continue;
             }
@@ -774,7 +772,7 @@ class Executor
             $fieldPath[]        = $key;
             $completedItem      = $this->completeValueCatchingError($itemType, $fieldNodes, $info, $fieldPath, $item);
             $completedItems[]   = $completedItem;
-            $doesContainPromise = $doesContainPromise || $this->isPromise($completedItem);
+            $doesContainPromise = $doesContainPromise || $completedItem instanceof ExtendedPromiseInterface;
         }
 
         return $doesContainPromise
@@ -906,16 +904,6 @@ class Executor
         }
 
         return $result;
-    }
-
-    /**
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    protected function isPromise($value): bool
-    {
-        return $value instanceof ExtendedPromiseInterface;
     }
 
     /**
