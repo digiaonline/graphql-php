@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Schema\Resolver;
 
+use Digia\GraphQL\Execution\ResolveInfo;
+
 class ResolverRegistry implements ResolverRegistryInterface
 {
     /**
@@ -10,11 +12,19 @@ class ResolverRegistry implements ResolverRegistryInterface
     protected $resolverMap;
 
     /**
-     * ResolverMapRegistry constructor.
-     * @param array $resolvers
+     * @var ResolverMiddlewareInterface[]|null
      */
-    public function __construct(array $resolvers = [])
+    protected $middleware;
+
+    /**
+     * ResolverRegistry constructor.
+     * @param ResolverInterface[]                $resolvers
+     * @param ResolverMiddlewareInterface[]|null $middleware
+     */
+    public function __construct(array $resolvers = [], ?array $middleware = null)
     {
+        $this->middleware = $middleware;
+
         $this->registerResolvers($resolvers);
     }
 
@@ -33,11 +43,23 @@ class ResolverRegistry implements ResolverRegistryInterface
     {
         $resolver = $this->getResolver($typeName);
 
-        if (null === $resolver) {
+        $resolver = $resolver instanceof ResolverCollection
+            ? $resolver->getResolveCallback()($fieldName)
+            : $resolver;
+
+        $resolveCallback = $resolver instanceof ResolverInterface
+            ? $resolver->getResolveCallback()
+            : $resolver;
+
+        if (null === $resolveCallback) {
             return null;
         }
 
-        return $resolver->getResolveMethod($fieldName);
+        if (null !== $this->middleware) {
+            return $this->applyMiddleware($resolveCallback, \array_reverse($this->middleware));
+        }
+
+        return $resolveCallback;
     }
 
     /**
@@ -47,11 +69,11 @@ class ResolverRegistry implements ResolverRegistryInterface
     {
         $resolver = $this->getResolver($typeName);
 
-        if (null === $resolver) {
-            return null;
+        if ($resolver instanceof ResolverInterface) {
+            return $resolver->getTypeResolver();
         }
 
-        return $resolver->getTypeResolver();
+        return null;
     }
 
     /**
@@ -69,14 +91,31 @@ class ResolverRegistry implements ResolverRegistryInterface
     {
         foreach ($resolvers as $typeName => $resolver) {
             if (\is_array($resolver)) {
-                $resolver = new ArrayResolver($resolver);
-            }
-
-            if (\is_string($resolver)) {
-                $resolver = new $resolver();
+                $resolver = new ResolverCollection($resolver);
             }
 
             $this->register($typeName, $resolver);
         }
+    }
+
+    /**
+     * @param callable $resolveCallback
+     * @param array    $middleware
+     * @return callable
+     */
+    protected function applyMiddleware(callable $resolveCallback, array $middleware): callable
+    {
+        return \array_reduce(
+            $middleware,
+            function (callable $resolveCallback, ResolverMiddlewareInterface $middleware) {
+                return function ($rootValue, array $arguments, $context = null, ?ResolveInfo $info = null) use (
+                    $resolveCallback,
+                    $middleware
+                ) {
+                    return $middleware->resolve($resolveCallback, $rootValue, $arguments, $context, $info);
+                };
+            },
+            $resolveCallback
+        );
     }
 }
