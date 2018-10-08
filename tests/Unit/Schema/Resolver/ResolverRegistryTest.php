@@ -103,6 +103,34 @@ class ResolverRegistryTest extends TestCase
             'name' => 'Luke Skywalker',
         ], $registry->getFieldResolver('Query', 'hero')(null, ['episode' => 'EMPIRE']));
     }
+
+    public function testBeforeResolve()
+    {
+        $registry = new ResolverRegistry([
+            'Query' => QueryResolverWithBeforeResolve::class,
+        ]);
+
+        $this->expectException(BeforeResolveException::class);
+        $registry->getFieldResolver('Query', 'human')(null, ['id' => '1000']);
+    }
+
+    public function testAfterResolve()
+    {
+        $registry = new ResolverRegistry([
+            'Query' => QueryResolverWithAfterResolve::class,
+        ]);
+
+        $this->expectException(AfterResolveException::class);
+        $registry->getFieldResolver('Query', 'human')(null, ['id' => '1000']);
+    }
+}
+
+class BeforeResolveException extends \Exception
+{
+}
+
+class AfterResolveException extends \Exception
+{
 }
 
 class QueryResolver extends AbstractResolver
@@ -125,5 +153,33 @@ class QueryResolver extends AbstractResolver
     public function resolveType($rootValue, $contextValues, ResolveInfo $info): ?callable
     {
         return null;
+    }
+}
+
+class QueryResolverWithBeforeResolve extends QueryResolver
+{
+    public function beforeResolve(
+        callable $resolveCallback,
+        $rootValue,
+        array $args,
+        $contextValues = null,
+        ?ResolveInfo $info = null
+    ) {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        throw new BeforeResolveException();
+    }
+}
+
+class QueryResolverWithAfterResolve extends QueryResolver
+{
+    public function afterResolve(
+        $result,
+        $rootValue,
+        array $args,
+        $contextValues = null,
+        ?ResolveInfo $info = null
+    ) {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        throw new AfterResolveException();
     }
 }

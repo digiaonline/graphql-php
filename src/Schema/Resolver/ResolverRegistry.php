@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Schema\Resolver;
 
+use Digia\GraphQL\Execution\ResolveInfo;
+
 class ResolverRegistry implements ResolverRegistryInterface
 {
     /**
@@ -37,7 +39,18 @@ class ResolverRegistry implements ResolverRegistryInterface
             return null;
         }
 
-        return $resolver->getResolveMethod($fieldName);
+        $resolveCallback = $resolver->getResolveCallback($fieldName);
+
+        if ($resolver instanceof ClassResolverInterface) {
+            return function ($rootValue, array $args, $contextValues = null, ?ResolveInfo $info = null) use ($resolver,
+                $resolveCallback) {
+                $resolverArgs    = \func_get_args();
+                $result          = $resolver->beforeResolve($resolveCallback, ...$resolverArgs);
+                return $resolver->afterResolve($result, ...$resolverArgs);
+            };
+        }
+
+        return $resolveCallback;
     }
 
     /**

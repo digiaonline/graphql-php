@@ -8,7 +8,7 @@ interface ResolverInterface
      * @param string $fieldName
      * @return callable|null
      */
-    public function getResolveMethod(string $fieldName): ?callable;
+    public function getResolveCallback(string $fieldName): ?callable;
 
     /**
      * @return callable|null
