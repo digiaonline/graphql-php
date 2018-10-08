@@ -22,7 +22,6 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use InvalidArgumentException;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\FulfilledPromise;
 use React\Promise\PromiseInterface;
@@ -114,8 +113,8 @@ class Executor
             $result = $operation->getOperation() === 'mutation'
                 ? $this->executeFieldsSerially($objectType, $rootValue, $path, $fields)
                 : $this->executeFields($objectType, $rootValue, $path, $fields);
-        } catch (ExecutionException $ex) {
-            $this->handleError($ex);
+        } catch (\Throwable $ex) {
+            $this->handleError(new ExecutionException($ex->getMessage(), null, null, null, null, null, $ex));
             return null;
         }
 
@@ -171,7 +170,6 @@ class Executor
      * @param array      $fields
      *
      * @return array
-     * @throws InvalidArgumentException
      */
     public function executeFieldsSerially(
         ObjectType $objectType,
@@ -255,6 +253,7 @@ class Executor
             return $typeNameMetaFieldDefinition;
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $fields = $parentType->getFields();
 
         return $fields[$fieldName] ?? null;
@@ -296,16 +295,14 @@ class Executor
                 $result
             );
 
-            if ($this->isPromise($completed)) {
-                $context = $this->context;
-
-                /** @var ExtendedPromiseInterface $completed */
-                return $completed->then(null, function ($error) use ($context, $fieldNodes, $path) {
-                    //@TODO Handle $error better
+            if ($completed instanceof ExtendedPromiseInterface) {
+                return $completed->then(null, function ($error) use ($fieldNodes, $path) {
                     if ($error instanceof \Exception) {
-                        $context->addError($this->buildLocatedError($error, $fieldNodes, $path));
+                        $this->handleError(
+                            $this->buildLocatedError($error, $fieldNodes, $path)
+                        );
                     } else {
-                        $context->addError(
+                        $this->handleError(
                             $this->buildLocatedError(
                                 new ExecutionException($error ?? 'An unknown error occurred.'),
                                 $fieldNodes,
@@ -366,6 +363,7 @@ class Executor
      * @param array      $fields
      *
      * @return array
+     * @throws ExecutionException
      * @throws \Throwable
      */
     protected function executeFields(
@@ -496,7 +494,6 @@ class Executor
         &$result
     ) {
         if ($result instanceof ExtendedPromiseInterface) {
-            /** @var ExtendedPromiseInterface $result */
             return $result->then(function (&$value) use ($returnType, $fieldNodes, $info, $path) {
                 return $this->completeValue($returnType, $fieldNodes, $info, $path, $value);
             });
