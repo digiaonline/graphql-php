@@ -26,7 +26,6 @@ use InvalidArgumentException;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\FulfilledPromise;
 use React\Promise\PromiseInterface;
-use Throwable;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
@@ -72,6 +71,7 @@ class Executor
 
     /**
      * Executor constructor.
+     *
      * @param ExecutionContext           $context
      * @param FieldCollector             $fieldCollector
      * @param ErrorHandlerInterface|null $errorHandler
@@ -114,8 +114,8 @@ class Executor
             $result = $operation->getOperation() === 'mutation'
                 ? $this->executeFieldsSerially($objectType, $rootValue, $path, $fields)
                 : $this->executeFields($objectType, $rootValue, $path, $fields);
-        } catch (\Throwable $ex) {
-            $this->handleError(new ExecutionException($ex->getMessage(), $fields, null, null, null, null, $ex));
+        } catch (ExecutionException $ex) {
+            $this->handleError($ex);
             return null;
         }
 
@@ -125,6 +125,7 @@ class Executor
     /**
      * @param Schema                  $schema
      * @param OperationDefinitionNode $operation
+     *
      * @return ObjectType|null
      * @throws ExecutionException
      */
@@ -141,6 +142,7 @@ class Executor
                         [$operation]
                     );
                 }
+
                 return $mutationType;
             case 'subscription':
                 $subscriptionType = $schema->getSubscriptionType();
@@ -150,6 +152,7 @@ class Executor
                         [$operation]
                     );
                 }
+
                 return $subscriptionType;
             default:
                 throw new ExecutionException(
@@ -166,9 +169,9 @@ class Executor
      * @param mixed      $rootValue
      * @param array      $path
      * @param array      $fields
+     *
      * @return array
      * @throws InvalidArgumentException
-     * @throws Throwable
      */
     public function executeFieldsSerially(
         ObjectType $objectType,
@@ -193,6 +196,7 @@ class Executor
                 /** @var ExtendedPromiseInterface $result */
                 return $result->then(function ($resolvedResult) use ($fieldName, $results) {
                     $results[$fieldName] = $resolvedResult;
+
                     return $results;
                 });
             }
@@ -217,8 +221,8 @@ class Executor
 
         $promise->then(function ($resolvedResults) use (&$finalResults) {
             $finalResults = $resolvedResults ?? [];
-        })->otherwise(function ($ex) {
-            $this->context->addError($ex);
+        })->otherwise(function (ExecutionException $ex) {
+            $this->handleError($ex);
         });
 
         return $finalResults;
@@ -228,6 +232,7 @@ class Executor
      * @param Schema     $schema
      * @param ObjectType $parentType
      * @param string     $fieldName
+     *
      * @return Field|null
      */
     public function getFieldDefinition(
@@ -262,6 +267,7 @@ class Executor
      * @param ResolveInfo   $info
      * @param array         $path
      * @param mixed         $result
+     *
      * @return array|mixed|null
      * @throws \Throwable
      */
@@ -293,6 +299,7 @@ class Executor
 
             if ($this->isPromise($completed)) {
                 $context = $this->context;
+
                 /** @var ExtendedPromiseInterface $completed */
                 return $completed->then(null, function ($error) use ($context, $fieldNodes, $path) {
                     //@TODO Handle $error better
@@ -307,6 +314,7 @@ class Executor
                             )
                         );
                     }
+
                     return new FulfilledPromise(null);
                 });
             }
@@ -318,13 +326,13 @@ class Executor
         }
     }
 
-
     /**
      * @param TypeInterface $fieldType
      * @param FieldNode[]   $fieldNodes
      * @param ResolveInfo   $info
      * @param array         $path
      * @param mixed         $result
+     *
      * @return array|mixed
      * @throws \Throwable
      */
@@ -357,6 +365,7 @@ class Executor
      * @param mixed      $rootValue
      * @param array      $path
      * @param array      $fields
+     *
      * @return array
      * @throws \Throwable
      */
@@ -404,9 +413,10 @@ class Executor
      * @param mixed       $rootValue
      * @param FieldNode[] $fieldNodes
      * @param array       $path
+     *
      * @return array|mixed|null
      * @throws UndefinedException
-     * @throws Throwable
+     * @throws \Throwable
      */
     protected function resolveField(
         ObjectType $parentType,
@@ -450,6 +460,7 @@ class Executor
     /**
      * @param Field      $field
      * @param ObjectType $objectType
+     *
      * @return callable|mixed|null
      */
     protected function determineResolveCallback(Field $field, ObjectType $objectType)
@@ -471,6 +482,7 @@ class Executor
      * @param ResolveInfo   $info
      * @param array         $path
      * @param mixed         $result
+     *
      * @return array|mixed
      * @throws InvariantException
      * @throws InvalidTypeException
@@ -552,6 +564,7 @@ class Executor
      * @param ResolveInfo           $info
      * @param array                 $path
      * @param mixed                 $result
+     *
      * @return array|PromiseInterface
      * @throws ExecutionException
      * @throws InvalidTypeException
@@ -605,6 +618,7 @@ class Executor
      * @param NamedTypeInterface        $returnType
      * @param ResolveInfo               $info
      * @param mixed                     $result
+     *
      * @return TypeInterface|ObjectType|null
      * @throws ExecutionException
      * @throws InvariantException
@@ -666,6 +680,7 @@ class Executor
      * @param mixed                 $context
      * @param ResolveInfo           $info
      * @param AbstractTypeInterface $abstractType
+     *
      * @return NamedTypeInterface|mixed|null
      * @throws InvariantException
      */
@@ -713,6 +728,7 @@ class Executor
                             return $possibleTypes[$index];
                         }
                     }
+
                     return null;
                 });
         }
@@ -726,6 +742,7 @@ class Executor
      * @param ResolveInfo $info
      * @param array       $path
      * @param mixed       $result
+     *
      * @return array|\React\Promise\Promise
      * @throws \Throwable
      */
@@ -768,6 +785,7 @@ class Executor
     /**
      * @param LeafTypeInterface|SerializableTypeInterface $returnType
      * @param mixed                                       $result
+     *
      * @return mixed
      * @throws ExecutionException
      */
@@ -791,6 +809,7 @@ class Executor
      * @param ResolveInfo $info
      * @param array       $path
      * @param mixed       $result
+     *
      * @return array
      * @throws ExecutionException
      * @throws InvalidTypeException
@@ -825,6 +844,7 @@ class Executor
      * @param mixed            $rootValue
      * @param ExecutionContext $context
      * @param ResolveInfo      $info
+     *
      * @return array|\Throwable
      */
     protected function resolveFieldValueOrError(
@@ -854,11 +874,12 @@ class Executor
      * @param FieldNode[] $fieldNodes
      * @param array       $path
      * @param mixed       $result
+     *
      * @return array
      * @throws ExecutionException
      * @throws InvalidTypeException
      * @throws InvariantException
-     * @throws Throwable
+     * @throws \Throwable
      */
     protected function executeSubFields(
         ObjectType $returnType,
@@ -889,6 +910,7 @@ class Executor
 
     /**
      * @param mixed $value
+     *
      * @return bool
      */
     protected function isPromise($value): bool
@@ -900,6 +922,7 @@ class Executor
      * @param \Throwable $originalException
      * @param array      $nodes
      * @param array      $path
+     *
      * @return ExecutionException
      */
     protected function buildLocatedError(
@@ -933,6 +956,7 @@ class Executor
      * @param ObjectType       $parentType
      * @param array|null       $path
      * @param ExecutionContext $context
+     *
      * @return ResolveInfo
      */
     protected function createResolveInfo(
@@ -976,6 +1000,7 @@ class Executor
      * @param array        $arguments
      * @param mixed        $contextValues
      * @param ResolveInfo  $info
+     *
      * @return mixed|null
      */
     public static function defaultFieldResolver($rootValue, array $arguments, $contextValues, ResolveInfo $info)
