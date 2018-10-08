@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Schema\Resolver;
 
 use Digia\GraphQL\Execution\ResolveInfo;
 
-abstract class AbstractResolver implements ResolverInterface
+abstract class AbstractResolver implements ClassResolverInterface
 {
     /**
      * @param mixed       $rootValue
@@ -17,7 +17,36 @@ abstract class AbstractResolver implements ResolverInterface
     /**
      * @inheritdoc
      */
-    public function getResolveMethod(string $fieldName): ?callable
+    public function beforeResolve(
+        callable $resolveCallback,
+        $rootValue,
+        array $args,
+        $contextValues = null,
+        ?ResolveInfo $info = null
+    ) {
+        // Override this method to perform logic before the resolver is invoked.
+        return $resolveCallback($rootValue, $args, $contextValues, $info);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function afterResolve(
+        $result,
+        $rootValue,
+        array $args,
+        $contextValues = null,
+        ?ResolveInfo $info = null
+    ) {
+        // Override this method to perform logic after the resolver is invoked.
+        return $result;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getResolveCallback(string $fieldName): ?callable
     {
         $resolveMethod = 'resolve' . \ucfirst($fieldName);
 
