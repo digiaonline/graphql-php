@@ -163,9 +163,44 @@ Resolver class example:
 
 ```php
 $schema = buildSchema($source, [
-    'Query' => QueryResolver::class,
+    'Query' => [
+        'hero' => new HeroResolver(),
+    ],
 ]);
 ```
+
+#### Resolver middleware
+
+If you find yourself writing the same logic in multiple resolvers you should consider using middleware. Resolver 
+middleware allow you to efficiently manage functionality across multiple resolvers.
+
+Before middleware example:
+
+```php
+class BeforeMiddleware implements ResolverMiddlewareInterface
+{
+    public function resolve(callable $resolveCallback, $rootValue, array $arguments, $context, ResolveInfo $info) {
+        $newRootValue = $this->doSomethingBefore();
+        return $resolveCallback($newRootValue, $arguments, $context, $info);
+    }
+}
+```
+
+After middleware example:
+
+```php
+class AfterMiddleware implements ResolverMiddlewareInterface
+{
+    public function resolve(callable $resolveCallback, $rootValue, array $arguments, $context, ResolveInfo $info) {
+        $result = $resolveCallback($rootValue, $arguments, $context, $info);
+        $this->doSomethingAfter();
+        return $result;
+    }
+}
+```
+
+Resolver middleware can be useful for a number of things; such as logging, input sanitization, performance 
+measurement, authorization and caching.
 
 If you want to learn more about schemas you can refer to the [specification](https://graphql.org/learn/schema/).
 
@@ -220,9 +255,9 @@ function ($rootValue, array $arguments, $context, ResolveInfo $info): string {
 Resolver class example:
 
 ```php
-class QueryResolver implements ResolverInterface
+class HumanResolver implements ResolverInterface
 {
-    public function resolveHero($rootValue, array $arguments, $context, ResolveInfo $info): string
+    public function resolve($rootValue, array $arguments, $context, ResolveInfo $info): string
     {
        return [
            'type'       => 'Human',
@@ -236,8 +271,10 @@ class QueryResolver implements ResolverInterface
 }
 ```
 
+#### The N+1 problem
+
 The resolver function can return a value, a [promise](https://github.com/reactphp/promise) or an array of promises. 
-This resolver function below illustrates how to use promise to solve **N+1** problem, the full example can be found in 
+This resolver function below illustrates how to use promise to solve the N+1 problem, the full example can be found in 
 this [test case](/tests/Functional/Execution/DeferredResolverTest.php).
 
 ```php
