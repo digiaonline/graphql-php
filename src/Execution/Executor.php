@@ -22,11 +22,9 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use InvalidArgumentException;
 use React\Promise\ExtendedPromiseInterface;
 use React\Promise\FulfilledPromise;
 use React\Promise\PromiseInterface;
-use Throwable;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeNameMetaFieldDefinition;
@@ -72,6 +70,7 @@ class Executor
 
     /**
      * Executor constructor.
+     *
      * @param ExecutionContext           $context
      * @param FieldCollector             $fieldCollector
      * @param ErrorHandlerInterface|null $errorHandler
@@ -115,7 +114,7 @@ class Executor
                 ? $this->executeFieldsSerially($objectType, $rootValue, $path, $fields)
                 : $this->executeFields($objectType, $rootValue, $path, $fields);
         } catch (\Throwable $ex) {
-            $this->handleError(new ExecutionException($ex->getMessage(), $fields, null, null, null, null, $ex));
+            $this->handleError(new ExecutionException($ex->getMessage(), null, null, null, null, null, $ex));
             return null;
         }
 
@@ -125,6 +124,7 @@ class Executor
     /**
      * @param Schema                  $schema
      * @param OperationDefinitionNode $operation
+     *
      * @return ObjectType|null
      * @throws ExecutionException
      */
@@ -141,6 +141,7 @@ class Executor
                         [$operation]
                     );
                 }
+
                 return $mutationType;
             case 'subscription':
                 $subscriptionType = $schema->getSubscriptionType();
@@ -150,6 +151,7 @@ class Executor
                         [$operation]
                     );
                 }
+
                 return $subscriptionType;
             default:
                 throw new ExecutionException(
@@ -166,9 +168,8 @@ class Executor
      * @param mixed      $rootValue
      * @param array      $path
      * @param array      $fields
+     *
      * @return array
-     * @throws InvalidArgumentException
-     * @throws Throwable
      */
     public function executeFieldsSerially(
         ObjectType $objectType,
@@ -189,10 +190,10 @@ class Executor
                 return null;
             }
 
-            if ($this->isPromise($result)) {
-                /** @var ExtendedPromiseInterface $result */
+            if ($result instanceof ExtendedPromiseInterface) {
                 return $result->then(function ($resolvedResult) use ($fieldName, $results) {
                     $results[$fieldName] = $resolvedResult;
+
                     return $results;
                 });
             }
@@ -217,8 +218,11 @@ class Executor
 
         $promise->then(function ($resolvedResults) use (&$finalResults) {
             $finalResults = $resolvedResults ?? [];
-        })->otherwise(function ($ex) {
-            $this->context->addError($ex);
+        })->otherwise(function (\Throwable $ex) {
+            if (!$ex instanceof ExecutionException) {
+                $ex = new ExecutionException($ex->getMessage(), null, null, null, null, null, $ex);
+            }
+            $this->handleError($ex);
         });
 
         return $finalResults;
@@ -228,6 +232,7 @@ class Executor
      * @param Schema     $schema
      * @param ObjectType $parentType
      * @param string     $fieldName
+     *
      * @return Field|null
      */
     public function getFieldDefinition(
@@ -251,6 +256,7 @@ class Executor
             return $typeNameMetaFieldDefinition;
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $fields = $parentType->getFields();
 
         return $fields[$fieldName] ?? null;
@@ -262,6 +268,7 @@ class Executor
      * @param ResolveInfo   $info
      * @param array         $path
      * @param mixed         $result
+     *
      * @return array|mixed|null
      * @throws \Throwable
      */
@@ -291,15 +298,14 @@ class Executor
                 $result
             );
 
-            if ($this->isPromise($completed)) {
-                $context = $this->context;
-                /** @var ExtendedPromiseInterface $completed */
-                return $completed->then(null, function ($error) use ($context, $fieldNodes, $path) {
-                    //@TODO Handle $error better
+            if ($completed instanceof ExtendedPromiseInterface) {
+                return $completed->then(null, function ($error) use ($fieldNodes, $path) {
                     if ($error instanceof \Exception) {
-                        $context->addError($this->buildLocatedError($error, $fieldNodes, $path));
+                        $this->handleError(
+                            $this->buildLocatedError($error, $fieldNodes, $path)
+                        );
                     } else {
-                        $context->addError(
+                        $this->handleError(
                             $this->buildLocatedError(
                                 new ExecutionException($error ?? 'An unknown error occurred.'),
                                 $fieldNodes,
@@ -307,6 +313,7 @@ class Executor
                             )
                         );
                     }
+
                     return new FulfilledPromise(null);
                 });
             }
@@ -318,13 +325,13 @@ class Executor
         }
     }
 
-
     /**
      * @param TypeInterface $fieldType
      * @param FieldNode[]   $fieldNodes
      * @param ResolveInfo   $info
      * @param array         $path
      * @param mixed         $result
+     *
      * @return array|mixed
      * @throws \Throwable
      */
@@ -357,7 +364,9 @@ class Executor
      * @param mixed      $rootValue
      * @param array      $path
      * @param array      $fields
+     *
      * @return array
+     * @throws ExecutionException
      * @throws \Throwable
      */
     protected function executeFields(
@@ -379,7 +388,7 @@ class Executor
                 continue;
             }
 
-            $doesContainPromise = $doesContainPromise || $this->isPromise($result);
+            $doesContainPromise = $doesContainPromise || $result instanceof ExtendedPromiseInterface;
 
             $finalResults[$fieldName] = $result;
         }
@@ -404,9 +413,10 @@ class Executor
      * @param mixed       $rootValue
      * @param FieldNode[] $fieldNodes
      * @param array       $path
+     *
      * @return array|mixed|null
      * @throws UndefinedException
-     * @throws Throwable
+     * @throws \Throwable
      */
     protected function resolveField(
         ObjectType $parentType,
@@ -450,6 +460,7 @@ class Executor
     /**
      * @param Field      $field
      * @param ObjectType $objectType
+     *
      * @return callable|mixed|null
      */
     protected function determineResolveCallback(Field $field, ObjectType $objectType)
@@ -471,6 +482,7 @@ class Executor
      * @param ResolveInfo   $info
      * @param array         $path
      * @param mixed         $result
+     *
      * @return array|mixed
      * @throws InvariantException
      * @throws InvalidTypeException
@@ -484,8 +496,7 @@ class Executor
         array $path,
         &$result
     ) {
-        if ($this->isPromise($result)) {
-            /** @var ExtendedPromiseInterface $result */
+        if ($result instanceof ExtendedPromiseInterface) {
             return $result->then(function (&$value) use ($returnType, $fieldNodes, $info, $path) {
                 return $this->completeValue($returnType, $fieldNodes, $info, $path, $value);
             });
@@ -552,6 +563,7 @@ class Executor
      * @param ResolveInfo           $info
      * @param array                 $path
      * @param mixed                 $result
+     *
      * @return array|PromiseInterface
      * @throws ExecutionException
      * @throws InvalidTypeException
@@ -572,8 +584,7 @@ class Executor
             $runtimeType = $this->defaultTypeResolver($result, $this->context->getContextValue(), $info, $returnType);
         }
 
-        if ($this->isPromise($runtimeType)) {
-            /** @var ExtendedPromiseInterface $runtimeType */
+        if ($runtimeType instanceof ExtendedPromiseInterface) {
             return $runtimeType->then(function ($resolvedRuntimeType) use (
                 $returnType,
                 $fieldNodes,
@@ -605,6 +616,7 @@ class Executor
      * @param NamedTypeInterface        $returnType
      * @param ResolveInfo               $info
      * @param mixed                     $result
+     *
      * @return TypeInterface|ObjectType|null
      * @throws ExecutionException
      * @throws InvariantException
@@ -666,6 +678,7 @@ class Executor
      * @param mixed                 $context
      * @param ResolveInfo           $info
      * @param AbstractTypeInterface $abstractType
+     *
      * @return NamedTypeInterface|mixed|null
      * @throws InvariantException
      */
@@ -686,7 +699,7 @@ class Executor
         foreach ($possibleTypes as $index => $type) {
             $isTypeOfResult = $type->isTypeOf($value, $context, $info);
 
-            if ($this->isPromise($isTypeOfResult)) {
+            if ($isTypeOfResult instanceof ExtendedPromiseInterface) {
                 $promisedIsTypeOfResults[$index] = $isTypeOfResult;
                 continue;
             }
@@ -713,6 +726,7 @@ class Executor
                             return $possibleTypes[$index];
                         }
                     }
+
                     return null;
                 });
         }
@@ -726,6 +740,7 @@ class Executor
      * @param ResolveInfo $info
      * @param array       $path
      * @param mixed       $result
+     *
      * @return array|\React\Promise\Promise
      * @throws \Throwable
      */
@@ -757,7 +772,7 @@ class Executor
             $fieldPath[]        = $key;
             $completedItem      = $this->completeValueCatchingError($itemType, $fieldNodes, $info, $fieldPath, $item);
             $completedItems[]   = $completedItem;
-            $doesContainPromise = $doesContainPromise || $this->isPromise($completedItem);
+            $doesContainPromise = $doesContainPromise || $completedItem instanceof ExtendedPromiseInterface;
         }
 
         return $doesContainPromise
@@ -768,6 +783,7 @@ class Executor
     /**
      * @param LeafTypeInterface|SerializableTypeInterface $returnType
      * @param mixed                                       $result
+     *
      * @return mixed
      * @throws ExecutionException
      */
@@ -791,6 +807,7 @@ class Executor
      * @param ResolveInfo $info
      * @param array       $path
      * @param mixed       $result
+     *
      * @return array
      * @throws ExecutionException
      * @throws InvalidTypeException
@@ -825,6 +842,7 @@ class Executor
      * @param mixed            $rootValue
      * @param ExecutionContext $context
      * @param ResolveInfo      $info
+     *
      * @return array|\Throwable
      */
     protected function resolveFieldValueOrError(
@@ -854,11 +872,12 @@ class Executor
      * @param FieldNode[] $fieldNodes
      * @param array       $path
      * @param mixed       $result
+     *
      * @return array
      * @throws ExecutionException
      * @throws InvalidTypeException
      * @throws InvariantException
-     * @throws Throwable
+     * @throws \Throwable
      */
     protected function executeSubFields(
         ObjectType $returnType,
@@ -888,18 +907,10 @@ class Executor
     }
 
     /**
-     * @param mixed $value
-     * @return bool
-     */
-    protected function isPromise($value): bool
-    {
-        return $value instanceof ExtendedPromiseInterface;
-    }
-
-    /**
      * @param \Throwable $originalException
      * @param array      $nodes
      * @param array      $path
+     *
      * @return ExecutionException
      */
     protected function buildLocatedError(
@@ -933,6 +944,7 @@ class Executor
      * @param ObjectType       $parentType
      * @param array|null       $path
      * @param ExecutionContext $context
+     *
      * @return ResolveInfo
      */
     protected function createResolveInfo(
@@ -976,6 +988,7 @@ class Executor
      * @param array        $arguments
      * @param mixed        $contextValues
      * @param ResolveInfo  $info
+     *
      * @return mixed|null
      */
     public static function defaultFieldResolver($rootValue, array $arguments, $contextValues, ResolveInfo $info)
