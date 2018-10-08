@@ -30,15 +30,6 @@ class ResolverCollection implements ResolverInterface
     }
 
     /**
-     * @param string $fieldName
-     * @return callable|null
-     */
-    public function getResolver(string $fieldName): ?callable
-    {
-        return $this->resolvers[$fieldName] ?? null;
-    }
-
-    /**
      * @inheritdoc
      */
     public function getResolveCallback(): ?callable
@@ -46,15 +37,9 @@ class ResolverCollection implements ResolverInterface
         return function ($fieldName) {
             $resolver = $this->getResolver($fieldName);
 
-            if ($resolver instanceof ResolverInterface) {
-                return $resolver->getResolveCallback();
-            }
-
-            if ($resolver instanceof \Closure) {
-                return $resolver;
-            }
-
-            return null;
+            return $resolver instanceof ResolverInterface
+                ? $resolver->getResolveCallback()
+                : $resolver;
         };
     }
 
@@ -78,5 +63,14 @@ class ResolverCollection implements ResolverInterface
 
             $this->addResolver($typeName, $resolver);
         }
+    }
+
+    /**
+     * @param string $fieldName
+     * @return callable|null
+     */
+    protected function getResolver(string $fieldName): ?callable
+    {
+        return $this->resolvers[$fieldName] ?? null;
     }
 }

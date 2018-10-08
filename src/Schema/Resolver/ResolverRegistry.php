@@ -43,12 +43,8 @@ class ResolverRegistry implements ResolverRegistryInterface
     {
         $resolver = $this->getResolver($typeName);
 
-        if (null === $resolver) {
-            return null;
-        }
-
         $resolver = $resolver instanceof ResolverCollection
-            ? $resolver->getResolver($fieldName)
+            ? $resolver->getResolveCallback()($fieldName)
             : $resolver;
 
         $resolveCallback = $resolver instanceof ResolverInterface
@@ -60,8 +56,7 @@ class ResolverRegistry implements ResolverRegistryInterface
         }
 
         if (null !== $this->middleware) {
-            $middleware = \array_reverse($this->middleware);
-            return $this->applyMiddleware($resolveCallback, $middleware);
+            return $this->applyMiddleware($resolveCallback, \array_reverse($this->middleware));
         }
 
         return $resolveCallback;
