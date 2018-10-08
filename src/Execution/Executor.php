@@ -218,7 +218,10 @@ class Executor
 
         $promise->then(function ($resolvedResults) use (&$finalResults) {
             $finalResults = $resolvedResults ?? [];
-        })->otherwise(function (ExecutionException $ex) {
+        })->otherwise(function (\Throwable $ex) {
+            if (!$ex instanceof ExecutionException) {
+                $ex = new ExecutionException($ex->getMessage(), null, null, null, null, null, $ex);
+            }
             $this->handleError($ex);
         });
 
