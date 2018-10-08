@@ -3,8 +3,8 @@
 namespace Digia\GraphQL\Test\Unit\Schema\Resolver;
 
 use Digia\GraphQL\Execution\ResolveInfo;
-use Digia\GraphQL\Schema\Resolver\AbstractResolver;
 use Digia\GraphQL\Schema\Resolver\AbstractObjectResolver;
+use Digia\GraphQL\Schema\Resolver\AbstractResolver;
 use Digia\GraphQL\Schema\Resolver\AbstractResolverMiddleware;
 use Digia\GraphQL\Schema\Resolver\ResolverCollection;
 use Digia\GraphQL\Schema\Resolver\ResolverMiddlewareInterface;
@@ -119,13 +119,40 @@ class ResolverRegistryTest extends TestCase
             new LogResultMiddleware($logCallback)
         ]);
 
-        $registry->getFieldResolver('Query', 'hello')(null, ['name' => 'Bob']);
+        $result = $registry->getFieldResolver('Query', 'hello')(null, ['name' => 'Bob']);
 
+        $this->assertEquals('Hello Bob!', $result);
         $this->assertEquals([
             '1. logInput {"name":"Bob"}',
             '2. logResult',
             '3. resolver: hello',
             '4. logResult',
+            '5. logInput',
+        ], $messages);
+    }
+
+    public function testResolverWithSpecificMiddleware()
+    {
+        $messages = [];
+
+        $logCallback = function (string $message) use (&$messages) {
+            $messages[] = $message;
+        };
+
+        $registry = new ResolverRegistry([
+            'Query' => [
+                'hello' => new HelloResolverWithSpecificMiddleware($logCallback),
+            ],
+        ], [
+            'logInput'  => new LogInputMiddleware($logCallback),
+            'logResult' => new LogResultMiddleware($logCallback)
+        ]);
+
+        $registry->getFieldResolver('Query', 'hello')(null, ['name' => 'Bob']);
+
+        $this->assertEquals([
+            '1. logInput {"name":"Bob"}',
+            '3. resolver: hello',
             '5. logInput',
         ], $messages);
     }
@@ -203,5 +230,15 @@ class HelloResolver extends AbstractResolver
     {
         \call_user_func($this->logCallback, '3. resolver: hello');
         return \sprintf('Hello %s!', $arguments['name'] ?? 'world');
+    }
+}
+
+class HelloResolverWithSpecificMiddleware extends HelloResolver
+{
+    public function getMiddleware(): ?array
+    {
+        return [
+            'logInput',
+        ];
     }
 }

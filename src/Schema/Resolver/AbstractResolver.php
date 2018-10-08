@@ -54,4 +54,12 @@ abstract class AbstractResolver implements ResolverInterface
         // Override this method when your resolver returns an interface or an union type.
         return null;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMiddleware(): ?array
+    {
+        return null;
+    }
 }
