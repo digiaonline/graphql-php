@@ -3,10 +3,8 @@
 namespace Digia\GraphQL\Test\Unit\Schema\Resolver;
 
 use Digia\GraphQL\Execution\ResolveInfo;
-use Digia\GraphQL\Schema\Resolver\AbstractObjectResolver;
-use Digia\GraphQL\Schema\Resolver\AbstractResolver;
-use Digia\GraphQL\Schema\Resolver\AbstractResolverMiddleware;
-use Digia\GraphQL\Schema\Resolver\ResolverCollection;
+use Digia\GraphQL\Schema\Resolver\AbstractTypeResolver;
+use Digia\GraphQL\Schema\Resolver\AbstractFieldResolver;
 use Digia\GraphQL\Schema\Resolver\ResolverMiddlewareInterface;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistry;
 use Digia\GraphQL\Test\TestCase;
@@ -16,7 +14,7 @@ use function Digia\GraphQL\Test\Functional\getHuman;
 
 class ResolverRegistryTest extends TestCase
 {
-    public function testArrayResolver()
+    public function testResolverMap()
     {
         $registry = new ResolverRegistry([
             'Query' => [
@@ -40,7 +38,19 @@ class ResolverRegistryTest extends TestCase
         ], $registry->getFieldResolver('Query', 'droid')(null, ['id' => '2001']));
     }
 
-    public function testResolverClassMap()
+    public function testTypeResolver()
+    {
+        $registry = new ResolverRegistry([
+            'Query' => new QueryResolver(),
+        ]);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $this->assertArraySubset([
+            'name' => 'Luke Skywalker',
+        ], $registry->getFieldResolver('Query', 'human')(null, ['id' => '1000']));
+    }
+
+    public function testFieldResolver()
     {
         $registry = new ResolverRegistry([
             'Query' => [
@@ -58,9 +68,7 @@ class ResolverRegistryTest extends TestCase
     {
         $registry = new ResolverRegistry();
 
-        $registry->register('Query', new ResolverCollection([
-            'human' => new HumanResolver(),
-        ]));
+        $registry->register('Query', new QueryResolver());
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertArraySubset([
@@ -206,18 +214,23 @@ class LogResultMiddleware extends LogMiddleware
     }
 }
 
-class HumanResolver extends AbstractResolver
+class QueryResolver extends AbstractTypeResolver
 {
-    /**
-     * @inheritdoc
-     */
-    public function resolve($rootValue, array $arguments, $context = null, ?ResolveInfo $info = null)
+    public function resolveHuman($rootValue, array $arguments, $context = null, ?ResolveInfo $info = null): array
     {
         return getHuman($arguments['id']);
     }
 }
 
-class HelloResolver extends AbstractResolver
+class HumanResolver extends AbstractFieldResolver
+{
+    public function resolve($rootValue, array $arguments, $context = null, ?ResolveInfo $info = null): array
+    {
+        return getHuman($arguments['id']);
+    }
+}
+
+class HelloResolver extends AbstractFieldResolver
 {
     protected $logCallback;
 
@@ -226,7 +239,7 @@ class HelloResolver extends AbstractResolver
         $this->logCallback = $logCallback;
     }
 
-    public function resolve($rootValue, array $arguments, $context = null, ?ResolveInfo $info = null)
+    public function resolve($rootValue, array $arguments, $context = null, ?ResolveInfo $info = null): string
     {
         \call_user_func($this->logCallback, '3. resolver: hello');
         return \sprintf('Hello %s!', $arguments['name'] ?? 'world');
