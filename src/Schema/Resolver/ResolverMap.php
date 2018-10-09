@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Schema\Resolver;
 
-class ResolverCollection implements ResolverInterface
+class ResolverMap implements ResolverCollectionInterface
 {
     protected const TYPE_RESOLVER_KEY = '__resolveType';
 
@@ -43,7 +43,7 @@ class ResolverCollection implements ResolverInterface
      */
     public function getResolveCallback(): ?callable
     {
-        return function ($fieldName) {
+        return function (string $fieldName) {
             $resolver = $this->getResolver($fieldName);
 
             return $resolver instanceof ResolverInterface
@@ -75,7 +75,7 @@ class ResolverCollection implements ResolverInterface
     {
         foreach ($resolvers as $typeName => $resolver) {
             if (\is_array($resolver)) {
-                $resolver = new ResolverCollection($resolver);
+                $resolver = new ResolverMap($resolver);
             }
 
             $this->addResolver($typeName, $resolver);

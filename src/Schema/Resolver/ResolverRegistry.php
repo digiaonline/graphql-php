@@ -43,7 +43,7 @@ class ResolverRegistry implements ResolverRegistryInterface
     {
         $resolver = $this->getResolver($typeName);
 
-        $resolver = $resolver instanceof ResolverCollection
+        $resolver = $resolver instanceof ResolverCollectionInterface
             ? $resolver->getResolver($fieldName)
             : $resolver;
 
@@ -95,7 +95,7 @@ class ResolverRegistry implements ResolverRegistryInterface
     {
         foreach ($resolvers as $typeName => $resolver) {
             if (\is_array($resolver)) {
-                $resolver = new ResolverCollection($resolver);
+                $resolver = new ResolverMap($resolver);
             }
 
             $this->register($typeName, $resolver);

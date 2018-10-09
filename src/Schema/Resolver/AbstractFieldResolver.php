@@ -4,8 +4,10 @@ namespace Digia\GraphQL\Schema\Resolver;
 
 use Digia\GraphQL\Execution\ResolveInfo;
 
-abstract class AbstractResolver implements ResolverInterface
+abstract class AbstractFieldResolver implements ResolverInterface
 {
+    use ResolverTrait;
+
     /**
      * @param mixed            $rootValue
      * @param array            $arguments
@@ -31,35 +33,5 @@ abstract class AbstractResolver implements ResolverInterface
         return function ($rootValue, array $arguments, $context = null, ?ResolveInfo $info = null) {
             return $this->resolve($rootValue, $arguments, $context, $info);
         };
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getTypeResolver(): ?callable
-    {
-        return function ($rootValue, $context = null, ?ResolveInfo $info = null) {
-            return $this->resolveType($rootValue, $context, $info);
-        };
-    }
-
-    /**
-     * @param mixed            $rootValue
-     * @param mixed            $context
-     * @param ResolveInfo|null $info
-     * @return callable|null
-     */
-    public function resolveType($rootValue, $context = null, ?ResolveInfo $info = null): ?callable
-    {
-        // Override this method when your resolver returns an interface or an union type.
-        return null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getMiddleware(): ?array
-    {
-        return null;
     }
 }
