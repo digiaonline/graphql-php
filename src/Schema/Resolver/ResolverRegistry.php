@@ -109,15 +109,15 @@ class ResolverRegistry implements ResolverRegistryInterface
      */
     protected function getMiddlewareToApply(ResolverInterface $resolver, array $middleware): array
     {
-        $middlewareNames = $resolver->getMiddleware();
+        $resolverMiddleware = $resolver->getMiddleware();
 
-        if (null === $middlewareNames) {
+        if (null === $resolverMiddleware) {
             return $middleware;
         }
 
-        return \array_filter($middleware, function ($name) use ($middlewareNames) {
-            return \in_array($name, $middlewareNames, true);
-        }, ARRAY_FILTER_USE_KEY);
+        return \array_filter($middleware, function (ResolverMiddlewareInterface $mw) use ($resolverMiddleware) {
+            return \in_array(\get_class($mw), $resolverMiddleware, true);
+        });
     }
 
     /**

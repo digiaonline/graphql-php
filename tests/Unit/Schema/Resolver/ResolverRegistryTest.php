@@ -144,8 +144,8 @@ class ResolverRegistryTest extends TestCase
                 'hello' => new HelloResolverWithSpecificMiddleware($logCallback),
             ],
         ], [
-            'logInput'  => new LogInputMiddleware($logCallback),
-            'logResult' => new LogResultMiddleware($logCallback)
+            new LogInputMiddleware($logCallback),
+            new LogResultMiddleware($logCallback)
         ]);
 
         $registry->getFieldResolver('Query', 'hello')(null, ['name' => 'Bob']);
@@ -238,7 +238,7 @@ class HelloResolverWithSpecificMiddleware extends HelloResolver
     public function getMiddleware(): ?array
     {
         return [
-            'logInput',
+            LogInputMiddleware::class,
         ];
     }
 }
