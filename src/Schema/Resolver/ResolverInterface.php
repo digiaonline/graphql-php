@@ -13,4 +13,9 @@ interface ResolverInterface
      * @return callable|null
      */
     public function getTypeResolver(): ?callable;
+
+    /**
+     * @return array|null
+     */
+    public function getMiddleware(): ?array;
 }

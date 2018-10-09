@@ -44,7 +44,7 @@ class ResolverRegistry implements ResolverRegistryInterface
         $resolver = $this->getResolver($typeName);
 
         $resolver = $resolver instanceof ResolverCollection
-            ? $resolver->getResolveCallback()($fieldName)
+            ? $resolver->getResolver($fieldName)
             : $resolver;
 
         $resolveCallback = $resolver instanceof ResolverInterface
@@ -56,7 +56,11 @@ class ResolverRegistry implements ResolverRegistryInterface
         }
 
         if (null !== $this->middleware) {
-            return $this->applyMiddleware($resolveCallback, \array_reverse($this->middleware));
+            $middleware = $resolver instanceof ResolverInterface
+                ? $this->getMiddlewareToApply($resolver, $this->middleware)
+                : $this->middleware;
+
+            return $this->applyMiddleware($resolveCallback, \array_reverse($middleware));
         }
 
         return $resolveCallback;
@@ -96,6 +100,24 @@ class ResolverRegistry implements ResolverRegistryInterface
 
             $this->register($typeName, $resolver);
         }
+    }
+
+    /**
+     * @param ResolverInterface             $resolver
+     * @param ResolverMiddlewareInterface[] $middleware
+     * @return array
+     */
+    protected function getMiddlewareToApply(ResolverInterface $resolver, array $middleware): array
+    {
+        $resolverMiddleware = $resolver->getMiddleware();
+
+        if (null === $resolverMiddleware) {
+            return $middleware;
+        }
+
+        return \array_filter($middleware, function (ResolverMiddlewareInterface $mw) use ($resolverMiddleware) {
+            return \in_array(\get_class($mw), $resolverMiddleware, true);
+        });
     }
 
     /**
