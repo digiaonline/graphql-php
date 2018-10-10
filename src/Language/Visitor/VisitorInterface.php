@@ -8,13 +8,13 @@ interface VisitorInterface
 {
     /**
      * @param NodeInterface $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface;
+    public function enterNode(NodeInterface $node): VisitorResult;
 
     /**
      * @param NodeInterface $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface;
+    public function leaveNode(NodeInterface $node): VisitorResult;
 }

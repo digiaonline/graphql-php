@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\unknownFragmentMessage;
 
 /**
@@ -18,7 +18,7 @@ class KnownFragmentNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    public function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
+    public function enterFragmentSpread(FragmentSpreadNode $node): VisitorResult
     {
         $fragmentName = $node->getNameValue();
         $fragment     = $this->context->getFragment($fragmentName);
@@ -29,6 +29,6 @@ class KnownFragmentNamesRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

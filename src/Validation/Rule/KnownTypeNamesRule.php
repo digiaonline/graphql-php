@@ -6,10 +6,9 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
-use Digia\GraphQL\Language\Node\NameNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Util\suggestionList;
 use function Digia\GraphQL\Validation\unknownTypeMessage;
 
@@ -24,7 +23,7 @@ class KnownTypeNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterNamedType(NamedTypeNode $node): ?NodeInterface
+    protected function enterNamedType(NamedTypeNode $node): VisitorResult
     {
         $schema   = $this->context->getSchema();
         $typeName = $node->getNameValue();
@@ -39,7 +38,7 @@ class KnownTypeNamesRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     // TODO: when validating IDL, re-enable these. Experimental version does not add unreferenced types, resulting in false-positive errors. Squelched errors for now.
@@ -47,32 +46,32 @@ class KnownTypeNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterObjectTypeDefinition(ObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function enterObjectTypeDefinition(ObjectTypeDefinitionNode $node): VisitorResult
     {
-        return null;
+        return new VisitorResult(null);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?NodeInterface
+    protected function enterInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): VisitorResult
     {
-        return null;
+        return new VisitorResult(null);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterUnionTypeDefinition(UnionTypeDefinitionNode $node): ?NodeInterface
+    protected function enterUnionTypeDefinition(UnionTypeDefinitionNode $node): VisitorResult
     {
-        return null;
+        return new VisitorResult(null);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterInputObjectTypeDefinition(InputObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function enterInputObjectTypeDefinition(InputObjectTypeDefinitionNode $node): VisitorResult
     {
-        return null;
+        return new VisitorResult(null);
     }
 }

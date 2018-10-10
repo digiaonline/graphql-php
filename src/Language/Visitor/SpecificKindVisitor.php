@@ -52,7 +52,7 @@ class SpecificKindVisitor implements VisitorInterface
     /**
      * @inheritdoc
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    public function enterNode(NodeInterface $node): VisitorResult
     {
         $enterMethod = 'enter' . $node->getKind();
         return $this->{$enterMethod}($node);
@@ -61,7 +61,7 @@ class SpecificKindVisitor implements VisitorInterface
     /**
      * @inheritdoc
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface
+    public function leaveNode(NodeInterface $node): VisitorResult
     {
         $leaveMethod = 'leave' . $node->getKind();
         return $this->{$leaveMethod}($node);
@@ -69,775 +69,775 @@ class SpecificKindVisitor implements VisitorInterface
 
     /**
      * @param ArgumentNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterArgument(ArgumentNode $node): ?NodeInterface
+    protected function enterArgument(ArgumentNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ArgumentNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveArgument(ArgumentNode $node): ?NodeInterface
+    protected function leaveArgument(ArgumentNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param BooleanValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterBooleanValue(BooleanValueNode $node): ?NodeInterface
+    protected function enterBooleanValue(BooleanValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param BooleanValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveBooleanValue(BooleanValueNode $node): ?NodeInterface
+    protected function leaveBooleanValue(BooleanValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param DirectiveDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterDirectiveDefinition(DirectiveDefinitionNode $node): ?NodeInterface
+    protected function enterDirectiveDefinition(DirectiveDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param DirectiveDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveDirectiveDefinition(DirectiveDefinitionNode $node): ?NodeInterface
+    protected function leaveDirectiveDefinition(DirectiveDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param DirectiveNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterDirective(DirectiveNode $node): ?NodeInterface
+    protected function enterDirective(DirectiveNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param DirectiveNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveDirective(DirectiveNode $node): ?NodeInterface
+    protected function leaveDirective(DirectiveNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param DocumentNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterDocument(DocumentNode $node): ?NodeInterface
+    protected function enterDocument(DocumentNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param DocumentNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveDocument(DocumentNode $node): ?NodeInterface
+    protected function leaveDocument(DocumentNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param EnumTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterEnumTypeDefinition(EnumTypeDefinitionNode $node): ?NodeInterface
+    protected function enterEnumTypeDefinition(EnumTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param EnumTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveEnumTypeDefinition(EnumTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveEnumTypeDefinition(EnumTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param EnumTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterEnumTypeExtension(EnumTypeExtensionNode $node): ?NodeInterface
+    protected function enterEnumTypeExtension(EnumTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param EnumTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveEnumTypeExtension(EnumTypeExtensionNode $node): ?NodeInterface
+    protected function leaveEnumTypeExtension(EnumTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param EnumValueDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterEnumValueDefinition(EnumValueDefinitionNode $node): ?NodeInterface
+    protected function enterEnumValueDefinition(EnumValueDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param EnumValueDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveEnumValueDefinition(EnumValueDefinitionNode $node): ?NodeInterface
+    protected function leaveEnumValueDefinition(EnumValueDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param EnumValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterEnumValue(EnumValueNode $node): ?NodeInterface
+    protected function enterEnumValue(EnumValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param EnumValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveEnumValue(EnumValueNode $node): ?NodeInterface
+    protected function leaveEnumValue(EnumValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FieldDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterFieldDefinition(FieldDefinitionNode $node): ?NodeInterface
+    protected function enterFieldDefinition(FieldDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FieldDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveFieldDefinition(FieldDefinitionNode $node): ?NodeInterface
+    protected function leaveFieldDefinition(FieldDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FieldNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterField(FieldNode $node): ?NodeInterface
+    protected function enterField(FieldNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FieldNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveField(FieldNode $node): ?NodeInterface
+    protected function leaveField(FieldNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FloatValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterFloatValue(FloatValueNode $node): ?NodeInterface
+    protected function enterFloatValue(FloatValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FloatValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveFloatValue(FloatValueNode $node): ?NodeInterface
+    protected function leaveFloatValue(FloatValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FragmentDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FragmentDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function leaveFragmentDefinition(FragmentDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FragmentSpreadNode $node
-     * @return FragmentSpreadNode|null
+     * @return VisitorResult
      */
-    protected function enterFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
+    protected function enterFragmentSpread(FragmentSpreadNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param FragmentSpreadNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveFragmentSpread(FragmentSpreadNode $node): ?NodeInterface
+    protected function leaveFragmentSpread(FragmentSpreadNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InlineFragmentNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    protected function enterInlineFragment(InlineFragmentNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InlineFragmentNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    protected function leaveInlineFragment(InlineFragmentNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InputObjectTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterInputObjectTypeDefinition(InputObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function enterInputObjectTypeDefinition(InputObjectTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InputObjectTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveInputObjectTypeDefinition(InputObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveInputObjectTypeDefinition(InputObjectTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InputObjectTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterInputObjectTypeExtension(InputObjectTypeExtensionNode $node): ?NodeInterface
+    protected function enterInputObjectTypeExtension(InputObjectTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InputObjectTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveInputObjectTypeExtension(InputObjectTypeExtensionNode $node): ?NodeInterface
+    protected function leaveInputObjectTypeExtension(InputObjectTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InputValueDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterInputValueDefinition(InputValueDefinitionNode $node): ?NodeInterface
+    protected function enterInputValueDefinition(InputValueDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InputValueDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveInputValueDefinition(InputValueDefinitionNode $node): ?NodeInterface
+    protected function leaveInputValueDefinition(InputValueDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param IntValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterIntValue(IntValueNode $node): ?NodeInterface
+    protected function enterIntValue(IntValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param IntValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveIntValue(IntValueNode $node): ?NodeInterface
+    protected function leaveIntValue(IntValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InterfaceTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?NodeInterface
+    protected function enterInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InterfaceTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveInterfaceTypeDefinition(InterfaceTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InterfaceTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterInterfaceTypeExtension(InterfaceTypeExtensionNode $node): ?NodeInterface
+    protected function enterInterfaceTypeExtension(InterfaceTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param InterfaceTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveInterfaceTypeExtension(InterfaceTypeExtensionNode $node): ?NodeInterface
+    protected function leaveInterfaceTypeExtension(InterfaceTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ListTypeNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterListType(ListTypeNode $node): ?NodeInterface
+    protected function enterListType(ListTypeNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ListTypeNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveListType(ListTypeNode $node): ?NodeInterface
+    protected function leaveListType(ListTypeNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ListValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterListValue(ListValueNode $node): ?NodeInterface
+    protected function enterListValue(ListValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ListValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveListValue(ListValueNode $node): ?NodeInterface
+    protected function leaveListValue(ListValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param NamedTypeNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterNamedType(NamedTypeNode $node): ?NodeInterface
+    protected function enterNamedType(NamedTypeNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param NamedTypeNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveNamedType(NamedTypeNode $node): ?NodeInterface
+    protected function leaveNamedType(NamedTypeNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param NameNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterName(NameNode $node): ?NodeInterface
+    protected function enterName(NameNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param NameNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveName(NameNode $node): ?NodeInterface
+    protected function leaveName(NameNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param NonNullTypeNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterNonNullType(NonNullTypeNode $node): ?NodeInterface
+    protected function enterNonNullType(NonNullTypeNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param NonNullTypeNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveNonNullType(NonNullTypeNode $node): ?NodeInterface
+    protected function leaveNonNullType(NonNullTypeNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param NullValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterNullValue(NullValueNode $node): ?NodeInterface
+    protected function enterNullValue(NullValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param NullValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveNullValue(NullValueNode $node): ?NodeInterface
+    protected function leaveNullValue(NullValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ObjectFieldNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterObjectField(ObjectFieldNode $node): ?NodeInterface
+    protected function enterObjectField(ObjectFieldNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ObjectFieldNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveObjectField(ObjectFieldNode $node): ?NodeInterface
+    protected function leaveObjectField(ObjectFieldNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ObjectTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterObjectTypeDefinition(ObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function enterObjectTypeDefinition(ObjectTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ObjectTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveObjectTypeDefinition(ObjectTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveObjectTypeDefinition(ObjectTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ObjectTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterObjectTypeExtension(ObjectTypeExtensionNode $node): ?NodeInterface
+    protected function enterObjectTypeExtension(ObjectTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ObjectTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveObjectTypeExtension(ObjectTypeExtensionNode $node): ?NodeInterface
+    protected function leaveObjectTypeExtension(ObjectTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ObjectValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterObjectValue(ObjectValueNode $node): ?NodeInterface
+    protected function enterObjectValue(ObjectValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ObjectValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveObjectValue(ObjectValueNode $node): ?NodeInterface
+    protected function leaveObjectValue(ObjectValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param OperationDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param OperationDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function leaveOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param OperationTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterOperationTypeDefinition(OperationTypeDefinitionNode $node): ?NodeInterface
+    protected function enterOperationTypeDefinition(OperationTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param OperationTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveOperationTypeDefinition(OperationTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveOperationTypeDefinition(OperationTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ScalarTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterScalarTypeDefinition(ScalarTypeDefinitionNode $node): ?NodeInterface
+    protected function enterScalarTypeDefinition(ScalarTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ScalarTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveScalarTypeDefinition(ScalarTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveScalarTypeDefinition(ScalarTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ScalarTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterScalarTypeExtension(ScalarTypeExtensionNode $node): ?NodeInterface
+    protected function enterScalarTypeExtension(ScalarTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param ScalarTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveScalarTypeExtension(ScalarTypeExtensionNode $node): ?NodeInterface
+    protected function leaveScalarTypeExtension(ScalarTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param SchemaDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterSchemaDefinition(SchemaDefinitionNode $node): ?NodeInterface
+    protected function enterSchemaDefinition(SchemaDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param SchemaDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveSchemaDefinition(SchemaDefinitionNode $node): ?NodeInterface
+    protected function leaveSchemaDefinition(SchemaDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param SchemaExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterSchemaExtension(SchemaExtensionNode $node): ?NodeInterface
+    protected function enterSchemaExtension(SchemaExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param SchemaExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveSchemaExtension(SchemaExtensionNode $node): ?NodeInterface
+    protected function leaveSchemaExtension(SchemaExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param SelectionSetNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterSelectionSet(SelectionSetNode $node): ?NodeInterface
+    protected function enterSelectionSet(SelectionSetNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param SelectionSetNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveSelectionSet(SelectionSetNode $node): ?NodeInterface
+    protected function leaveSelectionSet(SelectionSetNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param StringValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterStringValue(StringValueNode $node): ?NodeInterface
+    protected function enterStringValue(StringValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param StringValueNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveStringValue(StringValueNode $node): ?NodeInterface
+    protected function leaveStringValue(StringValueNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param UnionTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterUnionTypeDefinition(UnionTypeDefinitionNode $node): ?NodeInterface
+    protected function enterUnionTypeDefinition(UnionTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param UnionTypeDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveUnionTypeDefinition(UnionTypeDefinitionNode $node): ?NodeInterface
+    protected function leaveUnionTypeDefinition(UnionTypeDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param UnionTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterUnionTypeExtension(UnionTypeExtensionNode $node): ?NodeInterface
+    protected function enterUnionTypeExtension(UnionTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param UnionTypeExtensionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveUnionTypeExtension(UnionTypeExtensionNode $node): ?NodeInterface
+    protected function leaveUnionTypeExtension(UnionTypeExtensionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param VariableDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param VariableDefinitionNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function leaveVariableDefinition(VariableDefinitionNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param VariableNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function enterVariable(VariableNode $node): ?NodeInterface
+    protected function enterVariable(VariableNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @param VariableNode $node
-     * @return NodeInterface|null
+     * @return VisitorResult
      */
-    protected function leaveVariable(VariableNode $node): ?NodeInterface
+    protected function leaveVariable(VariableNode $node): VisitorResult
     {
-        return $node;
+        return new VisitorResult($node);
     }
 }

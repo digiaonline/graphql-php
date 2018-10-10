@@ -5,8 +5,8 @@ namespace Digia\GraphQL\Validation\Rule;
 use Digia\GraphQL\Error\ConversionException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Error\ValidationException;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Util\TypeASTConverter;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Type\isInputType;
@@ -26,7 +26,7 @@ class VariablesAreInputTypesRule extends AbstractRule
      * @throws ConversionException
      * @throws InvariantException
      */
-    protected function enterVariableDefinition(VariableDefinitionNode $node): ?NodeInterface
+    protected function enterVariableDefinition(VariableDefinitionNode $node): VisitorResult
     {
         $type = TypeASTConverter::convert($this->context->getSchema(), $node->getType());
 
@@ -41,6 +41,6 @@ class VariablesAreInputTypesRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

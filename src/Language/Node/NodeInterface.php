@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
+use Digia\GraphQL\Language\Visitor\VisitorBreak;
 use Digia\GraphQL\Language\Visitor\VisitorInterface;
 
 interface NodeInterface
@@ -40,6 +41,7 @@ interface NodeInterface
      * @param array              $path
      * @param array              $ancestors
      * @return NodeInterface|null
+     * @throws VisitorBreak
      */
     public function acceptVisitor(
         VisitorInterface $visitor,

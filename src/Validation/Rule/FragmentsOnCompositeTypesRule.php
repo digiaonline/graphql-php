@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Validation\Rule;
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\InlineFragmentNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Util\TypeASTConverter;
 use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
@@ -24,25 +24,25 @@ class FragmentsOnCompositeTypesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterFragmentDefinition(FragmentDefinitionNode $node): ?NodeInterface
+    protected function enterFragmentDefinition(FragmentDefinitionNode $node): VisitorResult
     {
         $this->validateFragementNode($node, function (FragmentDefinitionNode $node) {
             return fragmentOnNonCompositeMessage((string)$node, (string)$node->getTypeCondition());
         });
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterInlineFragment(InlineFragmentNode $node): ?NodeInterface
+    protected function enterInlineFragment(InlineFragmentNode $node): VisitorResult
     {
         $this->validateFragementNode($node, function (InlineFragmentNode $node) {
             return inlineFragmentOnNonCompositeMessage((string)$node->getTypeCondition());
         });
 
-        return $node;
+        return new VisitorResult($node);
     }
 
 

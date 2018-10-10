@@ -4,8 +4,8 @@ namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\DocumentNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use function Digia\GraphQL\Validation\anonymousOperationNotAloneMessage;
 
 /**
@@ -24,19 +24,19 @@ class LoneAnonymousOperationRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterDocument(DocumentNode $node): ?NodeInterface
+    protected function enterDocument(DocumentNode $node): VisitorResult
     {
         $this->operationCount = \count(\array_filter($node->getDefinitions(), function ($definition) {
             return $definition instanceof OperationDefinitionNode;
         }));
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterOperationDefinition(OperationDefinitionNode $node): ?NodeInterface
+    protected function enterOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
         if (null === $node->getName() && $this->operationCount > 1) {
             $this->context->reportError(
@@ -44,6 +44,6 @@ class LoneAnonymousOperationRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }

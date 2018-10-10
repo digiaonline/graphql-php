@@ -59,7 +59,7 @@ class TypeInfoVisitor implements VisitorInterface
      * @throws ConversionException
      * @throws InvariantException
      */
-    public function enterNode(NodeInterface $node): ?NodeInterface
+    public function enterNode(NodeInterface $node): VisitorResult
     {
         $schema = $this->typeInfo->getSchema();
 
@@ -149,13 +149,10 @@ class TypeInfoVisitor implements VisitorInterface
     /**
      * @inheritdoc
      */
-    public function leaveNode(NodeInterface $node): ?NodeInterface
+    public function leaveNode(NodeInterface $node): VisitorResult
     {
-        $newNode = $this->visitor->leaveNode($node);
-
-        if (null === $newNode) {
-            return null;
-        }
+        $VisitorResult = $this->visitor->leaveNode($node);
+        $newNode       = $VisitorResult->getValue();
 
         if ($newNode instanceof SelectionSetNode) {
             $this->typeInfo->popParentType();
@@ -181,6 +178,6 @@ class TypeInfoVisitor implements VisitorInterface
             $this->typeInfo->setEnumValue(null);
         }
 
-        return $newNode;
+        return $VisitorResult;
     }
 }

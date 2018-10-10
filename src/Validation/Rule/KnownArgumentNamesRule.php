@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\Argument;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Util\suggestionList;
@@ -24,7 +25,7 @@ class KnownArgumentNamesRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterArgument(ArgumentNode $node): ?NodeInterface
+    protected function enterArgument(ArgumentNode $node): VisitorResult
     {
         $argumentDefinition = $this->context->getArgument();
 
@@ -32,15 +33,15 @@ class KnownArgumentNamesRule extends AbstractRule
             $argumentOf = $node->getAncestor();
 
             if ($argumentOf instanceof FieldNode) {
-                return $this->validateField($node);
+                return new VisitorResult($this->validateField($node));
             }
 
             if ($argumentOf instanceof DirectiveNode) {
-                return $this->validateDirective($node);
+                return new VisitorResult($this->validateDirective($node));
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**

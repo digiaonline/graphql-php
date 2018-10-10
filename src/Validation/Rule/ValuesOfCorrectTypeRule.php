@@ -9,12 +9,12 @@ use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\FloatValueNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\NullValueNode;
 use Digia\GraphQL\Language\Node\ObjectFieldNode;
 use Digia\GraphQL\Language\Node\ObjectValueNode;
 use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -43,7 +43,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function enterNullValue(NullValueNode $node): ?NodeInterface
+    protected function enterNullValue(NullValueNode $node): VisitorResult
     {
         $type = $this->context->getInputType();
 
@@ -56,13 +56,13 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterListValue(ListValueNode $node): ?NodeInterface
+    protected function enterListValue(ListValueNode $node): VisitorResult
     {
         // Note: TypeInfo will traverse into a list's item type, so look to the
         // parent input type to check if it is a list.
@@ -70,16 +70,17 @@ class ValuesOfCorrectTypeRule extends AbstractRule
 
         if (!($type instanceof ListType)) {
             $this->isValidScalar($node);
-            return null; // Don't traverse further.
+
+            return new VisitorResult(null);
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterObjectField(ObjectFieldNode $node): ?NodeInterface
+    protected function enterObjectField(ObjectFieldNode $node): VisitorResult
     {
         $parentType = getNamedType($this->context->getParentInputType());
         $fieldType  = $this->context->getInputType();
@@ -96,19 +97,20 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterObjectValue(ObjectValueNode $node): ?NodeInterface
+    protected function enterObjectValue(ObjectValueNode $node): VisitorResult
     {
         $type = getNamedType($this->context->getInputType());
 
         if (!($type instanceof InputObjectType)) {
             $this->isValidScalar($node);
-            return null; // Don't traverse further.
+
+            return new VisitorResult(null);
         }
 
         // Ensure every required field exists.
@@ -131,13 +133,13 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterEnumValue(EnumValueNode $node): ?NodeInterface
+    protected function enterEnumValue(EnumValueNode $node): VisitorResult
     {
         $type = getNamedType($this->context->getInputType());
 
@@ -154,43 +156,47 @@ class ValuesOfCorrectTypeRule extends AbstractRule
             );
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterIntValue(IntValueNode $node): ?NodeInterface
+    protected function enterIntValue(IntValueNode $node): VisitorResult
     {
         $this->isValidScalar($node);
-        return $node;
+
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterFloatValue(FloatValueNode $node): ?NodeInterface
+    protected function enterFloatValue(FloatValueNode $node): VisitorResult
     {
         $this->isValidScalar($node);
-        return $node;
+
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterStringValue(StringValueNode $node): ?NodeInterface
+    protected function enterStringValue(StringValueNode $node): VisitorResult
     {
         $this->isValidScalar($node);
-        return $node;
+
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function enterBooleanValue(BooleanValueNode $node): ?NodeInterface
+    protected function enterBooleanValue(BooleanValueNode $node): VisitorResult
     {
         $this->isValidScalar($node);
-        return $node;
+
+        return new VisitorResult($node);
     }
 
     /**

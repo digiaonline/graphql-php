@@ -6,7 +6,7 @@ use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\FieldNode;
-use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Validation\missingDirectiveArgumentMessage;
@@ -25,12 +25,12 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
     /**
      * @inheritdoc
      */
-    protected function leaveField(FieldNode $node): ?NodeInterface
+    protected function leaveField(FieldNode $node): VisitorResult
     {
         $fieldDefinition = $this->context->getFieldDefinition();
 
         if (null === $fieldDefinition) {
-            return null;
+            return new VisitorResult(null);
         }
 
         $argumentNodes   = $node->getArguments();
@@ -56,18 +56,18 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 
     /**
      * @inheritdoc
      */
-    protected function leaveDirective(DirectiveNode $node): ?NodeInterface
+    protected function leaveDirective(DirectiveNode $node): VisitorResult
     {
         $directiveDefinition = $this->context->getDirective();
 
         if (null === $directiveDefinition) {
-            return null;
+            return new VisitorResult(null);
         }
 
         $argumentNodes   = $node->getArguments();
@@ -93,6 +93,6 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
             }
         }
 
-        return $node;
+        return new VisitorResult($node);
     }
 }
