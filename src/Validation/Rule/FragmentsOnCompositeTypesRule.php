@@ -2,12 +2,12 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Util\TypeASTConverter;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Validation\fragmentOnNonCompositeMessage;
 use function Digia\GraphQL\Validation\inlineFragmentOnNonCompositeMessage;
 

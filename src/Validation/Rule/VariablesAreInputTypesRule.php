@@ -2,12 +2,12 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\ConversionException;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
+use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Type\isInputType;
 use function Digia\GraphQL\Validation\nonInputTypeOnVariableMessage;

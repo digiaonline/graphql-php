@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Execution;
 
 
-use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Execution\ExecutionException;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;

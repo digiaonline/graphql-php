@@ -4,9 +4,6 @@ namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\ErrorHandlerInterface;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\SchemaValidationException;
-use Digia\GraphQL\Error\SyntaxErrorException;
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
@@ -14,8 +11,11 @@ use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\Source;
 use Digia\GraphQL\Language\StringSourceBuilder;
+use Digia\GraphQL\Language\SyntaxErrorException;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\Schema;
+use Digia\GraphQL\Schema\Validation\SchemaValidationException;
+use Digia\GraphQL\Validation\ValidationException;
 
 /**
  * @param string|Source                   $source

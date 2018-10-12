@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Language;
 
-use Digia\GraphQL\Error\SyntaxErrorException;
+use Digia\GraphQL\Language\SyntaxErrorException;
 use Digia\GraphQL\Language\Node\NodeKindEnum;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\TypeNameEnum;

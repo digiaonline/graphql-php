@@ -2,9 +2,8 @@
 
 namespace Digia\GraphQL\Schema\Validation;
 
-use Digia\GraphQL\Error\SchemaValidationException;
-use Digia\GraphQL\Error\ValidationExceptionInterface;
 use Digia\GraphQL\Schema\Schema;
+use Digia\GraphQL\Validation\ValidationExceptionInterface;
 
 interface ValidationContextInterface
 {

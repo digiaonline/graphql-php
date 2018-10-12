@@ -2,12 +2,12 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\NameNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Validation\duplicateArgumentMessage;
 
 /**

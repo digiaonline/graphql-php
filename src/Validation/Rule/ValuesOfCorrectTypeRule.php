@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\BooleanValueNode;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\FloatValueNode;
@@ -22,6 +21,7 @@ use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Type\getNullableType;

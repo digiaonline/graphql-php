@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Unit\Error;
 
 use Digia\GraphQL\Error\ErrorHandler;
-use Digia\GraphQL\Error\ExecutionException;
+use Digia\GraphQL\Execution\ExecutionException;
 use Digia\GraphQL\Test\TestCase;
 
 class ErrorHandlerTest extends TestCase

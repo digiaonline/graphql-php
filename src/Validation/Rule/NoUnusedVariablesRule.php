@@ -2,11 +2,11 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Validation\unusedVariableMessage;
 
 /**

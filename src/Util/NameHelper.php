@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Util;
 
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Validation\ValidationException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 
 class NameHelper

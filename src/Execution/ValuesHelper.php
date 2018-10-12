@@ -2,9 +2,6 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\CoercingException;
-use Digia\GraphQL\Error\ConversionException;
-use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
@@ -15,6 +12,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Schema\Schema;
+use Digia\GraphQL\Type\Coercer\CoercingException;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
@@ -25,6 +23,7 @@ use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\ValueASTConverter;
 use function Digia\GraphQL\Util\find;

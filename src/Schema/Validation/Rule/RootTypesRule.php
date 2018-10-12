@@ -2,14 +2,9 @@
 
 namespace Digia\GraphQL\Schema\Validation\Rule;
 
-use Digia\GraphQL\Error\SchemaValidationException;
-use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Language\Node\OperationTypeDefinitionNode;
-use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
-use Digia\GraphQL\Schema\Schema;
+use Digia\GraphQL\Schema\Validation\SchemaValidationException;
 use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use function Digia\GraphQL\Util\find;
 
 class RootTypesRule extends AbstractRule
 {

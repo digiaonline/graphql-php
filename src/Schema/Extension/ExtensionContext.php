@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Schema\Extension;
 
-use Digia\GraphQL\Error\ExtensionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
@@ -64,7 +63,7 @@ class ExtensionContext implements ExtensionContextInterface
 
     /**
      * @return ObjectType[]
-     * @throws ExtensionException
+     * @throws SchemaExtensionException
      * @throws InvariantException
      */
     public function getExtendedOperationTypes(): array
@@ -81,7 +80,7 @@ class ExtensionContext implements ExtensionContextInterface
                 $operation = $operationType->getOperation();
 
                 if (isset($operationTypes[$operation])) {
-                    throw new ExtensionException(\sprintf('Must provide only one %s type in schema.', $operation));
+                    throw new SchemaExtensionException(\sprintf('Must provide only one %s type in schema.', $operation));
                 }
 
                 $operationTypes[$operation] = $this->definitionBuilder->buildType($operationType->getType());
@@ -178,7 +177,7 @@ class ExtensionContext implements ExtensionContextInterface
     /**
      * @param NamedTypeNode $node
      * @return TypeInterface|null
-     * @throws ExtensionException
+     * @throws SchemaExtensionException
      * @throws InvariantException
      */
     public function resolveType(NamedTypeNode $node): ?TypeInterface
@@ -190,7 +189,7 @@ class ExtensionContext implements ExtensionContextInterface
             return $this->getExtendedType($existingType);
         }
 
-        throw new ExtensionException(
+        throw new SchemaExtensionException(
             \sprintf(
                 'Unknown type: "%s". Ensure that this type exists ' .
                 'either in the original schema, or is added in a type definition.',
@@ -362,7 +361,7 @@ class ExtensionContext implements ExtensionContextInterface
      * @return array
      * @throws InvalidTypeException
      * @throws InvariantException
-     * @throws ExtensionException
+     * @throws SchemaExtensionException
      */
     protected function extendFieldMap(FieldsAwareInterface $type): array
     {
@@ -391,7 +390,7 @@ class ExtensionContext implements ExtensionContextInterface
                 $fieldName = $field->getNameValue();
 
                 if (isset($oldFieldMap[$fieldName])) {
-                    throw new ExtensionException(
+                    throw new SchemaExtensionException(
                         \sprintf(
                             'Field "%s.%s" already exists in the schema. ' .
                             'It cannot also be defined in this type extension.',

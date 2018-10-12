@@ -2,16 +2,16 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\ConversionException;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\TypeHelper;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Validation\typeIncompatibleAnonymousSpreadMessage;
 use function Digia\GraphQL\Validation\typeIncompatibleSpreadMessage;
 

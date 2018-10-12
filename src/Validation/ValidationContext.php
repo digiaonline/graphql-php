@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;

@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Functional\Schema;
 
-use Digia\GraphQL\Error\ExtensionException;
+use Digia\GraphQL\Schema\Extension\SchemaExtensionException;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Schema\Extension\SchemaExtenderInterface;
 use Digia\GraphQL\Test\TestCase;
@@ -454,7 +454,7 @@ class ExtensionTest extends TestCase
 
     public function testDoesNotAllowReplacingADefaultDirective()
     {
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage('Directive "include" already exists in the schema. It cannot be redefined.');
         $this->extendTestSchema('directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD');
     }
@@ -468,7 +468,7 @@ class ExtensionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $sdl = parse('directive @meow(if: Boolean!) on FIELD | QUERY');
 
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage('Directive "meow" already exists in the schema. It cannot be redefined.');
         $this->extendSchema($extendedSchema, $sdl);
     }
@@ -477,7 +477,7 @@ class ExtensionTest extends TestCase
 
     public function testDoesNotAllowReplacingAnExistingType()
     {
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage(
             'Field "Bar.foo" already exists in the schema. It cannot also be ' .
             'defined in this type extension.'
@@ -493,7 +493,7 @@ class ExtensionTest extends TestCase
 
     public function testDoesNotAllowReferencingAnUnknownType()
     {
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage(
             'Unknown type: "Quix". Ensure that this type exists either in the ' .
             'original schema, or is added in a type definition.'
@@ -509,7 +509,7 @@ class ExtensionTest extends TestCase
 
     public function testDoesNotAllowExtendingAnUnknownType()
     {
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage(
             'Cannot extend type "UnknownType" because it does not exist in the existing schema.'
         );
@@ -524,7 +524,7 @@ class ExtensionTest extends TestCase
 
     public function testDoesNotAllowExtendingAnUnknownInterfaceType()
     {
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage(
             'Cannot extend type "UnknownInterfaceType" because it does not exist in the existing schema.'
         );
@@ -545,7 +545,7 @@ class ExtensionTest extends TestCase
 
     public function testDoesNotAllowExtendingANonObjectType()
     {
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage('Cannot extend non-object type "SomeInterface".');
         $this->extendTestSchema(dedent('
         extend type SomeInterface {
@@ -558,7 +558,7 @@ class ExtensionTest extends TestCase
 
     public function testDoesNotAllowExtendingANonObjectInterfaceType()
     {
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage('Cannot extend non-interface type "Foo".');
         $this->extendTestSchema(dedent('
         extend interface Foo {
@@ -571,7 +571,7 @@ class ExtensionTest extends TestCase
 
     public function testDoesNotAllowExtendingANonObjectScalarType()
     {
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage('Cannot extend non-object type "String".');
         $this->extendTestSchema(dedent('
         extend type String {
@@ -613,7 +613,7 @@ class ExtensionTest extends TestCase
         }
         ');
 
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage('Cannot define a new schema within a schema extension.');
         $this->extendSchema($this->testSchema, $node);
     }
@@ -710,7 +710,7 @@ class ExtensionTest extends TestCase
         }
         ');
 
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage('Must provide only one query type in schema.');
         $this->extendSchema($this->testSchema, $node);
     }
@@ -734,7 +734,7 @@ class ExtensionTest extends TestCase
         }
         ');
 
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage('Must provide only one mutation type in schema.');
         $this->extendSchema($this->testSchema, $node);
     }
@@ -762,7 +762,7 @@ class ExtensionTest extends TestCase
         }
         ');
 
-        $this->expectException(ExtensionException::class);
+        $this->expectException(SchemaExtensionException::class);
         $this->expectExceptionMessage('Must provide only one mutation type in schema.');
         $this->extendSchema($this->testSchema, $node);
     }

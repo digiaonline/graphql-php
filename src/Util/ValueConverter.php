@@ -2,9 +2,9 @@
 
 namespace Digia\GraphQL\Util;
 
-use Digia\GraphQL\Error\ConversionException;
+use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\SyntaxErrorException;
+use Digia\GraphQL\Language\SyntaxErrorException;
 use Digia\GraphQL\Language\Node\BooleanValueNode;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\FloatValueNode;

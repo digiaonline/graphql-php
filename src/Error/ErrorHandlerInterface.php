@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Error;
 
+use Digia\GraphQL\Execution\ExecutionException;
+
 interface ErrorHandlerInterface
 {
     /**

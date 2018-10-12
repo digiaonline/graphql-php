@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Util\TypeInfo;

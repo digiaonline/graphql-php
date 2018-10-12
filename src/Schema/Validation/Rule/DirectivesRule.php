@@ -3,9 +3,9 @@
 namespace Digia\GraphQL\Schema\Validation\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\DirectiveNode;
+use Digia\GraphQL\Schema\Validation\SchemaValidationException;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Util\NameHelper;
 use function Digia\GraphQL\Type\isInputType;

@@ -2,10 +2,10 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\LeafTypeInterface;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Validation\noSubselectionAllowedMessage;
 use function Digia\GraphQL\Validation\requiresSubselectionMessage;

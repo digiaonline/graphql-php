@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Schema\Extension;
 
-use Digia\GraphQL\Error\ExtensionException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\EnumTypeExtensionNode;
@@ -89,7 +88,7 @@ class SchemaExtender implements SchemaExtenderInterface
      * @param Schema       $schema
      * @param DocumentNode $document
      * @return ExtendInfo
-     * @throws ExtensionException
+     * @throws SchemaExtensionException
      */
     protected function createInfo(Schema $schema, DocumentNode $document): ExtendInfo
     {
@@ -101,7 +100,7 @@ class SchemaExtender implements SchemaExtenderInterface
         foreach ($document->getDefinitions() as $definition) {
             if ($definition instanceof SchemaDefinitionNode) {
                 // Sanity check that a schema extension is not defining a new schema
-                throw new ExtensionException('Cannot define a new schema within a schema extension.', [$definition]);
+                throw new SchemaExtensionException('Cannot define a new schema within a schema extension.', [$definition]);
             }
 
             if ($definition instanceof SchemaExtensionNode) {
@@ -115,7 +114,7 @@ class SchemaExtender implements SchemaExtenderInterface
                 $existingDirective = $schema->getDirective($directiveName);
 
                 if (null !== $existingDirective) {
-                    throw new ExtensionException(
+                    throw new SchemaExtensionException(
                         \sprintf(
                             'Directive "%s" already exists in the schema. It cannot be redefined.',
                             $directiveName
@@ -135,7 +134,7 @@ class SchemaExtender implements SchemaExtenderInterface
                 $existingType = $schema->getType($typeName);
 
                 if (null !== $existingType) {
-                    throw new ExtensionException(
+                    throw new SchemaExtensionException(
                         \sprintf(
                             'Type "%s" already exists in the schema. It cannot also ' .
                             'be defined in this type definition.',
@@ -156,7 +155,7 @@ class SchemaExtender implements SchemaExtenderInterface
                 $existingType     = $schema->getType($extendedTypeName);
 
                 if (null === $existingType) {
-                    throw new ExtensionException(
+                    throw new SchemaExtensionException(
                         \sprintf(
                             'Cannot extend type "%s" because it does not exist in the existing schema.',
                             $extendedTypeName
@@ -179,7 +178,7 @@ class SchemaExtender implements SchemaExtenderInterface
                 $definition instanceof UnionTypeExtensionNode ||
                 $definition instanceof EnumTypeExtensionNode ||
                 $definition instanceof InputObjectTypeExtensionNode) {
-                throw new ExtensionException(
+                throw new SchemaExtensionException(
                     \sprintf('The %s kind is not yet supported by extendSchema().', $definition->getKind())
                 );
             }
@@ -198,19 +197,19 @@ class SchemaExtender implements SchemaExtenderInterface
     /**
      * @param TypeInterface $type
      * @param NodeInterface $node
-     * @throws ExtensionException
+     * @throws SchemaExtensionException
      */
     protected function checkExtensionNode(TypeInterface $type, NodeInterface $node): void
     {
         if ($node instanceof ObjectTypeExtensionNode && !($type instanceof ObjectType)) {
-            throw new ExtensionException(
+            throw new SchemaExtensionException(
                 \sprintf('Cannot extend non-object type "%s".', toString($type)),
                 [$node]
             );
         }
 
         if ($node instanceof InterfaceTypeExtensionNode && !($type instanceof InterfaceType)) {
-            throw new ExtensionException(
+            throw new SchemaExtensionException(
                 \sprintf('Cannot extend non-interface type "%s".', toString($type)),
                 [$node]
             );
