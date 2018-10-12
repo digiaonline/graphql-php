@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Validation;
 
 use Digia\GraphQL\Error\GraphQLException;
-use Digia\GraphQL\Error\ValidationException;
+use Digia\GraphQL\Validation\ValidationException;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Util\TypeInfo;

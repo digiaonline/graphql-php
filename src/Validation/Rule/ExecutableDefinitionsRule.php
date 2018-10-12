@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\ExecutableDefinitionNodeInterface;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
@@ -10,6 +9,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Language\Node\SchemaExtensionNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Validation\nonExecutableDefinitionMessage;
 
 /**

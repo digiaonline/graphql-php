@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Util;
 
-use Digia\GraphQL\Error\ConversionException;
+use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\IntValueNode;
 use Digia\GraphQL\Language\Node\ListValueNode;
@@ -14,7 +14,6 @@ use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Util\ValueASTConverter;
-use Digia\GraphQL\Util\ValueHelper;
 use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newEnumType;
 use function Digia\GraphQL\Type\newInputObjectType;

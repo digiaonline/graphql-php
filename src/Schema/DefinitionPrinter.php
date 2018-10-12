@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Schema;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\PrintException;
+use Digia\GraphQL\Language\PrintException;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\DeprecationAwareInterface;
 use Digia\GraphQL\Type\Definition\DescriptionAwareInterface;

@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
@@ -12,6 +11,7 @@ use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\TypeHelper;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Validation\badVariablePositionMessage;
 

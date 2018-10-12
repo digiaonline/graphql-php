@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Schema\Validation\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\FieldDefinitionNode;
@@ -15,6 +14,7 @@ use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
+use Digia\GraphQL\Schema\Validation\SchemaValidationException;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\FieldsAwareInterface;

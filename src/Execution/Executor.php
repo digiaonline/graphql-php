@@ -3,11 +3,9 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ErrorHandlerInterface;
-use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\UndefinedException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;

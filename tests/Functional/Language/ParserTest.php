@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Test\Functional\Language;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\SyntaxErrorException;
+use Digia\GraphQL\Language\SyntaxErrorException;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;

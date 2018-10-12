@@ -1,10 +1,7 @@
 <?php
 
-// TODO: Move this file under the Node namespace
-
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\LanguageException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\BooleanValueNode;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Error;
+namespace Digia\GraphQL\Validation;
 
 interface ValidationExceptionInterface
 {

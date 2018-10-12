@@ -2,11 +2,10 @@
 
 namespace Digia\GraphQL\Schema\Validation;
 
-use Digia\GraphQL\Error\SchemaValidationException;
-use Digia\GraphQL\Error\ValidationExceptionInterface;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Schema\Validation\Rule\RuleInterface;
 use Digia\GraphQL\Schema\Validation\Rule\SupportedRules;
+use Digia\GraphQL\Validation\ValidationExceptionInterface;
 
 class SchemaValidator implements SchemaValidatorInterface
 {

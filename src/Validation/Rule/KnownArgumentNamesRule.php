@@ -2,13 +2,13 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\Argument;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Util\suggestionList;
 use function Digia\GraphQL\Validation\unknownArgumentMessage;

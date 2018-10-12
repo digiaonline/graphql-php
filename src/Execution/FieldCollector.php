@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\ConversionException;
-use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\FieldNode;
@@ -14,6 +12,7 @@ use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
 
 class FieldCollector

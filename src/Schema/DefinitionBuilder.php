@@ -2,11 +2,10 @@
 
 namespace Digia\GraphQL\Schema;
 
-use Digia\GraphQL\Error\CoercingException;
-use Digia\GraphQL\Error\ExecutionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\LanguageException;
+use Digia\GraphQL\Execution\ExecutionException;
+use Digia\GraphQL\Language\LanguageException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumValueDefinitionNode;
@@ -25,6 +24,7 @@ use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
+use Digia\GraphQL\Type\Coercer\CoercingException;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;

@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Schema\Schema;
@@ -14,6 +13,7 @@ use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Util\suggestionList;
 use function Digia\GraphQL\Validation\undefinedFieldMessage;
 

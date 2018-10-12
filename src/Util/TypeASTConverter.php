@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Util;
 
-use Digia\GraphQL\Error\ConversionException;
+use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ListTypeNode;
 use Digia\GraphQL\Language\Node\NamedTypeNode;

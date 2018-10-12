@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Schema\Building;
 
-use Digia\GraphQL\Error\BuildingException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
@@ -44,7 +43,7 @@ class SchemaBuilder implements SchemaBuilderInterface
      * @param ResolverRegistryInterface $resolverRegistry
      * @param array                     $options
      * @return BuildingContextInterface
-     * @throws BuildingException
+     * @throws SchemaBuildingException
      */
     protected function createContext(
         DocumentNode $document,
@@ -67,7 +66,7 @@ class SchemaBuilder implements SchemaBuilderInterface
     /**
      * @param DocumentNode $document
      * @return BuildInfo
-     * @throws BuildingException
+     * @throws SchemaBuildingException
      */
     protected function createInfo(DocumentNode $document): BuildInfo
     {
@@ -78,7 +77,7 @@ class SchemaBuilder implements SchemaBuilderInterface
         foreach ($document->getDefinitions() as $definition) {
             if ($definition instanceof SchemaDefinitionNode) {
                 if (null !== $schemaDefinition) {
-                    throw new BuildingException('Must provide only one schema definition.');
+                    throw new SchemaBuildingException('Must provide only one schema definition.');
                 }
 
                 $schemaDefinition = $definition;
@@ -96,7 +95,7 @@ class SchemaBuilder implements SchemaBuilderInterface
                 $typeName = $definition->getNameValue();
 
                 if (isset($typeDefinitionMap[$typeName])) {
-                    throw new BuildingException(\sprintf('Type "%s" was defined more than once.', $typeName));
+                    throw new SchemaBuildingException(\sprintf('Type "%s" was defined more than once.', $typeName));
                 }
 
                 $typeDefinitionMap[$typeName] = $definition;
@@ -117,7 +116,7 @@ class SchemaBuilder implements SchemaBuilderInterface
     /**
      * @param SchemaDefinitionNode $node
      * @return array
-     * @throws BuildingException
+     * @throws SchemaBuildingException
      */
     protected function getOperationTypeDefinitions(SchemaDefinitionNode $node, array $typeDefinitionMap): array
     {
@@ -134,13 +133,13 @@ class SchemaBuilder implements SchemaBuilderInterface
             $operation = $operationTypeDefinition->getOperation();
 
             if (isset($definitions[$typeName])) {
-                throw new BuildingException(
+                throw new SchemaBuildingException(
                     \sprintf('Must provide only one %s type in schema.', $operation)
                 );
             }
 
             if (!isset($typeDefinitionMap[$typeName])) {
-                throw new BuildingException(
+                throw new SchemaBuildingException(
                     \sprintf('Specified %s type %s not found in document.', $operation, $typeName)
                 );
             }

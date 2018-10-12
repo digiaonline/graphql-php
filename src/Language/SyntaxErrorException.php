@@ -1,8 +1,8 @@
 <?php
 
-namespace Digia\GraphQL\Error;
+namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Language\Source;
+use Digia\GraphQL\Error\GraphQLException;
 
 class SyntaxErrorException extends GraphQLException
 {

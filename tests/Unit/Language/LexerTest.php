@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Test\Unit\Language;
 
-use Digia\GraphQL\Error\SyntaxErrorException;
+use Digia\GraphQL\Language\SyntaxErrorException;
 use Digia\GraphQL\Language\Lexer;
 use Digia\GraphQL\Language\LexerInterface;
 use Digia\GraphQL\Language\Source;

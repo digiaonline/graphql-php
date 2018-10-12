@@ -13,7 +13,7 @@ class NameHelperTest extends TestCase
 {
 
     /**
-     * @expectedException  \Digia\GraphQL\Error\ValidationException
+     * @expectedException  \Digia\GraphQL\Validation\ValidationException
      * @expectedExceptionMessage Name "__invalid" must not begin with "__", which is reserved by GraphQL introspection.
      */
     public function testAssertInvalidReservedCharacters()
@@ -26,7 +26,7 @@ class NameHelperTest extends TestCase
     }
 
     /**
-     * @expectedException \Digia\GraphQL\Error\ValidationException
+     * @expectedException \Digia\GraphQL\Validation\ValidationException
      * @expectedExceptionMessage Names must match /^[_a-zA-Z][_a-zA-Z0-9]*$/ but "-" does not.
      */
     public function testAssertInvalidRegularExpression()

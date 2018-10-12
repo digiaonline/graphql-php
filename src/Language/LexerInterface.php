@@ -2,8 +2,6 @@
 
 namespace Digia\GraphQL\Language;
 
-use Digia\GraphQL\Error\SyntaxErrorException;
-
 interface LexerInterface
 {
     /**

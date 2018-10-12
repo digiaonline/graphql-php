@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Schema\Validation;
 
-use Digia\GraphQL\Error\SchemaValidationException;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Schema\Validation\Rule\RuleInterface;
 

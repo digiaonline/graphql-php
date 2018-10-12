@@ -2,10 +2,10 @@
 
 namespace Digia\GraphQL\Test\Functional\Schema;
 
-use Digia\GraphQL\Error\ValidationExceptionInterface;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use Digia\GraphQL\Test\TestCase;
+use Digia\GraphQL\Validation\ValidationExceptionInterface;
 use function Digia\GraphQL\buildSchema;
 use function Digia\GraphQL\extendSchema;
 use function Digia\GraphQL\Language\dedent;

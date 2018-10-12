@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Language\Visitor;
 
-use Digia\GraphQL\Error\ConversionException;
+use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\DirectiveNode;

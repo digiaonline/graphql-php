@@ -3,7 +3,6 @@
 namespace Digia\GraphQL\Language;
 
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Error\SyntaxErrorException;
 use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\BooleanValueNode;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;

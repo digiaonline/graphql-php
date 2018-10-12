@@ -2,10 +2,10 @@
 
 namespace Digia\GraphQL\Validation\Rule;
 
-use Digia\GraphQL\Error\ValidationException;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Validation\Conflict\ConflictFinder;
+use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Validation\fieldsConflictMessage;
 
 /**
