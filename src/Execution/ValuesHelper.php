@@ -258,8 +258,8 @@ class ValuesHelper
             return $this->coerceValueForNonNullType($value, $type, $blameNode, $path);
         }
 
-        if (empty($value)) {
-            return new CoercedValue(null, null);
+        if (null === $value) {
+            return new CoercedValue(null);
         }
 
         if ($type instanceof ScalarType) {
@@ -327,12 +327,12 @@ class ValuesHelper
     ): CoercedValue {
         try {
             $parseResult = $type->parseValue($value);
-            if (empty($parseResult)) {
+            if (null === $parseResult) {
                 return new CoercedValue(null, [
                     new GraphQLException(sprintf('Expected type %s', (string)$type))
                 ]);
             }
-            return new CoercedValue($parseResult, null);
+            return new CoercedValue($parseResult);
         } catch (InvalidTypeException|CoercingException $ex) {
             return new CoercedValue(null, [
                 $this->buildCoerceException(
