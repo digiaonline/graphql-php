@@ -18,10 +18,10 @@ class CoercedValue
 
     /**
      * CoercedValue constructor.
-     * @param mixed      $value
-     * @param array|null $errors
+     * @param mixed $value
+     * @param array $errors
      */
-    public function __construct($value, ?array $errors)
+    public function __construct($value, array $errors = [])
     {
         $this->errors = $errors;
         $this->value  = $value;
@@ -32,7 +32,7 @@ class CoercedValue
      */
     public function getErrors(): array
     {
-        return $this->errors ?? [];
+        return $this->errors;
     }
 
     /**

@@ -17,34 +17,32 @@ use function Digia\GraphQL\Type\stringType;
 
 class ValuesHelperTest extends TestCase
 {
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testCoerceArgumentValues()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
-            'query' =>
-                newObjectType([
-                    'name'   => 'Greeting',
-                    'fields' => [
-                        'greeting' => [
-                            'type' => stringType(),
-                            'args' => [
-                                'name' => [
-                                    'type' => stringType(),
-                                ]
-                            ]
-                        ]
-                    ]
-                ])
+            'query' => newObjectType([
+                'name'   => 'Greeting',
+                'fields' => [
+                    'greeting' => [
+                        'type' => stringType(),
+                        'args' => [
+                            'name' => [
+                                'type' => stringType(),
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $documentNode = parse('query Hello($name: String) { Greeting(name: $name) }');
         /** @var OperationDefinitionNode $operation */
         $operation = $documentNode->getDefinitions()[0];
         /** @var ArgumentsAwareInterface $node */
-        $node       = $operation->getSelectionSet()->getSelections()[0];
+        $node = $operation->getSelectionSet()->getSelections()[0];
+        /** @noinspection PhpUnhandledExceptionInspection */
         $definition = $schema->getQueryType()->getFields()['greeting'];
 
         $context = new ExecutionContext(
@@ -56,30 +54,26 @@ class ValuesHelperTest extends TestCase
         $this->assertSame(['name' => 'Han Solo'], $args);
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testCoerceVariableValues(): void
     {
-        // Test that non-nullable booleans are handled correctly
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
-            'query' =>
-                newObjectType([
-                    'name'   => 'nonNullBoolean',
-                    'fields' => [
-                        'greeting' => [
-                            'type' => stringType(),
-                            'args' => [
-                                'shout' => [
-                                    'type' => newNonNull(booleanType()),
-                                ]
-                            ]
-                        ]
-                    ]
-                ])
+            'query' => newObjectType([
+                'name'   => 'nonNullBoolean',
+                'fields' => [
+                    'greeting' => [
+                        'type' => stringType(),
+                        'args' => [
+                            'shout' => [
+                                'type' => newNonNull(booleanType()),
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $documentNode = parse('
             query ($shout: Boolean!) {
                 nonNullBoolean(shout: $shout)
@@ -92,11 +86,11 @@ class ValuesHelperTest extends TestCase
 
         // Try with true and false and null (null should give errors, the rest shouldn't)
         $coercedValue = coerceVariableValues($schema, $variableDefinitions, ['shout' => true]);
-        $this->assertEquals(['shout' => true], $coercedValue->getValue());
+        $this->assertSame(['shout' => true], $coercedValue->getValue());
         $this->assertFalse($coercedValue->hasErrors());
 
         $coercedValue = coerceVariableValues($schema, $variableDefinitions, ['shout' => false]);
-        $this->assertEquals(['shout' => false], $coercedValue->getValue());
+        $this->assertSame(['shout' => false], $coercedValue->getValue());
         $this->assertFalse($coercedValue->hasErrors());
 
         $coercedValue = coerceVariableValues($schema, $variableDefinitions, ['shout' => null]);
