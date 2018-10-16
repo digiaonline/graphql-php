@@ -1461,6 +1461,41 @@ SRC;
             ]
         ], $result->toArray());
     }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvariantException
+     */
+    public function testNonNullFieldQuery()
+    {
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'Greeting',
+                'fields' => [
+                    'hello' => [
+                        'type'    => newNonNull(stringType()),
+                        'resolve' => function () {
+                            return null;
+                        }
+                    ]
+                ]
+            ])
+        ]);
+
+        /** @var ExecutionResult $executionResult */
+        $executionResult = graphql($schema, 'query Greeting {hello}');
+
+        $this->assertSame([
+            'errors' => [
+                [
+
+                    'message'   => 'Cannot return null for non-nullable field Greeting.hello.',
+                    'locations' => null,
+                    'path'      => null,
+                ]
+            ],
+            'data'  => null
+        ], $executionResult);
+    }
 }
 
 class Special
