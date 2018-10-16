@@ -41,7 +41,7 @@ class VariablesInAllowedPositionRule extends AbstractRule
      * @inheritdoc
      *
      * @throws InvariantException
-     * @throws \Digia\GraphQL\Error\ConversionException
+     * @throws \Digia\GraphQL\Util\ConversionException
      */
     protected function leaveOperationDefinition(OperationDefinitionNode $node): VisitorResult
     {
