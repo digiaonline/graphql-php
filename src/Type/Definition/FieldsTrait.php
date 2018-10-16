@@ -26,7 +26,7 @@ trait FieldsTrait
     protected $fieldMap;
 
     /**
-     * @return null|string
+     * @return string
      */
     abstract public function getName(): string;
 

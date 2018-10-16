@@ -371,8 +371,8 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      * @param InputValueInterface $inputValue
      * @return string
      * @throws InvariantException
-     * @throws \Digia\GraphQL\Error\ConversionException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
+     * @throws \Digia\GraphQL\Util\ConversionException
      */
     protected function printInputValue(InputValueInterface $inputValue): string
     {
@@ -439,8 +439,8 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      * @param DeprecationAwareInterface $fieldOrEnumValue
      * @return string
      * @throws InvariantException
-     * @throws \Digia\GraphQL\Error\ConversionException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
+     * @throws \Digia\GraphQL\Util\ConversionException
      */
     protected function printDeprecated(DeprecationAwareInterface $fieldOrEnumValue): string
     {
