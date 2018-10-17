@@ -504,11 +504,7 @@ class Executor
             throw $result;
         }
 
-        // If result is null-like, return null.
-        if (null === $result) {
-            return null;
-        }
-
+        // If field type is NonNull, complete for inner type, and throw field error
         if ($returnType instanceof NonNullType) {
             $completed = $this->completeValue(
                 $returnType->getOfType(),
@@ -529,6 +525,11 @@ class Executor
             }
 
             return $completed;
+        }
+
+        // If result is null, return null.
+        if (null === $result) {
+            return null;
         }
 
         // If field type is List, complete each item in the list with the inner type
