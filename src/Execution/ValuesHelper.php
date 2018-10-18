@@ -361,7 +361,7 @@ class ValuesHelper
         ?Path $path
     ): CoercedValue {
         if (\is_string($value) && null !== ($enumValue = $type->getValue($value))) {
-            return new CoercedValue($enumValue, null);
+            return new CoercedValue($enumValue);
         }
 
         $suggestions = suggestionList((string)$value, \array_map(function (EnumValue $enumValue) {
