@@ -13,6 +13,7 @@ use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\Visitor;
 use Digia\GraphQL\Language\Visitor\VisitorBreak;
+use Digia\GraphQL\Language\Visitor\VisitorInfo;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
@@ -33,18 +34,19 @@ class VisitorTest extends TestCase
 
         $visitor = new Visitor(
             function (NodeInterface $node) use (&$visited): VisitorResult {
-                $visited[] = ['enter', array_slice($node->getPath(), 0)];
+                $visited[] = ['enter', array_slice($node->getVisitorInfo()->getPath(), 0)];
 
                 return new VisitorResult($node);
             },
             function (NodeInterface $node) use (&$visited): VisitorResult {
-                $visited[] = ['leave', array_slice($node->getPath(), 0)];
+                $visited[] = ['leave', array_slice($node->getVisitorInfo()->getPath(), 0)];
 
                 return new VisitorResult($node);
             }
         );
 
-        $ast->acceptVisitor($visitor);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $ast->acceptVisitor(new VisitorInfo($visitor));
 
         $this->assertEquals([
             ['enter', []],
@@ -75,7 +77,8 @@ class VisitorTest extends TestCase
             }
         );
 
-        $editedDocument = $document->acceptVisitor($visitor);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $editedDocument = $document->acceptVisitor(new VisitorInfo($visitor));
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
@@ -106,7 +109,8 @@ class VisitorTest extends TestCase
             }
         );
 
-        $editedDocument = $document->acceptVisitor($visitor);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $editedDocument = $document->acceptVisitor(new VisitorInfo($visitor));
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->assertEquals(
@@ -151,7 +155,8 @@ class VisitorTest extends TestCase
             }
         );
 
-        $ast->acceptVisitor($visitor);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $ast->acceptVisitor(new VisitorInfo($visitor));
 
         $this->assertTrue($didVisitEditedNode);
     }
@@ -180,7 +185,8 @@ class VisitorTest extends TestCase
             }
         );
 
-        $ast->acceptVisitor($visitor);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $ast->acceptVisitor(new VisitorInfo($visitor));
 
         $this->assertEquals([
             ['enter', 'Document', null],
@@ -226,7 +232,7 @@ class VisitorTest extends TestCase
         );
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -272,7 +278,7 @@ class VisitorTest extends TestCase
         );
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -319,7 +325,7 @@ class VisitorTest extends TestCase
         );
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -356,7 +362,7 @@ class VisitorTest extends TestCase
         );
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -403,21 +409,23 @@ class VisitorTest extends TestCase
 
         $visitor = new Visitor(
             function (NodeInterface $node) use (&$visited): VisitorResult {
-                $parent    = $node->getParent();
-                $visited[] = ['enter', $node->getKind(), $node->getKey(), $parent ? $parent->getKind() : null];
+                $key       = $node->getVisitorInfo()->getKey();
+                $parent    = $node->getVisitorInfo()->getParent();
+                $visited[] = ['enter', $node->getKind(), $key, $parent ? $parent->getKind() : null];
 
                 return new VisitorResult($node);
             },
             function (NodeInterface $node) use (&$visited): VisitorResult {
-                $parent    = $node->getParent();
-                $visited[] = ['leave', $node->getKind(), $node->getKey(), $parent ? $parent->getKind() : null];
+                $key       = $node->getVisitorInfo()->getKey();
+                $parent    = $node->getVisitorInfo()->getParent();
+                $visited[] = ['leave', $node->getKind(), $key, $parent ? $parent->getKind() : null];
 
                 return new VisitorResult($node);
             }
         );
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -762,7 +770,7 @@ class VisitorTest extends TestCase
         ]);
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -848,7 +856,7 @@ class VisitorTest extends TestCase
         ]);
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -917,7 +925,7 @@ class VisitorTest extends TestCase
         ]);
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -965,7 +973,7 @@ class VisitorTest extends TestCase
         ]);
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -1050,7 +1058,7 @@ class VisitorTest extends TestCase
         ]);
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -1123,7 +1131,7 @@ class VisitorTest extends TestCase
         );
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 
@@ -1242,7 +1250,7 @@ class VisitorTest extends TestCase
         );
 
         try {
-            $ast->acceptVisitor($visitor);
+            $ast->acceptVisitor(new VisitorInfo($visitor));
         } catch (VisitorBreak $e) {
         }
 

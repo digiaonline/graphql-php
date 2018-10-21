@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\Visitor\VisitorBreak;
+use Digia\GraphQL\Language\Visitor\VisitorInfo;
 use Digia\GraphQL\Language\Visitor\VisitorInterface;
 
 interface NodeInterface
@@ -35,32 +36,27 @@ interface NodeInterface
     public function toJSON(): string;
 
     /**
-     * @param VisitorInterface   $visitor
-     * @param string|int         $key
-     * @param NodeInterface|null $parent
-     * @param array              $path
-     * @param array              $ancestors
+     * @param VisitorInfo $visitorInfo
      * @return NodeInterface|null
-     * @throws VisitorBreak
      */
-    public function acceptVisitor(
-        VisitorInterface $visitor,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = [],
-        array $ancestors = []
-    ): ?NodeInterface;
+    public function acceptVisitor(VisitorInfo $visitorInfo): ?NodeInterface;
 
     /**
-     * @return NodeInterface|null
+     * @return VisitorInfo|null
      */
-    public function getAncestor(int $depth = 1): ?NodeInterface;
+    public function getVisitorInfo(): ?VisitorInfo;
 
     /**
      * @param NodeInterface $node
      * @return bool
      */
     public function determineIsEdited(NodeInterface $node): bool;
+
+    /**
+     * @param int $depth
+     * @return NodeInterface|null
+     */
+    public function getAncestor(int $depth = 1): ?NodeInterface;
 
     /**
      * @return bool
