@@ -177,6 +177,18 @@ middleware allow you to efficiently manage functionality across multiple resolve
 Before middleware example:
 
 ```php
+$schema = buildSchema($source, [
+    'Query' => [
+        'hero' => function ($rootValue, $arguments) {
+            return getHero($arguments['episode'] ?? null);
+        },
+    ],
+], [
+    'middleware' => [new BeforeMiddleware()],
+]);
+```
+
+```php
 class BeforeMiddleware implements ResolverMiddlewareInterface
 {
     public function resolve(callable $resolveCallback, $rootValue, array $arguments, $context, ResolveInfo $info) {
@@ -187,6 +199,18 @@ class BeforeMiddleware implements ResolverMiddlewareInterface
 ```
 
 After middleware example:
+
+```php
+$schema = buildSchema($source, [
+    'Query' => [
+        'hero' => function ($rootValue, $arguments) {
+            return getHero($arguments['episode'] ?? null);
+        },
+    ],
+], [
+    'middleware' => [new AfterMiddleware()],
+]);
+```
 
 ```php
 class AfterMiddleware implements ResolverMiddlewareInterface
