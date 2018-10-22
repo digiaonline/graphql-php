@@ -400,7 +400,7 @@ class ValuesHelper
         foreach ($fields as $field) {
             $fieldType = $field->getType();
 
-            if (empty($value[$field->getName()])) {
+            if (!isset($value[$field->getName()])) {
                 if (!empty($field->getDefaultValue())) {
                     $coercedValue[$field->getName()] = $field->getDefaultValue();
                 } elseif ($fieldType instanceof NonNullType) {
