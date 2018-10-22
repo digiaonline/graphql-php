@@ -6,9 +6,10 @@ use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\Location;
 use Digia\GraphQL\Language\NodeBuilderInterface;
 use Digia\GraphQL\Language\Visitor\VisitorBreak;
-use Digia\GraphQL\Language\Visitor\VisitorInterface;
+use Digia\GraphQL\Language\Visitor\VisitorInfo;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Util\ArrayToJsonTrait;
+use Digia\GraphQL\Util\NodeComparator;
 use Digia\GraphQL\Util\SerializationInterface;
 
 abstract class AbstractNode implements NodeInterface, SerializationInterface
@@ -26,29 +27,9 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
     protected $location;
 
     /**
-     * @var VisitorInterface
+     * @var VisitorInfo|null
      */
-    protected $visitor;
-
-    /**
-     * @var string|int|null
-     */
-    protected $key;
-
-    /**
-     * @var NodeInterface|null
-     */
-    protected $parent;
-
-    /**
-     * @var array
-     */
-    protected $path;
-
-    /**
-     * @var array
-     */
-    protected $ancestors = [];
+    protected $visitorInfo;
 
     /**
      * @var bool
@@ -130,24 +111,17 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
     /**
      * @inheritdoc
      */
-    public function acceptVisitor(
-        VisitorInterface $visitor,
-        $key = null,
-        ?NodeInterface $parent = null,
-        array $path = [],
-        array $ancestors = []
-    ): ?NodeInterface {
-        $this->visitor   = $visitor;
-        $this->key       = $key;
-        $this->parent    = $parent;
-        $this->path      = $path;
-        $this->ancestors = $ancestors;
+    public function acceptVisitor(VisitorInfo $visitorInfo): ?NodeInterface
+    {
+        $this->visitorInfo = $visitorInfo;
 
+        $visitor       = $this->visitorInfo->getVisitor();
         $VisitorResult = $visitor->enterNode(clone $this);
         $newNode       = $VisitorResult->getValue();
 
         // Handle early exit while entering
         if ($VisitorResult->getAction() === VisitorResult::ACTION_BREAK) {
+            /** @noinspection PhpUnhandledExceptionInspection */
             throw new VisitorBreak();
         }
 
@@ -185,6 +159,7 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
 
         // Handle early exit while leaving
         if ($VisitorResult->getAction() === VisitorResult::ACTION_BREAK) {
+            /** @noinspection PhpUnhandledExceptionInspection */
             throw new VisitorBreak();
         }
 
@@ -192,12 +167,27 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
     }
 
     /**
+     * @return VisitorInfo|null
+     */
+    public function getVisitorInfo(): ?VisitorInfo
+    {
+        return $this->visitorInfo;
+    }
+
+    /**
      * @inheritdoc
      */
     public function determineIsEdited(NodeInterface $node): bool
     {
-        $this->isEdited = $this->isEdited || !$this->compareNode($node);
-        return $this->isEdited;
+        return $this->isEdited = $this->isEdited() || !NodeComparator::compare($this, $node);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAncestor(int $depth = 1): ?NodeInterface
+    {
+        return null !== $this->visitorInfo ? $this->visitorInfo->getAncestor($depth) : null;
     }
 
     /**
@@ -209,112 +199,6 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function getAncestor(int $depth = 1): ?NodeInterface
-    {
-        if (empty($this->ancestors)) {
-            return null;
-        }
-
-        $index = \count($this->ancestors) - $depth;
-
-        return $this->ancestors[$index] ?? null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAncestors(): array
-    {
-        return $this->ancestors;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getParent(): ?NodeInterface
-    {
-        return $this->parent;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getPath(): array
-    {
-        return $this->path;
-    }
-
-    /**
-     * @param VisitorInterface $visitor
-     * @return $this
-     */
-    public function setVisitor(VisitorInterface $visitor)
-    {
-        $this->visitor = $visitor;
-        return $this;
-    }
-
-    /**
-     * @param mixed $key
-     * @return $this
-     */
-    public function setKey($key)
-    {
-        $this->key = $key;
-        return $this;
-    }
-
-    /**
-     * @param NodeInterface|null $parent
-     * @return $this
-     */
-    public function setParent(?NodeInterface $parent)
-    {
-        $this->parent = $parent;
-        return $this;
-    }
-
-    /**
-     * @param array $path
-     * @return $this
-     */
-    public function setPath(array $path)
-    {
-        $this->path = $path;
-        return $this;
-    }
-
-    /**
-     * @param array $ancestors
-     * @return $this
-     */
-    public function setAncestors(array $ancestors)
-    {
-        $this->ancestors = $ancestors;
-        return $this;
-    }
-
-    /**
-     * @param bool $isEdited
-     * @return $this
-     */
-    public function setIsEdited(bool $isEdited)
-    {
-        $this->isEdited = $isEdited;
-        return $this;
-    }
-
-    /**
      * @param NodeInterface|NodeInterface[] $nodeOrNodes
      * @param mixed                         $key
      * @param NodeInterface                 $parent
@@ -322,13 +206,13 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
      */
     protected function visitNodeOrNodes($nodeOrNodes, $key, NodeInterface $parent)
     {
-        $this->addAncestor($parent);
+        $this->visitorInfo->addAncestor($parent);
 
         $newNodeOrNodes = \is_array($nodeOrNodes)
             ? $this->visitNodes($nodeOrNodes, $key)
             : $this->visitNode($nodeOrNodes, $key, $parent);
 
-        $this->removeAncestor();
+        $this->visitorInfo->removeAncestor();
 
         return $newNodeOrNodes;
     }
@@ -340,7 +224,7 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
      */
     protected function visitNodes(array $nodes, $key): array
     {
-        $this->addOneToPath($key);
+        $this->visitorInfo->addOneToPath($key);
 
         $index    = 0;
         $newNodes = [];
@@ -354,7 +238,7 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
             }
         }
 
-        $this->removeOneFromPath();
+        $this->visitorInfo->removeOneFromPath();
 
         return $newNodes;
     }
@@ -367,17 +251,24 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
      */
     protected function visitNode(NodeInterface $node, $key, ?NodeInterface $parent): ?NodeInterface
     {
-        $this->addOneToPath($key);
+        $this->visitorInfo->addOneToPath($key);
 
-        $newNode = $node->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
+        $info = new VisitorInfo(
+            $this->visitorInfo->getVisitor(),
+            $key,
+            $parent,
+            $this->visitorInfo->getPath(),
+            $this->visitorInfo->getAncestors()
+        );
 
-        // If the node was edited, we need to revisit it
-        // to produce the expected result.
+        $newNode = $node->acceptVisitor($info);
+
+        // If the node was edited, we need to revisit it to produce the expected result.
         if (null !== $newNode && $newNode->isEdited()) {
-            $newNode = $newNode->acceptVisitor($this->visitor, $key, $parent, $this->path, $this->ancestors);
+            $newNode = $newNode->acceptVisitor($info);
         }
 
-        $this->removeOneFromPath();
+        $this->visitorInfo->removeOneFromPath();
 
         return $newNode;
     }
@@ -389,40 +280,6 @@ abstract class AbstractNode implements NodeInterface, SerializationInterface
     protected function compareNode(NodeInterface $other)
     {
         return $this->toJSON() === $other->toJSON();
-    }
-
-    /**
-     * Appends a key to the path.
-     * @param string $key
-     */
-    protected function addOneToPath(string $key)
-    {
-        $this->path[] = $key;
-    }
-
-    /**
-     * Removes the last item from the path.
-     */
-    protected function removeOneFromPath()
-    {
-        \array_pop($this->path);
-    }
-
-    /**
-     * Adds an ancestor.
-     * @param NodeInterface $node
-     */
-    protected function addAncestor(NodeInterface $node)
-    {
-        $this->ancestors[] = $node;
-    }
-
-    /**
-     *  Removes the last ancestor.
-     */
-    protected function removeAncestor()
-    {
-        $this->ancestors = \array_slice($this->ancestors, 0, -1);
     }
 
     /**

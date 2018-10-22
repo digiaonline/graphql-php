@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Validation;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
+use Digia\GraphQL\Language\Visitor\VisitorInfo;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use Digia\GraphQL\Util\TypeInfo;
@@ -50,7 +51,8 @@ class Validator implements ValidatorInterface
         $visitor = new TypeInfoVisitor($typeInfo, new ParallelVisitor($visitors));
 
         // Visit the whole document with each instance of all provided rules.
-        $document->acceptVisitor($visitor);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $document->acceptVisitor(new VisitorInfo($visitor));
 
         return $context->getErrors();
     }

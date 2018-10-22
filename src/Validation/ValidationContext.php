@@ -13,6 +13,7 @@ use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\Visitor;
+use Digia\GraphQL\Language\Visitor\VisitorInfo;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
@@ -257,7 +258,7 @@ class ValidationContext implements ValidationContextInterface
 
             $visitor = new TypeInfoVisitor($typeInfo, new Visitor($enterCallback));
 
-            $node->acceptVisitor($visitor);
+            $node->acceptVisitor(new VisitorInfo($visitor));
 
             $this->variableUsages[(string)$node] = $usages;
         }
