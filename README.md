@@ -252,7 +252,7 @@ If you want to learn more about queries you can refer to the [specification](htt
 
 Each type in a schema has a resolver associated with it that allows for resolving the actual value. However, most 
 types do not need a custom resolver, because they can be resolved using the default resolver. Usually these resolvers 
-are lambda functions, but you can also define your own resolvers by implementing the `ResolverInterface`.
+are lambda functions, but you can also define your own resolvers by extending `AbstractTypeResolver` or `AbstractFieldResolver`. Alternatively you can also implement the `ResolverInterface` directly.
 
 A resolver function receives four arguments:
 
@@ -276,21 +276,26 @@ function ($rootValue, array $arguments, $context, ResolveInfo $info): string {
 }
 ``` 
 
-Resolver class example:
+Type resolver example:
 
 ```php
-class HumanResolver implements ResolverInterface
+class HumanResolver extends AbstractTypeResolver
+{
+    public function resolveName($rootValue, array $arguments, $context, ResolveInfo $info): string
+    {
+        return $rootValue['name'];
+    }
+}
+```
+
+Field resolver example:
+
+```php
+class NameResolver extends AbstractFieldResolver
 {
     public function resolve($rootValue, array $arguments, $context, ResolveInfo $info): string
     {
-       return [
-           'type'       => 'Human',
-           'id'         => '1000',
-           'name'       => 'Luke Skywalker',
-           'friends'    => ['1002', '1003', '2000', '2001'],
-           'appearsIn'  => ['NEWHOPE', 'EMPIRE', 'JEDI'],
-           'homePlanet' => 'Tatooine',
-       ];
+       return $rootValue['name'];
     }
 }
 ```
