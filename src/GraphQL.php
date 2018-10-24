@@ -2,8 +2,7 @@
 
 namespace Digia\GraphQL;
 
-use Digia\GraphQL\Error\ErrorHandler;
-use Digia\GraphQL\Error\ErrorHandlerInterface;
+use Digia\GraphQL\Error\Handler\ErrorHandlerInterface;
 use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionProvider;
 use Digia\GraphQL\Execution\ExecutionResult;
@@ -231,14 +230,14 @@ class GraphQL
     }
 
     /**
-     * @param Schema                              $schema
-     * @param DocumentNode                        $document
-     * @param mixed                               $rootValue
-     * @param mixed                               $contextValue
-     * @param array                               $variableValues
-     * @param string|null                         $operationName
-     * @param callable|null                       $fieldResolver
-     * @param ErrorHandlerInterface|callable|null $errorHandler
+     * @param Schema                     $schema
+     * @param DocumentNode               $document
+     * @param mixed                      $rootValue
+     * @param mixed                      $contextValue
+     * @param array                      $variableValues
+     * @param string|null                $operationName
+     * @param callable|null              $fieldResolver
+     * @param ErrorHandlerInterface|null $errorHandler
      * @return ExecutionResult
      */
     public static function execute(
@@ -253,12 +252,6 @@ class GraphQL
     ): ExecutionResult {
         /** @var ExecutionInterface $execution */
         $execution = static::make(ExecutionInterface::class);
-
-        if (null !== $errorHandler) {
-            $errorHandler = $errorHandler instanceof ErrorHandlerInterface
-                ? $errorHandler
-                : new ErrorHandler($errorHandler);
-        }
 
         return $execution->execute(
             $schema,
