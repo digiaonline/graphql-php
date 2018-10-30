@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Schema;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Execution\ValuesHelper;
+use Digia\GraphQL\Execution\ValuesResolver;
 use Digia\GraphQL\Language\LanguageException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
@@ -77,9 +77,9 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected $directives;
 
     /**
-     * @var ValuesHelper
+     * @var ValuesResolver
      */
-    protected $valuesHelper;
+    protected $valuesResolver;
 
     /**
      * DefinitionBuilder constructor.
@@ -87,23 +87,23 @@ class DefinitionBuilder implements DefinitionBuilderInterface
      * @param ResolverRegistryInterface|null $resolverRegistry
      * @param array                          $types
      * @param array                          $directives
-     * @param callable|null                  $resolveTypeFunction
+     * @param callable|null                  $resolveTypeCallback
      */
     public function __construct(
         array $typeDefinitionsMap,
         ?ResolverRegistryInterface $resolverRegistry = null,
         array $types = [],
         array $directives = [],
-        ?callable $resolveTypeFunction = null
+        ?callable $resolveTypeCallback = null
     ) {
         $this->typeDefinitionsMap  = $typeDefinitionsMap;
         $this->resolverRegistry    = $resolverRegistry;
-        $this->resolveTypeFunction = $resolveTypeFunction ?? [$this, 'defaultTypeResolver'];
+        $this->resolveTypeFunction = $resolveTypeCallback ?? [$this, 'defaultTypeResolver'];
 
         $this->registerTypes($types);
         $this->registerDirectives($directives);
 
-        $this->valuesHelper = new ValuesHelper();
+        $this->valuesResolver = new ValuesResolver();
     }
 
     /**
@@ -543,7 +543,7 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected function getDeprecationReason(NodeInterface $node): ?string
     {
         if (isset($this->directives['deprecated'])) {
-            $deprecated = $this->valuesHelper->coerceDirectiveValues($this->directives['deprecated'], $node);
+            $deprecated = $this->valuesResolver->coerceDirectiveValues($this->directives['deprecated'], $node);
 
             return $deprecated['reason'] ?? null;
         }

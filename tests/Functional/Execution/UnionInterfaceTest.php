@@ -14,7 +14,6 @@ use function Digia\GraphQL\Type\newSchema;
 use function Digia\GraphQL\Type\stringType;
 use function Digia\GraphQL\Type\newUnionType;
 
-
 class UnionInterfaceTest extends TestCase
 {
     private $schema;
@@ -31,6 +30,7 @@ class UnionInterfaceTest extends TestCase
     {
         parent::setUp();
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $NamedType = newInterfaceType([
             'name'   => 'Named',
             'fields' => [
@@ -38,6 +38,7 @@ class UnionInterfaceTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$NamedType],
@@ -50,6 +51,7 @@ class UnionInterfaceTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$NamedType],
@@ -62,6 +64,7 @@ class UnionInterfaceTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PetType = newUnionType([
             'name'        => 'Pet',
             'types'       => [$DogType, $CatType],
@@ -78,6 +81,7 @@ class UnionInterfaceTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PersonType = newObjectType([
             'name'       => 'Person',
             'interfaces' => [$NamedType],
@@ -91,6 +95,7 @@ class UnionInterfaceTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => $PersonType
         ]);
@@ -108,34 +113,36 @@ class UnionInterfaceTest extends TestCase
 
     /**
      * can introspect on union and intersection types
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testCanIntrospectOnUnionAndIntersectionTypes()
     {
-        $source = '{
-        Named: __type(name: "Named") {
-          kind
-          name
-          fields { name }
-          interfaces { name }
-          possibleTypes { name }
-          enumValues { name }
-          inputFields { name }
-        }
-        Pet: __type(name: "Pet") {
-          kind
-          name
-          fields { name }
-          interfaces { name }
-          possibleTypes { name }
-          enumValues { name }
-          inputFields { name }
-        }
-      }';
+        $source = '
+        {
+          Named: __type(name: "Named") {
+            kind
+            name
+            fields { name }
+            interfaces { name }
+            possibleTypes { name }
+            enumValues { name }
+            inputFields { name }
+          }
+          
+          Pet: __type(name: "Pet") {
+            kind
+            name
+            fields { name }
+            interfaces { name }
+            possibleTypes { name }
+            enumValues { name }
+            inputFields { name }
+          }
+        }';
 
-        $expected = [
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $result = execute($this->schema, parse($source));
+
+        $this->assertSame([
             'Named' => [
                 'kind'          => 'INTERFACE',
                 'name'          => 'Named',
@@ -163,29 +170,25 @@ class UnionInterfaceTest extends TestCase
                 'enumValues'    => null,
                 'inputFields'   => null
             ]
-        ];
-
-        $this->assertSame($expected, execute($this->schema, parse($source))->getData());
+        ], $result->getData());
     }
 
     /**
      * executes using union types
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testExecutesUsingUnionTypes()
     {
-        $source = '  {
-        __typename
-        name
-        pets {
+        $source = '
+        {
           __typename
           name
-          woofs
-          meows
-        }
-      }';
+          pets {
+            __typename
+            name
+            woofs
+            meows
+          }
+        }';
 
         $expected = [
             '__typename' => 'Person',
@@ -196,32 +199,33 @@ class UnionInterfaceTest extends TestCase
             ]
         ];
 
-        $this->assertEquals($expected, execute($this->schema, parse($source), $this->john)->getData());
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $result = execute($this->schema, parse($source), $this->john);
+
+        $this->assertEquals($expected, $result->getData());
     }
 
     /**
      * executes union types with inline fragments
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testExecutesUnionTypesWithInlineFragments()
     {
-        $source = '{
-        __typename
-        name
-        pets {
+        $source = '
+        {
           __typename
-          ... on Dog {
-            name
-            woofs
+          name
+          pets {
+            __typename
+            ... on Dog {
+              name
+              woofs
+            }
+            ... on Cat {
+              name
+              meows
+            }
           }
-          ... on Cat {
-            name
-            meows
-          }
-        }
-      }';
+        }';
 
         $expected = [
             '__typename' => 'Person',
@@ -232,27 +236,28 @@ class UnionInterfaceTest extends TestCase
             ]
         ];
 
-        $this->assertSame($expected, execute($this->schema, parse($source), $this->john)->getData());
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $result = execute($this->schema, parse($source), $this->john);
+
+        $this->assertSame($expected, $result->getData());
     }
 
     /**
      * executes using interface types
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testExecutesUsingInterfaceTypes()
     {
-        $source = '{
-        __typename
-        name
-        friends {
+        $source = '
+        {
           __typename
           name
-          woofs
-          meows
-        }
-      }';
+          friends {
+            __typename
+            name
+            woofs
+            meows
+          }
+        }';
 
         $expected = [
             '__typename' => 'Person',
@@ -263,21 +268,74 @@ class UnionInterfaceTest extends TestCase
             ]
         ];
 
-        $this->assertSame($expected, execute($this->schema, parse($source), $this->john)->getData());
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $result = execute($this->schema, parse($source), $this->john);
+
+        $this->assertSame($expected, $result->getData());
     }
 
     /**
      * executes union types with inline fragments
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testExecutesUnionTypesWithInlineFragmentsTwo()
     {
-        $source = '{
-        __typename
-        name
-        friends {
+        $source = '
+        {
+          __typename
+          name
+          friends {
+            __typename
+            name
+            ... on Dog {
+              woofs
+            }
+            ... on Cat {
+              meows
+            }
+          }
+        }';
+
+        $expected = [
+            '__typename' => 'Person',
+            'name'       => 'John',
+            'friends'    => [
+                ['__typename' => 'Person', 'name' => 'Liz'],
+                ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true],
+            ]
+        ];
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $result = execute($this->schema, parse($source), $this->john);
+
+        $this->assertSame($expected, $result->getData());
+    }
+
+    /**
+     * allows fragment conditions to be abstract types
+     */
+    public function testAllowsFragmentConditionsToBeAbstractTypes()
+    {
+        $source = '
+        {
+          __typename
+          name
+          pets { ...PetFields }
+          friends { ...FriendFields }
+        }
+  
+        fragment PetFields on Pet {
+          __typename
+          ... on Dog {
+            name
+            woofs
+          }
+          ... on Cat {
+            name
+            meows
+          }
+        }
+  
+        fragment FriendFields on Named {
           __typename
           name
           ... on Dog {
@@ -286,58 +344,7 @@ class UnionInterfaceTest extends TestCase
           ... on Cat {
             meows
           }
-        }
-      }';
-
-        $expected = [
-            '__typename' => 'Person',
-            'name'       => 'John',
-            'friends'    => [
-                ['__typename' => 'Person', 'name' => 'Liz'],
-                ['__typename' => 'Dog', 'name' => 'Odie', 'woofs' => true],
-            ]
-        ];
-
-        $this->assertSame($expected, execute($this->schema, parse($source), $this->john)->getData());
-    }
-
-    /**
-     * allows fragment conditions to be abstract types
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
-    public function testAllowsFragmentConditionsToBeAbstractTypes()
-    {
-        $source = '{
-        __typename
-        name
-        pets { ...PetFields }
-        friends { ...FriendFields }
-      }
-
-      fragment PetFields on Pet {
-        __typename
-        ... on Dog {
-          name
-          woofs
-        }
-        ... on Cat {
-          name
-          meows
-        }
-      }
-
-      fragment FriendFields on Named {
-        __typename
-        name
-        ... on Dog {
-          woofs
-        }
-        ... on Cat {
-          meows
-        }
-      }';
+        }';
 
         $expected = [
             '__typename' => 'Person',
@@ -352,14 +359,14 @@ class UnionInterfaceTest extends TestCase
             ]
         ];
 
-        $this->assertSame($expected, execute($this->schema, parse($source), $this->john)->getData());
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $result = execute($this->schema, parse($source), $this->john);
+
+        $this->assertSame($expected, $result->getData());
     }
 
     /**
      * gets execution info in resolver
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testGetsExecutionInfoInResolver()
     {
@@ -369,6 +376,7 @@ class UnionInterfaceTest extends TestCase
         $encounteredRootValue = null;
         $PersonType2          = null;
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $NamedType2 = newInterfaceType([
             'name'        => 'Named',
             'fields'      => [
@@ -387,6 +395,7 @@ class UnionInterfaceTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PersonType2 = newObjectType([
             'name'       => 'Person',
             'interfaces' => [$NamedType2],
@@ -396,6 +405,7 @@ class UnionInterfaceTest extends TestCase
             ],
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema2 = newSchema([
             'query' => $PersonType2
         ]);
@@ -404,9 +414,12 @@ class UnionInterfaceTest extends TestCase
 
         $context = ['authToken' => '123abc'];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $result = execute($schema2, parse('{ name, friends { name } }'), $john2, $context);
+
         $this->assertSame(
             ['name' => 'John', 'friends' => [['name' => 'Liz']]],
-            execute($schema2, parse('{ name, friends { name } }'), $john2, $context)->getData()
+            $result->getData()
         );
 
         $this->assertSame($context, $encounteredContext);

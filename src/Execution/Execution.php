@@ -3,25 +3,20 @@
 namespace Digia\GraphQL\Execution;
 
 use Digia\GraphQL\Error\ErrorHandlerInterface;
+use Digia\GraphQL\Execution\Strategy\FieldCollector;
+use Digia\GraphQL\Execution\Strategy\ParallelExecutionStrategy;
+use Digia\GraphQL\Execution\Strategy\SerialExecutionStrategy;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
+use React\Promise\PromiseInterface;
 
 class Execution implements ExecutionInterface
 {
-
     /**
-     * @param Schema        $schema
-     * @param DocumentNode  $documentNode
-     * @param mixed         $rootValue
-     * @param mixed         $contextValue
-     * @param array         $variableValues
-     * @param null|string   $operationName
-     * @param callable|null $fieldResolver
-     * @return ExecutionResult
-     * @throws \Throwable
+     * @inheritdoc
      */
     public function execute(
         Schema $schema,
@@ -29,8 +24,8 @@ class Execution implements ExecutionInterface
         $rootValue = null,
         $contextValue = null,
         array $variableValues = [],
-        ?string $operationName = null,
-        ?callable $fieldResolver = null,
+        string $operationName = null,
+        callable $fieldResolver = null,
         ?ErrorHandlerInterface $errorHandler = null
     ): ExecutionResult {
         try {
@@ -52,10 +47,57 @@ class Execution implements ExecutionInterface
             return new ExecutionResult(null, [$error]);
         }
 
-        $data   = $this->createExecutor($context, $errorHandler)->execute();
-        $errors = $context->getErrors();
+        $valuesResolver = new ValuesResolver();
+        $fieldCollector = new FieldCollector($context, $valuesResolver);
 
-        return new ExecutionResult($data, $errors);
+        $data = $this->executeOperation($operationName, $context, $fieldCollector, $valuesResolver);
+
+        if ($data instanceof PromiseInterface) {
+            $data->then(function ($resolvedData) use (&$data) {
+                $data = $resolvedData;
+            });
+        }
+
+        return new ExecutionResult($data, $context->getErrors());
+    }
+
+    /**
+     * @param null|string      $operationName
+     * @param ExecutionContext $context
+     * @param FieldCollector   $fieldCollector
+     * @param ValuesResolver   $valuesResolver
+     * @return array|mixed|null|PromiseInterface
+     */
+    protected function executeOperation(
+        ?string $operationName,
+        ExecutionContext $context,
+        FieldCollector $fieldCollector,
+        ValuesResolver $valuesResolver
+    ) {
+        $strategy = $operationName === 'mutation'
+            ? new SerialExecutionStrategy($context, $fieldCollector, $valuesResolver)
+            : new ParallelExecutionStrategy($context, $fieldCollector, $valuesResolver);
+
+        $result = null;
+
+        try {
+            $result = $strategy->execute();
+        } catch (ExecutionException $exception) {
+            $context->addError($exception);
+        } catch (\Throwable $exception) {
+            $context->addError(
+                new ExecutionException($exception->getMessage(), null, null, null, null, null, $exception)
+            );
+        }
+
+        if ($result instanceof PromiseInterface) {
+            return $result->then(null, function (ExecutionException $exception) use ($context) {
+                $context->addError($exception);
+                return \React\Promise\resolve(null);
+            });
+        }
+
+        return $result;
     }
 
     /**
@@ -68,7 +110,6 @@ class Execution implements ExecutionInterface
      * @param callable|null $fieldResolver
      * @return ExecutionContext
      * @throws ExecutionException
-     * @throws \Exception
      */
     protected function createContext(
         Schema $schema,
@@ -85,7 +126,7 @@ class Execution implements ExecutionInterface
 
         foreach ($documentNode->getDefinitions() as $definition) {
             if ($definition instanceof OperationDefinitionNode) {
-                if (null === $operationName && $operation) {
+                if (null === $operationName && null !== $operation) {
                     throw new ExecutionException(
                         'Must provide operation name if query contains multiple operations.'
                     );
@@ -113,7 +154,7 @@ class Execution implements ExecutionInterface
             throw new ExecutionException('Must provide an operation.');
         }
 
-        $coercedVariableValues = (new ValuesHelper())->coerceVariableValues(
+        $coercedVariableValues = (new ValuesResolver())->coerceVariableValues(
             $schema,
             $operation->getVariableDefinitions(),
             $rawVariableValues
@@ -135,15 +176,5 @@ class Execution implements ExecutionInterface
             $operation,
             $errors
         );
-    }
-
-    /**
-     * @param ExecutionContext           $context
-     * @param ErrorHandlerInterface|null $errorHandler
-     * @return Executor
-     */
-    protected function createExecutor(ExecutionContext $context, ?ErrorHandlerInterface $errorHandler = null): Executor
-    {
-        return new Executor($context, new FieldCollector($context), $errorHandler);
     }
 }

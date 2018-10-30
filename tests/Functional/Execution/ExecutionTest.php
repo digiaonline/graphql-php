@@ -7,6 +7,7 @@ use Digia\GraphQL\Execution\ResolveInfo;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\graphql;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\intType;
 use function Digia\GraphQL\Type\newList;
@@ -107,7 +108,7 @@ class ExecutionTest extends TestCase
 
     /**
      * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
      */
     public function testExecuteArbitraryCode()
     {
@@ -222,34 +223,34 @@ class ExecutionTest extends TestCase
         ]);
 
         $source = '
-      query Example($size: Int) {
-        a,
-        b,
-        x: c
-        ...c
-        f
-        ...on DataType {
-          pic(size: $size)
-          promise {
-            a
+          query Example($size: Int) {
+            a,
+            b,
+            x: c
+            ...c
+            f
+            ...on DataType {
+              pic(size: $size)
+              promise {
+                a
+              }
+            }
+            deep {
+              a
+              b
+              c
+              deeper {
+                a
+                b
+              }
+            }
           }
-        }
-        deep {
-          a
-          b
-          c
-          deeper {
-            a
-            b
+    
+          fragment c on DataType {
+            d
+            e
           }
-        }
-      }
-
-      fragment c on DataType {
-        d
-        e
-      }
-    ';
+        ';
 
         $schema = newSchema(['query' => $dataType]);
 
@@ -377,17 +378,17 @@ class ExecutionTest extends TestCase
      */
     public function testMergeParallelFragments()
     {
-        $source = <<<SRC
-{ a, ...FragOne, ...FragTwo }
-fragment FragOne on Type {
-    b
-    deep { b, deeper: deep { b } }
-}
-fragment FragTwo on Type {
-    c
-    deep { c, deeper: deep { c } }
-}
-SRC;
+        $source = '
+        { a, ...FragOne, ...FragTwo }
+        fragment FragOne on Type {
+            b
+            deep { b, deeper: deep { b } }
+        }
+        fragment FragTwo on Type {
+            c
+            deep { c, deeper: deep { c } }
+        }
+        ';
 
         $type = newObjectType([
             'name'   => 'Type',
@@ -447,7 +448,7 @@ SRC;
      * provides info about current execution state
      *
      * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
      */
     public function testProvidesInfoAboutCurrentExecutionState()
     {
@@ -492,7 +493,7 @@ SRC;
      * Threads root value context correctly
      *
      * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
      */
     public function testThreadsRootValueContextCorrectly()
     {
@@ -525,7 +526,7 @@ SRC;
      * Correctly threads arguments
      *
      * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
      */
     public function testCorrectlyThreadsArguments()
     {
@@ -554,15 +555,9 @@ SRC;
         $this->assertEquals(['numArg' => 123, 'stringArg' => 'foo'], $resolvedArgs);
     }
 
-    /**
-     * Nulls out error subtrees
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testNullsOutErrorsSubTrees()
     {
-        $source = '{
+        $source = dedent('{
           sync
           syncError
           syncRawError
@@ -575,7 +570,7 @@ SRC;
           asyncError
           asyncRawError
           asyncReturnError
-        }';
+        }');
 
         $data = [
             'sync'                => function () {
@@ -613,7 +608,7 @@ SRC;
                 return \React\Promise\reject(null);
             },
             'asyncError'          => function () {
-                return new \React\Promise\Promise(function ($resolve, $reject) {
+                return new \React\Promise\Promise(function () {
                     throw new \Exception('Error getting asyncError');
                 });
             },
@@ -627,6 +622,7 @@ SRC;
             },
         ];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Type',
@@ -647,23 +643,10 @@ SRC;
             ]),
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($source), $data);
 
         $this->assertEquals([
-            'data'   => [
-                'sync'                => 'sync',
-                'syncError'           => null,
-                'syncRawError'        => null,
-                'syncReturnError'     => null,
-                'syncReturnErrorList' => ['sync0', null, 'sync2', null],
-                'async'               => 'async',
-                'asyncReject'         => null,
-                'asyncRawReject'      => null,
-                'asyncEmptyReject'    => null,
-                'asyncError'          => null,
-                'asyncRawError'       => null,
-                'asyncReturnError'    => null,
-            ],
             'errors' => [
                 [
                     'message'   => 'Error getting syncError',
@@ -727,12 +710,22 @@ SRC;
                 ],
                 [
                     'message'   => 'Error getting asyncRawReject',
-                    'locations' => null, //@TODO This should not be null
+                    'locations' => [
+                        [
+                            'line'   => 9,
+                            'column' => 11,
+                        ]
+                    ],
                     'path'      => ['asyncRawReject']
                 ],
                 [
-                    'message'   => 'An unknown error occurred.',
-                    'locations' => null, //@TODO This should not be null
+                    'message'   => '',
+                    'locations' => [
+                        [
+                            'line'   => 10,
+                            'column' => 11,
+                        ]
+                    ],
                     'path'      => ['asyncEmptyReject']
                 ],
                 [
@@ -765,16 +758,24 @@ SRC;
                     ],
                     'path'      => ['asyncReturnError']
                 ],
-            ]
+            ],
+            'data'   => [
+                'sync'                => 'sync',
+                'syncError'           => null,
+                'syncRawError'        => null,
+                'syncReturnError'     => null,
+                'syncReturnErrorList' => ['sync0', null, 'sync2', null],
+                'async'               => 'async',
+                'asyncReject'         => null,
+                'asyncRawReject'      => null,
+                'asyncEmptyReject'    => null,
+                'asyncError'          => null,
+                'asyncRawError'       => null,
+                'asyncReturnError'    => null,
+            ],
         ], $result->toArray());
     }
 
-    //nulls error subtree for promise rejection
-
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testNullsErrorSubTreeForPromiseRejection()
     {
         $query = '
@@ -785,6 +786,7 @@ SRC;
           }
         ';
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Type',
@@ -806,6 +808,7 @@ SRC;
             ]),
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query));
 
         $this->assertEquals([
@@ -827,14 +830,9 @@ SRC;
         ], $result->toArray());
     }
 
-    //Full response path is included for non-nullable fields
-
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testFullResponsePathIsIncludedForNonNullableFields()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $A = newObjectType([
             'name'   => 'A',
             'fields' => function () use (&$A) {
@@ -843,41 +841,42 @@ SRC;
                         'type'    => $A,
                         'resolve' => function () {
                             return [];
-                        }
+                        },
                     ],
                     'nonNullA'  => [
                         'type'    => newNonNull($A),
                         'resolve' => function () {
                             return [];
-                        }
+                        },
                     ],
                     'throws'    => [
                         'type'    => newNonNull(stringType()),
                         'resolve' => function () {
                             throw new \Exception('Catch me if you can!');
-                        }
-                    ]
+                        },
+                    ],
                 ];
-            }
+            },
         ]);
 
-        $queryType = newObjectType([
-            'name'   => 'query',
-            'fields' => function () use (&$A) {
-                return [
-                    'nullableA' => [
-                        'type'    => $A,
-                        'resolve' => function () {
-                            return [];
-                        }
-                    ]
-                ];
-            }
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'query',
+                'fields' => function () use (&$A) {
+                    return [
+                        'nullableA' => [
+                            'type'    => $A,
+                            'resolve' => function () {
+                                return [];
+                            },
+                        ],
+                    ];
+                },
+            ])
         ]);
 
-        $schema = newSchema(['query' => $queryType]);
-
-        $query = '
+        $query = dedent('
           query {
             nullableA {
               aliasedA: nullableA {
@@ -888,34 +887,36 @@ SRC;
                 }
               }
             }
-          }';
+          }
+        ');
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query));
 
-        $this->assertEquals([
-            'data'   => [
-                'nullableA' => [
-                    'aliasedA' => null
-                ]
-            ],
+        $this->assertSame([
             'errors' => [
                 [
                     'message'   => 'Catch me if you can!',
                     'locations' => [
                         [
-                            'line'   => 7,
-                            'column' => 21
-                        ]
+                            'line'   => 6,
+                            'column' => 1,
+                        ],
                     ],
                     'path'      => [
                         'nullableA',
                         'aliasedA',
                         'nonNullA',
                         'anotherA',
-                        'throws'
+                        'throws',
                     ]
                 ]
-            ]
+            ],
+            'data'   => [
+                'nullableA' => [
+                    'aliasedA' => null,
+                ],
+            ],
         ], $result->toArray());
     }
 
@@ -923,7 +924,7 @@ SRC;
      * Uses the inline operation if no operation name is provided
      *
      * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
      */
     public function testUsesTheInlineOperationIfNoOperationIsProvided()
     {
@@ -953,7 +954,7 @@ SRC;
      * Uses the named operation if operation name is provided
      *
      * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
      */
     public function testUsesTheNamedOperationIfOperationNameIsProvided()
     {
@@ -982,14 +983,12 @@ SRC;
 
     /**
      * Provides error if no operation is provided
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testProvidesErrorIfNoOperationIsProvided()
     {
         $rootValue = ['a' => 'b'];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Type',
@@ -1002,6 +1001,8 @@ SRC;
         ]);
 
         $query  = 'fragment Example on Type { a }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query), $rootValue);
 
         $this->assertEquals([
@@ -1019,14 +1020,12 @@ SRC;
 
     /**
      * Errors if no op name is provided with multiple operations
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testErrorsIfNoOpNameIsProvidedWithMultipleOperations()
     {
         $rootValue = ['a' => 'b'];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Type',
@@ -1039,6 +1038,8 @@ SRC;
         ]);
 
         $query  = 'query Example { a } query OtherExample { a }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query), $rootValue);
 
         $this->assertEquals([
@@ -1055,14 +1056,12 @@ SRC;
 
     /**
      * Errors if unknown operation name is provided
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testErrorsIfUnknownOperationNameIsProvided()
     {
         $rootValue = ['a' => 'b'];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Type',
@@ -1074,7 +1073,9 @@ SRC;
             ])
         ]);
 
-        $query  = 'query Example { a } query OtherExample { a }';
+        $query = 'query Example { a } query OtherExample { a }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query), $rootValue, [], [], 'UnknownExample');
 
         $this->assertEquals([
@@ -1092,14 +1093,12 @@ SRC;
 
     /**
      * Uses the query schema for queries
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testUsesTheQuerySchemaForQueries()
     {
         $rootValue = ['a' => 'b'];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query'        => newObjectType([
                 'name'   => 'Q',
@@ -1127,7 +1126,9 @@ SRC;
             ])
         ]);
 
-        $query  = 'query Q { a } mutation M { c } subscription S { a }';
+        $query = 'query Q { a } mutation M { c } subscription S { a }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query), $rootValue, [], [], 'Q');
 
         $this->assertEquals([
@@ -1139,34 +1140,34 @@ SRC;
 
     /**
      * Uses the mutation schema for mutations
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testUsesTheMutationSchemaForMutations()
     {
         $rootValue = ['a' => 'b', 'c' => 'd'];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query'    => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => [
                         'type' => stringType(),
-                    ]
-                ]
+                    ],
+                ],
             ]),
             'mutation' => newObjectType([
                 'name'   => 'M',
                 'fields' => [
                     'c' => [
                         'type' => stringType(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
         $query  = 'query Q { a } mutation M { c } subscription S { a }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query), $rootValue, [], [], 'M');
 
         $this->assertEquals([
@@ -1178,14 +1179,12 @@ SRC;
 
     /**
      * Uses the subscription schema for subscriptions
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testUsesTheSubscriptionSchemaForSubscriptions()
     {
         $rootValue = ['a' => 'b'];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query'        => newObjectType([
                 'name'   => 'Q',
@@ -1206,6 +1205,8 @@ SRC;
         ]);
 
         $query  = 'query Q { a } subscription S { a }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query), $rootValue, [], [], 'S');
 
         $this->assertEquals([
@@ -1217,24 +1218,28 @@ SRC;
 
     /**
      * Correct field ordering despite execution order
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testCorrectFieldOrderingDespiteExecutionOrder()
     {
         $rootValue = [
-            'a' => 'a',
+            'a' => function () {
+                return 'a';
+            },
             'b' => function () {
                 return \React\Promise\resolve('b');
             },
-            'c' => 'c',
+            'c' => function () {
+                return 'c';
+            },
             'd' => function () {
                 return \React\Promise\resolve('d');
             },
-            'e' => 'e'
+            'e' => function () {
+                return 'e';
+            },
         ];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Q',
@@ -1244,11 +1249,13 @@ SRC;
                     'c' => ['type' => stringType()],
                     'd' => ['type' => stringType()],
                     'e' => ['type' => stringType()],
-                ]
-            ])
+                ],
+            ]),
         ]);
 
         $query  = '{ a, b, c, d, e }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query), $rootValue);
 
         $this->assertEquals([
@@ -1258,7 +1265,7 @@ SRC;
                 'c' => 'c',
                 'd' => 'd',
                 'e' => 'e',
-            ]
+            ],
         ], $result->toArray());
     }
 
@@ -1266,7 +1273,7 @@ SRC;
      * Avoid recursions
      *
      * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
      */
     public function testAvoidRecursions()
     {
@@ -1278,54 +1285,56 @@ SRC;
                 'fields' => [
                     'a' => [
                         'type' => stringType(),
-                    ]
-                ]
-            ])
+                    ],
+                ],
+            ]),
         ]);
 
-        $query  = 'query Q {
-            a
-            ...Frag
-            ...Frag
-          }
+        $query  = '
+        query Q {
+          a
+          ...Frag
+          ...Frag
+        }
     
-          fragment Frag on Type {
-            a,
-            ...Frag
-          }';
+        fragment Frag on Type {
+          a
+          ...Frag
+        }
+        ';
+
         $result = execute($schema, parse($query), $rootValue, [], [], 'Q');
 
         $this->assertEquals([
             'data' => [
                 'a' => 'b',
-            ]
+            ],
         ], $result->toArray());
     }
 
     /**
      * Does not include illegal fields in output
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testDoesNotIncludeIllegalFieldsInOutput()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query'    => newObjectType([
                 'name'   => 'Q',
                 'fields' => [
                     'a' => ['type' => stringType()],
-                ]
+                ],
             ]),
             'mutation' => newObjectType([
                 'name'   => 'M',
                 'fields' => [
                     'c' => ['type' => stringType()],
-                ]
-            ])
+                ],
+            ]),
         ]);
 
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $executionResult = execute($schema, parse('mutation M { thisIsIllegalDontIncludeMe }'));
 
         $expected = new ExecutionResult([], []);
@@ -1336,14 +1345,12 @@ SRC;
 
     /**
      * Fails when an isTypeOf check is not met
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testFailsWhenAnIsTypeOfCheckIsNotMet()
     {
-        $SpecialType = newObjectType([
-            'name'     => 'SpecialType',
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $specialType = newObjectType([
+            'name'     => 'specialType',
             'fields'   => [
                 'value' => [
                     'type' => stringType()
@@ -1354,13 +1361,14 @@ SRC;
             },
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
-                'fields' => function () use (&$SpecialType) {
+                'fields' => function () use ($specialType) {
                     return [
                         'specials' => [
-                            'type'    => newList($SpecialType),
+                            'type'    => newList($specialType),
                             'resolve' => function ($root) {
                                 return $root['specials'];
                             }
@@ -1377,35 +1385,39 @@ SRC;
             ]
         ];
 
-        $query  = '{ specials { value } }';
+        $query = '{ specials { value } }';
+
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query), $rootValue);
 
-        $this->assertEquals(1, count($result->getErrors()));
-        $this->assertEquals([
+        $this->assertSame([
+            'errors' => [
+                [
+                    'message'   => 'Expected value of type "specialType" but got: Object.',
+                    'locations' => [
+                        [
+                            'line'   => 1,
+                            'column' => 3,
+                        ],
+                    ],
+                    'path'      => ['specials', 1],
+                ],
+            ],
             'data'   => [
                 'specials' => [
                     ['value' => 'foo'],
-                    null
-                ]
-            ],
-            'errors' => [
-                [
-                    'message'   => 'Expected value of type "SpecialType" but received: Object.',
-                    'locations' => null,
-                    'path'      => ['specials', 1]
+                    null,
                 ],
-            ]
+            ],
         ], $result->toArray());
     }
 
     /**
      * Executes ignoring invalid non-executable definitions
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testExecutesIgnoringInvalidNonExecutableDefinitions()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -1419,6 +1431,7 @@ SRC;
 
         $query = '{ foo } type Query { bar: String }';
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query));
 
         $this->assertEquals([
@@ -1430,12 +1443,10 @@ SRC;
 
     /**
      * Uses a custom field resolver
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testUsesACustomFieldResolver()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -1453,6 +1464,7 @@ SRC;
             return $info->getFieldName();
         };
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($query), [], [], [], null, $customResolver);
 
         $this->assertEquals([
@@ -1462,40 +1474,38 @@ SRC;
         ], $result->toArray());
     }
 
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     */
-    public function testNonNullFieldQuery()
-    {
-        $schema = newSchema([
-            'query' => newObjectType([
-                'name'   => 'Greeting',
-                'fields' => [
-                    'hello' => [
-                        'type'    => newNonNull(stringType()),
-                        'resolve' => function () {
-                            return null;
-                        }
-                    ]
-                ]
-            ])
-        ]);
-
-        /** @var ExecutionResult $executionResult */
-        $executionResult = graphql($schema, 'query Greeting {hello}');
-
-        $this->assertSame([
-            'errors' => [
-                [
-
-                    'message'   => 'Cannot return null for non-nullable field Greeting.hello.',
-                    'locations' => null,
-                    'path'      => null,
-                ]
-            ],
-            'data'  => null
-        ], $executionResult);
-    }
+//    public function testNonNullFieldQuery()
+//    {
+//        /** @noinspection PhpUnhandledExceptionInspection */
+//        $schema = newSchema([
+//            'query' => newObjectType([
+//                'name'   => 'Greeting',
+//                'fields' => [
+//                    'hello' => [
+//                        'type'    => newNonNull(stringType()),
+//                        'resolve' => function () {
+//                            return null;
+//                        }
+//                    ]
+//                ]
+//            ])
+//        ]);
+//
+//        /** @noinspection PhpUnhandledExceptionInspection */
+//        $executionResult = graphql($schema, 'query Greeting {hello}');
+//
+//        $this->assertSame([
+//            'errors' => [
+//                [
+//
+//                    'message'   => 'Cannot return null for non-nullable field Greeting.hello.',
+//                    'locations' => null,
+//                    'path'      => null,
+//                ]
+//            ],
+//            'data'   => null
+//        ], $executionResult);
+//    }
 }
 
 class Special

@@ -22,12 +22,10 @@ class AbstractPromiseTest extends TestCase
 
     /**
      * isTypeOf used to resolve runtime type for Interface
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testIsTypeOfUsedToResolveFunctionForInterface()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PetInterfaceType = newInterfaceType([
             'name'   => 'Pet',
             'fields' => [
@@ -35,6 +33,7 @@ class AbstractPromiseTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
@@ -47,6 +46,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
@@ -59,6 +59,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -89,7 +90,7 @@ class AbstractPromiseTest extends TestCase
           }
         }';
 
-        /** @var ExecutionResult $executionResult */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($source));
 
         $expected = new ExecutionResult([
@@ -110,12 +111,10 @@ class AbstractPromiseTest extends TestCase
 
     /**
      * isTypeOf can be rejected
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testIsTypeOfCanBeRejected()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PetInterfaceType = newInterfaceType([
             'name'   => 'Pet',
             'fields' => [
@@ -123,6 +122,7 @@ class AbstractPromiseTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
@@ -135,6 +135,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
@@ -147,6 +148,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -177,7 +179,7 @@ class AbstractPromiseTest extends TestCase
           }
         }';
 
-        /** @var ExecutionResult $executionResult */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($source));
 
         $expected = [
@@ -206,12 +208,10 @@ class AbstractPromiseTest extends TestCase
 
     /**
      * isTypeOf used to resolve runtime type for Union
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testIsTypeOfUsedToResolveRuntimeTypeForUnion()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $DogType = newObjectType([
             'name'     => 'Dog',
             'fields'   => [
@@ -223,6 +223,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $CatType = newObjectType([
             'name'     => 'Cat',
             'fields'   => [
@@ -234,6 +235,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PetUnionType = newUnionType([
             'name'        => 'Pet',
             'types'       => [$DogType, $CatType],
@@ -249,6 +251,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -278,7 +281,7 @@ class AbstractPromiseTest extends TestCase
           }
         }';
 
-        /** @var ExecutionResult $executionResult */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($source));
 
         $expected = new ExecutionResult([
@@ -299,12 +302,10 @@ class AbstractPromiseTest extends TestCase
 
     /**
      * resolveType on Interface yields useful error
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testResolveTypeOnInterfaceYieldsUsefulError()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PetInterfaceType = newInterfaceType([
             'name'        => 'Pet',
             'resolveType' => function ($obj) use (&$DogType, &$CatType, &$HumanType) {
@@ -317,6 +318,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
@@ -326,6 +328,7 @@ class AbstractPromiseTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
@@ -335,6 +338,7 @@ class AbstractPromiseTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $HumanType = newObjectType([
             'name'   => 'Human',
             'fields' => [
@@ -342,6 +346,7 @@ class AbstractPromiseTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -373,7 +378,7 @@ class AbstractPromiseTest extends TestCase
           }
         }';
 
-        /** @var ExecutionResult $executionResult */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($source));
 
         $expected = [
@@ -404,12 +409,10 @@ class AbstractPromiseTest extends TestCase
 
     /**
      * resolveType on Union yields useful error
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testResolveTypeOnUnionYieldsUsefulError()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $DogType = newObjectType([
             'name'     => 'Dog',
             'fields'   => [
@@ -421,6 +424,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $CatType = newObjectType([
             'name'     => 'Cat',
             'fields'   => [
@@ -432,6 +436,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $HumanType = newObjectType([
             'name'     => 'Human',
             'fields'   => [
@@ -442,6 +447,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PetUnionType = newUnionType([
             'name'        => 'Pet',
             'types'       => [$DogType, $CatType],
@@ -462,6 +468,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -492,7 +499,7 @@ class AbstractPromiseTest extends TestCase
           }
         }';
 
-        /** @var ExecutionResult $executionResult */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($source));
 
         $expected = [
@@ -523,12 +530,10 @@ class AbstractPromiseTest extends TestCase
 
     /**
      * resolveType allows resolving with type name
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
      */
     public function testResolveTypeAllowsResolvingWithTypeName()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PetInterfaceType = newInterfaceType([
             'name'        => 'Pet',
             'resolveType' => function ($obj) {
@@ -540,6 +545,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
@@ -552,6 +558,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
@@ -564,6 +571,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -594,7 +602,7 @@ class AbstractPromiseTest extends TestCase
           }
         }';
 
-        /** @var ExecutionResult $executionResult */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($source));
 
         $expected = new ExecutionResult([
@@ -613,14 +621,12 @@ class AbstractPromiseTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    //resolveType can be caught
-
     /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * resolveType can be caught
      */
     public function testResolveTypeCanBeCaught()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $PetInterfaceType = newInterfaceType([
             'name'        => 'Pet',
             'resolveType' => function ($obj) {
@@ -628,6 +634,7 @@ class AbstractPromiseTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $DogType = newObjectType([
             'name'       => 'Dog',
             'interfaces' => [$PetInterfaceType],
@@ -637,6 +644,7 @@ class AbstractPromiseTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $CatType = newObjectType([
             'name'       => 'Cat',
             'interfaces' => [$PetInterfaceType],
@@ -646,6 +654,7 @@ class AbstractPromiseTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -676,7 +685,7 @@ class AbstractPromiseTest extends TestCase
           }
         }';
 
-        /** @var ExecutionResult $executionResult */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = execute($schema, parse($source));
 
         $expected = [

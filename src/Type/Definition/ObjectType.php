@@ -116,7 +116,7 @@ class ObjectType implements NamedTypeInterface, CompositeTypeInterface, OutputTy
      */
     public function isTypeOf($value, $context, $info)
     {
-        return $this->isTypeOfCallback !== null
+        return null !== $this->isTypeOfCallback
             ? \call_user_func($this->isTypeOfCallback, $value, $context, $info)
             : false;
     }
@@ -143,9 +143,17 @@ class ObjectType implements NamedTypeInterface, CompositeTypeInterface, OutputTy
     }
 
     /**
+     * @return bool
+     */
+    public function hasIsTypeOfCallback(): bool
+    {
+        return null !== $this->isTypeOfCallback;
+    }
+
+    /**
      * @return null|callable
      */
-    public function getIsTypeOf(): ?callable
+    public function getIsTypeOfCallback(): ?callable
     {
         return $this->isTypeOfCallback;
     }
@@ -160,8 +168,9 @@ class ObjectType implements NamedTypeInterface, CompositeTypeInterface, OutputTy
         $interfaces = resolveThunk($interfacesOrThunk);
 
         if (!\is_array($interfaces)) {
-            throw new InvariantException(\sprintf('%s interfaces must be an array or a function which returns an array.',
-                $this->name));
+            throw new InvariantException(
+                \sprintf('%s interfaces must be an array or a function which returns an array.', $this->name)
+            );
         }
 
         return $interfaces;

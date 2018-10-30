@@ -22,6 +22,14 @@ trait ResolveTypeTrait
     }
 
     /**
+     * @return bool
+     */
+    public function hasResolveTypeCallback(): bool
+    {
+        return null !== $this->resolveTypeCallback;
+    }
+
+    /**
      * @return callable|null
      */
     public function getResolveTypeCallback(): ?callable

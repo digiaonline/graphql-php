@@ -11,8 +11,8 @@ function starWarsSchema()
 
     /** @noinspection PhpUnhandledExceptionInspection */
     return buildSchema($source, [
-        'Query' => [
-            'hero' => function ($value, $arguments) {
+        'Query'     => [
+            'hero'  => function ($value, $arguments) {
                 return getHero($arguments['episode'] ?? null);
             },
             'human' => function ($value, $arguments) {
@@ -22,20 +22,25 @@ function starWarsSchema()
                 return getDroid($arguments['id']);
             },
         ],
-        'Human' => [
-            'friends' => function ($human) {
+        'Human'     => [
+            'friends'         => function ($human) {
                 return getFriends($human);
             },
             'secretBackstory' => function () {
                 throw new \Exception('secretBackstory is secret.');
             },
         ],
-        'Droid' => [
-            'friends' => function ($droid) {
+        'Droid'     => [
+            'friends'         => function ($droid) {
                 return getFriends($droid);
             },
             'secretBackstory' => function () {
                 throw new \Exception('secretBackstory is secret.');
+            },
+        ],
+        'Character' => [
+            '__resolveType' => function ($character) {
+                return $character['type'];
             },
         ],
     ]);

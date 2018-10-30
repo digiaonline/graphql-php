@@ -112,7 +112,7 @@ class ResolveTest extends TestCase
      *
      * @throws \Digia\GraphQL\Error\InvariantException
      */
-    public function testUsesProviedResolveFunction()
+    public function testUsesProvidedResolveFunction()
     {
         $schema = $this->createTestSchema([
             'type'    => stringType(),
@@ -125,12 +125,13 @@ class ResolveTest extends TestCase
             }
         ]);
 
+        $result = graphql($schema, '{ test }');
+
         $this->assertEquals([
             'data' => [
                 'test' => '[null,[]]'
             ]
-        ], graphql($schema, '{ test }'));
-
+        ], $result);
 
         $this->assertEquals([
             'data' => [

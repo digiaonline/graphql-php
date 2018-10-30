@@ -1,9 +1,12 @@
 <?php
 
-namespace Digia\GraphQL\Execution;
+namespace Digia\GraphQL\Execution\Strategy;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Execution\ExecutionContext;
+use Digia\GraphQL\Execution\ExecutionException;
+use Digia\GraphQL\Execution\ValuesResolver;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
@@ -34,20 +37,21 @@ class FieldCollector
     protected $includeDirective;
 
     /**
-     * @var ValuesHelper
+     * @var ValuesResolver
      */
-    protected $valuesHelper;
+    protected $valuesResolver;
 
     /**
      * FieldCollector constructor.
      * @param ExecutionContext $context
+     * @param ValuesResolver   $valuesResolver
      */
-    public function __construct(ExecutionContext $context)
+    public function __construct(ExecutionContext $context, ValuesResolver $valuesResolver)
     {
         $this->context          = $context;
         $this->skipDirective    = SkipDirective();
         $this->includeDirective = IncludeDirective();
-        $this->valuesHelper     = new ValuesHelper();
+        $this->valuesResolver   = $valuesResolver;
     }
 
     /**
@@ -59,6 +63,7 @@ class FieldCollector
      * @throws InvalidTypeException
      * @throws ExecutionException
      * @throws InvariantException
+     * @throws ConversionException
      */
     public function collectFields(
         ObjectType $runtimeType,
@@ -98,13 +103,14 @@ class FieldCollector
             if ($selection instanceof FragmentSpreadNode) {
                 $fragmentName = $selection->getNameValue();
 
-                if (!empty($visitedFragmentNames[$fragmentName])) {
+                if (isset($visitedFragmentNames[$fragmentName])) {
                     continue;
                 }
 
                 $visitedFragmentNames[$fragmentName] = true;
-                /** @var FragmentDefinitionNode $fragment */
+
                 $fragment = $this->context->getFragments()[$fragmentName];
+
                 $this->collectFields($runtimeType, $fragment->getSelectionSet(), $fields, $visitedFragmentNames);
 
                 continue;
@@ -117,7 +123,6 @@ class FieldCollector
     /**
      * @param NodeInterface $node
      * @return bool
-     *
      * @throws ExecutionException
      * @throws InvalidTypeException
      * @throws InvariantException
@@ -126,15 +131,14 @@ class FieldCollector
     {
         $contextVariables = $this->context->getVariableValues();
 
-        $skip = $this->valuesHelper->coerceDirectiveValues($this->skipDirective, $node, $contextVariables);
+        $skip = $this->valuesResolver->coerceDirectiveValues($this->skipDirective, $node, $contextVariables);
 
         if ($skip && $skip['if'] === true) {
             return false;
         }
 
-        $include = $this->valuesHelper->coerceDirectiveValues($this->includeDirective, $node, $contextVariables);
+        $include = $this->valuesResolver->coerceDirectiveValues($this->includeDirective, $node, $contextVariables);
 
-        /** @noinspection IfReturnReturnSimplificationInspection */
         if ($include && $include['if'] === false) {
             return false;
         }
@@ -169,5 +173,4 @@ class FieldCollector
 
         return false;
     }
-
 }
