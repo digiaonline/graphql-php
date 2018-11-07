@@ -16,14 +16,14 @@ class ExecutionResult implements SerializationInterface
     protected $data;
 
     /**
-     * @var ExecutionException[]
+     * @var GraphQLException[]
      */
     protected $errors;
 
     /**
      * ExecutionResult constructor.
-     * @param array|null           $data
-     * @param ExecutionException[] $errors
+     * @param array|null         $data
+     * @param GraphQLException[] $errors
      */
     public function __construct(?array $data, array $errors)
     {
@@ -40,7 +40,7 @@ class ExecutionResult implements SerializationInterface
     }
 
     /**
-     * @return ExecutionException[]
+     * @return GraphQLException[]
      */
     public function getErrors(): array
     {
@@ -48,10 +48,10 @@ class ExecutionResult implements SerializationInterface
     }
 
     /**
-     * @param ExecutionException $error
+     * @param GraphQLException $error
      * @return ExecutionResult
      */
-    public function addError(ExecutionException $error): ExecutionResult
+    public function addError(GraphQLException $error): ExecutionResult
     {
         $this->errors[] = $error;
         return $this;
