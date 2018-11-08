@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\ErrorHandlerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class ExecutionProvider extends AbstractServiceProvider
@@ -12,7 +11,6 @@ class ExecutionProvider extends AbstractServiceProvider
      */
     protected $provides = [
         ExecutionInterface::class,
-        ValuesHelper::class,
     ];
 
     /**
@@ -21,6 +19,5 @@ class ExecutionProvider extends AbstractServiceProvider
     public function register()
     {
         $this->container->share(ExecutionInterface::class, Execution::class);
-        $this->container->share(ValuesHelper::class, ValuesHelper::class);
     }
 }

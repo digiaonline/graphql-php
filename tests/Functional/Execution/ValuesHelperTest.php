@@ -4,12 +4,8 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\ExecutionContext;
 use Digia\GraphQL\Execution\ValuesHelper;
-use Digia\GraphQL\Language\Node\ArgumentsAwareInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
-use Digia\GraphQL\Language\Node\StringValueNode;
 use Digia\GraphQL\Test\TestCase;
-use function Digia\GraphQL\Execution\coerceArgumentValues;
-use function Digia\GraphQL\Execution\coerceVariableValues;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\booleanType;
 use function Digia\GraphQL\Type\newInputObjectType;
@@ -20,9 +16,27 @@ use function Digia\GraphQL\Type\stringType;
 
 class ValuesHelperTest extends TestCase
 {
+    /**
+     * @var ValuesHelper
+     */
+    private $valuesHelper;
+
+    /**
+     * @inheritdoc
+     */
+    protected function setUp()
+    {
+        $this->valuesHelper = new ValuesHelper();
+    }
+
+    /**
+     * @throws \Digia\GraphQL\Error\InvalidTypeException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Execution\ExecutionException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
+     */
     public function testCoerceArgumentValues()
     {
-        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Greeting',
@@ -39,27 +53,28 @@ class ValuesHelperTest extends TestCase
             ]),
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $documentNode = parse('query Hello($name: String) { Greeting(name: $name) }');
-        /** @var OperationDefinitionNode $operation */
-        $operation = $documentNode->getDefinitions()[0];
-        /** @var ArgumentsAwareInterface $node */
-        $node = $operation->getSelectionSet()->getSelections()[0];
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $definition = $schema->getQueryType()->getFields()['greeting'];
+        $operation    = $documentNode->getDefinitions()[0];
+        $node         = $operation->getSelectionSet()->getSelections()[0];
+        $definition   = $schema->getQueryType()->getFields()['greeting'];
 
         $context = new ExecutionContext(
             $schema, [], null, null, ['name' => 'Han Solo'], null, $operation, []
         );
 
-        $args = coerceArgumentValues($definition, $node, $context->getVariableValues());
+        $args = $this->valuesHelper->coerceArgumentValues($definition, $node, $context->getVariableValues());
 
         $this->assertSame(['name' => 'Han Solo'], $args);
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
+     * @throws \Digia\GraphQL\Util\ConversionException
+     */
     public function testCoerceVariableValues(): void
     {
-        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'nonNullBoolean',
@@ -76,7 +91,6 @@ class ValuesHelperTest extends TestCase
             ]),
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $documentNode = parse('
             query ($shout: Boolean!) {
                 nonNullBoolean(shout: $shout)
@@ -88,23 +102,28 @@ class ValuesHelperTest extends TestCase
         $variableDefinitions = $operation->getVariableDefinitions();
 
         // Try with true and false and null (null should give errors, the rest shouldn't)
-        $coercedValue = coerceVariableValues($schema, $variableDefinitions, ['shout' => true]);
+        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, ['shout' => true]);
         $this->assertSame(['shout' => true], $coercedValue->getValue());
         $this->assertFalse($coercedValue->hasErrors());
 
-        $coercedValue = coerceVariableValues($schema, $variableDefinitions, ['shout' => false]);
+        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, ['shout' => false]);
         $this->assertSame(['shout' => false], $coercedValue->getValue());
         $this->assertFalse($coercedValue->hasErrors());
 
-        $coercedValue = coerceVariableValues($schema, $variableDefinitions, ['shout' => null]);
+        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, ['shout' => null]);
         $this->assertEquals([], $coercedValue->getValue());
         $this->assertTrue($coercedValue->hasErrors());
     }
 
+    /**
+     * @throws \Digia\GraphQL\Error\GraphQLException
+     * @throws \Digia\GraphQL\Error\InvariantException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
+     * @throws \Digia\GraphQL\Util\ConversionException
+     */
     public function testCoerceValuesForInputObjectTypes(): void
     {
         // Test input object types
-        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -128,7 +147,6 @@ class ValuesHelperTest extends TestCase
             ]),
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $documentNode = parse('
             query ($inputObject: InputObject!) {
                 inputObjectField(inputObject: $inputObject)
@@ -140,7 +158,7 @@ class ValuesHelperTest extends TestCase
         $variableDefinitions = $operation->getVariableDefinitions();
 
         // Test with a missing non-null string
-        $coercedValue = coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => 'some string'
             ]
@@ -151,7 +169,7 @@ class ValuesHelperTest extends TestCase
             $coercedValue->getErrors()[0]->getMessage());
 
         // Test again with all variables, no errors expected
-        $coercedValue = coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => 'some string',
                 'b' => 'some other required string',
@@ -161,7 +179,6 @@ class ValuesHelperTest extends TestCase
         $this->assertFalse($coercedValue->hasErrors());
 
         // Test with non-nullable boolean input fields
-        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'   => 'Query',
@@ -185,7 +202,6 @@ class ValuesHelperTest extends TestCase
             ]),
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $documentNode = parse('
             query ($inputObject: InputObject!) {
                 inputObjectField(inputObject: $inputObject)
@@ -197,7 +213,7 @@ class ValuesHelperTest extends TestCase
         $variableDefinitions = $operation->getVariableDefinitions();
 
         // Test with a missing non-null string
-        $coercedValue = coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => true
             ]
@@ -208,7 +224,7 @@ class ValuesHelperTest extends TestCase
             $coercedValue->getErrors()[0]->getMessage());
 
         // Test again with all fields present, all booleans true
-        $coercedValue = coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => true,
                 'b' => true,
@@ -218,7 +234,7 @@ class ValuesHelperTest extends TestCase
         $this->assertFalse($coercedValue->hasErrors());
 
         // Test again with all fields present, all booleans false (this has been problematic before)
-        $coercedValue = coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => false,
                 'b' => false,

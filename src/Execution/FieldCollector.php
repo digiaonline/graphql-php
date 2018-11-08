@@ -34,6 +34,11 @@ class FieldCollector
     protected $includeDirective;
 
     /**
+     * @var ValuesHelper
+     */
+    protected $valuesHelper;
+
+    /**
      * FieldCollector constructor.
      * @param ExecutionContext $context
      */
@@ -42,6 +47,7 @@ class FieldCollector
         $this->context          = $context;
         $this->skipDirective    = SkipDirective();
         $this->includeDirective = IncludeDirective();
+        $this->valuesHelper     = new ValuesHelper();
     }
 
     /**
@@ -111,18 +117,22 @@ class FieldCollector
     /**
      * @param NodeInterface $node
      * @return bool
+     *
+     * @throws ExecutionException
+     * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function shouldIncludeNode(NodeInterface $node): bool
     {
         $contextVariables = $this->context->getVariableValues();
 
-        $skip = coerceDirectiveValues($this->skipDirective, $node, $contextVariables);
+        $skip = $this->valuesHelper->coerceDirectiveValues($this->skipDirective, $node, $contextVariables);
 
         if ($skip && $skip['if'] === true) {
             return false;
         }
 
-        $include = coerceDirectiveValues($this->includeDirective, $node, $contextVariables);
+        $include = $this->valuesHelper->coerceDirectiveValues($this->includeDirective, $node, $contextVariables);
 
         /** @noinspection IfReturnReturnSimplificationInspection */
         if ($include && $include['if'] === false) {

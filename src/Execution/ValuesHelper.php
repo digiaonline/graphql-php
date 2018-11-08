@@ -30,6 +30,9 @@ use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\suggestionList;
 
+/**
+ * TODO: Make this class static
+ */
 class ValuesHelper
 {
     /**

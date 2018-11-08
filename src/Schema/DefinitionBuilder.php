@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Schema;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Execution\ValuesHelper;
 use Digia\GraphQL\Language\LanguageException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
@@ -34,7 +35,6 @@ use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Util\ValueASTConverter;
-use function Digia\GraphQL\Execution\coerceDirectiveValues;
 use function Digia\GraphQL\Type\introspectionTypes;
 use function Digia\GraphQL\Type\newDirective;
 use function Digia\GraphQL\Type\newEnumType;
@@ -77,6 +77,11 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected $directives;
 
     /**
+     * @var ValuesHelper
+     */
+    protected $valuesHelper;
+
+    /**
      * DefinitionBuilder constructor.
      * @param array                          $typeDefinitionsMap
      * @param ResolverRegistryInterface|null $resolverRegistry
@@ -97,6 +102,8 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
         $this->registerTypes($types);
         $this->registerDirectives($directives);
+
+        $this->valuesHelper = new ValuesHelper();
     }
 
     /**
@@ -529,11 +536,14 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
      * @return null|string
+     * @throws InvalidTypeException
+     * @throws InvariantException
+     * @throws \Digia\GraphQL\Execution\ExecutionException
      */
     protected function getDeprecationReason(NodeInterface $node): ?string
     {
         if (isset($this->directives['deprecated'])) {
-            $deprecated = coerceDirectiveValues($this->directives['deprecated'], $node);
+            $deprecated = $this->valuesHelper->coerceDirectiveValues($this->directives['deprecated'], $node);
 
             return $deprecated['reason'] ?? null;
         }
