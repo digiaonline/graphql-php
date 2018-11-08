@@ -1,5 +1,9 @@
 # Change log
 
+## 1.0.3
+
+* Drastically reduce the number of container `make()` ([#332](https://github.com/digiaonline/graphql-php/pull/332))
+
 ## 1.0.2
 
 * Expanded the README table of contents somewhat ([#329](https://github.com/digiaonline/graphql-php/pull/329))
