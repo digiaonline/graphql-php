@@ -4,7 +4,6 @@ namespace Digia\GraphQL\Schema;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
-use Digia\GraphQL\Execution\ExecutionException;
 use Digia\GraphQL\Language\LanguageException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
@@ -530,13 +529,15 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
      * @return null|string
-     * @throws InvariantException
-     * @throws ExecutionException
-     * @throws InvalidTypeException
      */
     protected function getDeprecationReason(NodeInterface $node): ?string
     {
-        $deprecated = coerceDirectiveValues(DeprecatedDirective(), $node);
-        return $deprecated['reason'] ?? null;
+        if (isset($this->directives['deprecated'])) {
+            $deprecated = coerceDirectiveValues($this->directives['deprecated'], $node);
+
+            return $deprecated['reason'] ?? null;
+        }
+
+        return null;
     }
 }
