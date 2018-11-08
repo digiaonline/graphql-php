@@ -1,5 +1,12 @@
 # Change log
 
+## 1.0.2
+
+* Expanded the README table of contents somewhat ([#329](https://github.com/digiaonline/graphql-php/pull/329))
+* Don't validate the schema again while validating the query against it ([#328](https://github.com/digiaonline/graphql-php/pull/328))
+* Fix some incorrect type-hints in `ExecutionResult` ([#327](https://github.com/digiaonline/graphql-php/pull/327))
+* Fix resolver example in the README ([#313](https://github.com/digiaonline/graphql-php/pull/313))
+
 ## 1.0.1
 
 * Fix a bug where you could not use `false` as value for `Boolean!` input types ([#311](https://github.com/digiaonline/graphql-php/pull/311))
