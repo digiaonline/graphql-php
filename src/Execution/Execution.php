@@ -113,7 +113,7 @@ class Execution implements ExecutionInterface
             throw new ExecutionException('Must provide an operation.');
         }
 
-        $coercedVariableValues = coerceVariableValues(
+        $coercedVariableValues = (new ValuesHelper())->coerceVariableValues(
             $schema,
             $operation->getVariableDefinitions(),
             $rawVariableValues

@@ -11,6 +11,7 @@ use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
@@ -23,12 +24,30 @@ class FieldCollector
     protected $context;
 
     /**
+     * @var Directive
+     */
+    protected $skipDirective;
+
+    /**
+     * @var Directive
+     */
+    protected $includeDirective;
+
+    /**
+     * @var ValuesHelper
+     */
+    protected $valuesHelper;
+
+    /**
      * FieldCollector constructor.
      * @param ExecutionContext $context
      */
     public function __construct(ExecutionContext $context)
     {
-        $this->context = $context;
+        $this->context          = $context;
+        $this->skipDirective    = SkipDirective();
+        $this->includeDirective = IncludeDirective();
+        $this->valuesHelper     = new ValuesHelper();
     }
 
     /**
@@ -98,18 +117,22 @@ class FieldCollector
     /**
      * @param NodeInterface $node
      * @return bool
+     *
+     * @throws ExecutionException
+     * @throws InvalidTypeException
+     * @throws InvariantException
      */
     protected function shouldIncludeNode(NodeInterface $node): bool
     {
         $contextVariables = $this->context->getVariableValues();
 
-        $skip = coerceDirectiveValues(SkipDirective(), $node, $contextVariables);
+        $skip = $this->valuesHelper->coerceDirectiveValues($this->skipDirective, $node, $contextVariables);
 
         if ($skip && $skip['if'] === true) {
             return false;
         }
 
-        $include = coerceDirectiveValues(IncludeDirective(), $node, $contextVariables);
+        $include = $this->valuesHelper->coerceDirectiveValues($this->includeDirective, $node, $contextVariables);
 
         /** @noinspection IfReturnReturnSimplificationInspection */
         if ($include && $include['if'] === false) {

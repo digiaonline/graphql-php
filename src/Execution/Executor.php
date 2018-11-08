@@ -62,6 +62,11 @@ class Executor
     protected $errorHandler;
 
     /**
+     * @var ValuesHelper
+     */
+    protected $valuesHelper;
+
+    /**
      * @var array
      */
     private static $defaultFieldResolver = [__CLASS__, 'defaultFieldResolver'];
@@ -81,6 +86,7 @@ class Executor
         $this->context        = $context;
         $this->fieldCollector = $fieldCollector;
         $this->errorHandler   = $errorHandler;
+        $this->valuesHelper   = new ValuesHelper();
     }
 
     /**
@@ -855,7 +861,7 @@ class Executor
         try {
             $result = $resolveCallback(
                 $rootValue,
-                coerceArgumentValues($field, $fieldNode, $context->getVariableValues()),
+                $this->valuesHelper->coerceArgumentValues($field, $fieldNode, $context->getVariableValues()),
                 $context->getContextValue(),
                 $info
             );

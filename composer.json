@@ -30,7 +30,6 @@
     "autoload": {
         "files": [
             "./src/Error/helpers.php",
-            "./src/Execution/values.php",
             "./src/Language/blockStringValue.php",
             "./src/Language/utils.php",
             "./src/Schema/utils.php",
