@@ -25,9 +25,19 @@ JavaScript [reference implementation](https://github.com/graphql/graphql-js).
 - [Installation](#installation)
 - [Example](#example)
 - [Creating a schema](#creating-a-schema)
+  - [Resolver registry](#resolver-registry)
+  - [Resolver middleware](#resolver-middleware)
 - [Execution](#execution)
+  - [Queries](#queries)
+  - [Resolvers](#resolvers)
+    - [The N+1 problem](#the-n1-problem)
+  - [Variables](#variables)
+  - [Context](#context)
 - [Scalars](#scalars)
+  - [Custom scalars](#custom-scalars)
+- [Advanced usage](#advanced-usage)
 - [Integration](#integration)
+  - [Laravel](#laravel)
 
 ## Installation
 
@@ -169,7 +179,7 @@ $schema = buildSchema($source, [
 ]);
 ```
 
-#### Resolver middleware
+### Resolver middleware
 
 If you find yourself writing the same logic in multiple resolvers you should consider using middleware. Resolver 
 middleware allow you to efficiently manage functionality across multiple resolvers.
