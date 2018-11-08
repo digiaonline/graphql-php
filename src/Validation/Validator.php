@@ -7,27 +7,12 @@ use Digia\GraphQL\Language\Visitor\ParallelVisitor;
 use Digia\GraphQL\Language\Visitor\TypeInfoVisitor;
 use Digia\GraphQL\Language\Visitor\VisitorInfo;
 use Digia\GraphQL\Schema\Schema;
-use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use Digia\GraphQL\Validation\Rule\RuleInterface;
 use Digia\GraphQL\Validation\Rule\SupportedRules;
 
 class Validator implements ValidatorInterface
 {
-    /**
-     * @var SchemaValidatorInterface
-     */
-    protected $schemaValidator;
-
-    /**
-     * Validator constructor.
-     * @param SchemaValidatorInterface $schemaValidator
-     */
-    public function __construct(SchemaValidatorInterface $schemaValidator)
-    {
-        $this->schemaValidator = $schemaValidator;
-    }
-
     /**
      * @inheritdoc
      */
@@ -37,8 +22,6 @@ class Validator implements ValidatorInterface
         ?array $rules = null,
         ?TypeInfo $typeInfo = null
     ): array {
-        $this->schemaValidator->assertValid($schema);
-
         $typeInfo = $typeInfo ?? new TypeInfo($schema);
         $rules    = $rules ?? SupportedRules::build();
 

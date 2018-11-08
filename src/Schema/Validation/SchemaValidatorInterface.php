@@ -16,11 +16,6 @@ interface SchemaValidatorInterface
 
     /**
      * @param Schema $schema
-     */
-    public function assertValid(Schema $schema): void;
-
-    /**
-     * @param Schema $schema
      * @return ValidationContextInterface
      */
     public function createContext(Schema $schema): ValidationContextInterface;

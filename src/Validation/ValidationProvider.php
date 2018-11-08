@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Validation;
 
-use Digia\GraphQL\Schema\Validation\SchemaValidatorInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 class ValidationProvider extends AbstractServiceProvider
@@ -19,8 +18,6 @@ class ValidationProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $this->container
-            ->share(ValidatorInterface::class, Validator::class)
-            ->addArgument(SchemaValidatorInterface::class);
+        $this->container->share(ValidatorInterface::class, Validator::class);
     }
 }

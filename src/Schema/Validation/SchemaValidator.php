@@ -28,23 +28,6 @@ class SchemaValidator implements SchemaValidatorInterface
     }
 
     /**
-     * @param Schema $schema
-     * @throws SchemaValidationException
-     */
-    public function assertValid(Schema $schema): void
-    {
-        $errors = $this->validate($schema);
-
-        if (!empty($errors)) {
-            $message = \implode("\n", \array_map(function (SchemaValidationException $error) {
-                return $error->getMessage();
-            }, $errors));
-
-            throw new SchemaValidationException($message);
-        }
-    }
-
-    /**
      * @inheritdoc
      */
     public function createContext(Schema $schema): ValidationContextInterface
