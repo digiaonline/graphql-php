@@ -11,6 +11,7 @@ use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
+use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
@@ -23,12 +24,24 @@ class FieldCollector
     protected $context;
 
     /**
+     * @var Directive
+     */
+    protected $skipDirective;
+
+    /**
+     * @var Directive
+     */
+    protected $includeDirective;
+
+    /**
      * FieldCollector constructor.
      * @param ExecutionContext $context
      */
     public function __construct(ExecutionContext $context)
     {
-        $this->context = $context;
+        $this->context          = $context;
+        $this->skipDirective    = SkipDirective();
+        $this->includeDirective = IncludeDirective();
     }
 
     /**
@@ -103,13 +116,13 @@ class FieldCollector
     {
         $contextVariables = $this->context->getVariableValues();
 
-        $skip = coerceDirectiveValues(SkipDirective(), $node, $contextVariables);
+        $skip = coerceDirectiveValues($this->skipDirective, $node, $contextVariables);
 
         if ($skip && $skip['if'] === true) {
             return false;
         }
 
-        $include = coerceDirectiveValues(IncludeDirective(), $node, $contextVariables);
+        $include = coerceDirectiveValues($this->includeDirective, $node, $contextVariables);
 
         /** @noinspection IfReturnReturnSimplificationInspection */
         if ($include && $include['if'] === false) {
