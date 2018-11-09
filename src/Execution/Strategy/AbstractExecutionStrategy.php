@@ -473,17 +473,17 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
 
         $itemType           = $returnType->getOfType();
         $completedItems     = [];
-        $doesContainPromise = false;
+        $containsPromise = false;
 
         foreach ($result as $key => $item) {
             $fieldPath          = $path;
             $fieldPath[]        = $key;
             $completedItem      = $this->completeValueCatchingError($itemType, $fieldNodes, $info, $fieldPath, $item);
             $completedItems[]   = $completedItem;
-            $doesContainPromise = $doesContainPromise || $completedItem instanceof PromiseInterface;
+            $containsPromise = $containsPromise || $completedItem instanceof PromiseInterface;
         }
 
-        return $doesContainPromise
+        return $containsPromise
             ? \React\Promise\all($completedItems)
             : $completedItems;
     }

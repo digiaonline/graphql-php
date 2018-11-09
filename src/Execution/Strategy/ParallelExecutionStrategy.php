@@ -22,7 +22,7 @@ class ParallelExecutionStrategy extends AbstractExecutionStrategy
     public function executeFields(ObjectType $parentType, $rootValue, array $path, array $fields)
     {
         $results            = [];
-        $doesContainPromise = false;
+        $containsPromise = false;
 
         foreach ($fields as $fieldName => $fieldNodes) {
             $fieldPath   = $path;
@@ -34,11 +34,11 @@ class ParallelExecutionStrategy extends AbstractExecutionStrategy
                 continue;
             }
 
-            $doesContainPromise  = $doesContainPromise || $result instanceof PromiseInterface;
+            $containsPromise  = $containsPromise || $result instanceof PromiseInterface;
             $results[$fieldName] = $result;
         }
 
-        if (!$doesContainPromise) {
+        if (!$containsPromise) {
             return $results;
         }
 
