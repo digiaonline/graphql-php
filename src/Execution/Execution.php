@@ -52,6 +52,12 @@ class Execution implements ExecutionInterface
 
         $data = $this->executeOperation($operationName, $context, $fieldCollector, $valuesResolver);
 
+        if (null !== $errorHandler) {
+            foreach ($context->getErrors() as $error) {
+                $errorHandler->handleError($error);
+            }
+        }
+
         if ($data instanceof PromiseInterface) {
             $data->then(function ($resolvedData) use (&$data) {
                 $data = $resolvedData;
@@ -62,17 +68,19 @@ class Execution implements ExecutionInterface
     }
 
     /**
-     * @param null|string      $operationName
-     * @param ExecutionContext $context
-     * @param FieldCollector   $fieldCollector
-     * @param ValuesResolver   $valuesResolver
+     * @param null|string                $operationName
+     * @param ExecutionContext           $context
+     * @param FieldCollector             $fieldCollector
+     * @param ValuesResolver             $valuesResolver
+     * @param ErrorHandlerInterface|null $errorHandler
      * @return array|mixed|null|PromiseInterface
      */
     protected function executeOperation(
         ?string $operationName,
         ExecutionContext $context,
         FieldCollector $fieldCollector,
-        ValuesResolver $valuesResolver
+        ValuesResolver $valuesResolver,
+        ?ErrorHandlerInterface $errorHandler = null
     ) {
         $strategy = $operationName === 'mutation'
             ? new SerialExecutionStrategy($context, $fieldCollector, $valuesResolver)
