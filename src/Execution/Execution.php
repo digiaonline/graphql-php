@@ -24,8 +24,8 @@ class Execution implements ExecutionInterface
         $rootValue = null,
         $contextValue = null,
         array $variableValues = [],
-        string $operationName = null,
-        callable $fieldResolver = null,
+        ?string $operationName = null,
+        ?callable $fieldResolver = null,
         ?ErrorHandlerInterface $errorHandler = null
     ): ExecutionResult {
         try {
