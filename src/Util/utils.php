@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Util;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Type\Definition\TypeInterface;
+use React\Promise\PromiseInterface;
 use function Digia\GraphQL\printNode;
 
 /**
@@ -54,13 +55,13 @@ function orList(array $items): string
 function suggestionList(string $input, array $options): array
 {
     $optionsByDistance = [];
-    $oLength = \count($options);
-    $inputThreshold = \strlen($input) / 2;
+    $oLength           = \count($options);
+    $inputThreshold    = \strlen($input) / 2;
 
     /** @noinspection ForeachInvariantsInspection */
     for ($i = 0; $i < $oLength; $i++) {
         // Comparison must be case-insensitive.
-        $distance = \levenshtein(\strtolower($input), \strtolower($options[$i]));
+        $distance  = \levenshtein(\strtolower($input), \strtolower($options[$i]));
         $threshold = \max($inputThreshold, \strlen($options[$i]) / 2, 1);
         if ($distance <= $threshold) {
             $optionsByDistance[$options[$i]] = $distance;
@@ -88,7 +89,6 @@ function quotedOrList(array $items): string
         return '"' . $item . '"';
     }, $items));
 }
-
 
 
 /**
@@ -156,6 +156,43 @@ function keyValueMap(array $array, callable $keyFn, callable $valFn): array
         $map[$keyFn($item)] = $valFn($item);
         return $map;
     }, []);
+}
+
+/**
+ * @param array $map
+ * @return PromiseInterface
+ */
+function promiseForMap(array $map): PromiseInterface
+{
+    $keys             = \array_keys($map);
+    $promisesOrValues = \array_map(function ($name) use ($map) {
+        return $map[$name];
+    }, $keys);
+
+    return \React\Promise\all($promisesOrValues)->then(function ($values) use ($keys) {
+        $i = 0;
+        return \array_reduce($values, function ($resolvedObject, $value) use ($keys, &$i) {
+            $resolvedObject[$keys[$i++]] = $value;
+            return $resolvedObject;
+        }, []);
+    });
+}
+
+/**
+ * @param array    $values
+ * @param callable $fn
+ * @param mixed    $initial
+ * @return mixed
+ */
+function promiseReduce(array $values, callable $fn, $initial = null)
+{
+    return \array_reduce($values, function ($previous, $value) use ($fn) {
+        return $previous instanceof PromiseInterface
+            ? $previous->then(function ($resolvedValue) use ($fn, $value) {
+                return $fn($resolvedValue, $value);
+            })
+            : $fn($previous, $value);
+    }, $initial);
 }
 
 /**

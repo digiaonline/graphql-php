@@ -269,7 +269,7 @@ class ExtensionContext implements ExtensionContextInterface
             },
             'astNode'           => $type->getAstNode(),
             'extensionASTNodes' => $extensionASTNodes,
-            'isTypeOf'          => $type->getIsTypeOf(),
+            'isTypeOf'          => $type->getIsTypeOfCallback(),
         ]);
     }
 

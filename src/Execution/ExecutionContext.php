@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Execution\ExecutionException;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
@@ -35,7 +34,7 @@ class ExecutionContext
     protected $variableValues;
 
     /**
-     * @var mixed
+     * @var callable|null
      */
     protected $fieldResolver;
 
@@ -51,14 +50,15 @@ class ExecutionContext
 
     /**
      * ExecutionContext constructor.
-     * @param Schema                  $schema
-     * @param array                   $fragments
-     * @param mixed                   $rootValue
-     * @param mixed                   $contextValue
-     * @param mixed                   $variableValues
-     * @param mixed                   $fieldResolver
-     * @param OperationDefinitionNode $operation
-     * @param array                   $errors
+     *
+     * @param Schema                   $schema
+     * @param FragmentDefinitionNode[] $fragments
+     * @param mixed                    $rootValue
+     * @param mixed                    $contextValue
+     * @param mixed                    $variableValues
+     * @param callable|null            $fieldResolver
+     * @param OperationDefinitionNode  $operation
+     * @param array                    $errors
      */
     public function __construct(
         Schema $schema,
@@ -66,7 +66,7 @@ class ExecutionContext
         $rootValue,
         $contextValue,
         $variableValues,
-        $fieldResolver,
+        ?callable $fieldResolver,
         OperationDefinitionNode $operation,
         array $errors
     ) {
@@ -135,18 +135,26 @@ class ExecutionContext
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
-    public function getFieldResolver()
+    public function hasFieldResolver(): bool
+    {
+        return null !== $this->fieldResolver;
+    }
+
+    /**
+     * @return callable|null
+     */
+    public function getFieldResolver(): ?callable
     {
         return $this->fieldResolver;
     }
 
     /**
-     * @param mixed $fieldResolver
+     * @param callable|null $fieldResolver
      * @return ExecutionContext
      */
-    public function setFieldResolver($fieldResolver): ExecutionContext
+    public function setFieldResolver(?callable $fieldResolver): ExecutionContext
     {
         $this->fieldResolver = $fieldResolver;
         return $this;

@@ -2,10 +2,9 @@
 
 namespace Digia\GraphQL\Test\Functional;
 
-use function Digia\GraphQL\buildSchema;
 use Digia\GraphQL\Test\TestCase;
+use function Digia\GraphQL\buildSchema;
 use function Digia\GraphQL\graphql;
-use function Digia\GraphQL\Type\newScalarType;
 
 class IntrospectionTest extends TestCase
 {
@@ -482,7 +481,7 @@ class IntrospectionTest extends TestCase
         $this->assertEquals([
             'data' => [
                 '__type' => [
-                    'name'        => 'Postcode',
+                    'name' => 'Postcode',
                 ],
             ],
         ], $result);
@@ -501,7 +500,7 @@ class IntrospectionTest extends TestCase
         }
         ';
 
-
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = buildSchema($schema);
 
         $query = '
@@ -512,13 +511,14 @@ class IntrospectionTest extends TestCase
         }
         ';
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = graphql($schema, $query);
 
         $this->assertArrayNotHasKey('errors', $result);
         $this->assertEquals([
             'data' => [
                 '__type' => [
-                    'name'        => 'Date',
+                    'name' => 'Date',
                 ],
             ],
         ], $result);

@@ -33,7 +33,7 @@ use function Digia\GraphQL\Util\suggestionList;
 /**
  * TODO: Make this class static
  */
-class ValuesHelper
+class ValuesResolver
 {
     /**
      * Prepares an object map of argument values given a list of argument
@@ -59,30 +59,34 @@ class ValuesHelper
             return $coercedValues;
         }
 
+        /** @var ArgumentNode[] $argumentNodeMap */
         $argumentNodeMap = keyMap($argumentNodes, function (ArgumentNode $value) {
             return $value->getNameValue();
         });
 
         foreach ($argumentDefinitions as $argumentDefinition) {
-            $argumentName = $argumentDefinition->getName();
-            $argumentType = $argumentDefinition->getType();
-            /** @var ArgumentNode|null $argumentNode */
-            $argumentNode = $argumentNodeMap[$argumentName] ?? null;
-            $defaultValue = $argumentDefinition->getDefaultValue();
+            $argumentName  = $argumentDefinition->getName();
+            $argumentType  = $argumentDefinition->getType();
+            $argumentNode  = $argumentNodeMap[$argumentName] ?? null;
+            $defaultValue  = $argumentDefinition->getDefaultValue();
+            $argumentValue = null !== $argumentNode ? $argumentNode->getValue() : null;
 
             if (null === $argumentNode) {
                 if (null !== $defaultValue) {
                     $coercedValues[$argumentName] = $defaultValue;
                 } elseif ($argumentType instanceof NonNullType) {
                     throw new ExecutionException(
-                        sprintf('Argument "%s" of required type "%s" was not provided.', $argumentName,
-                            $argumentType),
+                        sprintf(
+                            'Argument "%s" of required type "%s" was not provided.',
+                            $argumentName,
+                            $argumentType
+                        ),
                         [$node]
                     );
                 }
-            } elseif ($argumentNode->getValue() instanceof VariableNode) {
+            } elseif ($argumentValue instanceof VariableNode) {
                 $coercedValues[$argumentName] = $this->coerceValueForVariableNode(
-                    $argumentNode->getValue(),
+                    $argumentValue,
                     $argumentType,
                     $argumentName,
                     $variableValues,
@@ -90,17 +94,20 @@ class ValuesHelper
                 );
             } else {
                 try {
-                    $coercedValues[$argumentName] = ValueASTConverter::convert($argumentNode->getValue(),
+                    $coercedValues[$argumentName] = ValueASTConverter::convert(
+                        $argumentNode->getValue(),
                         $argumentType,
-                        $variableValues);
+                        $variableValues
+                    );
                 } catch (\Exception $ex) {
                     // Value nodes that cannot be resolved should be treated as invalid values
                     // because there is no undefined value in PHP so that we throw an exception
-
                     throw new ExecutionException(
-                        sprintf('Argument "%s" has invalid value %s.',
+                        sprintf(
+                            'Argument "%s" has invalid value %s.',
                             $argumentName,
-                            (string)$argumentNode->getValue()),
+                            (string)$argumentNode->getValue()
+                        ),
                         [$argumentNode->getValue()],
                         null,
                         null,
@@ -515,7 +522,7 @@ class ValuesHelper
             [$blameNode],
             null,
             null,
-            // TODO: Change this to null?
+            // TODO: Change this to null
             [],
             null,
             $originalException
@@ -532,11 +539,9 @@ class ValuesHelper
         $currentPath = $path;
 
         while ($currentPath !== null) {
-            if (\is_string($currentPath->getKey())) {
-                $stringPath = '.' . $currentPath->getKey() . $stringPath;
-            } else {
-                $stringPath = '[' . (string)$currentPath->getKey() . ']' . $stringPath;
-            }
+            $stringPath = \is_string($currentPath->getKey())
+                ? '.' . $currentPath->getKey() . $stringPath
+                : '[' . (string)$currentPath->getKey() . ']' . $stringPath;
 
             $currentPath = $currentPath->getPrevious();
         }

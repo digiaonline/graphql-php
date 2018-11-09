@@ -9,4 +9,9 @@ interface AbstractTypeInterface extends NamedTypeInterface
      * @return mixed
      */
     public function resolveType(...$args);
+
+    /**
+     * @return bool
+     */
+    public function hasResolveTypeCallback(): bool;
 }

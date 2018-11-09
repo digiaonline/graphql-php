@@ -3,7 +3,8 @@
 namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Execution\ExecutionContext;
-use Digia\GraphQL\Execution\ValuesHelper;
+use Digia\GraphQL\Execution\ValuesResolver;
+use Digia\GraphQL\Language\Node\ArgumentsAwareInterface;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\parse;
@@ -14,19 +15,19 @@ use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
 use function Digia\GraphQL\Type\stringType;
 
-class ValuesHelperTest extends TestCase
+class ValuesResolverTest extends TestCase
 {
     /**
-     * @var ValuesHelper
+     * @var ValuesResolver
      */
-    private $valuesHelper;
+    private $valuesResolver;
 
     /**
      * @inheritdoc
      */
     protected function setUp()
     {
-        $this->valuesHelper = new ValuesHelper();
+        $this->valuesResolver = new ValuesResolver();
     }
 
     /**
@@ -62,7 +63,7 @@ class ValuesHelperTest extends TestCase
             $schema, [], null, null, ['name' => 'Han Solo'], null, $operation, []
         );
 
-        $args = $this->valuesHelper->coerceArgumentValues($definition, $node, $context->getVariableValues());
+        $args = $this->valuesResolver->coerceArgumentValues($definition, $node, $context->getVariableValues());
 
         $this->assertSame(['name' => 'Han Solo'], $args);
     }
@@ -102,15 +103,15 @@ class ValuesHelperTest extends TestCase
         $variableDefinitions = $operation->getVariableDefinitions();
 
         // Try with true and false and null (null should give errors, the rest shouldn't)
-        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, ['shout' => true]);
+        $coercedValue = $this->valuesResolver->coerceVariableValues($schema, $variableDefinitions, ['shout' => true]);
         $this->assertSame(['shout' => true], $coercedValue->getValue());
         $this->assertFalse($coercedValue->hasErrors());
 
-        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, ['shout' => false]);
+        $coercedValue = $this->valuesResolver->coerceVariableValues($schema, $variableDefinitions, ['shout' => false]);
         $this->assertSame(['shout' => false], $coercedValue->getValue());
         $this->assertFalse($coercedValue->hasErrors());
 
-        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, ['shout' => null]);
+        $coercedValue = $this->valuesResolver->coerceVariableValues($schema, $variableDefinitions, ['shout' => null]);
         $this->assertEquals([], $coercedValue->getValue());
         $this->assertTrue($coercedValue->hasErrors());
     }
@@ -158,7 +159,7 @@ class ValuesHelperTest extends TestCase
         $variableDefinitions = $operation->getVariableDefinitions();
 
         // Test with a missing non-null string
-        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesResolver->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => 'some string'
             ]
@@ -169,7 +170,7 @@ class ValuesHelperTest extends TestCase
             $coercedValue->getErrors()[0]->getMessage());
 
         // Test again with all variables, no errors expected
-        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesResolver->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => 'some string',
                 'b' => 'some other required string',
@@ -213,7 +214,7 @@ class ValuesHelperTest extends TestCase
         $variableDefinitions = $operation->getVariableDefinitions();
 
         // Test with a missing non-null string
-        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesResolver->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => true
             ]
@@ -224,7 +225,7 @@ class ValuesHelperTest extends TestCase
             $coercedValue->getErrors()[0]->getMessage());
 
         // Test again with all fields present, all booleans true
-        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesResolver->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => true,
                 'b' => true,
@@ -234,7 +235,7 @@ class ValuesHelperTest extends TestCase
         $this->assertFalse($coercedValue->hasErrors());
 
         // Test again with all fields present, all booleans false (this has been problematic before)
-        $coercedValue = $this->valuesHelper->coerceVariableValues($schema, $variableDefinitions, [
+        $coercedValue = $this->valuesResolver->coerceVariableValues($schema, $variableDefinitions, [
             'inputObject' => [
                 'a' => false,
                 'b' => false,
