@@ -58,9 +58,9 @@ class Execution implements ExecutionInterface
             });
         }
 
-        if (null !== $errorHandler) {
+        if ($errorHandler instanceof ErrorHandlerInterface) {
             foreach ($context->getErrors() as $error) {
-                $errorHandler->handleError($error);
+                $errorHandler->handleExecutionError($error, $context);
             }
         }
 
@@ -72,15 +72,13 @@ class Execution implements ExecutionInterface
      * @param ExecutionContext           $context
      * @param FieldCollector             $fieldCollector
      * @param ValuesResolver             $valuesResolver
-     * @param ErrorHandlerInterface|null $errorHandler
      * @return array|mixed|null|PromiseInterface
      */
     protected function executeOperation(
         ?string $operationName,
         ExecutionContext $context,
         FieldCollector $fieldCollector,
-        ValuesResolver $valuesResolver,
-        ?ErrorHandlerInterface $errorHandler = null
+        ValuesResolver $valuesResolver
     ) {
         $strategy = $operationName === 'mutation'
             ? new SerialExecutionStrategy($context, $fieldCollector, $valuesResolver)

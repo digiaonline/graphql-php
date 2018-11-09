@@ -2,8 +2,8 @@
 
 namespace Digia\GraphQL\Test\Unit\Error\Handler;
 
+use Digia\GraphQL\Error\Handler\AbstractErrorMiddleware;
 use Digia\GraphQL\Error\Handler\ErrorHandler;
-use Digia\GraphQL\Error\Handler\ErrorMiddlewareInterface;
 use Digia\GraphQL\Execution\ExecutionContext;
 use Digia\GraphQL\Execution\ExecutionException;
 use Digia\GraphQL\Test\TestCase;
@@ -17,7 +17,7 @@ class ErrorHandlerTest extends TestCase
         $exception    = new ExecutionException('This is an exception.');
         $context      = $this->mockContext();
 
-        $errorHandler->handle($exception, $context);
+        $errorHandler->handleExecutionError($exception, $context);
 
         $this->assertTrue($middleware->wasInvoked());
     }
@@ -40,7 +40,7 @@ class ErrorHandlerTest extends TestCase
         $exception      = new ExecutionException('This is an exception.');
         $context        = $this->mockContext();
 
-        $errorHandler->handle($exception, $context);
+        $errorHandler->handleExecutionError($exception, $context);
 
         $this->assertSame([
             'Middleware A invoked',
@@ -59,11 +59,11 @@ class ErrorHandlerTest extends TestCase
     }
 }
 
-class WasInvokedMiddleware implements ErrorMiddlewareInterface
+class WasInvokedMiddleware extends AbstractErrorMiddleware
 {
     private $wasInvoked = false;
 
-    public function handle(ExecutionException $exception, ExecutionContext $context, callable $next)
+    public function handleExecutionError(ExecutionException $exception, ExecutionContext $context, callable $next)
     {
         $this->wasInvoked = true;
 
@@ -76,7 +76,7 @@ class WasInvokedMiddleware implements ErrorMiddlewareInterface
     }
 }
 
-class LoggerMiddleware implements ErrorMiddlewareInterface
+class LoggerMiddleware extends AbstractErrorMiddleware
 {
     private $logCallback;
 
@@ -85,7 +85,7 @@ class LoggerMiddleware implements ErrorMiddlewareInterface
         $this->logCallback = $logCallback;
     }
 
-    public function handle(ExecutionException $exception, ExecutionContext $context, callable $next)
+    public function handleExecutionError(ExecutionException $exception, ExecutionContext $context, callable $next)
     {
         \call_user_func($this->logCallback, $exception, $context);
 
@@ -93,9 +93,6 @@ class LoggerMiddleware implements ErrorMiddlewareInterface
     }
 }
 
-class NoopMiddleware implements ErrorMiddlewareInterface
+class NoopMiddleware extends AbstractErrorMiddleware
 {
-    public function handle(ExecutionException $exception, ExecutionContext $context, callable $next)
-    {
-    }
 }

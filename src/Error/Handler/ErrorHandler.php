@@ -10,7 +10,7 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * @var ErrorMiddlewareInterface[]
      */
-    protected $middleware;
+    protected $middleware = [];
 
     /**
      * ErrorHandler constructor.
@@ -24,18 +24,35 @@ class ErrorHandler implements ErrorHandlerInterface
     }
 
     /**
-     * @inheritdoc
+     * @param \Throwable $exception
      */
-    public function handle(ExecutionException $exception, ExecutionContext $context)
+    public function handleError(\Throwable $exception)
     {
         $next = function () {
             // NO-OP
         };
 
-        foreach (\array_reverse($this->middleware) as $mw) {
-            /** @var ErrorMiddlewareInterface $mw */
-            $next = function (ExecutionException $exception, ExecutionContext $context) use ($mw, $next) {
-                return $mw->handle($exception, $context, $next);
+        foreach ($this->middleware as $middleware) {
+            $next = function (\Throwable $exception) use ($middleware, $next) {
+                return $middleware->handleError($exception, $next);
+            };
+        }
+
+        \call_user_func($next, $exception);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function handleExecutionError(ExecutionException $exception, ExecutionContext $context)
+    {
+        $next = function () {
+            // NO-OP
+        };
+
+        foreach ($this->middleware as $middleware) {
+            $next = function (ExecutionException $exception, ExecutionContext $context) use ($middleware, $next) {
+                return $middleware->handleExecutionError($exception, $context, $next);
             };
         }
 
@@ -47,6 +64,6 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     protected function addMiddleware(ErrorMiddlewareInterface $middleware)
     {
-        $this->middleware[] = $middleware;
+        \array_unshift($this->middleware, $middleware);
     }
 }

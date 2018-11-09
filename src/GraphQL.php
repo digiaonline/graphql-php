@@ -3,6 +3,7 @@
 namespace Digia\GraphQL;
 
 use Digia\GraphQL\Error\Handler\ErrorHandlerInterface;
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Execution\ExecutionInterface;
 use Digia\GraphQL\Execution\ExecutionProvider;
 use Digia\GraphQL\Execution\ExecutionResult;
@@ -14,6 +15,7 @@ use Digia\GraphQL\Language\Node\ValueNodeInterface;
 use Digia\GraphQL\Language\NodePrinterInterface;
 use Digia\GraphQL\Language\ParserInterface;
 use Digia\GraphQL\Language\Source;
+use Digia\GraphQL\Language\SyntaxErrorException;
 use Digia\GraphQL\Schema\Building\SchemaBuilderInterface;
 use Digia\GraphQL\Schema\Building\SchemaBuildingProvider;
 use Digia\GraphQL\Schema\Extension\SchemaExtenderInterface;
@@ -248,12 +250,81 @@ class GraphQL
         array $variableValues = [],
         $operationName = null,
         callable $fieldResolver = null,
-        $errorHandler = null
+        ?ErrorHandlerInterface $errorHandler = null
     ): ExecutionResult {
         /** @var ExecutionInterface $execution */
         $execution = static::make(ExecutionInterface::class);
 
         return $execution->execute(
+            $schema,
+            $document,
+            $rootValue,
+            $contextValue,
+            $variableValues,
+            $operationName,
+            $fieldResolver,
+            $errorHandler
+        );
+    }
+
+    /**
+     * @param Schema                     $schema
+     * @param string                     $source
+     * @param mixed                      $rootValue
+     * @param mixed                      $contextValue
+     * @param array                      $variableValues
+     * @param null|string                $operationName
+     * @param callable|null              $fieldResolver
+     * @param ErrorHandlerInterface|null $errorHandler
+     * @return ExecutionResult
+     * @throws InvariantException
+     * @throws SyntaxErrorException
+     */
+    public static function process(
+        Schema $schema,
+        string $source,
+        $rootValue = null,
+        $contextValue = null,
+        array $variableValues = [],
+        ?string $operationName = null,
+        ?callable $fieldResolver = null,
+        ?ErrorHandlerInterface $errorHandler = null
+    ): ExecutionResult {
+        $schemaValidationErrors = validateSchema($schema);
+
+        if (!empty($schemaValidationErrors)) {
+            if (null !== $errorHandler) {
+                foreach ($schemaValidationErrors as $schemaValidationError) {
+                    $errorHandler->handleError($schemaValidationError);
+                }
+            }
+
+            return new ExecutionResult(null, $schemaValidationErrors);
+        }
+
+        try {
+            $document = parse($source);
+        } catch (SyntaxErrorException $error) {
+            if (null !== $errorHandler) {
+                $errorHandler->handleError($error);
+            }
+
+            return new ExecutionResult(null, [$error]);
+        }
+
+        $validationErrors = validate($schema, $document);
+
+        if (!empty($validationErrors)) {
+            if (null !== $errorHandler) {
+                foreach ($validationErrors as $validationError) {
+                    $errorHandler->handleError($validationError);
+                }
+            }
+
+            return new ExecutionResult(null, $validationErrors);
+        }
+
+        return execute(
             $schema,
             $document,
             $rootValue,

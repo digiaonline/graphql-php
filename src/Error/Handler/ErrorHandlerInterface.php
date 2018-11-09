@@ -8,8 +8,13 @@ use Digia\GraphQL\Execution\ExecutionException;
 interface ErrorHandlerInterface
 {
     /**
-     * @param ExecutionException $exception
-     * @param ExecutionContext   $context
+     * @param \Throwable $exception
      */
-    public function handle(ExecutionException $exception, ExecutionContext $context);
+    public function handleError(\Throwable $exception);
+
+    /**
+     * @param ExecutionException    $exception
+     * @param ExecutionContext $context
+     */
+    public function handleExecutionError(ExecutionException $exception, ExecutionContext $context);
 }
