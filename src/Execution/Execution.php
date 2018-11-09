@@ -52,16 +52,16 @@ class Execution implements ExecutionInterface
 
         $data = $this->executeOperation($operationName, $context, $fieldCollector, $valuesResolver);
 
-        if (null !== $errorHandler) {
-            foreach ($context->getErrors() as $error) {
-                $errorHandler->handleError($error);
-            }
-        }
-
         if ($data instanceof PromiseInterface) {
             $data->then(function ($resolvedData) use (&$data) {
                 $data = $resolvedData;
             });
+        }
+
+        if (null !== $errorHandler) {
+            foreach ($context->getErrors() as $error) {
+                $errorHandler->handleError($error);
+            }
         }
 
         return new ExecutionResult($data, $context->getErrors());
