@@ -1474,38 +1474,38 @@ class ExecutionTest extends TestCase
         ], $result->toArray());
     }
 
-//    public function testNonNullFieldQuery()
-//    {
-//        /** @noinspection PhpUnhandledExceptionInspection */
-//        $schema = newSchema([
-//            'query' => newObjectType([
-//                'name'   => 'Greeting',
-//                'fields' => [
-//                    'hello' => [
-//                        'type'    => newNonNull(stringType()),
-//                        'resolve' => function () {
-//                            return null;
-//                        }
-//                    ]
-//                ]
-//            ])
-//        ]);
-//
-//        /** @noinspection PhpUnhandledExceptionInspection */
-//        $executionResult = graphql($schema, 'query Greeting {hello}');
-//
-//        $this->assertSame([
-//            'errors' => [
-//                [
-//
-//                    'message'   => 'Cannot return null for non-nullable field Greeting.hello.',
-//                    'locations' => null,
-//                    'path'      => null,
-//                ]
-//            ],
-//            'data'   => null
-//        ], $executionResult);
-//    }
+    public function testNonNullFieldQuery()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $schema = newSchema([
+            'query' => newObjectType([
+                'name'   => 'Greeting',
+                'fields' => [
+                    'hello' => [
+                        'type'    => newNonNull(stringType()),
+                        'resolve' => function () {
+                            return null;
+                        }
+                    ]
+                ]
+            ])
+        ]);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $executionResult = graphql($schema, 'query Greeting {hello}');
+
+        $this->assertSame([
+            'errors' => [
+                [
+
+                    'message'   => 'Cannot return null for non-nullable field Greeting.hello.',
+                    'locations' => null,
+                    'path'      => ['hello'],
+                ]
+            ],
+            'data'   => null
+        ], $executionResult);
+    }
 }
 
 class Special
