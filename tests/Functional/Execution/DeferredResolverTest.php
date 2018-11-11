@@ -11,23 +11,29 @@ use function Digia\GraphQL\Type\stringType;
 
 class DirectorBuffer
 {
-    protected static $directorsIds = [];
+    protected static $ids = [];
 
-    protected static $authors = [];
+    protected static $data = [];
+
+    protected static $dataLoaded = false;
 
     public static function add(int $id)
     {
-        self::$directorsIds[] = $id;
+        self::$ids[] = $id;
     }
 
     public static function get(int $id)
     {
-        return self::$authors[$id];
+        return self::$data[$id];
     }
 
-    public static function loadBuffered(): void
+    public static function loadData(): void
     {
-        self::$authors = [
+        if (self::$dataLoaded) {
+            return;
+        }
+
+        self::$data = [
             42 => [
                 'name' => 'George Lucas',
             ],
@@ -35,15 +41,14 @@ class DirectorBuffer
                 'name' => 'Irvin Kershner'
             ]
         ];
+
+        self::$dataLoaded = true;
     }
 }
 
 class DeferredResolverTest extends ResolveTest
 {
 
-    /**
-     * @throws \Digia\GraphQL\Error\InvariantException
-     */
     public function testUsingFieldDeferredResolver()
     {
         $movies = [
@@ -57,6 +62,7 @@ class DeferredResolverTest extends ResolveTest
             ]
         ];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $directorType = newObjectType([
             'name'        => 'Director',
             'description' => 'Director of the movie',
@@ -67,6 +73,7 @@ class DeferredResolverTest extends ResolveTest
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $movieType = newObjectType([
             'name'        => 'Movie',
             'description' => 'A movie',
@@ -74,11 +81,11 @@ class DeferredResolverTest extends ResolveTest
                 'title'    => ['type' => stringType()],
                 'director' => [
                     'type'    => $directorType,
-                    'resolve' => function ($movie, $args) {
+                    'resolve' => function (array $movie) {
                         DirectorBuffer::add($movie['directorId']);
 
-                        return new Promise(function (callable $resolve, callable $reject) use ($movie) {
-                            DirectorBuffer::loadBuffered();
+                        return new Promise(function (callable $resolve) use ($movie) {
+                            DirectorBuffer::loadData();
                             $resolve(DirectorBuffer::get($movie['directorId']));
                         });
                     }
@@ -86,6 +93,7 @@ class DeferredResolverTest extends ResolveTest
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => newObjectType([
                 'name'        => 'Query',
@@ -112,9 +120,10 @@ class DeferredResolverTest extends ResolveTest
             }
         ';
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $result = graphql($schema, $query, $movies);
 
-        $this->assertEquals([
+        $this->assertSame([
             'data' => [
                 'movies' => [
                     [
