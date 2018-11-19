@@ -62,7 +62,8 @@ class ExtensionContext implements ExtensionContextInterface
     }
 
     /**
-     * @return ObjectType[]
+     * @inheritdoc
+     *
      * @throws SchemaExtensionException
      * @throws InvariantException
      */

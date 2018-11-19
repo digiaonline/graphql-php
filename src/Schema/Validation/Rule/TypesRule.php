@@ -7,11 +7,8 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\FieldDefinitionNode;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
-use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NamedTypeNode;
-use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
-use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Validation\SchemaValidationException;
@@ -534,8 +531,7 @@ class TypesRule extends AbstractRule
 
     /**
      * @param FieldsAwareInterface $type
-     * @return ObjectTypeDefinitionNode[]|ObjectTypeExtensionNode[]|InterfaceTypeDefinitionNode[]
-     * |InterfaceTypeExtensionNode[]
+     * @return array
      */
     protected function getAllObjectOrInterfaceNodes(FieldsAwareInterface $type): array
     {
