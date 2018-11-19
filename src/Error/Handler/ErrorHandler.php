@@ -1,0 +1,69 @@
+<?php
+
+namespace Digia\GraphQL\Error\Handler;
+
+use Digia\GraphQL\Execution\ExecutionContext;
+use Digia\GraphQL\Execution\ExecutionException;
+
+class ErrorHandler implements ErrorHandlerInterface
+{
+    /**
+     * @var ErrorMiddlewareInterface[]
+     */
+    protected $middleware = [];
+
+    /**
+     * ErrorHandler constructor.
+     * @param ErrorMiddlewareInterface[] $middleware
+     */
+    public function __construct(array $middleware)
+    {
+        foreach ($middleware as $mw) {
+            $this->addMiddleware($mw);
+        }
+    }
+
+    /**
+     * @param \Throwable $exception
+     */
+    public function handleError(\Throwable $exception)
+    {
+        $next = function () {
+            // NO-OP
+        };
+
+        foreach ($this->middleware as $middleware) {
+            $next = function (\Throwable $exception) use ($middleware, $next) {
+                return $middleware->handleError($exception, $next);
+            };
+        }
+
+        \call_user_func($next, $exception);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function handleExecutionError(ExecutionException $exception, ExecutionContext $context)
+    {
+        $next = function () {
+            // NO-OP
+        };
+
+        foreach ($this->middleware as $middleware) {
+            $next = function (ExecutionException $exception, ExecutionContext $context) use ($middleware, $next) {
+                return $middleware->handleExecutionError($exception, $context, $next);
+            };
+        }
+
+        \call_user_func($next, $exception, $context);
+    }
+
+    /**
+     * @param ErrorMiddlewareInterface $middleware
+     */
+    protected function addMiddleware(ErrorMiddlewareInterface $middleware)
+    {
+        \array_unshift($this->middleware, $middleware);
+    }
+}

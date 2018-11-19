@@ -2,7 +2,9 @@
 
 namespace Digia\GraphQL;
 
-use Digia\GraphQL\Error\ErrorHandlerInterface;
+use Digia\GraphQL\Error\Handler\CallableMiddleware;
+use Digia\GraphQL\Error\Handler\ErrorHandler;
+use Digia\GraphQL\Error\Handler\ErrorHandlerInterface;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Execution\ExecutionResult;
 use Digia\GraphQL\Language\Node\DocumentNode;
@@ -118,14 +120,14 @@ function validate(Schema $schema, DocumentNode $document): array
 }
 
 /**
- * @param Schema                              $schema
- * @param DocumentNode                        $document
- * @param mixed|null                          $rootValue
- * @param mixed|null                          $contextValue
- * @param array                               $variableValues
- * @param mixed|null                          $operationName
- * @param callable|null                       $fieldResolver
- * @param ErrorHandlerInterface|callable|null $errorHandler
+ * @param Schema                     $schema
+ * @param DocumentNode               $document
+ * @param mixed|null                 $rootValue
+ * @param mixed|null                 $contextValue
+ * @param array                      $variableValues
+ * @param mixed|null                 $operationName
+ * @param callable|null              $fieldResolver
+ * @param ErrorHandlerInterface|null $errorHandler
  * @return ExecutionResult
  */
 function execute(
@@ -162,14 +164,15 @@ function printNode(NodeInterface $node): string
 /**
  * @param Schema                              $schema
  * @param string                              $source
- * @param mixed|null                          $rootValue
- * @param mixed|null                          $contextValue
+ * @param mixed                               $rootValue
+ * @param mixed                               $contextValue
  * @param array                               $variableValues
- * @param mixed|null                          $operationName
+ * @param string|null                         $operationName
  * @param callable|null                       $fieldResolver
  * @param ErrorHandlerInterface|callable|null $errorHandler
  * @return array
  * @throws InvariantException
+ * @throws SyntaxErrorException
  */
 function graphql(
     Schema $schema,
@@ -177,29 +180,17 @@ function graphql(
     $rootValue = null,
     $contextValue = null,
     array $variableValues = [],
-    $operationName = null,
-    callable $fieldResolver = null,
+    ?string $operationName = null,
+    ?callable $fieldResolver = null,
     $errorHandler = null
 ): array {
-    $schemaValidationErrors = validateSchema($schema);
-    if (!empty($schemaValidationErrors)) {
-        return (new ExecutionResult([], $schemaValidationErrors))->toArray();
+    if (\is_callable($errorHandler)) {
+        $errorHandler = new ErrorHandler([new CallableMiddleware($errorHandler)]);
     }
 
-    try {
-        $document = parse($source);
-    } catch (SyntaxErrorException $error) {
-        return (new ExecutionResult([], [$error]))->toArray();
-    }
-
-    $validationErrors = validate($schema, $document);
-    if (!empty($validationErrors)) {
-        return (new ExecutionResult([], $validationErrors))->toArray();
-    }
-
-    $result = execute(
+    $result = GraphQL::process(
         $schema,
-        $document,
+        $source,
         $rootValue,
         $contextValue,
         $variableValues,

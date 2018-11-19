@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Execution;
 
-use Digia\GraphQL\Error\ErrorHandlerInterface;
+use Digia\GraphQL\Error\Handler\ErrorHandlerInterface;
 use Digia\GraphQL\Execution\Strategy\FieldCollector;
 use Digia\GraphQL\Execution\Strategy\ParallelExecutionStrategy;
 use Digia\GraphQL\Execution\Strategy\SerialExecutionStrategy;
@@ -60,7 +60,7 @@ class Execution implements ExecutionInterface
 
         if (null !== $errorHandler) {
             foreach ($context->getErrors() as $error) {
-                $errorHandler->handleError($error);
+                $errorHandler->handleExecutionError($error, $context);
             }
         }
 
@@ -68,19 +68,17 @@ class Execution implements ExecutionInterface
     }
 
     /**
-     * @param null|string                $operationName
-     * @param ExecutionContext           $context
-     * @param FieldCollector             $fieldCollector
-     * @param ValuesResolver             $valuesResolver
-     * @param ErrorHandlerInterface|null $errorHandler
+     * @param null|string      $operationName
+     * @param ExecutionContext $context
+     * @param FieldCollector   $fieldCollector
+     * @param ValuesResolver   $valuesResolver
      * @return array|mixed|null|PromiseInterface
      */
     protected function executeOperation(
         ?string $operationName,
         ExecutionContext $context,
         FieldCollector $fieldCollector,
-        ValuesResolver $valuesResolver,
-        ?ErrorHandlerInterface $errorHandler = null
+        ValuesResolver $valuesResolver
     ) {
         $strategy = $operationName === 'mutation'
             ? new SerialExecutionStrategy($context, $fieldCollector, $valuesResolver)
