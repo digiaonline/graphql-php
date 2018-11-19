@@ -70,12 +70,6 @@ class ValueConverter
             return self::convertListType($value, $type);
         }
 
-        // Populate the fields of the input object by creating ASTs from each value
-        // in the PHP object according to the fields in the input type.
-        if ($type instanceof InputObjectType) {
-            return self::convertInputObjectType($value, $type);
-        }
-
         if ($type instanceof ScalarType || $type instanceof EnumType) {
             return self::convertScalarOrEnum($value, $type);
         }
@@ -109,37 +103,6 @@ class ValueConverter
         }
 
         return new ListValueNode($nodes, null);
-    }
-
-    /**
-     * @param mixed           $value
-     * @param InputObjectType $type
-     * @return ObjectValueNode|null
-     * @throws InvariantException
-     * @throws SyntaxErrorException
-     * @throws ConversionException
-     */
-    protected static function convertInputObjectType($value, InputObjectType $type): ?ObjectValueNode
-    {
-        if (null === $value || !\is_object($value)) {
-            return null;
-        }
-
-        /** @var InputField[] $fields */
-        $fields = \array_values($type->getFields());
-
-        $nodes = [];
-
-        foreach ($fields as $field) {
-            $fieldName  = $field->getName();
-            $fieldValue = self::convert($value[$fieldName], $field->getType());
-
-            if (null !== $fieldValue) {
-                $nodes[] = new ObjectFieldNode(new NameNode($fieldName, null), $fieldValue, null);
-            }
-        }
-
-        return new ObjectValueNode($nodes, null);
     }
 
     /**
