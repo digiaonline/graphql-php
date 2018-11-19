@@ -10,11 +10,11 @@ interface ErrorHandlerInterface
     /**
      * @param \Throwable $exception
      */
-    public function handleError(\Throwable $exception);
+    public function handleError(\Throwable $exception): void;
 
     /**
      * @param ExecutionException    $exception
      * @param ExecutionContext $context
      */
-    public function handleExecutionError(ExecutionException $exception, ExecutionContext $context);
+    public function handleExecutionError(ExecutionException $exception, ExecutionContext $context): void;
 }
