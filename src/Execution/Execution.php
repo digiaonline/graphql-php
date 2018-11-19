@@ -2,10 +2,10 @@
 
 namespace Digia\GraphQL\Execution;
 
+use Digia\GraphQL\Error\Handler\ErrorHandlerInterface;
 use Digia\GraphQL\Execution\Strategy\FieldCollector;
 use Digia\GraphQL\Execution\Strategy\ParallelExecutionStrategy;
 use Digia\GraphQL\Execution\Strategy\SerialExecutionStrategy;
-use Digia\GraphQL\Error\Handler\ErrorHandlerInterface;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Language\Node\FragmentDefinitionNode;
 use Digia\GraphQL\Language\Node\FragmentSpreadNode;
@@ -58,7 +58,7 @@ class Execution implements ExecutionInterface
             });
         }
 
-        if ($errorHandler instanceof ErrorHandlerInterface) {
+        if (null !== $errorHandler) {
             foreach ($context->getErrors() as $error) {
                 $errorHandler->handleExecutionError($error, $context);
             }
@@ -68,10 +68,10 @@ class Execution implements ExecutionInterface
     }
 
     /**
-     * @param null|string                $operationName
-     * @param ExecutionContext           $context
-     * @param FieldCollector             $fieldCollector
-     * @param ValuesResolver             $valuesResolver
+     * @param null|string      $operationName
+     * @param ExecutionContext $context
+     * @param FieldCollector   $fieldCollector
+     * @param ValuesResolver   $valuesResolver
      * @return array|mixed|null|PromiseInterface
      */
     protected function executeOperation(
