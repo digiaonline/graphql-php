@@ -12,29 +12,14 @@ class ValueConverterTest extends TestCase
 {
 
     /**
-     * @var ValueConverter
-     */
-    private $valueConverter;
-
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->valueConverter = new ValueConverter();
-    }
-
-    /**
-     * @throws \Digia\GraphQL\Error\ConversionException
      * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @throws \Digia\GraphQL\Language\SyntaxErrorException
+     * @throws \Digia\GraphQL\Util\ConversionException
      */
     public function testIdType(): void
     {
         // Ensure numerical IDs become Ints
-        $this->assertInstanceOf(IntValueNode::class, $this->valueConverter->convert('45', idType()));
-        $this->assertInstanceOf(StringValueNode::class, $this->valueConverter->convert('abc123', idType()));
+        $this->assertInstanceOf(IntValueNode::class, ValueConverter::convert('45', idType()));
+        $this->assertInstanceOf(StringValueNode::class, ValueConverter::convert('abc123', idType()));
     }
 }
