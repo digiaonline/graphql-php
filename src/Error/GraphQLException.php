@@ -213,9 +213,9 @@ class GraphQLException extends AbstractException implements SerializationInterfa
     public function toArray(): array
     {
         $result = [
-            'message'    => $this->message,
-            'locations'  => $this->getLocationsAsArray(),
-            'path'       => $this->path,
+            'message'   => $this->message,
+            'locations' => $this->getLocationsAsArray(),
+            'path'      => $this->path,
         ];
 
         if (null !== $this->extensions) {
@@ -237,7 +237,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
      * @param array|null $nodes
      * @return $this
      */
-    protected function resolveNodes(?array $nodes)
+    protected function resolveNodes(?array $nodes): self
     {
         if (\is_array($nodes)) {
             $nodes = !empty($nodes) ? $nodes : [];
@@ -256,7 +256,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
      * @param Source|null $source
      * @return $this
      */
-    protected function resolveSource(?Source $source)
+    protected function resolveSource(?Source $source): self
     {
         if (null === $source && !empty($this->nodes)) {
             $firstNode = $this->nodes[0] ?? null;
@@ -273,7 +273,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
      * @param array|null $positions
      * @return $this
      */
-    protected function resolvePositions(?array $positions)
+    protected function resolvePositions(?array $positions): self
     {
         if (null === $positions && !empty($this->nodes)) {
             $positions = \array_reduce($this->nodes, function (array $list, ?NodeInterface $node) {
@@ -301,8 +301,10 @@ class GraphQLException extends AbstractException implements SerializationInterfa
      * @param Source|null $source
      * @return $this
      */
-    protected function resolveLocations(?array $positions, ?Source $source)
+    protected function resolveLocations(?array $positions, ?Source $source): self
     {
+        $locations = null;
+
         if (null !== $positions && null !== $source) {
             $locations = \array_map(function ($position) use ($source) {
                 return SourceLocation::fromSource($source, $position);
@@ -317,7 +319,7 @@ class GraphQLException extends AbstractException implements SerializationInterfa
             }, []);
         }
 
-        if (isset($locations)) {
+        if ($locations !== null) {
             $this->locations = $locations;
         }
 

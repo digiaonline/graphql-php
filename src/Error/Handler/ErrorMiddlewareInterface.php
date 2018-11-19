@@ -17,6 +17,7 @@ interface ErrorMiddlewareInterface
     /**
      * @param ExecutionException $exception
      * @param ExecutionContext   $context
+     * @param callable           $next
      * @return mixed
      */
     public function handleExecutionError(ExecutionException $exception, ExecutionContext $context, callable $next);

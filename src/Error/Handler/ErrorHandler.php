@@ -26,7 +26,7 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * @param \Throwable $exception
      */
-    public function handleError(\Throwable $exception)
+    public function handleError(\Throwable $exception): void
     {
         $next = function () {
             // NO-OP
@@ -38,13 +38,13 @@ class ErrorHandler implements ErrorHandlerInterface
             };
         }
 
-        \call_user_func($next, $exception);
+        $next($exception);
     }
 
     /**
      * @inheritdoc
      */
-    public function handleExecutionError(ExecutionException $exception, ExecutionContext $context)
+    public function handleExecutionError(ExecutionException $exception, ExecutionContext $context): void
     {
         $next = function () {
             // NO-OP
@@ -56,13 +56,13 @@ class ErrorHandler implements ErrorHandlerInterface
             };
         }
 
-        \call_user_func($next, $exception, $context);
+        $next($exception, $context);
     }
 
     /**
      * @param ErrorMiddlewareInterface $middleware
      */
-    protected function addMiddleware(ErrorMiddlewareInterface $middleware)
+    protected function addMiddleware(ErrorMiddlewareInterface $middleware): void
     {
         \array_unshift($this->middleware, $middleware);
     }

@@ -26,6 +26,6 @@ class CallableMiddleware extends AbstractErrorMiddleware
      */
     public function handleExecutionError(ExecutionException $exception, ExecutionContext $context, callable $next)
     {
-        return \call_user_func($this->handleCallback, $exception, $context, $next);
+        \call_user_func($this->handleCallback, $exception, $context, $next);
     }
 }

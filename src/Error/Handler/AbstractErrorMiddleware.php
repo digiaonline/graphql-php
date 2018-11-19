@@ -8,18 +8,14 @@ use Digia\GraphQL\Execution\ExecutionException;
 abstract class AbstractErrorMiddleware implements ErrorMiddlewareInterface
 {
     /**
-     * @param \Throwable $exception
-     * @param callable   $next
-     * @return mixed
+     * @inheritdoc
      */
     public function handleError(\Throwable $exception, callable $next)
     {
     }
 
     /**
-     * @param ExecutionException $exception
-     * @param ExecutionContext   $context
-     * @return mixed
+     * @inheritdoc
      */
     public function handleExecutionError(ExecutionException $exception, ExecutionContext $context, callable $next)
     {
