@@ -243,8 +243,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
         try {
             // Build an associative array of arguments from the field.arguments AST, using the
             // variables scope to fulfill any variable references.
-            $result = \call_user_func(
-                $resolveCallback,
+            $result = $resolveCallback(
                 $rootValue,
                 $this->valuesResolver->coerceArgumentValues($field, $fieldNode, $context->getVariableValues()),
                 $context->getContextValue(),
@@ -922,7 +921,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
         }
 
         return $property instanceof \Closure
-            ? \call_user_func($property, $rootValue, $arguments, $contextValues, $info)
+            ? $property($rootValue, $arguments, $contextValues, $info)
             : $property;
     }
 }
