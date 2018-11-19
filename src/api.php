@@ -120,14 +120,14 @@ function validate(Schema $schema, DocumentNode $document): array
 }
 
 /**
- * @param Schema                              $schema
- * @param DocumentNode                        $document
- * @param mixed|null                          $rootValue
- * @param mixed|null                          $contextValue
- * @param array                               $variableValues
- * @param mixed|null                          $operationName
- * @param callable|null                       $fieldResolver
- * @param ErrorHandlerInterface|callable|null $errorHandler
+ * @param Schema                     $schema
+ * @param DocumentNode               $document
+ * @param mixed|null                 $rootValue
+ * @param mixed|null                 $contextValue
+ * @param array                      $variableValues
+ * @param mixed|null                 $operationName
+ * @param callable|null              $fieldResolver
+ * @param ErrorHandlerInterface|null $errorHandler
  * @return ExecutionResult
  */
 function execute(
