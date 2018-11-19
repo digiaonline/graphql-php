@@ -163,7 +163,7 @@ function dedent(string $str): string
  */
 function printBlockString($value, bool $isDescription): string
 {
-    $escaped = \preg_replace('/"""/g', '\\"""', $value);
+    $escaped = \preg_replace('/"""/', '\\"""', $value);
     return $value{0} === ' ' || ($value{0} === "\t" && false === strpos($value, "\n"))
         ? '"""' . \preg_replace('/"$/', "\"\n", $escaped) . '"""'
         : '"""' . $isDescription ? $escaped : indent($escaped) . "\n" . '"""';
