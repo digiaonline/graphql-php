@@ -3,9 +3,7 @@
 namespace Digia\GraphQL\Language\Node;
 
 use Digia\GraphQL\Language\Location;
-use Digia\GraphQL\Language\Visitor\VisitorBreak;
 use Digia\GraphQL\Language\Visitor\VisitorInfo;
-use Digia\GraphQL\Language\Visitor\VisitorInterface;
 
 interface NodeInterface
 {
@@ -34,6 +32,11 @@ interface NodeInterface
      * @return string
      */
     public function toJSON(): string;
+
+    /**
+     * @return string
+     */
+    public function __toString(): string;
 
     /**
      * @param VisitorInfo $visitorInfo
