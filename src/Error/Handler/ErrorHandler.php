@@ -28,7 +28,7 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     public function handleError(\Throwable $exception): void
     {
-        $next = function () {
+        $next = function (...$args) {
             // NO-OP
         };
 
@@ -46,7 +46,7 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     public function handleExecutionError(ExecutionException $exception, ExecutionContext $context): void
     {
-        $next = function () {
+        $next = function (...$args) {
             // NO-OP
         };
 
