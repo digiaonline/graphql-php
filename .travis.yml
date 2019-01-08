@@ -1,11 +1,14 @@
 language: php
 
-# Use container-based infrastructure
-sudo: false
-
 php:
   - 7.1
   - 7.2
+  - 7.3
+
+# Cache Composer packages so "composer install" is faster
+cache:
+  directories:
+  - "$HOME/.composer/cache"
 
 before_script:
   - composer self-update
