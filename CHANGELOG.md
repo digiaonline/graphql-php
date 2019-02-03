@@ -1,5 +1,13 @@
 # Change log
 
+## 1.1.0
+
+* Add initial support for execution strategies
+* Add support for error handling middleware 
+* Fix some bugs in the error handling
+* Fix some type-hint issues
+* Run Travis CI tests on PHP 7.3 too, improve build times by caching
+
 ## 1.0.3
 
 * Drastically reduce the number of container `make()` ([#332](https://github.com/digiaonline/graphql-php/pull/332))
