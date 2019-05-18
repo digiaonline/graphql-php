@@ -33,6 +33,8 @@ use Digia\GraphQL\Validation\RulesProvider;
 use Digia\GraphQL\Validation\ValidationProvider;
 use Digia\GraphQL\Validation\ValidatorInterface;
 use League\Container\Container;
+use React\Promise\PromiseInterface;
+use function React\Promise\resolve;
 
 class GraphQL
 {
@@ -240,7 +242,7 @@ class GraphQL
      * @param string|null                $operationName
      * @param callable|null              $fieldResolver
      * @param ErrorHandlerInterface|null $errorHandler
-     * @return ExecutionResult
+     * @return PromiseInterface<ExecutionResult>
      */
     public static function execute(
         Schema $schema,
@@ -251,7 +253,7 @@ class GraphQL
         $operationName = null,
         callable $fieldResolver = null,
         ?ErrorHandlerInterface $errorHandler = null
-    ): ExecutionResult {
+    ): PromiseInterface {
         /** @var ExecutionInterface $execution */
         $execution = static::make(ExecutionInterface::class);
 
@@ -276,7 +278,7 @@ class GraphQL
      * @param null|string                $operationName
      * @param callable|null              $fieldResolver
      * @param ErrorHandlerInterface|null $errorHandler
-     * @return ExecutionResult
+     * @return PromiseInterface<ExecutionResult>
      * @throws InvariantException
      * @throws SyntaxErrorException
      */
@@ -289,7 +291,7 @@ class GraphQL
         ?string $operationName = null,
         ?callable $fieldResolver = null,
         ?ErrorHandlerInterface $errorHandler = null
-    ): ExecutionResult {
+    ): PromiseInterface {
         $schemaValidationErrors = validateSchema($schema);
 
         if (!empty($schemaValidationErrors)) {
@@ -299,7 +301,7 @@ class GraphQL
                 }
             }
 
-            return new ExecutionResult(null, $schemaValidationErrors);
+            return resolve(new ExecutionResult(null, $schemaValidationErrors));
         }
 
         try {
@@ -309,7 +311,7 @@ class GraphQL
                 $errorHandler->handleError($error);
             }
 
-            return new ExecutionResult(null, [$error]);
+            return resolve(new ExecutionResult(null, [$error]));
         }
 
         $validationErrors = validate($schema, $document);
@@ -321,7 +323,7 @@ class GraphQL
                 }
             }
 
-            return new ExecutionResult(null, $validationErrors);
+            return resolve(new ExecutionResult(null, $validationErrors));
         }
 
         return execute(

@@ -5,6 +5,7 @@ namespace Digia\GraphQL\Execution;
 use Digia\GraphQL\Error\Handler\ErrorHandlerInterface;
 use Digia\GraphQL\Language\Node\DocumentNode;
 use Digia\GraphQL\Schema\Schema;
+use React\Promise\PromiseInterface;
 
 interface ExecutionInterface
 {
@@ -17,7 +18,7 @@ interface ExecutionInterface
      * @param string|null                $operationName
      * @param callable|null              $fieldResolver
      * @param ErrorHandlerInterface|null $errorHandler
-     * @return ExecutionResult
+     * @return PromiseInterface<ExecutionResult>
      */
     public function execute(
         Schema $schema,
@@ -28,5 +29,5 @@ interface ExecutionInterface
         string $operationName = null,
         callable $fieldResolver = null,
         ?ErrorHandlerInterface $errorHandler = null
-    ): ExecutionResult;
+    ): PromiseInterface;
 }
