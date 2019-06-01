@@ -242,7 +242,7 @@ class GraphQL
      * @param string|null                $operationName
      * @param callable|null              $fieldResolver
      * @param ErrorHandlerInterface|null $errorHandler
-     * @return PromiseInterface<ExecutionResult>
+     * @return PromiseInterface
      */
     public static function execute(
         Schema $schema,
@@ -278,9 +278,8 @@ class GraphQL
      * @param null|string                $operationName
      * @param callable|null              $fieldResolver
      * @param ErrorHandlerInterface|null $errorHandler
-     * @return PromiseInterface<ExecutionResult>
+     * @return PromiseInterface
      * @throws InvariantException
-     * @throws SyntaxErrorException
      */
     public static function process(
         Schema $schema,
@@ -326,7 +325,7 @@ class GraphQL
             return resolve(new ExecutionResult(null, $validationErrors));
         }
 
-        return execute(
+        return executeAsync(
             $schema,
             $document,
             $rootValue,

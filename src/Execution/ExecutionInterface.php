@@ -18,7 +18,7 @@ interface ExecutionInterface
      * @param string|null                $operationName
      * @param callable|null              $fieldResolver
      * @param ErrorHandlerInterface|null $errorHandler
-     * @return PromiseInterface<ExecutionResult>
+     * @return PromiseInterface
      */
     public function execute(
         Schema $schema,

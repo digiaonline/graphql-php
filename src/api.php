@@ -174,7 +174,7 @@ function execute(
  * @param mixed|null                 $operationName
  * @param callable|null              $fieldResolver
  * @param ErrorHandlerInterface|null $errorHandler
- * @return PromiseInterface<ExecutionResult>
+ * @return PromiseInterface
  */
 function executeAsync(
     Schema $schema,
@@ -185,7 +185,7 @@ function executeAsync(
     $operationName = null,
     callable $fieldResolver = null,
     $errorHandler = null
-): ExecutionResult {
+): PromiseInterface {
     return GraphQL::execute(
         $schema,
         $document,
@@ -267,7 +267,7 @@ function graphql(
  * @param string|null                         $operationName
  * @param callable|null                       $fieldResolver
  * @param ErrorHandlerInterface|callable|null $errorHandler
- * @return PromiseInterface<array>
+ * @return PromiseInterface
  * @throws InvariantException
  * @throws SyntaxErrorException
  */
