@@ -20,6 +20,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Util\ValueConverter;
+use function Digia\GraphQL\Language\printBlockString;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Type\isIntrospectionType;
 use function Digia\GraphQL\Type\isSpecifiedScalarType;
@@ -84,6 +85,10 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     {
         if ($definition instanceof Schema) {
             return $this->printSchemaDefinition($definition);
+        }
+
+        if ($definition instanceof Directive) {
+            return $this->printDirectiveDefinition($definition);
         }
 
         if ($definition instanceof NamedTypeInterface) {
@@ -210,6 +215,23 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     }
 
     /**
+     * @param Directive $directive
+     * @return string
+     */
+    public function printDirectiveDefinition(Directive $directive): string
+    {
+        $description = $this->printDescription($directive);
+        $name        = $directive->getName();
+        $arguments   = $this->printArguments($directive->getArguments());
+        $locations   = implode(' | ', $directive->getLocations());
+
+        return printLines([
+            $description,
+            "directive @{$name}{$arguments} on {$locations}",
+        ]);
+    }
+
+    /**
      * @param NamedTypeInterface $type
      * @return string
      * @throws PrintException
@@ -327,13 +349,22 @@ class DefinitionPrinter implements DefinitionPrinterInterface
         ]);
     }
 
+    /**
+     * @param array $values
+     * @return string
+     */
     protected function printEnumValues(array $values): string
     {
-        return printLines(\array_map(function (EnumValue $value): string {
-            $description = $this->printDescription($value, '  ');
-            $name        = $value->getName();
-            $deprecated  = $this->printDeprecated($value);
-            $enum        = empty($deprecated) ? $name : "{$name} {$deprecated}";
+        // The first item is always the first in block, all item after that are not.
+        // This is important for getting the linebreaks correct between the items.
+        $firstInBlock = true;
+
+        return printLines(\array_map(function (EnumValue $value) use (&$firstInBlock): string {
+            $description  = $this->printDescription($value, '  ', $firstInBlock);
+            $name         = $value->getName();
+            $deprecated   = $this->printDeprecated($value);
+            $enum         = empty($deprecated) ? $name : "{$name} {$deprecated}";
+            $firstInBlock = false;
 
             return printLines([
                 $description,
@@ -376,11 +407,14 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      */
     protected function printInputValue(InputValueInterface $inputValue): string
     {
-        $type         = $inputValue->getType();
-        $name         = $inputValue->getName();
-        $defaultValue = printNode(ValueConverter::convert($inputValue->getDefaultValue(), $type));
+        $type = $inputValue->getType();
+        $name = $inputValue->getName();
 
-        return $inputValue->hasDefaultValue()
+        $defaultValue = $inputValue->hasDefaultValue()
+            ? printNode(ValueConverter::convert($inputValue->getDefaultValue(), $type))
+            : null;
+
+        return null !== $defaultValue
             ? "{$name}: {$type} = {$defaultValue}"
             : "{$name}: {$type}";
     }
@@ -391,19 +425,30 @@ class DefinitionPrinter implements DefinitionPrinterInterface
      */
     protected function printFields(array $fields): string
     {
-        return printLines(\array_map(function (Field $field): string {
-            $description = $this->printDescription($field);
-            $name        = $field->getName();
-            $arguments   = $this->printArguments($field->getArguments());
-            $type        = (string)$field->getType();
-            $deprecated  = $this->printDeprecated($field);
+        // The first item is always the first in block, all item after that are not.
+        // This is important for getting the linebreaks correct between the items.
+        $firstInBlock = true;
+
+        return printLines(\array_map(function (Field $field) use (&$firstInBlock): string {
+            $description  = $this->printDescription($field, '  ', $firstInBlock);
+            $name         = $field->getName();
+            $arguments    = $this->printArguments($field->getArguments());
+            $type         = (string)$field->getType();
+            $deprecated   = $this->printDeprecated($field);
+            $firstInBlock = false;
+
             return printLines([
                 $description,
                 "  {$name}{$arguments}: {$type}{$deprecated}"
             ]);
-        }, \array_values($fields)));
+        }, $fields));
     }
 
+    /**
+     * @param array  $arguments
+     * @param string $indentation
+     * @return string
+     */
     protected function printArguments(array $arguments, string $indentation = ''): string
     {
         if (empty($arguments)) {
@@ -420,17 +465,17 @@ class DefinitionPrinter implements DefinitionPrinterInterface
         }
 
         $args = \array_map(function (Argument $argument) use ($indentation) {
-            $description = $this->printDescription($argument);
+            $description = $this->printDescription($argument, '  ');
             $inputValue  = $this->printInputValue($argument);
             return printLines([
-                $description,
+                "{$indentation}{$description}",
                 "  {$indentation}{$inputValue}"
             ]);
         }, $arguments);
 
         return printLines([
             '(',
-            $args,
+            \implode(", ", $args),
             $indentation . ')'
         ]);
     }
@@ -460,65 +505,44 @@ class DefinitionPrinter implements DefinitionPrinterInterface
     }
 
     /**
-     * @param mixed  $type
-     * @param string $indentation
-     * @param bool   $isFirstInBlock
+     * @param DescriptionAwareInterface $definition
+     * @param string                    $indentation
+     * @param bool                      $isFirstInBlock
      * @return string
      */
     protected function printDescription(
-        $type,
+        DescriptionAwareInterface $definition,
         string $indentation = '',
         bool $isFirstInBlock = true
     ): string {
-        if (!($type instanceof DescriptionAwareInterface)) {
-            return '';
-        }
-
         // Don't print anything if the type has no description
-        if ($type->getDescription() === null) {
+        if ($definition->getDescription() === null) {
             return '';
         }
 
-        $lines      = descriptionLines($type->getDescription(), 120 - \strlen($indentation));
-        $linesCount = \count($lines);
+        $lines = descriptionLines($definition->getDescription(), 120 - \strlen($indentation));
 
         if (isset($this->options['commentDescriptions']) && true === $this->options['commentDescriptions']) {
             return $this->printDescriptionWithComments($lines, $indentation, $isFirstInBlock);
         }
 
-        $description = $indentation && !$isFirstInBlock
-            ? "\n" . $indentation . '"""'
-            : $indentation . '"""';
+        $text                = \implode("\n", $lines);
+        $preferMultipleLines = \strlen($text) > 70;
+        $blockString         = printBlockString($text, '', $preferMultipleLines);
+        $prefix              = strlen($indentation) > 0 && !$isFirstInBlock ? "\n" . $indentation : $indentation;
 
-        // In some circumstances, a single line can be used for the description.
-        if (
-            $linesCount === 1 &&
-            ($firstLineLength = \strlen($lines[0])) < 70 &&
-            $lines[0][$firstLineLength - 1] !== '"'
-        ) {
-            return $description . escapeQuote($lines[0]) . '"""';
-        }
-
-        // Format a multi-line block quote to account for leading space.
-        $hasLeadingSpace = $lines[0][0] === ' ' || $lines[0][0] === "\t";
-        if (!$hasLeadingSpace) {
-            $description .= "\n";
-        }
-
-        for ($i = 0; $i < $linesCount; $i++) {
-            $description .= $i !== 0 || !$hasLeadingSpace
-                ? $description .= $indentation
-                : escapeQuote($lines[$i]) . "\n";
-        }
-
-        $description .= $indentation . '"""';
-
-        return $description;
+        return $prefix . \str_replace("\n", "\n" . $indentation, $blockString);
     }
 
+    /**
+     * @param array  $lines
+     * @param string $indentation
+     * @param bool   $isFirstInBlock
+     * @return string
+     */
     protected function printDescriptionWithComments(array $lines, string $indentation, bool $isFirstInBlock): string
     {
-        $description = $indentation && !$isFirstInBlock ? "\n" : '';
+        $description = \strlen($indentation) > 0 && !$isFirstInBlock ? "\n" : '';
         $linesCount  = \count($lines);
 
         for ($i = 0; $i < $linesCount; $i++) {

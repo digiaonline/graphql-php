@@ -9,25 +9,15 @@ namespace Digia\GraphQL\Schema;
  */
 function descriptionLines(string $description, int $maxLength): array
 {
-    $lines    = [];
-    $rawLines = \explode("\n", $description);
-
-    foreach ($rawLines as $rawLine) {
-        if ('' === $rawLine) {
-            $lines[] = $rawLine;
-            continue;
+    // Map over the description lines and merge them into a flat array.
+    return \array_merge(...\array_map(function (string $line) use ($maxLength) {
+        if (\strlen($line) < ($maxLength + 5)) {
+            return [$line];
         }
 
-        // For > 120 character long lines, cut at space boundaries into sublines
-        // of ~80 chars.
-        $subLines = breakLine($rawLine, $maxLength);
-
-        foreach ($subLines as $subLine) {
-            $lines[] = $subLine;
-        }
-    }
-
-    return $lines;
+        // For > 120 character long lines, cut at space boundaries into sublines of ~80 chars.
+        return breakLine($line, $maxLength);
+    }, \explode("\n", $description)));
 }
 
 /**
@@ -41,31 +31,23 @@ function breakLine(string $line, int $maxLength): array
         return [$line];
     }
 
-    $pos        = $maxLength - 40;
-    $parts      = \preg_split("/((?: |^).{15,{$pos}}(?= |$))/", $line);
-    $parts      = false === $parts ? [] : $parts;
-    $partsCount = \count($parts);
+    $endPos = $maxLength - 40;
 
-    if ($partsCount < 4) {
-        return [$line];
-    }
-
-    $subLines = [$parts[0] . $parts[1] . $parts[2]];
-
-    for ($i = 3; $i < $partsCount; $i++) {
-        $subLines[] = \substr($parts[$i], 1) . $parts[$i + 1];
-    }
-
-    return $subLines;
+    return \array_map('trim', \preg_split(
+        "/((?: |^).{15,{$endPos}}(?= |$))/",
+        $line,
+        0,
+        PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+    ));
 }
 
 /**
  * @param string $line
  * @return string
  */
-function escapeQuote(string $line): string
+function escapeQuotes(string $line): string
 {
-    return \preg_replace('/"""/', '\\"""', $line);
+    return \strtr($line, ['"""' => '\\"""', '`' => '\`']);
 }
 
 /**
