@@ -26,9 +26,11 @@ use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\ValueASTConverter;
+use function Digia\GraphQL\Test\jsonEncode;
 use function Digia\GraphQL\Util\find;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\suggestionList;
+use function Digia\GraphQL\Util\toString;
 
 /**
  * TODO: Make this class static
@@ -76,7 +78,7 @@ class ValuesResolver
                     $coercedValues[$argumentName] = $defaultValue;
                 } elseif ($argumentType instanceof NonNullType) {
                     throw new ExecutionException(
-                        sprintf(
+                        \sprintf(
                             'Argument "%s" of required type "%s" was not provided.',
                             $argumentName,
                             $argumentType
@@ -103,7 +105,7 @@ class ValuesResolver
                     // Value nodes that cannot be resolved should be treated as invalid values
                     // because there is no undefined value in PHP so that we throw an exception
                     throw new ExecutionException(
-                        sprintf(
+                        \sprintf(
                             'Argument "%s" has invalid value %s.',
                             $argumentName,
                             (string)$argumentNode->getValue()
@@ -173,18 +175,19 @@ class ValuesResolver
         $errors        = [];
 
         foreach ($variableDefinitionNodes as $variableDefinitionNode) {
-            $variableName = $variableDefinitionNode->getVariable()->getNameValue();
-            $variableType = TypeASTConverter::convert($schema, $variableDefinitionNode->getType());
+            $variableName     = $variableDefinitionNode->getVariable()->getNameValue();
+            $variableType     = TypeASTConverter::convert($schema, $variableDefinitionNode->getType());
+            $variableTypeName = (string)$variableType;
+
+            if ($variableTypeName === '') {
+                $variableTypeName = (string)$variableDefinitionNode;
+            }
 
             if (!$this->isInputType($variableType)) {
-                $variableTypeName = (string)$variableType;
-
-                if ($variableTypeName === '') {
-                    $variableTypeName = (string)$variableDefinitionNode;
-                }
-
+                // Must use input types for variables. This should be caught during
+                // validation, however is checked again here for safety.
                 $errors[] = $this->buildCoerceException(
-                    sprintf(
+                    \sprintf(
                         'Variable "$%s" expected value of type "%s" which cannot be used as an input type',
                         $variableName,
                         $variableTypeName
@@ -193,42 +196,57 @@ class ValuesResolver
                     null
                 );
             } else {
-                if (!array_key_exists($variableName, $inputs)) {
-                    if ($variableType instanceof NonNullType) {
-                        $errors[] = $this->buildCoerceException(
-                            sprintf(
-                                'Variable "$%s" of required type "%s" was not provided',
-                                $variableName,
-                                (string)$variableType
-                            ),
-                            $variableDefinitionNode,
-                            null
-                        );
-                    } elseif ($variableDefinitionNode->getDefaultValue() !== null) {
-                        $coercedValues[$variableName] = ValueASTConverter::convert(
-                            $variableDefinitionNode->getDefaultValue(),
-                            $variableType
-                        );
-                    }
-                } else {
-                    $value        = $inputs[$variableName];
-                    $coercedValue = $this->coerceValue($value, $variableType, $variableDefinitionNode);
-                    if ($coercedValue->hasErrors()) {
-                        $messagePrelude = sprintf(
-                            'Variable "$%s" got invalid value %s',
-                            $variableName, json_encode($value)
-                        );
-                        foreach ($coercedValue->getErrors() as $error) {
-                            $errors[] = $this->buildCoerceException(
-                                $messagePrelude,
-                                $variableDefinitionNode,
-                                null,
-                                $error->getMessage(),
-                                $error
-                            );
-                        }
+                $hasValue = isset($inputs[$variableName]);
+                $value    = $hasValue ? $inputs[$variableName] : null;
+                if (!$hasValue && $variableDefinitionNode->hasDefaultValue()) {
+                    // If no value was provided to a variable with a default value,
+                    // use the default value.
+                    // TODO: Ensure that this conversion is done correctly.
+                    $coercedValues[$variableName] = ValueASTConverter::convert(
+                        $variableDefinitionNode->getDefaultValue(),
+                        $variableType
+                    );
+                } elseif ((!$hasValue || null === $value) && $variableType instanceof NonNullType) {
+                    // If no value or a nullish value was provided to a variable with a
+                    // non-null type (required), produce an error.
+                    $errors[] = $this->buildCoerceException(
+                        \sprintf(
+                            $value
+                                ? 'Variable "$%s" of non-null type "%s" must not be null'
+                                : 'Variable "$%s" of required type "%s" was not provided',
+                            $variableName,
+                            $variableTypeName
+                        ),
+                        $variableDefinitionNode,
+                        null
+                    );
+                } elseif ($hasValue) {
+                    if (null === $value) {
+                        // If the explicit value `null` was provided, an entry in the coerced
+                        // values must exist as the value `null`.
+                        $coercedValues[$variableName] = null;
                     } else {
-                        $coercedValues[$variableName] = $coercedValue->getValue();
+                        // Otherwise, a non-null value was provided, coerce it to the expected
+                        // type or report an error if coercion fails.
+                        $coercedValue = $this->coerceValue($value, $variableType, $variableDefinitionNode);
+                        if ($coercedValue->hasErrors()) {
+                            $message = \sprintf(
+                                'Variable "$%s" got invalid value %s',
+                                $variableName,
+                                jsonEncode($value)
+                            );
+                            foreach ($coercedValue->getErrors() as $error) {
+                                $errors[] = $this->buildCoerceException(
+                                    $message,
+                                    $variableDefinitionNode,
+                                    null,
+                                    $error->getMessage(),
+                                    $error
+                                );
+                            }
+                        } else {
+                            $coercedValues[$variableName] = $coercedValue->getValue();
+                        }
                     }
                 }
             }
