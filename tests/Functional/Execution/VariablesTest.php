@@ -1088,7 +1088,8 @@ class VariablesTest extends TestCase
             'query' => $TestType
         ]);
 
-        $this->assertQueryResult(
+        $this->assertQueryResultWithSchema(
+            $schema,
             '{
               fieldWithObjectInput(input: {c: "foo", d: "2018-01-01"})
             }',
@@ -1097,24 +1098,18 @@ class VariablesTest extends TestCase
                     'fieldWithObjectInput' => '{"c":"foo","d":{"date":"2018-01-01 00:00:00.000000","timezone_type":3,"timezone":"Europe\/Helsinki"}}'
                 ]
             ],
-            [],
-            $schema
         );
     }
 
     /**
      * @noinspection PhpDocMissingThrowsInspection
      *
-     * @param string      $query
-     * @param array       $expected
-     * @param array       $variables
-     * @param Schema|null $schema
+     * @param string $query
+     * @param array  $expected
+     * @param array  $variables
      */
-    private function assertQueryResult(string $query, array $expected, array $variables = [], Schema $schema = null)
+    protected function assertQueryResult(string $query, array $expected, array $variables = [])
     {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $result = execute($schema ?: $this->schema, parse(dedent($query)), null, null, $variables);
-
-        $this->assertEquals($expected, $result->toArray());
+        $this->assertQueryResultWithSchema($this->schema, $query, $expected, null, null, $variables);
     }
 }
