@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL;
 
+use Digia\GraphQL\Error\GraphQLException;
 use Digia\GraphQL\Error\Handler\CallableMiddleware;
 use Digia\GraphQL\Error\Handler\ErrorHandler;
 use Digia\GraphQL\Error\Handler\ErrorHandlerInterface;
@@ -18,6 +19,7 @@ use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Schema\Validation\SchemaValidationException;
 use Digia\GraphQL\Validation\ValidationException;
+use React\Promise\PromiseInterface;
 
 /**
  * @param string|Source                   $source
@@ -140,6 +142,53 @@ function execute(
     callable $fieldResolver = null,
     $errorHandler = null
 ): ExecutionResult {
+    $resultPromise = GraphQL::execute(
+        $schema,
+        $document,
+        $rootValue,
+        $contextValue,
+        $variableValues,
+        $operationName,
+        $fieldResolver,
+        $errorHandler
+    );
+
+    $data = null;
+
+    $resultPromise->then(function (ExecutionResult $result) use (&$data) {
+        $data = $result;
+    });
+
+    if (null === $data) {
+        $data = new ExecutionResult(null, [
+            new GraphQLException('Looks like you are using Event Loop. Please use `executeAsync` method instead.')
+        ]);
+    }
+
+    return $data;
+}
+
+/**
+ * @param Schema                     $schema
+ * @param DocumentNode               $document
+ * @param mixed|null                 $rootValue
+ * @param mixed|null                 $contextValue
+ * @param array                      $variableValues
+ * @param mixed|null                 $operationName
+ * @param callable|null              $fieldResolver
+ * @param ErrorHandlerInterface|null $errorHandler
+ * @return PromiseInterface
+ */
+function executeAsync(
+    Schema $schema,
+    DocumentNode $document,
+    $rootValue = null,
+    $contextValue = null,
+    array $variableValues = [],
+    $operationName = null,
+    callable $fieldResolver = null,
+    $errorHandler = null
+): PromiseInterface {
     return GraphQL::execute(
         $schema,
         $document,
@@ -188,7 +237,7 @@ function graphql(
         $errorHandler = new ErrorHandler([new CallableMiddleware($errorHandler)]);
     }
 
-    $result = GraphQL::process(
+    $resultPromise = GraphQL::process(
         $schema,
         $source,
         $rootValue,
@@ -199,5 +248,60 @@ function graphql(
         $errorHandler
     );
 
-    return $result->toArray();
+    $data = null;
+
+    $resultPromise->then(function (ExecutionResult $result) use (&$data) {
+        $data = $result;
+    });
+
+    if (null === $data) {
+        $data = new ExecutionResult(null, [
+            new GraphQLException('Looks like you are using Event Loop. Please use `graphqlAsync` method instead.')
+        ]);
+    }
+
+    return $data->toArray();
+}
+
+/**
+ * @param Schema                              $schema
+ * @param string                              $source
+ * @param mixed                               $rootValue
+ * @param mixed                               $contextValue
+ * @param array                               $variableValues
+ * @param string|null                         $operationName
+ * @param callable|null                       $fieldResolver
+ * @param ErrorHandlerInterface|callable|null $errorHandler
+ * @return PromiseInterface
+ * @throws InvariantException
+ * @throws SyntaxErrorException
+ */
+function graphqlAsync(
+    Schema $schema,
+    string $source,
+    $rootValue = null,
+    $contextValue = null,
+    array $variableValues = [],
+    ?string $operationName = null,
+    ?callable $fieldResolver = null,
+    $errorHandler = null
+): PromiseInterface {
+    if (\is_callable($errorHandler)) {
+        $errorHandler = new ErrorHandler([new CallableMiddleware($errorHandler)]);
+    }
+
+    $resultPromise = GraphQL::process(
+        $schema,
+        $source,
+        $rootValue,
+        $contextValue,
+        $variableValues,
+        $operationName,
+        $fieldResolver,
+        $errorHandler
+    );
+
+    return $resultPromise->then(function (ExecutionResult $result) {
+        return $result->toArray();
+    });
 }

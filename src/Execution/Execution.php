@@ -12,6 +12,7 @@ use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
 use React\Promise\PromiseInterface;
+use function React\Promise\resolve;
 
 class Execution implements ExecutionInterface
 {
@@ -27,7 +28,7 @@ class Execution implements ExecutionInterface
         ?string $operationName = null,
         ?callable $fieldResolver = null,
         ?ErrorHandlerInterface $errorHandler = null
-    ): ExecutionResult {
+    ): PromiseInterface {
         try {
             $context = $this->createContext(
                 $schema,
@@ -41,10 +42,10 @@ class Execution implements ExecutionInterface
 
             // Return early errors if execution context failed.
             if (!empty($context->getErrors())) {
-                return new ExecutionResult(null, $context->getErrors());
+                return resolve(new ExecutionResult(null, $context->getErrors()));
             }
         } catch (ExecutionException $error) {
-            return new ExecutionResult(null, [$error]);
+            return resolve(new ExecutionResult(null, [$error]));
         }
 
         $valuesResolver = new ValuesResolver();
@@ -53,8 +54,8 @@ class Execution implements ExecutionInterface
         $data = $this->executeOperation($operationName, $context, $fieldCollector, $valuesResolver);
 
         if ($data instanceof PromiseInterface) {
-            $data->then(function ($resolvedData) use (&$data) {
-                $data = $resolvedData;
+            return $data->then(function ($resolvedData) use ($context) {
+                return new ExecutionResult($resolvedData, $context->getErrors());
             });
         }
 
@@ -64,7 +65,7 @@ class Execution implements ExecutionInterface
             }
         }
 
-        return new ExecutionResult($data, $context->getErrors());
+        return resolve(new ExecutionResult($data, $context->getErrors()));
     }
 
     /**
