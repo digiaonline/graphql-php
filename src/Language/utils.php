@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Language;
 
+use function Digia\GraphQL\Schema\escapeQuotes;
+
 /**
  * @param int $code
  * @return string
@@ -157,14 +159,31 @@ function dedent(string $str): string
 }
 
 /**
- * @param mixed $value
- * @param bool  $isDescription
+ * @param string $value
+ * @param string $indentation
+ * @param bool   $preferMultipleLines
  * @return string
  */
-function printBlockString($value, bool $isDescription): string
-{
-    $escaped = \preg_replace('/"""/', '\\"""', $value);
-    return $value{0} === ' ' || ($value{0} === "\t" && false === strpos($value, "\n"))
-        ? '"""' . \preg_replace('/"$/', "\"\n", $escaped) . '"""'
-        : '"""' . $isDescription ? $escaped : indent($escaped) . "\n" . '"""';
+function printBlockString(string $value, string $indentation = '', bool $preferMultipleLines = false): string {
+    $isSingleLine = false === \strpos($value, "\n");
+    $hasLeadingSpace = $value{0} === ' ' || $value{0} === "\t";
+    $hasTrailingQuote = $value[\strlen($value) - 1] === '"';
+    $printAsMultipleLines = !$isSingleLine || $hasTrailingQuote || $preferMultipleLines;
+
+    $result = '';
+
+    // Format a multi-line block quote to account for leading space.
+    if ($printAsMultipleLines && !($isSingleLine && $hasLeadingSpace)) {
+        $result .= "\n" . $indentation;
+    }
+
+    $result .= \strlen($indentation) > 0
+        ? \str_replace("\n", "\n" . $indentation, $value)
+        : $value;
+
+    if ($printAsMultipleLines) {
+        $result .= "\n";
+    }
+
+    return '"""' . escapeQuotes($result) . '"""';
 }

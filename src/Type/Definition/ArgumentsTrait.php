@@ -41,7 +41,6 @@ trait ArgumentsTrait
 
     /**
      * @return Argument[]
-     * @throws InvariantException
      */
     public function getArguments(): array
     {

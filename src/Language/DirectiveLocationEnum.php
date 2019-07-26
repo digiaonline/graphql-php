@@ -13,6 +13,7 @@ class DirectiveLocationEnum
     public const FRAGMENT_DEFINITION = 'FRAGMENT_DEFINITION';
     public const FRAGMENT_SPREAD     = 'FRAGMENT_SPREAD';
     public const INLINE_FRAGMENT     = 'INLINE_FRAGMENT';
+    public const VARIABLE_DEFINITION = 'VARIABLE_DEFINITION';
     // Type System Definitions
     public const SCHEMA                 = 'SCHEMA';
     public const SCALAR                 = 'SCALAR';

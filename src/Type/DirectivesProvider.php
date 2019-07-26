@@ -77,9 +77,9 @@ class DirectivesProvider extends AbstractServiceProvider
                         'reason' => [
                             'type'         => stringType(),
                             'description'  =>
-                                'Explains why this element was deprecated, usually also including a ' .
-                                'suggestion for how to access supported similar data. Formatted ' .
-                                'in [Markdown](https://daringfireball.net/projects/markdown/).',
+                                'Explains why this element was deprecated, usually also including a suggestion ' .
+                                'for how to access supported similar data. Formatted using the Markdown syntax ' .
+                                '(as specified by [CommonMark](https://commonmark.org/).',
                             'defaultValue' => DEFAULT_DEPRECATION_REASON,
                         ],
                     ]
