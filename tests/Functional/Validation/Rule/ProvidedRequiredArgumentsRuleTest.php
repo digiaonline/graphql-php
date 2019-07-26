@@ -2,16 +2,16 @@
 
 namespace Digia\GraphQL\Test\Functional\Validation\Rule;
 
-use Digia\GraphQL\Validation\Rule\ProvidedNonNullArgumentsRule;
+use Digia\GraphQL\Validation\Rule\ProvidedRequiredArgumentsRule;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\Test\Functional\Validation\missingDirectiveArgument;
 use function Digia\GraphQL\Test\Functional\Validation\missingFieldArgument;
 
-class ProvidedNonNullArgumentsRuleTest extends RuleTestCase
+class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
 {
     protected function getRuleClassName(): string
     {
-        return ProvidedNonNullArgumentsRule::class;
+        return ProvidedRequiredArgumentsRule::class;
     }
 
     public function testIgnoresUnknownArguments()

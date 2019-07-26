@@ -16,7 +16,7 @@ use Digia\GraphQL\Validation\Rule\NoUnusedFragmentsRule;
 use Digia\GraphQL\Validation\Rule\NoUnusedVariablesRule;
 use Digia\GraphQL\Validation\Rule\OverlappingFieldsCanBeMergedRule;
 use Digia\GraphQL\Validation\Rule\PossibleFragmentSpreadsRule;
-use Digia\GraphQL\Validation\Rule\ProvidedNonNullArgumentsRule;
+use Digia\GraphQL\Validation\Rule\ProvidedRequiredArgumentsRule;
 use Digia\GraphQL\Validation\Rule\ScalarLeafsRule;
 use Digia\GraphQL\Validation\Rule\SingleFieldSubscriptionsRule;
 use Digia\GraphQL\Validation\Rule\UniqueArgumentNamesRule;
@@ -51,7 +51,7 @@ class RulesProvider extends AbstractServiceProvider
         NoUnusedVariablesRule::class,
         OverlappingFieldsCanBeMergedRule::class,
         PossibleFragmentSpreadsRule::class,
-        ProvidedNonNullArgumentsRule::class,
+        ProvidedRequiredArgumentsRule::class,
         ScalarLeafsRule::class,
         SingleFieldSubscriptionsRule::class,
         UniqueArgumentNamesRule::class,
@@ -83,7 +83,7 @@ class RulesProvider extends AbstractServiceProvider
         $this->container->add(NoUnusedVariablesRule::class, NoUnusedVariablesRule::class);
         $this->container->add(OverlappingFieldsCanBeMergedRule::class, OverlappingFieldsCanBeMergedRule::class);
         $this->container->add(PossibleFragmentSpreadsRule::class, PossibleFragmentSpreadsRule::class);
-        $this->container->add(ProvidedNonNullArgumentsRule::class, ProvidedNonNullArgumentsRule::class);
+        $this->container->add(ProvidedRequiredArgumentsRule::class, ProvidedRequiredArgumentsRule::class);
         $this->container->add(ScalarLeafsRule::class, ScalarLeafsRule::class);
         $this->container->add(SingleFieldSubscriptionsRule::class, SingleFieldSubscriptionsRule::class);
         $this->container->add(UniqueArgumentNamesRule::class, UniqueArgumentNamesRule::class);

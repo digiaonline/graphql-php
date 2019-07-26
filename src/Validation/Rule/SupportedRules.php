@@ -24,7 +24,7 @@ class SupportedRules
         NoUnusedVariablesRule::class,
         OverlappingFieldsCanBeMergedRule::class,
         PossibleFragmentSpreadsRule::class,
-        ProvidedNonNullArgumentsRule::class,
+        ProvidedRequiredArgumentsRule::class,
         ScalarLeafsRule::class,
         SingleFieldSubscriptionsRule::class,
         UniqueArgumentNamesRule::class,
