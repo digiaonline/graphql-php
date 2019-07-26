@@ -187,7 +187,7 @@ middleware allow you to efficiently manage functionality across multiple resolve
 Before middleware example:
 
 ```php
-$schema = buildSchema($source, [
+$resolverRegistry = new ResolverRegristry([
     'Query' => [
         'hero' => function ($rootValue, $arguments) {
             return getHero($arguments['episode'] ?? null);
@@ -196,6 +196,7 @@ $schema = buildSchema($source, [
 ], [
     'middleware' => [new BeforeMiddleware()],
 ]);
+$schema = buildSchema($source, $resolverRegistry);
 ```
 
 ```php
@@ -211,7 +212,7 @@ class BeforeMiddleware implements ResolverMiddlewareInterface
 After middleware example:
 
 ```php
-$schema = buildSchema($source, [
+$resolverRegistry = new ResolverRegristry([
     'Query' => [
         'hero' => function ($rootValue, $arguments) {
             return getHero($arguments['episode'] ?? null);
@@ -220,6 +221,7 @@ $schema = buildSchema($source, [
 ], [
     'middleware' => [new AfterMiddleware()],
 ]);
+$schema = buildSchema($source, $resolverRegistry);
 ```
 
 ```php
