@@ -2,7 +2,6 @@
 
 namespace Digia\GraphQL\Util;
 
-use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\EnumValueNode;
@@ -64,7 +63,7 @@ class ValueASTConverter
         }
 
         if ($node instanceof VariableNode) {
-            return self::convertVariable($node, $variables);
+            return self::convertVariable($node, $type, $variables);
         }
 
         if ($type instanceof ListType) {
@@ -105,12 +104,13 @@ class ValueASTConverter
     }
 
     /**
-     * @param VariableNode $node
-     * @param array        $variables
+     * @param VariableNode  $node
+     * @param TypeInterface $type
+     * @param array         $variables
      * @return mixed
      * @throws ConversionException
      */
-    protected static function convertVariable(VariableNode $node, array $variables)
+    protected static function convertVariable(VariableNode $node, TypeInterface $type, array $variables)
     {
         $variableName = $node->getNameValue();
 
@@ -123,7 +123,15 @@ class ValueASTConverter
         // Note: we're not doing any checking that this variable is correct. We're
         // assuming that this query has been validated and the variable usage here
         // is of the correct type.
-        return $variables[$variableName];
+        $variableValue = $variables[$variableName];
+
+        if (null === $variableValue && $type instanceof NonNullType) {
+            throw new ConversionException(
+                \sprintf('Cannot convert invalid value "%s" for variable "%s".', $variableValue, $variableName)
+            );
+        }
+
+        return $variableValue;
     }
 
     /**
