@@ -123,7 +123,7 @@ class NonNullTest extends TestCase
         // Note: validation should identify this issue first (values of correct
         // type rule) however execution should still protect against this.
 
-        $this->markTestSkipped('Requires proper support for null values.');
+        $this->markTestIncomplete('Requires proper support for null values.');
 
         $this->assertQueryResult(
             'query {
@@ -183,7 +183,7 @@ class NonNullTest extends TestCase
 
     public function testFieldErrorWhenNonNullArgProvidedVariableWithExplicitNullValue()
     {
-        $this->markTestSkipped('Requires proper support for null values.');
+        $this->markTestIncomplete('Requires proper support for null values.');
 
         $this->assertQueryResult(
             'query ($testVar: String = "default value") {
