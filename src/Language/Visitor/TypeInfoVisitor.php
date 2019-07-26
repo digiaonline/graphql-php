@@ -102,7 +102,8 @@ class TypeInfoVisitor implements VisitorInterface
             /** @noinspection PhpParamsInspection */
             $this->typeInfo->pushInputType(isInputType($inputType) ? $inputType : null);
         } elseif ($node instanceof ArgumentNode) {
-            $argumentType       = null;
+            $argumentType = null;
+            /** @var Argument|null $argumentDefinition */
             $argumentDefinition = null;
             $fieldOrDirective   = $this->typeInfo->getDirective() ?: $this->typeInfo->getFieldDefinition();
             if (null !== $fieldOrDirective) {
@@ -117,13 +118,19 @@ class TypeInfoVisitor implements VisitorInterface
                 }
             }
             $this->typeInfo->setArgument($argumentDefinition);
+            $this->typeInfo->pushDefaultValue(null !== $argumentDefinition
+                ? $argumentDefinition->getDefaultValue()
+                : null);
             $this->typeInfo->pushInputType(isInputType($argumentType) ? $argumentType : null);
         } elseif ($node instanceof ListValueNode) {
             $listType = getNullableType($this->typeInfo->getInputType());
             $itemType = $listType instanceof ListType ? $listType->getOfType() : $listType;
+            // List positions never have a default value.
+            $this->typeInfo->pushDefaultValue(null);
             $this->typeInfo->pushInputType(isInputType($itemType) ? $itemType : null);
         } elseif ($node instanceof ObjectFieldNode) {
             $objectType     = getNamedType($this->typeInfo->getInputType());
+            $inputField     = null;
             $inputFieldType = null;
             if ($objectType instanceof InputObjectType) {
                 $fields     = $objectType->getFields();
@@ -132,6 +139,7 @@ class TypeInfoVisitor implements VisitorInterface
                     $inputFieldType = $inputField->getType();
                 }
             }
+            $this->typeInfo->pushDefaultValue(null !== $inputField ? $inputField->getDefaultValue() : null);
             /** @noinspection PhpParamsInspection */
             $this->typeInfo->pushInputType(isInputType($inputFieldType) ? $inputFieldType : null);
         } elseif ($node instanceof EnumValueNode) {
@@ -169,10 +177,12 @@ class TypeInfoVisitor implements VisitorInterface
             $this->typeInfo->popInputType();
         } elseif ($newNode instanceof ArgumentNode) {
             $this->typeInfo->setArgument(null);
+            $this->typeInfo->popDefaultValue();
             $this->typeInfo->popInputType();
         } elseif ($newNode instanceof ListValueNode) {
             $this->typeInfo->popInputType();
         } elseif ($newNode instanceof ObjectFieldNode) {
+            $this->typeInfo->popDefaultValue();
             $this->typeInfo->popInputType();
         } elseif ($newNode instanceof EnumValueNode) {
             $this->typeInfo->setEnumValue(null);
