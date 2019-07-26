@@ -154,14 +154,17 @@ function execute(
     );
 
     $data = null;
+
     $resultPromise->then(function (ExecutionResult $result) use (&$data) {
         $data = $result;
     });
-    if ($data === null) {
+
+    if (null === $data) {
         $data = new ExecutionResult(null, [
-            new GraphQLException('It\'s looks like you are using Event Loop. Please use `executeAsync` method instead.')
+            new GraphQLException('Looks like you are using Event Loop. Please use `executeAsync` method instead.')
         ]);
     }
+
     return $data;
 }
 
@@ -246,12 +249,14 @@ function graphql(
     );
 
     $data = null;
+
     $resultPromise->then(function (ExecutionResult $result) use (&$data) {
         $data = $result;
     });
-    if ($data === null) {
+
+    if (null === $data) {
         $data = new ExecutionResult(null, [
-            new GraphQLException('It\'s looks like you are using Event Loop. Please use `graphqlAsync` method instead.')
+            new GraphQLException('Looks like you are using Event Loop. Please use `graphqlAsync` method instead.')
         ]);
     }
 
