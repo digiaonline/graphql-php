@@ -3,8 +3,6 @@
 namespace Digia\GraphQL\Test\Functional\Execution;
 
 use Digia\GraphQL\Test\TestCase;
-use function Digia\GraphQL\execute;
-use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Type\newNonNull;
 use function Digia\GraphQL\Type\newObjectType;
 use function Digia\GraphQL\Type\newSchema;
@@ -31,10 +29,10 @@ class NonNullTest extends TestCase
                                 'type' => newNonNull(stringType()),
                             ],
                         ],
-                        'resolve' => function ($_, $args) {
-                            if (\is_string($args['cannotBeNull'])) {
-                                return "Passed: {$args['cannotBeNull']}";
-                            }
+                        'resolve' => function ($_, $args): ?string {
+                            return \is_string($args['cannotBeNull'])
+                                ? "Passed: {$args['cannotBeNull']}"
+                                : null;
                         }
                     ],
                 ],
@@ -114,7 +112,7 @@ class NonNullTest extends TestCase
                         'path'      => ['withNonNullArg'],
                     ],
                 ],
-            ],
+            ]
         );
     }
 
@@ -145,7 +143,7 @@ class NonNullTest extends TestCase
                         'path'      => ['withNonNullArg'],
                     ],
                 ],
-            ],
+            ]
         );
     }
 
