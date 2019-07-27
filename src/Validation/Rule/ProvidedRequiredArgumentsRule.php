@@ -41,8 +41,13 @@ class ProvidedRequiredArgumentsRule extends AbstractRule
         foreach ($fieldDefinition->getArguments() as $argumentDefinition) {
             $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;
             $argumentType = $argumentDefinition->getType();
+            $defaultValue = $argumentDefinition->getDefaultValue();
 
-            if (null === $argumentNode && $argumentType instanceof NonNullType) {
+            if (
+                null === $argumentNode
+                && $argumentType instanceof NonNullType
+                && null === $defaultValue
+            ) {
                 $this->context->reportError(
                     new ValidationException(
                         missingFieldArgumentMessage(

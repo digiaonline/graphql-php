@@ -122,8 +122,12 @@ class ValuesOfCorrectTypeRule extends AbstractRule
         foreach ($inputFields as $fieldName => $field) {
             $fieldType = $field->getType();
             $fieldNode = $fieldNodeMap[$fieldName] ?? null;
+            $fieldDefaultValue = $field->getDefaultValue();
 
-            if (null === $fieldNode && $fieldType instanceof NonNullType) {
+            if (null === $fieldNode
+                && $fieldType instanceof NonNullType
+                && null === $fieldDefaultValue
+            ) {
                 $this->context->reportError(
                     new ValidationException(
                         requiredFieldMessage($type->getName(), $fieldName, (string)$fieldType),

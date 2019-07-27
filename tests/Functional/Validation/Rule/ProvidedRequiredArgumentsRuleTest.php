@@ -18,13 +18,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               dog {
                 isHouseTrained(unknownArgument: true)
               }
             }
-            ')
+            '
         );
     }
 
@@ -32,13 +32,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               dog {
                 isHouseTrained(atOtherHomes: true)
               }
             }
-            ')
+            '
         );
     }
 
@@ -46,13 +46,27 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               dog {
                 isHouseTrained
               }
             }
-            ')
+            '
+        );
+    }
+
+    public function testNoArgumentOnNonNullFieldWithDefaultValue()
+    {
+        $this->expectPassesRule(
+            $this->rule,
+            '
+            {
+              complicatedArgs {
+                nonNullFieldWithDefault
+              }
+            }
+            '
         );
     }
 
@@ -60,13 +74,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleReqs(req1: 1, req2: 2)
               }
             }
-            ')
+            '
         );
     }
 
@@ -74,13 +88,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleReqs(req2: 2, req1: 1)
               }
             }
-            ')
+            '
         );
     }
 
@@ -88,13 +102,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleOpts
               }
             }
-            ')
+            '
         );
     }
 
@@ -102,13 +116,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleOpts(opt1: 1)
               }
             }
-            ')
+            '
         );
     }
 
@@ -116,13 +130,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleOpts(opt2: 1)
               }
             }
-            ')
+            '
         );
     }
 
@@ -130,13 +144,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleOptAndReq(req1: 3, req2: 4)
               }
             }
-            ')
+            '
         );
     }
 
@@ -144,13 +158,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleOptAndReq(req1: 3, req2: 4, opt1: 5)
               }
             }
-            ')
+            '
         );
     }
 
@@ -158,13 +172,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleOptAndReq(req1: 3, req2: 4, opt1: 5, opt2: 6)
               }
             }
-            ')
+            '
         );
     }
 
@@ -172,13 +186,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectFailsRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleReqs(req2: 2)
               }
             }
-            '),
+            ',
             [missingFieldArgument('multipleReqs', 'req1', 'Int!', [3, 5])]
         );
     }
@@ -187,13 +201,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectFailsRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleReqs
               }
             }
-            '),
+            ',
             [
                 missingFieldArgument('multipleReqs', 'req1', 'Int!', [3, 5]),
                 missingFieldArgument('multipleReqs', 'req2', 'Int!', [3, 5]),
@@ -205,13 +219,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectFailsRule(
             $this->rule,
-            dedent('
+            '
             {
               complicatedArgs {
                 multipleReqs(req1: "one")
               }
             }
-            '),
+            ',
             [missingFieldArgument('multipleReqs', 'req2', 'Int!', [3, 5])]
         );
     }
@@ -220,11 +234,11 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               dog @unknown
             }
-            ')
+            '
         );
     }
 
@@ -232,7 +246,7 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectPassesRule(
             $this->rule,
-            dedent('
+            '
             {
               dog @include(if: true) {
                 name
@@ -241,7 +255,7 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
                 name
               }
             }
-            ')
+            '
         );
     }
 
@@ -249,13 +263,13 @@ class ProvidedRequiredArgumentsRuleTest extends RuleTestCase
     {
         $this->expectFailsRule(
             $this->rule,
-            dedent('
+            '
             {
               dog @include {
                 name @skip
               }
             }
-            '),
+            ',
             [
                 missingDirectiveArgument('include', 'if', 'Boolean!', [2, 7]),
                 missingDirectiveArgument('skip', 'if', 'Boolean!', [3, 10]),

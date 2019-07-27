@@ -781,7 +781,7 @@ class OverlappingFieldsCanBeMergedRuleTest extends RuleTestCase
                 fieldConflict(
                     'scalar',
                     'they return conflicting types String! and String',
-                    [[5, 7], [8, 7]]
+                    [[4, 7], [7, 7]]
                 )
             ]
         );
