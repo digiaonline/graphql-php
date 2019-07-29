@@ -990,25 +990,6 @@ class ValuesOfCorrectTypeRuleTest extends RuleTestCase
             ',
             [badValue('Boolean!', 'null', [5, 21])]
         );
-        
-        /*
-         it('Partial object, null to non-null field', () => {
-      expectFailsRule(
-        ValuesOfCorrectType,
-        `
-        {
-          complicatedArgs {
-            complexArgField(complexArg: {
-              requiredField: true,
-              nonNullField: null,
-            })
-          }
-        }
-      `,
-        [badValue('Boolean!', 'null', 6, 29)],
-      );
-    });
-         */
     }
 
     public function testPartialObjectUnknownFieldArgument()

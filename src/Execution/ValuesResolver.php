@@ -300,15 +300,12 @@ class ValuesResolver
         return new CoercedValue($coercedValues, $errors);
     }
 
-
     /**
      * @param TypeInterface|null $type
      * @return bool
      */
-    protected
-    function isInputType(
-        ?TypeInterface $type
-    ) {
+    protected function isInputType(?TypeInterface $type)
+    {
         return ($type instanceof ScalarType) ||
             ($type instanceof EnumType) ||
             ($type instanceof InputObjectType) ||
@@ -327,13 +324,8 @@ class ValuesResolver
      * @throws GraphQLException
      * @throws InvariantException
      */
-    private
-    function coerceValue(
-        $value,
-        $type,
-        $blameNode,
-        ?Path $path = null
-    ): CoercedValue {
+    private function coerceValue($value, $type, $blameNode, ?Path $path = null): CoercedValue
+    {
         if ($type instanceof NonNullType) {
             return $this->coerceValueForNonNullType($value, $type, $blameNode, $path);
         }
@@ -370,8 +362,7 @@ class ValuesResolver
      * @throws GraphQLException
      * @throws InvariantException
      */
-    protected
-    function coerceValueForNonNullType(
+    protected function coerceValueForNonNullType(
         $value,
         NonNullType $type,
         NodeInterface $blameNode,
@@ -400,8 +391,7 @@ class ValuesResolver
      * @param Path|null     $path
      * @return CoercedValue
      */
-    protected
-    function coerceValueForScalarType(
+    protected function coerceValueForScalarType(
         $value,
         ScalarType $type,
         NodeInterface $blameNode,
@@ -436,8 +426,7 @@ class ValuesResolver
      * @return CoercedValue
      * @throws InvariantException
      */
-    protected
-    function coerceValueForEnumType(
+    protected function coerceValueForEnumType(
         $value,
         EnumType $type,
         NodeInterface $blameNode,
@@ -469,8 +458,7 @@ class ValuesResolver
      * @throws GraphQLException
      * @throws InvariantException
      */
-    protected
-    function coerceValueForInputObjectType(
+    protected function coerceValueForInputObjectType(
         $value,
         InputObjectType $type,
         NodeInterface $blameNode,
@@ -542,8 +530,7 @@ class ValuesResolver
      * @throws GraphQLException
      * @throws InvariantException
      */
-    protected
-    function coerceValueForListType(
+    protected function coerceValueForListType(
         $value,
         ListType $type,
         NodeInterface $blameNode,
@@ -581,8 +568,7 @@ class ValuesResolver
      * @param GraphQLException|null $originalException
      * @return GraphQLException
      */
-    protected
-    function buildCoerceException(
+    protected function buildCoerceException(
         string $message,
         NodeInterface $blameNode,
         ?Path $path,
@@ -609,10 +595,8 @@ class ValuesResolver
      * @param Path|null $path
      * @return string
      */
-    protected
-    function printPath(
-        ?Path $path
-    ) {
+    protected function printPath(?Path $path)
+    {
         $stringPath  = '';
         $currentPath = $path;
 
@@ -636,8 +620,7 @@ class ValuesResolver
      * @return mixed
      * @throws ExecutionException
      */
-    protected
-    function coerceValueForVariableNode(
+    protected function coerceValueForVariableNode(
         VariableNode $variableNode,
         TypeInterface $argumentType,
         string $argumentName,
