@@ -30,7 +30,7 @@ class NonNullTest extends TestCase
                             ],
                         ],
                         'resolve' => function ($_, $args): ?string {
-                            return \is_string($args['cannotBeNull'])
+                            return isset($args['cannotBeNull']) && \is_string($args['cannotBeNull'])
                                 ? "Passed: {$args['cannotBeNull']}"
                                 : null;
                         }
@@ -121,8 +121,6 @@ class NonNullTest extends TestCase
         // Note: validation should identify this issue first (values of correct
         // type rule) however execution should still protect against this.
 
-        $this->markTestIncomplete('Requires proper support for null values.');
-
         $this->assertQueryResult(
             'query {
               withNonNullArg(cannotBeNull: null)
@@ -181,8 +179,6 @@ class NonNullTest extends TestCase
 
     public function testFieldErrorWhenNonNullArgProvidedVariableWithExplicitNullValue()
     {
-        $this->markTestIncomplete('Requires proper support for null values.');
-
         $this->assertQueryResult(
             'query ($testVar: String = "default value") {
               withNonNullArg (cannotBeNull: $testVar)
@@ -197,7 +193,7 @@ class NonNullTest extends TestCase
                         'locations' => [
                             [
                                 'line'   => 2,
-                                'column' => 44,
+                                'column' => 45,
                             ],
                         ],
                         'path'      => ['withNonNullArg'],

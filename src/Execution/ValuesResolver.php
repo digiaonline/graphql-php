@@ -9,6 +9,8 @@ use Digia\GraphQL\Language\Node\ArgumentNode;
 use Digia\GraphQL\Language\Node\ArgumentsAwareInterface;
 use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Language\Node\NodeKindEnum;
+use Digia\GraphQL\Language\Node\NullValueNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Language\Node\VariableNode;
 use Digia\GraphQL\Schema\Schema;
@@ -26,11 +28,12 @@ use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\ValueASTConverter;
+use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Test\jsonEncode;
 use function Digia\GraphQL\Util\find;
+use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\keyMap;
 use function Digia\GraphQL\Util\suggestionList;
-use function Digia\GraphQL\Util\toString;
 
 /**
  * TODO: Make this class static
@@ -73,10 +76,44 @@ class ValuesResolver
             $defaultValue  = $argumentDefinition->getDefaultValue();
             $argumentValue = null !== $argumentNode ? $argumentNode->getValue() : null;
 
-            if (null === $argumentNode) {
-                if (null !== $defaultValue) {
-                    $coercedValues[$argumentName] = $defaultValue;
-                } elseif ($argumentType instanceof NonNullType) {
+            if (null !== $argumentNode && $argumentValue instanceof VariableNode) {
+                $variableName = $argumentValue->getNameValue();
+                $hasValue     = !empty($variableValues) && \array_key_exists($variableName, $variableValues);
+                $isNull       = $hasValue && null === $variableValues[$variableName];
+            } else {
+                $hasValue = null !== $argumentNode;
+                $isNull   = $hasValue && $argumentValue instanceof NullValueNode;
+            }
+
+            if (!$hasValue && null !== $defaultValue) {
+                // If no argument was provided where the definition has a default value,
+                // use the default value.
+                $coercedValues[$argumentName] = $defaultValue;
+            } elseif ((!$hasValue || $isNull) && $argumentType instanceof NonNullType) {
+                // If no argument or a null value was provided to an argument with a
+                // non-null type (required), produce a field error.
+                if ($isNull) {
+                    throw new ExecutionException(
+                        \sprintf(
+                            'Argument "%s" of non-null type "%s" must not be null.',
+                            $argumentName,
+                            $argumentType
+                        ),
+                        [$argumentValue]
+                    );
+                } elseif (null !== $argumentNode && $argumentValue instanceof VariableNode) {
+                    $variableName = $argumentValue->getNameValue();
+                    throw new ExecutionException(
+                        \sprintf(
+                            'Argument "%s" of required type "%s" was provided the variable "$%s" '
+                            . 'which was not provided a runtime value.',
+                            $argumentName,
+                            $argumentType,
+                            $variableName
+                        ),
+                        [$argumentValue]
+                    );
+                } else {
                     throw new ExecutionException(
                         \sprintf(
                             'Argument "%s" of required type "%s" was not provided.',
@@ -86,37 +123,43 @@ class ValuesResolver
                         [$node]
                     );
                 }
-            } elseif ($argumentValue instanceof VariableNode) {
-                $coercedValues[$argumentName] = $this->coerceValueForVariableNode(
-                    $argumentValue,
-                    $argumentType,
-                    $argumentName,
-                    $variableValues,
-                    $defaultValue
-                );
-            } else {
-                try {
-                    $coercedValues[$argumentName] = ValueASTConverter::convert(
-                        $argumentNode->getValue(),
-                        $argumentType,
-                        $variableValues
-                    );
-                } catch (\Exception $ex) {
-                    // Value nodes that cannot be resolved should be treated as invalid values
-                    // because there is no undefined value in PHP so that we throw an exception
-                    throw new ExecutionException(
-                        \sprintf(
-                            'Argument "%s" has invalid value %s.',
-                            $argumentName,
-                            (string)$argumentNode->getValue()
-                        ),
-                        [$argumentNode->getValue()],
-                        null,
-                        null,
-                        null,
-                        null,
-                        $ex
-                    );
+            } elseif ($hasValue) {
+                if ($argumentValue instanceof NullValueNode) {
+                    // If the explicit value `null` was provided, an entry in the coerced
+                    // values must exist as the value `null`.
+                    $coercedValues[$argumentName] = null;
+                } elseif ($argumentValue instanceof VariableNode) {
+                    $variableName = $argumentValue->getNameValue();
+                    invariant(!empty($variableValues), 'Must exist for hasValue to be true.');
+                    // Note: This does no further checking that this variable is correct.
+                    // This assumes that this query has been validated and the variable
+                    // usage here is of the correct type.
+                    $coercedValues[$argumentName] = $variableValues[$variableName];
+                } else {
+                    $valueNode = $argumentNode->getValue();
+                    try {
+                        // Value nodes that cannot be resolved should be treated as invalid values
+                        // because there is no undefined value in PHP so that we throw an exception
+                        $coercedValue = ValueASTConverter::convert($valueNode, $argumentType, $variableValues);
+                    } catch (\Exception $ex) {
+                        // Note: ValuesOfCorrectType validation should catch this before
+                        // execution. This is a runtime check to ensure execution does not
+                        // continue with an invalid argument value.
+                        throw new ExecutionException(
+                            \sprintf(
+                                'Argument "%s" has invalid value %s.',
+                                $argumentName,
+                                (string)$argumentValue
+                            ),
+                            [$argumentValue],
+                            null,
+                            null,
+                            null,
+                            null,
+                            $ex
+                        );
+                    }
+                    $coercedValues[$argumentName] = $coercedValue;
                 }
             }
         }
@@ -169,8 +212,11 @@ class ValuesResolver
      * @throws InvariantException
      * @throws ConversionException
      */
-    public function coerceVariableValues(Schema $schema, array $variableDefinitionNodes, array $inputs): CoercedValue
-    {
+    public function coerceVariableValues(
+        Schema $schema,
+        array $variableDefinitionNodes,
+        array $inputs
+    ): CoercedValue {
         $coercedValues = [];
         $errors        = [];
 
@@ -196,12 +242,11 @@ class ValuesResolver
                     null
                 );
             } else {
-                $hasValue = isset($inputs[$variableName]);
+                $hasValue = \array_key_exists($variableName, $inputs);
                 $value    = $hasValue ? $inputs[$variableName] : null;
                 if (!$hasValue && $variableDefinitionNode->hasDefaultValue()) {
                     // If no value was provided to a variable with a default value,
                     // use the default value.
-                    // TODO: Ensure that this conversion is done correctly.
                     $coercedValues[$variableName] = ValueASTConverter::convert(
                         $variableDefinitionNode->getDefaultValue(),
                         $variableType
@@ -260,8 +305,10 @@ class ValuesResolver
      * @param TypeInterface|null $type
      * @return bool
      */
-    protected function isInputType(?TypeInterface $type)
-    {
+    protected
+    function isInputType(
+        ?TypeInterface $type
+    ) {
         return ($type instanceof ScalarType) ||
             ($type instanceof EnumType) ||
             ($type instanceof InputObjectType) ||
@@ -280,8 +327,13 @@ class ValuesResolver
      * @throws GraphQLException
      * @throws InvariantException
      */
-    private function coerceValue($value, $type, $blameNode, ?Path $path = null): CoercedValue
-    {
+    private
+    function coerceValue(
+        $value,
+        $type,
+        $blameNode,
+        ?Path $path = null
+    ): CoercedValue {
         if ($type instanceof NonNullType) {
             return $this->coerceValueForNonNullType($value, $type, $blameNode, $path);
         }
@@ -318,7 +370,8 @@ class ValuesResolver
      * @throws GraphQLException
      * @throws InvariantException
      */
-    protected function coerceValueForNonNullType(
+    protected
+    function coerceValueForNonNullType(
         $value,
         NonNullType $type,
         NodeInterface $blameNode,
@@ -347,7 +400,8 @@ class ValuesResolver
      * @param Path|null     $path
      * @return CoercedValue
      */
-    protected function coerceValueForScalarType(
+    protected
+    function coerceValueForScalarType(
         $value,
         ScalarType $type,
         NodeInterface $blameNode,
@@ -382,7 +436,8 @@ class ValuesResolver
      * @return CoercedValue
      * @throws InvariantException
      */
-    protected function coerceValueForEnumType(
+    protected
+    function coerceValueForEnumType(
         $value,
         EnumType $type,
         NodeInterface $blameNode,
@@ -414,7 +469,8 @@ class ValuesResolver
      * @throws GraphQLException
      * @throws InvariantException
      */
-    protected function coerceValueForInputObjectType(
+    protected
+    function coerceValueForInputObjectType(
         $value,
         InputObjectType $type,
         NodeInterface $blameNode,
@@ -486,7 +542,8 @@ class ValuesResolver
      * @throws GraphQLException
      * @throws InvariantException
      */
-    protected function coerceValueForListType(
+    protected
+    function coerceValueForListType(
         $value,
         ListType $type,
         NodeInterface $blameNode,
@@ -524,7 +581,8 @@ class ValuesResolver
      * @param GraphQLException|null $originalException
      * @return GraphQLException
      */
-    protected function buildCoerceException(
+    protected
+    function buildCoerceException(
         string $message,
         NodeInterface $blameNode,
         ?Path $path,
@@ -551,8 +609,10 @@ class ValuesResolver
      * @param Path|null $path
      * @return string
      */
-    protected function printPath(?Path $path)
-    {
+    protected
+    function printPath(
+        ?Path $path
+    ) {
         $stringPath  = '';
         $currentPath = $path;
 
@@ -576,7 +636,8 @@ class ValuesResolver
      * @return mixed
      * @throws ExecutionException
      */
-    protected function coerceValueForVariableNode(
+    protected
+    function coerceValueForVariableNode(
         VariableNode $variableNode,
         TypeInterface $argumentType,
         string $argumentName,
