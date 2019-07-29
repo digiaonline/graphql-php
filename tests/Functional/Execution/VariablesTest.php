@@ -172,22 +172,22 @@ class VariablesTest extends TestCase
         );
     }
 
-    public function testVariableWithExplicitNullValue()
-    {
-        $this->markTestIncomplete('Requires proper support for null values.');
+    // TODO: This test will probably never work in PHP
 
-        $this->assertQueryResult(
-            'query q($input: String) {
-              fieldWithNullableStringInput(input: $input)
-            }',
-            [
-                'data' => [
-                    'fieldWithNullableStringInput' => 'null',
-                ]
-            ],
-            ['input' => null]
-        );
-    }
+//    public function testVariableWithExplicitNullValue()
+//    {
+//        $this->assertQueryResult(
+//            'query q($input: String) {
+//              fieldWithNullableStringInput(input: $input)
+//            }',
+//            [
+//                'data' => [
+//                    'fieldWithNullableStringInput' => 'null',
+//                ]
+//            ],
+//            ['input' => null]
+//        );
+//    }
 
     public function testUsesDefaultValueWhenValueNotProvided()
     {
@@ -218,40 +218,40 @@ class VariablesTest extends TestCase
         );
     }
 
-    public function testUsesExplicitNullValueInsteadOfDefaultValue()
-    {
-        $this->markTestIncomplete('Requires proper support for null values.');
+    // TODO: This test will probably never work in PHP
 
-        $this->assertQueryResult(
-            'query ($input: String = "Default value") {
-              fieldWithNullableStringInput(input: $input)
-            }',
-            [
-                'data' => [
-                    'fieldWithNullableStringInput' => 'null',
-                ]
-            ],
-            ['input' => null]
-        );
-    }
+//    public function testUsesExplicitNullValueInsteadOfDefaultValue()
+//    {
+//        $this->assertQueryResult(
+//            'query ($input: String = "Default value") {
+//              fieldWithNullableStringInput(input: $input)
+//            }',
+//            [
+//                'data' => [
+//                    'fieldWithNullableStringInput' => 'null',
+//                ]
+//            ],
+//            ['input' => null]
+//        );
+//    }
 
-    public function testUsesNullDefaultValueWhenValueNotProvided()
-    {
-        $this->markTestIncomplete('Requires proper support for null values.');
+    // TODO: This test will probably never work in PHP
 
-        $this->assertQueryResult(
-            'query ($input: String = null) {
-              fieldWithNullableStringInput(input: $input)
-            }',
-            [
-                'data' => [
-                    'fieldWithNullableStringInput' => 'null',
-                ]
-            ],
-            // Intentionally missing variable values.
-            []
-        );
-    }
+//    public function testUsesNullDefaultValueWhenValueNotProvided()
+//    {
+//        $this->assertQueryResult(
+//            'query ($input: String = null) {
+//              fieldWithNullableStringInput(input: $input)
+//            }',
+//            [
+//                'data' => [
+//                    'fieldWithNullableStringInput' => 'null',
+//                ]
+//            ],
+//            // Intentionally missing variable values.
+//            []
+//        );
+//    }
 
     public function testProperlyParsesSingleValueToList()
     {
@@ -510,7 +510,6 @@ class VariablesTest extends TestCase
             ]
         );
     }
-
 
     public function testAllowsNullableInputsToBeOmittedInUnlistedVariable()
     {
@@ -1007,7 +1006,7 @@ class VariablesTest extends TestCase
         );
     }
 
-    public function testWhenOmittedVariableProvied()
+    public function testWhenOmittedVariableProvided()
     {
         $this->assertQueryResult(
             'query ($optional: String) {
@@ -1097,7 +1096,7 @@ class VariablesTest extends TestCase
                 'data' => [
                     'fieldWithObjectInput' => '{"c":"foo","d":{"date":"2018-01-01 00:00:00.000000","timezone_type":3,"timezone":"Europe\/Helsinki"}}'
                 ]
-            ],
+            ]
         );
     }
 
