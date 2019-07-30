@@ -547,6 +547,7 @@ class ValuesResolver
         if (is_array($value) || $value instanceof Traversable) {
             $errors        = [];
             $coercedValues = [];
+
             foreach ($value as $index => $itemValue) {
                 $coercedValue = static::coerceValue($itemValue, $itemType, $blameNode, new Path($path, $index));
 
@@ -590,8 +591,7 @@ class ValuesResolver
             [$blameNode],
             null,
             null,
-            // TODO: Change this to null
-            [],
+            null,
             null,
             $originalException
         );

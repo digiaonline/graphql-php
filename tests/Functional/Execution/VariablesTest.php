@@ -133,7 +133,7 @@ class VariablesTest extends TestCase
                 'input' => $inputArg
             ],
             'resolve' => function ($_, $args) {
-                return isset($args['input']) ? jsonEncode($args['input']) : null;
+                return array_key_exists('input', $args) ? jsonEncode($args['input']) : null;
             }
         ];
     }
@@ -172,22 +172,20 @@ class VariablesTest extends TestCase
         );
     }
 
-    // TODO: This test will probably never work in PHP
-
-//    public function testVariableWithExplicitNullValue()
-//    {
-//        $this->assertQueryResult(
-//            'query q($input: String) {
-//              fieldWithNullableStringInput(input: $input)
-//            }',
-//            [
-//                'data' => [
-//                    'fieldWithNullableStringInput' => 'null',
-//                ]
-//            ],
-//            ['input' => null]
-//        );
-//    }
+    public function testVariableWithExplicitNullValue()
+    {
+        $this->assertQueryResult(
+            'query q($input: String) {
+              fieldWithNullableStringInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => 'null',
+                ]
+            ],
+            ['input' => null]
+        );
+    }
 
     public function testUsesDefaultValueWhenValueNotProvided()
     {
@@ -218,40 +216,36 @@ class VariablesTest extends TestCase
         );
     }
 
-    // TODO: This test will probably never work in PHP
+    public function testUsesExplicitNullValueInsteadOfDefaultValue()
+    {
+        $this->assertQueryResult(
+            'query ($input: String = "Default value") {
+              fieldWithNullableStringInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => 'null',
+                ]
+            ],
+            ['input' => null]
+        );
+    }
 
-//    public function testUsesExplicitNullValueInsteadOfDefaultValue()
-//    {
-//        $this->assertQueryResult(
-//            'query ($input: String = "Default value") {
-//              fieldWithNullableStringInput(input: $input)
-//            }',
-//            [
-//                'data' => [
-//                    'fieldWithNullableStringInput' => 'null',
-//                ]
-//            ],
-//            ['input' => null]
-//        );
-//    }
-
-    // TODO: This test will probably never work in PHP
-
-//    public function testUsesNullDefaultValueWhenValueNotProvided()
-//    {
-//        $this->assertQueryResult(
-//            'query ($input: String = null) {
-//              fieldWithNullableStringInput(input: $input)
-//            }',
-//            [
-//                'data' => [
-//                    'fieldWithNullableStringInput' => 'null',
-//                ]
-//            ],
-//            // Intentionally missing variable values.
-//            []
-//        );
-//    }
+    public function testUsesNullDefaultValueWhenValueNotProvided()
+    {
+        $this->assertQueryResult(
+            'query ($input: String = null) {
+              fieldWithNullableStringInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => 'null',
+                ]
+            ],
+            // Intentionally missing variable values.
+            []
+        );
+    }
 
     public function testProperlyParsesSingleValueToList()
     {
@@ -409,7 +403,6 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
                     ]
                 ]
             ],
@@ -435,7 +428,6 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
                     ],
                     [
                         'message'   => 'Variable "$input" got invalid value {"na":{"a":"foo"}}; ' .
@@ -446,9 +438,8 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
-                    ]
-                ]
+                    ],
+                ],
             ],
             ['input' => ['na' => ['a' => 'foo']]]
         );
@@ -473,7 +464,6 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
                     ]
                 ]
             ],
@@ -533,7 +523,7 @@ class VariablesTest extends TestCase
             }',
             [
                 'data' => [
-                    'fieldWithNullableStringInput' => null
+                    'fieldWithNullableStringInput' => 'null'
                 ],
             ],
             ['value' => null]
@@ -587,8 +577,7 @@ class VariablesTest extends TestCase
                                 'line'   => 1
                             ]
                         ],
-                        'path'      => []
-                    ]
+                    ],
                 ],
             ]
         );
@@ -611,8 +600,7 @@ class VariablesTest extends TestCase
                                 'line'   => 1
                             ]
                         ],
-                        'path'      => []
-                    ]
+                    ],
                 ],
             ],
             ['value' => null]
@@ -690,7 +678,6 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => [] // @TODO Check path
                     ]
                 ]
             ],
@@ -748,7 +735,7 @@ class VariablesTest extends TestCase
             }',
             [
                 'data' => [
-                    'list' => null
+                    'list' => 'null'
                 ],
             ],
             ['input' => null]
@@ -803,8 +790,7 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
-                    ]
+                    ],
                 ],
             ],
             ['input' => null]
@@ -835,7 +821,7 @@ class VariablesTest extends TestCase
             }',
             [
                 'data' => [
-                    'listNN' => null
+                    'listNN' => 'null'
                 ]
             ],
             ['input' => null]
@@ -875,8 +861,7 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
-                    ]
+                    ],
                 ],
             ],
             ['input' => ['A', null, 'B']]
@@ -900,8 +885,7 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
-                    ]
+                    ],
                 ],
             ],
             ['input' => null]
@@ -926,8 +910,7 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
-                    ]
+                    ],
                 ],
             ],
             ['input' => ['A', null, 'B']]
@@ -952,19 +935,10 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
                     ]
                 ],
             ],
-            [
-                'input' => [
-                    'list' => [
-                        'A',
-                        null,
-                        'B'
-                    ]
-                ]
-            ]
+            ['input' => ['list' => ['A', null, 'B']]]
         );
     }
 
@@ -986,7 +960,6 @@ class VariablesTest extends TestCase
                                 'column' => 8
                             ]
                         ],
-                        'path'      => []
                     ]
                 ],
             ],
