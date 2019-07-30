@@ -12,6 +12,7 @@ use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
 use React\Promise\PromiseInterface;
+use function React\Promise\resolve;
 
 class Execution implements ExecutionInterface
 {
@@ -47,10 +48,9 @@ class Execution implements ExecutionInterface
             return new ExecutionResult(null, [$error]);
         }
 
-        $valuesResolver = new ValuesResolver();
-        $fieldCollector = new FieldCollector($context, $valuesResolver);
+        $fieldCollector = new FieldCollector($context);
 
-        $data = $this->executeOperation($operationName, $context, $fieldCollector, $valuesResolver);
+        $data = $this->executeOperation($operationName, $context, $fieldCollector);
 
         if ($data instanceof PromiseInterface) {
             $data->then(function ($resolvedData) use (&$data) {
@@ -71,18 +71,16 @@ class Execution implements ExecutionInterface
      * @param null|string      $operationName
      * @param ExecutionContext $context
      * @param FieldCollector   $fieldCollector
-     * @param ValuesResolver   $valuesResolver
      * @return array|mixed|null|PromiseInterface
      */
     protected function executeOperation(
         ?string $operationName,
         ExecutionContext $context,
-        FieldCollector $fieldCollector,
-        ValuesResolver $valuesResolver
+        FieldCollector $fieldCollector
     ) {
         $strategy = $operationName === 'mutation'
-            ? new SerialExecutionStrategy($context, $fieldCollector, $valuesResolver)
-            : new ParallelExecutionStrategy($context, $fieldCollector, $valuesResolver);
+            ? new SerialExecutionStrategy($context, $fieldCollector)
+            : new ParallelExecutionStrategy($context, $fieldCollector);
 
         $result = null;
 
@@ -99,7 +97,7 @@ class Execution implements ExecutionInterface
         if ($result instanceof PromiseInterface) {
             return $result->then(null, function (ExecutionException $exception) use ($context) {
                 $context->addError($exception);
-                return \React\Promise\resolve(null);
+                return resolve(null);
             });
         }
 
@@ -160,7 +158,7 @@ class Execution implements ExecutionInterface
             throw new ExecutionException('Must provide an operation.');
         }
 
-        $coercedVariableValues = (new ValuesResolver())->coerceVariableValues(
+        $coercedVariableValues = ValuesResolver::coerceVariableValues(
             $schema,
             $operation->getVariableDefinitions(),
             $rawVariableValues

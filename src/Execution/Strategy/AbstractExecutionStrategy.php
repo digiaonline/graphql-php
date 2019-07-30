@@ -43,11 +43,6 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
     protected $fieldCollector;
 
     /**
-     * @var ValuesResolver
-     */
-    protected $valuesResolver;
-
-    /**
      * @var callable
      */
     protected $typeResolverCallback;
@@ -73,20 +68,17 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
      *
      * @param ExecutionContext $context
      * @param FieldCollector   $fieldCollector
-     * @param ValuesResolver   $valueResolver
      * @param callable|null    $typeResolverCallback
      * @param callable|null    $fieldResolverCallback
      */
     public function __construct(
         ExecutionContext $context,
         FieldCollector $fieldCollector,
-        ValuesResolver $valueResolver,
         ?callable $typeResolverCallback = null,
         ?callable $fieldResolverCallback = null
     ) {
         $this->context               = $context;
         $this->fieldCollector        = $fieldCollector;
-        $this->valuesResolver        = $valueResolver;
         $this->typeResolverCallback  = $typeResolverCallback ?? [$this, 'defaultTypeResolver'];
         $this->fieldResolverCallback = $fieldResolverCallback ?? [$this, 'defaultFieldResolver'];
     }
@@ -245,7 +237,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
             // variables scope to fulfill any variable references.
             $result = $resolveCallback(
                 $rootValue,
-                $this->valuesResolver->coerceArgumentValues($field, $fieldNode, $context->getVariableValues()),
+                ValuesResolver::coerceArgumentValues($field, $fieldNode, $context->getVariableValues()),
                 $context->getContextValue(),
                 $info
             );
