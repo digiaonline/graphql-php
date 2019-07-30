@@ -40,20 +40,16 @@ class ValueASTConverter
      * | Enum Value           | Mixed         |
      * | NullValue            | null          |
      *
-     * @param NodeInterface|ValueNodeInterface|null $node
-     * @param TypeInterface                         $type
-     * @param array                                 $variables
+     * @param NodeInterface $node
+     * @param TypeInterface $type
+     * @param array         $variables
      * @return mixed|null
      * @throws InvalidTypeException
      * @throws InvariantException
      * @throws ConversionException
      */
-    public static function convert(?NodeInterface $node, TypeInterface $type, array $variables = [])
+    public static function convert(NodeInterface $node, TypeInterface $type, array $variables = [])
     {
-        if (null === $node) {
-            throw new ConversionException('Node is not defined.');
-        }
-
         if ($type instanceof NonNullType) {
             return self::convertNonNullType($node, $type, $variables);
         }
