@@ -4,10 +4,13 @@ namespace Digia\GraphQL\Test\Functional\Execution;
 
 
 use Digia\GraphQL\Error\InvalidTypeException;
+use Digia\GraphQL\Language\Node\ValueAwareInterface;
+use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Test\TestCase;
 use function Digia\GraphQL\execute;
 use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\parse;
+use function Digia\GraphQL\Test\jsonEncode;
 use function Digia\GraphQL\Type\newInputObjectType;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
@@ -27,14 +30,13 @@ class VariablesTest extends TestCase
 
 
     /**
-     * @throws \Digia\GraphQL\Error\InvalidTypeException
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
+     * @noinspection PhpDocMissingThrowsInspection
      */
     protected function setUp()
     {
         parent::setUp();
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestComplexScalar = newScalarType([
             'name'         => 'ComplexScalar',
             'serialize'    => function ($value) {
@@ -49,7 +51,7 @@ class VariablesTest extends TestCase
                 }
                 return null;
             },
-            'parseLiteral' => function ($ast) {
+            'parseLiteral' => function (ValueAwareInterface $ast) {
                 if ($ast->getValue() === 'SerializedValue') {
                     return 'DeserializedValue';
                 }
@@ -57,6 +59,7 @@ class VariablesTest extends TestCase
             }
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestInputObject = newInputObjectType([
             'name'   => 'TestInputObject',
             'fields' => [
@@ -67,6 +70,7 @@ class VariablesTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestNestedInputObject = newInputObjectType([
             'name'   => 'TestNestedInputObject',
             'fields' => [
@@ -75,37 +79,43 @@ class VariablesTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestType = newObjectType([
             'name'   => 'TestType',
             'fields' => [
-                'fieldWithObjectInput'            => $this->fieldWithInputArg(['type' => $TestInputObject]),
-                'fieldWithNullableStringInput'    => $this->fieldWithInputArg(['type' => stringType()]),
-                'fieldWithNonNullableStringInput' => $this->fieldWithInputArg([
+                'fieldWithObjectInput'                                   => $this->fieldWithInputArg(['type' => $TestInputObject]),
+                'fieldWithNullableStringInput'                           => $this->fieldWithInputArg(['type' => stringType()]),
+                'fieldWithNonNullableStringInput'                        => $this->fieldWithInputArg([
                     'type' => newNonNull(stringType())
                 ]),
-                'fieldWithDefaultArgumentValue'   => $this->fieldWithInputArg([
+                'fieldWithDefaultArgumentValue'                          => $this->fieldWithInputArg([
                     'type'         => stringType(),
                     'defaultValue' => 'Hello World'
                 ]),
-                'fieldWithNestedInputObject'      => $this->fieldWithInputArg([
+                'fieldWithNonNullableStringInputAndDefaultArgumentValue' => $this->fieldWithInputArg([
+                    'type'         => newNonNull(stringType()),
+                    'defaultValue' => 'Hello World'
+                ]),
+                'fieldWithNestedInputObject'                             => $this->fieldWithInputArg([
                     'type'         => $TestNestedInputObject,
                     'defaultValue' => 'Hello World'
                 ]),
-                'list'                            => $this->fieldWithInputArg([
+                'list'                                                   => $this->fieldWithInputArg([
                     'type' => newList(stringType())
                 ]),
-                'nnList'                          => $this->fieldWithInputArg([
+                'nnList'                                                 => $this->fieldWithInputArg([
                     'type' => newNonNull(newList(stringType())),
                 ]),
-                'listNN'                          => $this->fieldWithInputArg([
+                'listNN'                                                 => $this->fieldWithInputArg([
                     'type' => newList(newNonNull(stringType())),
                 ]),
-                'nnListNN'                        => $this->fieldWithInputArg([
+                'nnListNN'                                               => $this->fieldWithInputArg([
                     'type' => newNonNull(newList(newNonNull(stringType()))),
                 ]),
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->schema = newSchema([
             'query' => $TestType
         ]);
@@ -122,661 +132,559 @@ class VariablesTest extends TestCase
             'args'    => [
                 'input' => $inputArg
             ],
-            'resolve' => function ($root, $args) {
-                if (isset($args['input'])) {
-                    return json_encode($args['input']);
-                }
+            'resolve' => function ($_, $args) {
+                return array_key_exists('input', $args) ? jsonEncode($args['input']) : null;
             }
         ];
     }
 
-    //Execute: Handles inputs
+    // Execute: Handles inputs
 
-    //Handles objects and nullability
+    // Handles objects and nullability
 
-    /**
-     * Executes with complex input
-     *
-     * @return \Digia\GraphQL\Execution\ExecutionResult
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testExecutesWithComplexInput()
     {
-        $query = '{
-            fieldWithObjectInput(input: {a: "foo", b: ["bar"], c: "baz"})
-        }';
-
-        $result = execute($this->schema, parse($query));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+        $this->assertQueryResult(
+            '{
+              fieldWithObjectInput(input: {a: "foo", b: ["bar"], c: "baz"})
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+                ]
             ]
-        ], $result->toArray());
+        );
     }
 
+    public function testVariableNotProvided()
+    {
+        $this->assertQueryResult(
+            'query q($input: String) {
+              fieldWithNullableStringInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => null
+                ]
+            ],
+            // Intentionally missing variable values.
+            []
+        );
+    }
 
-    /**
-     * Properly parses single value to list
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
+    public function testVariableWithExplicitNullValue()
+    {
+        $this->assertQueryResult(
+            'query q($input: String) {
+              fieldWithNullableStringInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => 'null',
+                ]
+            ],
+            ['input' => null]
+        );
+    }
+
+    public function testUsesDefaultValueWhenValueNotProvided()
+    {
+        $this->assertQueryResult(
+            'query ($input: TestInputObject = {a: "foo", b: ["bar"], c: "baz"}) {
+              fieldWithObjectInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}',
+                ]
+            ]
+        );
+    }
+
+    public function testDoesNotUseDefaultValueWhenValueProvided()
+    {
+        $this->assertQueryResult(
+            'query ($input: String = "Default value") {
+              fieldWithNullableStringInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => '"Variable value"',
+                ]
+            ],
+            ['input' => 'Variable value']
+        );
+    }
+
+    public function testUsesExplicitNullValueInsteadOfDefaultValue()
+    {
+        $this->assertQueryResult(
+            'query ($input: String = "Default value") {
+              fieldWithNullableStringInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => 'null',
+                ]
+            ],
+            ['input' => null]
+        );
+    }
+
+    public function testUsesNullDefaultValueWhenValueNotProvided()
+    {
+        $this->assertQueryResult(
+            'query ($input: String = null) {
+              fieldWithNullableStringInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => 'null',
+                ]
+            ],
+            // Intentionally missing variable values.
+            []
+        );
+    }
+
     public function testProperlyParsesSingleValueToList()
     {
-        $query = '{
-            fieldWithObjectInput(input: {a: "foo", b: "bar", c: "baz"})
-        }';
-
-        $result = execute($this->schema, parse($query));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+        $this->assertQueryResult(
+            '{
+              fieldWithObjectInput(input: {a: "foo", b: "bar", c: "baz"})
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+                ]
             ]
-        ], $result->toArray());
+        );
     }
 
-    /**
-     * Properly parses null value to null
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testProperlyParsesNullValueToNull()
     {
-        $query = '{
-            fieldWithObjectInput(input: {a: null, b: null, c: "C", d: null})
-        }';
-
-        $result = execute($this->schema, parse($query));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"a":null,"b":null,"c":"C","d":null}'
+        $this->assertQueryResult(
+            '{
+              fieldWithObjectInput(input: {a: null, b: null, c: "C", d: null})
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"a":null,"b":null,"c":"C","d":null}'
+                ]
             ]
-        ], $result->toArray());
+        );
     }
 
-    /**
-     * Properly parses null value in list
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testProperlyParsesNullValueInList()
     {
-        $query = '{
-            fieldWithObjectInput(input: {b: ["A",null,"C"], c: "C"})
-        }';
-
-        $result = execute($this->schema, parse($query));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"b":["A",null,"C"],"c":"C"}'
+        $this->assertQueryResult(
+            '{
+              fieldWithObjectInput(input: {b: ["A",null,"C"], c: "C"})
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"b":["A",null,"C"],"c":"C"}'
+                ]
             ]
-        ], $result->toArray());
+        );
     }
 
-    /**
-     * Does not use incorrect value
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testDoesNotUseIncorrectValue()
     {
-        $query = '{
-            fieldWithObjectInput(input: ["foo", "bar", "baz"])
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data'   => [
-                'fieldWithObjectInput' => null
-            ],
-            'errors' => [
-                [
-                    'message'   => 'Argument "input" has invalid value ["foo","bar","baz"].',
-                    'path'      => ['fieldWithObjectInput'],
-                    'locations' => [['line' => 2, 'column' => 41]],
+        $this->assertQueryResult(
+            '{
+              fieldWithObjectInput(input: ["foo", "bar", "baz"])
+            }',
+            [
+                'data'   => [
+                    'fieldWithObjectInput' => null
+                ],
+                'errors' => [
+                    [
+                        'message'   => 'Argument "input" has invalid value ["foo","bar","baz"].',
+                        'path'      => ['fieldWithObjectInput'],
+                        'locations' => [['line' => 2, 'column' => 43]],
+                    ]
                 ]
             ]
-        ], $result->toArray());
+        );
     }
 
-    /**
-     * Properly runs parseLiteral on complex scalar types
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testProperlyRunsParseLiteralOnComplexScalarTypes()
     {
-        $query = '{
-            fieldWithObjectInput(input: {c: "foo", d: "SerializedValue"})
-        }';
-
-        $result = execute($this->schema, parse($query));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"c":"foo","d":"DeserializedValue"}'
+        $this->assertQueryResult(
+            '{
+                fieldWithObjectInput(input: {c: "foo", d: "SerializedValue"})
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"c":"foo","d":"DeserializedValue"}'
+                ]
             ]
-        ], $result->toArray());
+        );
     }
 
-    //USING VARIABLES
+    // USING VARIABLES
 
-    /**
-     * Executes with complex input
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testExecutesWithComplexInputUsingVariables()
     {
-        $query = 'query ($input: TestInputObject) {
-          fieldWithObjectInput(input: $input)
-        }';
-
-        $params = ['input' => ['a' => 'foo', 'b' => ['bar'], 'c' => 'baz']];
-
-        $result = execute($this->schema, parse($query), null, null, $params);
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
-            ]
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($input: TestInputObject) {
+              fieldWithObjectInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+                ]
+            ],
+            ['input' => ['a' => 'foo', 'b' => ['bar'], 'c' => 'baz']]
+        );
     }
 
-    /**
-     * Use default value when not provided
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testUseDefaultValueWhenNotProvide()
     {
-        $query = 'query ($input: TestInputObject = {a: "foo", b: ["bar"], c: "baz"}) {
-            fieldWithObjectInput(input: $input)
-         }';
-
-        $result = execute($this->schema, parse($query));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+        $this->assertQueryResult(
+            'query ($input: TestInputObject = {a: "foo", b: ["bar"], c: "baz"}) {
+              fieldWithObjectInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+                ]
             ]
-        ], $result->toArray());
+        );
     }
 
-    /**
-     * Properly parses single value to list
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testProperlyParsesSingleValueToListUsingVariable()
     {
-        $params = ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => 'baz']];
-
-        $query = 'query ($input: TestInputObject) {
-            fieldWithObjectInput(input: $input)
-        }';
-
-        $result = execute($this->schema, parse($query), null, null, $params);
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
-            ]
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($input: TestInputObject) {
+              fieldWithObjectInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"a":"foo","b":["bar"],"c":"baz"}'
+                ]
+            ],
+            ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => 'baz']]
+        );
     }
 
-    /**
-     * Executes with complex scalar input using variable
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testExecutesWithComplexScalarInputUsingVariable()
     {
-        $params = ['input' => ['c' => 'foo', 'd' => 'SerializedValue']];
-
-        $query = 'query ($input: TestInputObject) {
-            fieldWithObjectInput(input: $input)
-        }';
-
-        $result = execute($this->schema, parse($query), null, null, $params);
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"c":"foo","d":"DeserializedValue"}'
-            ]
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($input: TestInputObject) {
+              fieldWithObjectInput(input: $input)
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"c":"foo","d":"DeserializedValue"}'
+                ]
+            ],
+            ['input' => ['c' => 'foo', 'd' => 'SerializedValue']]
+        );
     }
 
-    /**
-     * Errors on null for nested non-null using variable
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testErrorsOnNullForNestedNonNullUsingVariable()
     {
-        $params = ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => null]];
-
-        $query = 'query ($input: TestInputObject) {
-            fieldWithObjectInput(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, $params);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$input" got invalid value {"a":"foo","b":"bar","c":null}; ' .
-                        'Field value.c of required type String! was not provided.',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
-                    ],
-                    'path'      => []
+        $this->assertQueryResult(
+            'query ($input: TestInputObject) {
+              fieldWithObjectInput(input: $input)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$input" got invalid value {"a":"foo","b":"bar","c":null}; ' .
+                            'Field value.c of required type String! was not provided.',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
+                    ]
                 ]
-            ]
-        ], $result->toArray());
+            ],
+            ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => null]]
+        );
     }
 
-    /**
-     * Errors on deep nested errors and with many errors
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testErrorsOnDeepNestedErrorsWithManyErrors()
     {
-        $params = ['input' => ['na' => ['a' => 'foo']]];
-
-        $query = 'query ($input: TestNestedInputObject) {
-            fieldWithNestedObjectInput(input: $input)
-         }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, $params);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$input" got invalid value {"na":{"a":"foo"}}; ' .
-                        'Field value.na.c of required type String! was not provided.',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
+        $this->assertQueryResult(
+            'query ($input: TestNestedInputObject) {
+              fieldWithNestedObjectInput(input: $input)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$input" got invalid value {"na":{"a":"foo"}}; ' .
+                            'Field value.na.c of required type String! was not provided.',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
                     ],
-                    'path'      => []
+                    [
+                        'message'   => 'Variable "$input" got invalid value {"na":{"a":"foo"}}; ' .
+                            'Field value.nb of required type String! was not provided.',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
+                    ],
                 ],
-                [
-                    'message'   => 'Variable "$input" got invalid value {"na":{"a":"foo"}}; ' .
-                        'Field value.nb of required type String! was not provided.',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
-                    ],
-                    'path'      => []
-                ]
-            ]
-        ], $result->toArray());
+            ],
+            ['input' => ['na' => ['a' => 'foo']]]
+        );
     }
 
-    /**
-     * Errors on addition of unknown input field
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testErrorsOnAdditionOfUnknownInputField()
     {
-        $params = ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => 'baz', 'extra' => 'dog']];
-
-        $query = 'query ($input: TestInputObject) {
-            fieldWithObjectInput(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, $params);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$input" got invalid value ' .
-                        '{"a":"foo","b":"bar","c":"baz","extra":"dog"}; ' .
-                        'Field "extra" is not defined by type TestInputObject.',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
-                    ],
-                    'path'      => []
+        $this->assertQueryResult(
+            'query ($input: TestInputObject) {
+              fieldWithObjectInput(input: $input)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$input" got invalid value ' .
+                            '{"a":"foo","b":"bar","c":"baz","extra":"dog"}; ' .
+                            'Field "extra" is not defined by type TestInputObject.',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
+                    ]
                 ]
-            ]
-        ], $result->toArray());
+            ],
+            ['input' => ['a' => 'foo', 'b' => 'bar', 'c' => 'baz', 'extra' => 'dog']]
+        );
     }
 
     // HANDLES NULLABLE SCALARS
 
-    /**
-     * Allows nullable inputs to be omitted
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsNullableInputsToBeOmitted()
     {
-        $query = '{
-          fieldWithNullableStringInput
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithNullableStringInput' => null
-            ],
-        ], $result->toArray());
+        $this->assertQueryResult(
+            '{
+              fieldWithNullableStringInput
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => null
+                ],
+            ]
+        );
     }
 
-    /**
-     * Allows nullable inputs to be omitted in a variable
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsNullableInputsToBeOmittedInAVariable()
     {
-        $query = 'query ($value: String) {
-          fieldWithNullableStringInput(input: $value)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithNullableStringInput' => null
-            ],
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($value: String) {
+              fieldWithNullableStringInput(input: $value)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => null
+                ],
+            ]
+        );
     }
 
-
-    /**
-     * Allows nullable inputs to be omitted in an unlisted variable
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsNullableInputsToBeOmittedInUnlistedVariable()
     {
-        $query = 'query {
-          fieldWithNullableStringInput(input: $value)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithNullableStringInput' => null
-            ],
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query {
+              fieldWithNullableStringInput(input: $value)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => null
+                ],
+            ]
+        );
     }
 
-    /**
-     * Allows nullable inputs to be set to null in a variable
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsNullableInputsToBeSetToNullInVariable()
     {
-        $query = 'query ($value: String) {
-          fieldWithNullableStringInput(input: $value)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['value' => null]);
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithNullableStringInput' => null
+        $this->assertQueryResult(
+            'query ($value: String) {
+              fieldWithNullableStringInput(input: $value)
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => 'null'
+                ],
             ],
-        ], $result->toArray());
+            ['value' => null]
+        );
     }
 
-    /**
-     * Allows nullable inputs to be set to a value directly
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsNullableInputsToBeSetToAValueDirectly()
     {
-        $query = 'query ($value: String) {
-          fieldWithNullableStringInput(input: "a")
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithNullableStringInput' => '"a"'
-            ],
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($value: String) {
+              fieldWithNullableStringInput(input: "a")
+            }',
+            [
+                'data' => [
+                    'fieldWithNullableStringInput' => '"a"'
+                ],
+            ]
+        );
     }
 
     // HANDLES NON-NULLABLE SCALARS'
 
-    /**
-     * Allows non-nullable inputs to be omitted given a default
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsNonNullableInputsToBeOmittedGivenADefault()
     {
-        $query = 'query ($value: String = "default") {
-          fieldWithNonNullableStringInput(input: $value)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithNonNullableStringInput' => '"default"'
-            ],
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($value: String = "default") {
+              fieldWithNonNullableStringInput(input: $value)
+            }',
+            [
+                'data' => [
+                    'fieldWithNonNullableStringInput' => '"default"'
+                ],
+            ]
+        );
     }
 
-    /**
-     * Does not allow non-nullable inputs to be omitted in a variable
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testDoesNotAllowNonNullableInputsToBeOmittedInAVariable()
     {
-        $query = 'query ($value: String!) {
-          fieldWithNonNullableStringInput(input: $value)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$value" of required type "String!" was not provided.',
-                    'locations' => [
-                        [
-                            'column' => 8,
-                            'line'   => 1
-                        ]
+        $this->assertQueryResult(
+            'query ($value: String!) {
+              fieldWithNonNullableStringInput(input: $value)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$value" of required type "String!" was not provided.',
+                        'locations' => [
+                            [
+                                'column' => 8,
+                                'line'   => 1
+                            ]
+                        ],
                     ],
-                    'path'      => []
-                ]
-            ],
-        ], $result->toArray());
+                ],
+            ]
+        );
     }
 
-
-    /**
-     * Does not allow non-nullable inputs to be set to null in a variable
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testDoesNotAllowNonNullabeInputsToBeSetToNullInAVariable()
     {
-        $query = 'query ($value: String!) {
-          fieldWithNonNullableStringInput(input: $value)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['value' => null]);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$value" got invalid value null; ' .
-                        'Expected non-nullable type String! not to be null.',
-                    'locations' => [
-                        [
-                            'column' => 8,
-                            'line'   => 1
-                        ]
+        $this->assertQueryResult(
+            'query ($value: String!) {
+              fieldWithNonNullableStringInput(input: $value)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$value" of required type "String!" was not provided.',
+                        'locations' => [
+                            [
+                                'column' => 8,
+                                'line'   => 1
+                            ]
+                        ],
                     ],
-                    'path'      => []
-                ]
+                ],
             ],
-        ], $result->toArray());
+            ['value' => null]
+        );
     }
 
-
-    /**
-     * Allows non-nullable inputs to be set to a value in a variable
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsNonNullableInputsToBeSetToAValueInAVariable()
     {
-        $query = 'query ($value: String!) {
-          fieldWithNonNullableStringInput(input: $value)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['value' => 'a']);
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithNonNullableStringInput' => '"a"'
-            ]
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($value: String!) {
+              fieldWithNonNullableStringInput(input: $value)
+            }',
+            [
+                'data' => [
+                    'fieldWithNonNullableStringInput' => '"a"'
+                ]
+            ],
+            ['value' => 'a']
+        );
     }
 
-    /**
-     * Allows non-nullable inputs to be set to a value directly
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsNonNullableInputsToBeSetToAValueDirectly()
     {
-        $query = '{
-          fieldWithNonNullableStringInput(input: "a")
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithNonNullableStringInput' => '"a"'
+        $this->assertQueryResult(
+            '{
+              fieldWithNonNullableStringInput(input: "a")
+            }',
+            [
+                'data' => [
+                    'fieldWithNonNullableStringInput' => '"a"'
+                ]
             ]
-        ], $result->toArray());
+        );
     }
 
-    /**
-     * Reports error for missing non-nullable inputs
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testReportErrorForMissingNonNullableInputs()
     {
-        $query = '{ fieldWithNonNullableStringInput }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data'   => [
-                'fieldWithNonNullableStringInput' => null
-            ],
-            'errors' => [
-                [
-                    'message'   => 'Argument "input" of required type "String!" was not provided.',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 3
-                        ]
-                    ],
-                    'path'      => ['fieldWithNonNullableStringInput']
+        $this->assertQueryResult(
+            '{ fieldWithNonNullableStringInput }',
+            [
+                'data'   => [
+                    'fieldWithNonNullableStringInput' => null
+                ],
+                'errors' => [
+                    [
+                        'message'   => 'Argument "input" of required type "String!" was not provided.',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 3
+                            ]
+                        ],
+                        'path'      => ['fieldWithNonNullableStringInput']
+                    ]
                 ]
             ]
-        ], $result->toArray());
+        );
     }
 
-    /**
-     * Reports error for array passed into string input
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testReportErrorForArrayPassedIntoStringInput()
     {
-        $query = 'query ($value: String!) {
-          fieldWithNonNullableStringInput(input: $value)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['value' => [1, 2, 3]]);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$value" got invalid value [1,2,3]; Expected type String; ' .
-                        'String cannot represent a non-scalar value',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
-                    ],
-                    'path'      => [] // @TODO Check path
+        $this->assertQueryResult(
+            'query ($value: String!) {
+              fieldWithNonNullableStringInput(input: $value)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$value" got invalid value [1,2,3]; Expected type String; ' .
+                            'String cannot represent a non-scalar value',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
+                    ]
                 ]
-            ]
-        ], $result->toArray());
+            ],
+            ['value' => [1, 2, 3]]
+        );
     }
 
-    //serializing an array via GraphQLString throws TypeError
     public function testSerializingAnArrayViaGraphQLStringThrowsTypeError()
     {
         $this->expectException(InvalidTypeException::class);
@@ -784,13 +692,6 @@ class VariablesTest extends TestCase
         stringType()->serialize([1, 2, 3]);
     }
 
-
-    /**
-     * Reports error for non-provided variables for non-nullable inputs
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testReportErrorForNonProvidedVariableForNonNullableInputs()
     {
         // Note: this test would typically fail validation before encountering
@@ -799,444 +700,323 @@ class VariablesTest extends TestCase
         // change to make a formerly non-required argument required, this asserts
         // failure before allowing the underlying code to receive a non-null value.
 
-        $query = '{
-          fieldWithNonNullableStringInput(input: $foo)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data'   => [
-                'fieldWithNonNullableStringInput' => null
-            ],
-            'errors' => [
-                [
-                    'message'   => 'Argument "input" of required type "String!" was provided the ' .
-                        'variable "$foo" which was not provided a runtime value.',
-                    'locations' => [
-                        [
-                            'line'   => 2,
-                            'column' => 50
-                        ]
-                    ],
-                    'path'      => ['fieldWithNonNullableStringInput']
+        $this->assertQueryResult(
+            '{
+              fieldWithNonNullableStringInput(input: $foo)
+            }',
+            [
+                'data'   => [
+                    'fieldWithNonNullableStringInput' => null
+                ],
+                'errors' => [
+                    [
+                        'message'   => 'Argument "input" of required type "String!" was provided the ' .
+                            'variable "$foo" which was not provided a runtime value.',
+                        'locations' => [
+                            [
+                                'line'   => 2,
+                                'column' => 54
+                            ]
+                        ],
+                        'path'      => ['fieldWithNonNullableStringInput']
+                    ]
                 ]
             ]
-        ], $result->toArray());
+        );
     }
 
     // HANDLES LISTS AND NULLABILITY
 
-    /**
-     * Allows lists to be null
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsListsToBeNull()
     {
-        $query = 'query ($input: [String]) {
-          list(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
-
-        $this->assertEquals([
-            'data' => [
-                'list' => null
+        $this->assertQueryResult(
+            'query ($input: [String]) {
+              list(input: $input)
+            }',
+            [
+                'data' => [
+                    'list' => 'null'
+                ],
             ],
-        ], $result->toArray());
+            ['input' => null]
+        );
     }
 
-    /**
-     * Allows lists to contain values
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsListsContainValues()
     {
-        $query = 'query ($input: [String]) {
-          list(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A']]);
-
-        $this->assertEquals([
-            'data' => [
-                'list' => '["A"]'
+        $this->assertQueryResult(
+            'query ($input: [String]) {
+              list(input: $input)
+            }',
+            [
+                'data' => [
+                    'list' => '["A"]'
+                ],
             ],
-        ], $result->toArray());
+            ['input' => ['A']]
+        );
     }
 
 
-    /**
-     * Allows lists to contain null
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsListsContainNull()
     {
-        $query = 'query ($input: [String]) {
-          list(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A', null, 'B']]);
-
-        $this->assertEquals([
-            'data' => [
-                'list' => '["A",null,"B"]'
+        $this->assertQueryResult(
+            'query ($input: [String]) {
+              list(input: $input)
+            }',
+            [
+                'data' => [
+                    'list' => '["A",null,"B"]'
+                ],
             ],
-        ], $result->toArray());
+            ['input' => ['A', null, 'B']]
+        );
     }
 
-    /**
-     * Does not allow non-null lists to be null
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testDoesNotAllowNonNullListsToBeNull()
     {
-        $query = 'query ($input: [String]!) {
-          nnList(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$input" got invalid value null; ' .
-                        'Expected non-nullable type [String]! not to be null.',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
+        $this->assertQueryResult(
+            'query ($input: [String]!) {
+              nnList(input: $input)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$input" of required type "[String]!" was not provided.',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
                     ],
-                    'path'      => []
-                ]
+                ],
             ],
-        ], $result->toArray());
+            ['input' => null]
+        );
     }
 
 
-    /**
-     * Allows non-null lists to contain values
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsNonNullListsToContainValues()
     {
-        $query = 'query ($input: [String]!) {
-          nnList(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A']]);
-
-        $this->assertEquals([
-            'data' => [
-                'nnList' => '["A"]'
-            ]
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($input: [String]!) {
+              nnList(input: $input)
+            }',
+            [
+                'data' => [
+                    'nnList' => '["A"]'
+                ]
+            ],
+            ['input' => ['A']]
+        );
     }
 
-    /**
-     * Allows lists of non-nulls to be null
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsListsOfNonNullsToBeNull()
     {
-        $query = 'query ($input: [String!]) {
-          listNN(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
-
-        $this->assertEquals([
-            'data' => [
-                'listNN' => null
-            ]
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($input: [String!]) {
+              listNN(input: $input)
+            }',
+            [
+                'data' => [
+                    'listNN' => 'null'
+                ]
+            ],
+            ['input' => null]
+        );
     }
 
-
-    /**
-     * Allows lists of non-nulls to contain values
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testAllowsListsOfNonNullsToContainValues()
     {
-        $query = 'query ($input: [String!]) {
-          listNN(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A']]);
-
-        $this->assertEquals([
-            'data' => [
-                'listNN' => '["A"]'
-            ]
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($input: [String!]) {
+              listNN(input: $input)
+            }',
+            [
+                'data' => [
+                    'listNN' => '["A"]'
+                ]
+            ],
+            ['input' => ['A']]
+        );
     }
 
-
-    /**
-     * Does not allow lists of non-nulls to contain null
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testDoesNotAllowsListsOfNonNullsToContainNull()
     {
-        $query = 'query ($input: [String!]) {
-          listNN(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A', null, 'B']]);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$input" got invalid value ["A",null,"B"]; ' .
-                        'Expected non-nullable type String! not to be null at value[1].',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
+        $this->assertQueryResult(
+            'query ($input: [String!]) {
+              listNN(input: $input)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$input" got invalid value ["A",null,"B"]; ' .
+                            'Expected non-nullable type String! not to be null at value[1].',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
                     ],
-                    'path'      => []
-                ]
+                ],
             ],
-        ], $result->toArray());
+            ['input' => ['A', null, 'B']]
+        );
     }
 
-    /**
-     * Does not allow non-null lists of non-nulls to be null
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testDoesNotAllowsListsOfNonNullsToBeNull()
     {
-        $query = 'query ($input: [String!]!) {
-          nnListNN(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => null]);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$input" got invalid value null; ' .
-                        'Expected non-nullable type [String!]! not to be null.',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
+        $this->assertQueryResult(
+            'query ($input: [String!]!) {
+              nnListNN(input: $input)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$input" of required type "[String!]!" was not provided.',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
                     ],
-                    'path'      => []
-                ]
+                ],
             ],
-        ], $result->toArray());
+            ['input' => null]
+        );
     }
 
-
-    /**
-     * Does not allow non-null lists of non-nulls to contain null
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testDoesNotAllowsNonNullListsOfNonNullsToContainNull()
     {
-        $query = 'query ($input: [String!]!) {
-          nnListNN(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, ['input' => ['A', null, 'B']]);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$input" got invalid value ["A",null,"B"]; ' .
-                        'Expected non-nullable type String! not to be null at value[1].',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
+        $this->assertQueryResult(
+            'query ($input: [String!]!) {
+              nnListNN(input: $input)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$input" got invalid value ["A",null,"B"]; ' .
+                            'Expected non-nullable type String! not to be null at value[1].',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
                     ],
-                    'path'      => []
-                ]
+                ],
             ],
-        ], $result->toArray());
+            ['input' => ['A', null, 'B']]
+        );
     }
 
-    /**
-     * Does not allow invalid types to be used as values
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testDoesNotAllowsInvalidTypesToBeUsedAsValues()
     {
-        $query = 'query ($input: TestType!) {
-          fieldWithObjectInput(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, [
-            'input' => [
-                'list' => [
-                    'A',
-                    null,
-                    'B'
-                ]
-            ]
-        ]);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$input" expected value of type "TestType!" which ' .
-                        'cannot be used as an input type.',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
-                    ],
-                    'path'      => []
-                ]
+        $this->assertQueryResult(
+            'query ($input: TestType!) {
+              fieldWithObjectInput(input: $input)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$input" expected value of type "TestType!" which ' .
+                            'cannot be used as an input type.',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
+                    ]
+                ],
             ],
-        ], $result->toArray());
+            ['input' => ['list' => ['A', null, 'B']]]
+        );
     }
 
-
-    /**
-     * Does not allow unknown types to be used as values
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testDoesNotAllowsUnknownTypesToBeUsedAsValues()
     {
-        $query = 'query ($input: UnknownType!) {
-          fieldWithObjectInput(input: $input)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)), null, null, [
-            'input' => 'whoknows'
-        ]);
-
-        $this->assertEquals([
-            'data'   => null,
-            'errors' => [
-                [
-                    'message'   => 'Variable "$input" expected value of type "UnknownType!" which ' .
-                        'cannot be used as an input type.',
-                    'locations' => [
-                        [
-                            'line'   => 1,
-                            'column' => 8
-                        ]
-                    ],
-                    'path'      => []
-                ]
+        $this->assertQueryResult(
+            'query ($input: UnknownType!) {
+              fieldWithObjectInput(input: $input)
+            }',
+            [
+                'data'   => null,
+                'errors' => [
+                    [
+                        'message'   => 'Variable "$input" expected value of type "UnknownType!" which ' .
+                            'cannot be used as an input type.',
+                        'locations' => [
+                            [
+                                'line'   => 1,
+                                'column' => 8
+                            ]
+                        ],
+                    ]
+                ],
             ],
-        ], $result->toArray());
+            ['input' => 'whoknows']
+        );
     }
 
     // Execute: Uses argument default values
 
-
-    /**
-     * When no argument provided
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testWhenNoArgumentProvided()
     {
-        $query = '{ fieldWithDefaultArgumentValue }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data' => ['fieldWithDefaultArgumentValue' => '"Hello World"']
-        ], $result->toArray());
+        $this->assertQueryResult(
+            '{ fieldWithDefaultArgumentValue }',
+            [
+                'data' => ['fieldWithDefaultArgumentValue' => '"Hello World"']
+            ]
+        );
     }
 
-    /**
-     * When omitted variable provided
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
-    public function testWhenOmittedVariableProvied()
+    public function testWhenOmittedVariableProvided()
     {
-        $query = 'query ($optional: String) {
-          fieldWithDefaultArgumentValue(input: $optional)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data' => ['fieldWithDefaultArgumentValue' => '"Hello World"']
-        ], $result->toArray());
+        $this->assertQueryResult(
+            'query ($optional: String) {
+              fieldWithDefaultArgumentValue(input: $optional)
+            }',
+            [
+                'data' => ['fieldWithDefaultArgumentValue' => '"Hello World"']
+            ]
+        );
     }
 
-    /**
-     * Not when argument cannot be coerced
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testNotWhenArgumentCannotBeCoerced()
     {
-        $query = '{
-          fieldWithDefaultArgumentValue(input: WRONG_TYPE)
-        }';
-
-        $result = execute($this->schema, parse(dedent($query)));
-
-        $this->assertEquals([
-            'data'   => [
-                'fieldWithDefaultArgumentValue' => null
-            ],
-            'errors' => [
-                [
-                    'message'   => 'Argument "input" has invalid value WRONG_TYPE.',
-                    'locations' => [
-                        [
-                            'line'   => 2,
-                            'column' => 48
-                        ]
-                    ],
-                    'path'      => ['fieldWithDefaultArgumentValue']
-                ]
-            ],
-        ], $result->toArray());
+        $this->assertQueryResult(
+            '{
+              fieldWithDefaultArgumentValue(input: WRONG_TYPE)
+            }',
+            [
+                'data'   => [
+                    'fieldWithDefaultArgumentValue' => null
+                ],
+                'errors' => [
+                    [
+                        'message'   => 'Argument "input" has invalid value WRONG_TYPE.',
+                        'locations' => [
+                            [
+                                'line'   => 2,
+                                'column' => 52
+                            ]
+                        ],
+                        'path'      => ['fieldWithDefaultArgumentValue']
+                    ]
+                ],
+            ]
+        );
     }
 
-    /**
-     * Custom DateTime scalar type.
-     *
-     * @throws \Digia\GraphQL\Error\InvariantException
-     * @throws \Digia\GraphQL\Error\SyntaxErrorException
-     */
     public function testCustomDateTimeScalarType()
     {
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -1246,7 +1026,7 @@ class VariablesTest extends TestCase
                 /** @noinspection PhpUndefinedMethodInspection */
                 return $value->format('Y-m-d');
             },
-            'parseValue' => function ($node) {
+            'parseValue'   => function ($node) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 return new \DateTime($node->getValue(), new \DateTimeZone('Europe/Helsinki'));
             },
@@ -1256,6 +1036,7 @@ class VariablesTest extends TestCase
             },
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestInputObject = newInputObjectType([
             'name'   => 'TestInputObject',
             'fields' => [
@@ -1266,6 +1047,7 @@ class VariablesTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $TestType = newObjectType([
             'name'   => 'TestType',
             'fields' => [
@@ -1273,20 +1055,33 @@ class VariablesTest extends TestCase
             ]
         ]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $schema = newSchema([
             'query' => $TestType
         ]);
 
-        $query = '{
-            fieldWithObjectInput(input: {c: "foo", d: "2018-01-01"})
-        }';
-
-        $result = execute($schema, parse($query));
-
-        $this->assertEquals([
-            'data' => [
-                'fieldWithObjectInput' => '{"c":"foo","d":{"date":"2018-01-01 00:00:00.000000","timezone_type":3,"timezone":"Europe\/Helsinki"}}'
+        $this->assertQueryResultWithSchema(
+            $schema,
+            '{
+              fieldWithObjectInput(input: {c: "foo", d: "2018-01-01"})
+            }',
+            [
+                'data' => [
+                    'fieldWithObjectInput' => '{"c":"foo","d":{"date":"2018-01-01 00:00:00.000000","timezone_type":3,"timezone":"Europe\/Helsinki"}}'
+                ]
             ]
-        ], $result->toArray());
+        );
+    }
+
+    /**
+     * @noinspection PhpDocMissingThrowsInspection
+     *
+     * @param string $query
+     * @param array  $expected
+     * @param array  $variables
+     */
+    protected function assertQueryResult(string $query, array $expected, array $variables = [])
+    {
+        $this->assertQueryResultWithSchema($this->schema, $query, $expected, null, null, $variables);
     }
 }

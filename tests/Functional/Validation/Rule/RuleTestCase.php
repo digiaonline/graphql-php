@@ -7,6 +7,7 @@ use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Test\TestCase;
 use Digia\GraphQL\Validation\Rule\RuleInterface;
 use Digia\GraphQL\Validation\ValidatorInterface;
+use function Digia\GraphQL\Language\dedent;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Test\Functional\Validation\testSchema;
 
@@ -52,13 +53,15 @@ abstract class RuleTestCase extends TestCase
 
     protected function expectValid($schema, $rules, $query)
     {
-        $errors = $this->validator->validate($schema, parse($query), $rules);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $errors = $this->validator->validate($schema, parse(dedent($query)), $rules);
         $this->assertEmpty($errors, 'Should validate');
     }
 
     protected function expectInvalid($schema, $rules, $query, $expectedErrors): array
     {
-        $errors = $this->validator->validate($schema, parse($query), $rules);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $errors = $this->validator->validate($schema, parse(dedent($query)), $rules);
         $this->assertTrue(count($errors) >= 1, 'Should not validate');
         $this->assertEquals($expectedErrors, array_map('Digia\GraphQL\Error\formatError', $errors));
         return $errors;

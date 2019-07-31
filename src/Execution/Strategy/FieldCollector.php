@@ -37,21 +37,14 @@ class FieldCollector
     protected $includeDirective;
 
     /**
-     * @var ValuesResolver
-     */
-    protected $valuesResolver;
-
-    /**
      * FieldCollector constructor.
      * @param ExecutionContext $context
-     * @param ValuesResolver   $valuesResolver
      */
-    public function __construct(ExecutionContext $context, ValuesResolver $valuesResolver)
+    public function __construct(ExecutionContext $context)
     {
         $this->context          = $context;
         $this->skipDirective    = SkipDirective();
         $this->includeDirective = IncludeDirective();
-        $this->valuesResolver   = $valuesResolver;
     }
 
     /**
@@ -131,13 +124,13 @@ class FieldCollector
     {
         $contextVariables = $this->context->getVariableValues();
 
-        $skip = $this->valuesResolver->coerceDirectiveValues($this->skipDirective, $node, $contextVariables);
+        $skip = ValuesResolver::coerceDirectiveValues($this->skipDirective, $node, $contextVariables);
 
         if ($skip && $skip['if'] === true) {
             return false;
         }
 
-        $include = $this->valuesResolver->coerceDirectiveValues($this->includeDirective, $node, $contextVariables);
+        $include = ValuesResolver::coerceDirectiveValues($this->includeDirective, $node, $contextVariables);
 
         if ($include && $include['if'] === false) {
             return false;

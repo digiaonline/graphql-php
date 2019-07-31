@@ -18,7 +18,7 @@ use function Digia\GraphQL\Validation\missingFieldArgumentMessage;
  * A field or directive is only valid if all required (non-null) field arguments
  * have been provided.
  */
-class ProvidedNonNullArgumentsRule extends AbstractRule
+class ProvidedRequiredArgumentsRule extends AbstractRule
 {
     // Validate on leave to allow for deeper errors to appear first.
 
@@ -41,8 +41,13 @@ class ProvidedNonNullArgumentsRule extends AbstractRule
         foreach ($fieldDefinition->getArguments() as $argumentDefinition) {
             $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;
             $argumentType = $argumentDefinition->getType();
+            $defaultValue = $argumentDefinition->getDefaultValue();
 
-            if (null === $argumentNode && $argumentType instanceof NonNullType) {
+            if (
+                null === $argumentNode
+                && $argumentType instanceof NonNullType
+                && null === $defaultValue
+            ) {
                 $this->context->reportError(
                     new ValidationException(
                         missingFieldArgumentMessage(

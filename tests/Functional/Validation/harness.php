@@ -260,6 +260,7 @@ function ComplexInput(): InputObjectType
             'name'   => 'ComplexInput',
             'fields' => [
                 'requiredField'   => ['type' => newNonNull(booleanType())],
+                'nonNullField'    => ['type' => newNonNull(booleanType()), 'defaultValue' => false],
                 'intField'        => ['type' => intType()],
                 'stringField'     => ['type' => stringType()],
                 'booleanField'    => ['type' => booleanType()],
@@ -324,6 +325,12 @@ function ComplicatedArgs(): ObjectType
                         'args' => [
                             'req1' => ['type' => newNonNull(intType())],
                             'req2' => ['type' => newNonNull(intType())],
+                        ],
+                    ],
+                    'nonNullFieldWithDefault'   => [
+                        'type' => stringType(),
+                        'args' => [
+                            'arg' => ['type' => newNonNull(intType()), 'defaultValue' => 0],
                         ],
                     ],
                     'multipleOpts'              => [

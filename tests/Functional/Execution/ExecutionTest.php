@@ -1011,7 +1011,6 @@ class ExecutionTest extends TestCase
                 [
                     'message'   => 'Must provide an operation.',
                     'locations' => null,
-                    'path'      => null
                 ]
             ]
         ], $result->toArray());
@@ -1048,7 +1047,6 @@ class ExecutionTest extends TestCase
                 [
                     'message'   => 'Must provide operation name if query contains multiple operations.',
                     'locations' => null,
-                    'path'      => null
                 ]
             ]
         ], $result->toArray());
@@ -1084,7 +1082,6 @@ class ExecutionTest extends TestCase
                 [
                     'message'   => 'Unknown operation named "UnknownExample".',
                     'locations' => null,
-                    'path'      => null
                 ]
             ]
         ], $result->toArray());

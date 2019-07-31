@@ -2,6 +2,7 @@
 
 namespace Digia\GraphQL\Util;
 
+use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
@@ -44,6 +45,11 @@ class TypeInfo
      * @var Field[]
      */
     protected $fieldDefinitionStack = [];
+
+    /**
+     * @var array
+     */
+    protected $defaultValueStack = [];
 
     /**
      * @var Directive
@@ -116,9 +122,12 @@ class TypeInfo
         $this->typeStack[] = $type;
     }
 
+    /**
+     *
+     */
     public function popType(): void
     {
-        array_pop($this->typeStack);
+        \array_pop($this->typeStack);
     }
 
     /**
@@ -137,9 +146,12 @@ class TypeInfo
         $this->parentTypeStack[] = $type;
     }
 
+    /**
+     *
+     */
     public function popParentType(): void
     {
-        array_pop($this->parentTypeStack);
+        \array_pop($this->parentTypeStack);
     }
 
     /**
@@ -158,9 +170,12 @@ class TypeInfo
         $this->inputTypeStack[] = $type;
     }
 
+    /**
+     * 
+     */
     public function popInputType(): void
     {
-        array_pop($this->inputTypeStack);
+        \array_pop($this->inputTypeStack);
     }
 
     /**
@@ -187,9 +202,12 @@ class TypeInfo
         $this->fieldDefinitionStack[] = $fieldDefinition;
     }
 
+    /**
+     * 
+     */
     public function popFieldDefinition(): void
     {
-        array_pop($this->fieldDefinitionStack);
+        \array_pop($this->fieldDefinitionStack);
     }
 
     /**
@@ -206,6 +224,30 @@ class TypeInfo
     public function getSchema(): Schema
     {
         return $this->schema;
+    }
+
+    /**
+     * @param mixed|null $defaultValue
+     */
+    public function pushDefaultValue($defaultValue): void
+    {
+        $this->defaultValueStack[] = $defaultValue;
+    }
+
+    /**
+     *
+     */
+    public function popDefaultValue(): void
+    {
+        \array_pop($this->defaultValueStack);
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getDefaultValue()
+    {
+        return $this->getFromStack($this->defaultValueStack, 1);
     }
 
     /**
@@ -274,6 +316,7 @@ class TypeInfo
  * @param TypeInterface $parentType
  * @param FieldNode     $fieldNode
  * @return Field|null
+ * @throws InvariantException
  */
 function getFieldDefinition(Schema $schema, TypeInterface $parentType, FieldNode $fieldNode): ?Field
 {

@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Schema;
 
 use Digia\GraphQL\Error\InvalidTypeException;
 use Digia\GraphQL\Error\InvariantException;
+use Digia\GraphQL\Execution\ExecutionException;
 use Digia\GraphQL\Execution\ValuesResolver;
 use Digia\GraphQL\Language\LanguageException;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
@@ -24,7 +25,6 @@ use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
-use Digia\GraphQL\Type\Coercer\CoercingException;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -77,11 +77,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     protected $directives;
 
     /**
-     * @var ValuesResolver
-     */
-    protected $valuesResolver;
-
-    /**
      * DefinitionBuilder constructor.
      * @param array                          $typeDefinitionsMap
      * @param ResolverRegistryInterface|null $resolverRegistry
@@ -102,8 +97,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
 
         $this->registerTypes($types);
         $this->registerDirectives($directives);
-
-        $this->valuesResolver = new ValuesResolver();
     }
 
     /**
@@ -255,7 +248,6 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param array $nodes
      * @return array
-     * @throws CoercingException
      */
     protected function buildArguments(array $nodes): array
     {
@@ -536,14 +528,13 @@ class DefinitionBuilder implements DefinitionBuilderInterface
     /**
      * @param NodeInterface|EnumValueDefinitionNode|FieldDefinitionNode $node
      * @return null|string
-     * @throws InvalidTypeException
      * @throws InvariantException
-     * @throws \Digia\GraphQL\Execution\ExecutionException
+     * @throws ExecutionException
      */
     protected function getDeprecationReason(NodeInterface $node): ?string
     {
         if (isset($this->directives['deprecated'])) {
-            $deprecated = $this->valuesResolver->coerceDirectiveValues($this->directives['deprecated'], $node);
+            $deprecated = ValuesResolver::coerceDirectiveValues($this->directives['deprecated'], $node);
 
             return $deprecated['reason'] ?? null;
         }

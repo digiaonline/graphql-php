@@ -35,7 +35,6 @@ class ExecutionResultTest extends TestCase
                 [
                     'message'   => 'Error',
                     'locations' => null,
-                    'path'      => null
                 ]
             ],
             'data'   => ['foo' => 'bar'],
@@ -48,13 +47,11 @@ class ExecutionResultTest extends TestCase
             'errors' => [
                 [
                     'message'   => 'Error',
-                    'locations' => null,
-                    'path'      => null
+                    'locations' => null
                 ],
                 [
                     'message'   => 'Another error',
-                    'locations' => null,
-                    'path'      => null
+                    'locations' => null
                 ]
             ],
             'data'   => ['foo' => 'bar'],

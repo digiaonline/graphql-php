@@ -33,14 +33,6 @@ class ValueASTConverterTest extends TestCase
         $this->converter = new ValueASTConverter();
     }
 
-    public function testConvertNull()
-    {
-        $this->expectException(ConversionException::class);
-        $this->expectExceptionMessage('Node is not defined.');
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $this->converter->convert(null, stringType());
-    }
-
     public function testConvertNonNullWithStringValue()
     {
         $node = new StringValueNode('foo', false, null);

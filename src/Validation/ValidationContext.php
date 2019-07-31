@@ -250,7 +250,11 @@ class ValidationContext implements ValidationContextInterface
                 }
 
                 if ($node instanceof VariableNode) {
-                    $usages[] = ['node' => $node, 'type' => $typeInfo->getInputType()];
+                    $usages[] = [
+                        'node'         => $node,
+                        'type'         => $typeInfo->getInputType(),
+                        'defaultValue' => $typeInfo->getDefaultValue(),
+                    ];
                 }
 
                 return new VisitorResult($node);
