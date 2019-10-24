@@ -166,7 +166,7 @@ function dedent(string $str): string
  */
 function printBlockString(string $value, string $indentation = '', bool $preferMultipleLines = false): string {
     $isSingleLine = false === \strpos($value, "\n");
-    $hasLeadingSpace = $value{0} === ' ' || $value{0} === "\t";
+    $hasLeadingSpace = $value[0] === ' ' || $value[0] === "\t";
     $hasTrailingQuote = $value[\strlen($value) - 1] === '"';
     $printAsMultipleLines = !$isSingleLine || $hasTrailingQuote || $preferMultipleLines;
 
