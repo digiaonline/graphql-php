@@ -9,4 +9,8 @@ use Digia\GraphQL\Schema\DefinitionInterface;
  */
 interface TypeInterface extends DefinitionInterface
 {
+    /**
+     * @return string
+     */
+    public function __toString(): string;
 }
