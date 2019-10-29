@@ -11,7 +11,7 @@ use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputField;
 use Digia\GraphQL\Type\Definition\InputObjectType;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;

@@ -10,7 +10,7 @@ use GraphQL\Contracts\TypeSystem\Type\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
