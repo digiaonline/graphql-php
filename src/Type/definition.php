@@ -71,9 +71,15 @@ function assertType($type)
  */
 function isInputType(?TypeInterface $type): bool
 {
-    return null !== $type &&
-        ($type instanceof InputTypeInterface ||
-            ($type instanceof WrappingTypeInterface && isInputType($type->getOfType())));
+    if (null === $type) {
+        return false;
+    }
+
+    if ($type instanceof WrappingTypeInterface) {
+        return isInputType($type->getOfType());
+    }
+
+    return $type instanceof InputTypeInterface;
 }
 
 /**
@@ -85,9 +91,15 @@ function isInputType(?TypeInterface $type): bool
  */
 function isOutputType(?TypeInterface $type): bool
 {
-    return null !== $type &&
-        ($type instanceof OutputTypeInterface ||
-            ($type instanceof WrappingTypeInterface && isOutputType($type->getOfType())));
+    if (null === $type) {
+        return false;
+    }
+
+    if ($type instanceof WrappingTypeInterface) {
+        return isOutputType($type->getOfType());
+    }
+
+    return $type instanceof OutputTypeInterface;
 }
 
 /**
