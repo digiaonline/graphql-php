@@ -56,17 +56,17 @@ class Schema extends Definition implements SchemaInterface
     use ASTNodeTrait;
 
     /**
-     * @var ObjectType|null
+     * @var ObjectTypeInterface|null
      */
     protected $queryType;
 
     /**
-     * @var ObjectType|null
+     * @var ObjectTypeInterface|null
      */
     protected $mutationType;
 
     /**
-     * @var ObjectType|null
+     * @var ObjectTypeInterface|null
      */
     protected $subscriptionType;
 
@@ -76,7 +76,7 @@ class Schema extends Definition implements SchemaInterface
     protected $types = [];
 
     /**
-     * @var array
+     * @var DirectiveInterface[]
      */
     protected $directives = [];
 
@@ -91,7 +91,7 @@ class Schema extends Definition implements SchemaInterface
     protected $typeMap = [];
 
     /**
-     * @var array
+     * @var NamedTypeInterface[]
      */
     protected $implementations = [];
 
@@ -103,20 +103,20 @@ class Schema extends Definition implements SchemaInterface
     /**
      * Schema constructor.
      *
-     * @param ObjectType|null                                        $queryType
-     * @param ObjectType|null                                        $mutationType
-     * @param ObjectType|null                                        $subscriptionType
+     * @param ObjectTypeInterface|null                               $queryType
+     * @param ObjectTypeInterface|null                               $mutationType
+     * @param ObjectTypeInterface|null                               $subscriptionType
      * @param TypeInterface[]                                        $types
-     * @param Directive[]                                            $directives
+     * @param DirectiveInterface[]                                   $directives
      * @param bool                                                   $assumeValid
      * @param SchemaDefinitionNode|null                              $astNode
      * @param ObjectTypeExtensionNode[]|InterfaceTypeExtensionNode[] $extensionASTNodes
      * @throws InvariantException
      */
     public function __construct(
-        ?ObjectType $queryType,
-        ?ObjectType $mutationType,
-        ?ObjectType $subscriptionType,
+        ?ObjectTypeInterface $queryType,
+        ?ObjectTypeInterface $mutationType,
+        ?ObjectTypeInterface $subscriptionType,
         array $types,
         array $directives,
         bool $assumeValid,
@@ -139,7 +139,7 @@ class Schema extends Definition implements SchemaInterface
     }
 
     /**
-     * @return ObjectType|null
+     * @return ObjectTypeInterface|null
      */
     public function getQueryType(): ?ObjectTypeInterface
     {
@@ -147,7 +147,7 @@ class Schema extends Definition implements SchemaInterface
     }
 
     /**
-     * @return ObjectType|null
+     * @return ObjectTypeInterface|null
      */
     public function getMutationType(): ?ObjectTypeInterface
     {
@@ -155,7 +155,7 @@ class Schema extends Definition implements SchemaInterface
     }
 
     /**
-     * @return ObjectType|null
+     * @return ObjectTypeInterface|null
      */
     public function getSubscriptionType(): ?ObjectTypeInterface
     {
@@ -164,7 +164,7 @@ class Schema extends Definition implements SchemaInterface
 
     /**
      * @param string $name
-     * @return Directive|null
+     * @return DirectiveInterface|null
      */
     public function getDirective(string $name): ?DirectiveInterface
     {
@@ -174,7 +174,7 @@ class Schema extends Definition implements SchemaInterface
     }
 
     /**
-     * @return array
+     * @return DirectiveInterface[]
      */
     public function getDirectives(): array
     {
@@ -182,9 +182,9 @@ class Schema extends Definition implements SchemaInterface
     }
 
     /**
-     * @return array
+     * @return NamedTypeInterface[]
      */
-    public function getTypeMap(): iterable
+    public function getTypeMap(): array
     {
         return $this->typeMap;
     }
@@ -224,8 +224,9 @@ class Schema extends Definition implements SchemaInterface
 
             $this->possibleTypesMap[$abstractTypeName] = \array_reduce(
                 $possibleTypes,
-                function (array $map, NamedTypeInterface $type) {
+                static function (array $map, NamedTypeInterface $type): array {
                     $map[$type->getName()] = true;
+
                     return $map;
                 },
                 []
@@ -240,7 +241,7 @@ class Schema extends Definition implements SchemaInterface
      * @return NamedTypeInterface[]
      * @throws InvariantException
      */
-    public function getPossibleTypes(AbstractTypeContract $abstractType): iterable
+    public function getPossibleTypes(AbstractTypeContract $abstractType): array
     {
         assert($abstractType instanceof NamedTypeInterface);
 
@@ -261,7 +262,7 @@ class Schema extends Definition implements SchemaInterface
     }
 
     /**
-     *
+     * @return void
      */
     protected function buildTypeMap(): void
     {
@@ -390,7 +391,6 @@ class Schema extends Definition implements SchemaInterface
      * @param array     $map
      * @param Directive $directive
      * @return array
-     * @throws InvariantException
      */
     protected function typeMapDirectiveReducer(array $map, Directive $directive): array
     {
