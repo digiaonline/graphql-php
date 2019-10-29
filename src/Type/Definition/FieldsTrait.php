@@ -9,6 +9,9 @@ use function Digia\GraphQL\Type\newField;
 use function Digia\GraphQL\Type\resolveThunk;
 use function Digia\GraphQL\Util\toString;
 
+/**
+ * @mixin FieldsAwareInterface
+ */
 trait FieldsTrait
 {
     /**

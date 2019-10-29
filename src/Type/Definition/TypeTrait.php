@@ -2,8 +2,12 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use GraphQL\Contracts\TypeSystem\Common\TypeAwareInterface;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
+/**
+ * @mixin TypeAwareInterface
+ */
 trait TypeTrait
 {
     /**

@@ -2,6 +2,11 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use GraphQL\Contracts\TypeSystem\Common\NameAwareInterface;
+
+/**
+ * @mixin NameAwareInterface
+ */
 trait NameTrait
 {
     /**
@@ -18,7 +23,7 @@ trait NameTrait
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     public function __toString(): string
     {

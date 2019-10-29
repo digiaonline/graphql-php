@@ -9,10 +9,7 @@ use Digia\GraphQL\Schema\Definition;
 use GraphQL\Contracts\TypeSystem\ArgumentInterface;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
-class Argument extends Definition implements
-    ArgumentInterface,
-    InputValueInterface,
-    ASTNodeAwareInterface
+class Argument extends Definition implements ArgumentInterface, InputValueInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use TypeTrait;
