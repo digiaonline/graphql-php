@@ -6,15 +6,13 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
 use Digia\GraphQL\Schema\Definition;
-use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
-use GraphQL\Contracts\TypeSystem\Common\TypeAwareInterface;
+use GraphQL\Contracts\TypeSystem\ArgumentInterface;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 class Argument extends Definition implements
-    TypeAwareInterface,
+    ArgumentInterface,
     InputValueInterface,
-    ASTNodeAwareInterface,
-    DescriptionAwareInterface
+    ASTNodeAwareInterface
 {
     use NameTrait;
     use TypeTrait;
