@@ -3,9 +3,14 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Error\InvariantException;
+use GraphQL\Contracts\TypeSystem\ArgumentInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newArgument;
+use GraphQL\Contracts\TypeSystem\Common\ArgumentsAwareInterface as ArgumentsAwareContract;
 
+/**
+ * @mixin ArgumentsAwareContract
+ */
 trait ArgumentsTrait
 {
     /**
@@ -14,14 +19,14 @@ trait ArgumentsTrait
     protected $rawArguments = [];
 
     /**
-     * @var Argument[]
+     * @var ArgumentInterface[]
      */
     protected $arguments;
 
     /**
      * @return string
      */
-    public abstract function getName(): string;
+    abstract public function getName(): string;
 
     /**
      * @return array
@@ -42,7 +47,7 @@ trait ArgumentsTrait
     /**
      * @return Argument[]
      */
-    public function getArguments(): array
+    public function getArguments(): iterable
     {
         return $this->arguments;
     }
@@ -72,5 +77,23 @@ trait ArgumentsTrait
         }
 
         return $arguments;
+    }
+
+    /**
+     * @param string $name
+     * @return ArgumentInterface|null
+     */
+    public function getArgument(string $name): ?ArgumentInterface
+    {
+        return $this->arguments[$name] ?? null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasArgument(string $name): bool
+    {
+        return isset($this->arguments[$name]);
     }
 }

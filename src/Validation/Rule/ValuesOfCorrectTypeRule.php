@@ -120,7 +120,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
         });
 
         foreach ($inputFields as $fieldName => $field) {
-            $fieldType = $field->getType();
+            $fieldType = $field->getNullableType();
             $fieldNode = $fieldNodeMap[$fieldName] ?? null;
             $fieldDefaultValue = $field->getDefaultValue();
 

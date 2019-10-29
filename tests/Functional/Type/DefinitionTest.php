@@ -257,34 +257,34 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $articleField = $this->blogQuery->getFields()['article'];
 
-        $this->assertEquals($this->blogArticle, $articleField->getType());
-        $this->assertEquals($this->blogArticle->getName(), $articleField->getType()->getName());
+        $this->assertEquals($this->blogArticle, $articleField->getNullableType());
+        $this->assertEquals($this->blogArticle->getName(), $articleField->getNullableType()->getName());
         $this->assertSame('article', $articleField->getName());
 
         /** @var ObjectType $articleFieldType */
-        $articleFieldType = $articleField->getType();
+        $articleFieldType = $articleField->getNullableType();
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $titleField = $articleFieldType->getFields()['title'];
         $this->assertSame('title', $titleField->getName());
-        $this->assertSame(stringType(), $titleField->getType());
-        $this->assertSame('String', $titleField->getType()->getName());
+        $this->assertSame(stringType(), $titleField->getNullableType());
+        $this->assertSame('String', $titleField->getNullableType()->getName());
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $authorField = $articleFieldType->getFields()['author'];
 
         /** @var ObjectType $authorFieldType */
-        $authorFieldType = $authorField->getType();
+        $authorFieldType = $authorField->getNullableType();
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $recentArticleField = $authorFieldType->getFields()['recentArticle'];
-        $this->assertEquals($this->blogArticle, !$recentArticleField ?: $recentArticleField->getType());
+        $this->assertEquals($this->blogArticle, !$recentArticleField ?: $recentArticleField->getNullableType());
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $feedField = $this->blogQuery->getFields()['feed'];
 
         /** @var ListType $feedFieldType */
-        $feedFieldType = $feedField->getType();
+        $feedFieldType = $feedField->getNullableType();
         $this->assertEquals($this->blogArticle, $feedFieldType->getOfType());
 
         $this->assertSame('feed', $feedField->getName());
@@ -304,8 +304,8 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $writeArticleField = $this->blogMutation->getFields()['writeArticle'];
 
-        $this->assertEquals($this->blogArticle, $writeArticleField->getType());
-        $this->assertSame('Article', $writeArticleField->getType()->getName());
+        $this->assertEquals($this->blogArticle, $writeArticleField->getNullableType());
+        $this->assertSame('Article', $writeArticleField->getNullableType()->getName());
         $this->assertSame('writeArticle', $writeArticleField->getName());
     }
 
@@ -323,8 +323,8 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $articleSubscribeField = $this->blogSubscription->getFields()['articleSubscribe'];
 
-        $this->assertEquals($this->blogArticle, $articleSubscribeField->getType());
-        $this->assertSame('Article', $articleSubscribeField->getType()->getName());
+        $this->assertEquals($this->blogArticle, $articleSubscribeField->getNullableType());
+        $this->assertSame('Article', $articleSubscribeField->getNullableType()->getName());
         $this->assertSame('articleSubscribe', $articleSubscribeField->getName());
     }
 
@@ -384,7 +384,7 @@ class DefinitionTest extends TestCase
         /** @noinspection PhpUnhandledExceptionInspection */
         $field = $typeWithDeprecatedField->getFields()['bar'];
 
-        $this->assertSame(stringType(), $field->getType());
+        $this->assertSame(stringType(), $field->getNullableType());
         $this->assertSame('A terrible reason', $field->getDeprecationReason());
         $this->assertTrue($field->isDeprecated());
         $this->assertSame('bar', $field->getName());
@@ -654,7 +654,7 @@ class DefinitionTest extends TestCase
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->assertEquals(stringType(), $objectType->getField('f')->getType());
+        $this->assertEquals(stringType(), $objectType->getField('f')->getNullableType());
     }
 
     // rejects an Object type field with undefined config
@@ -1377,7 +1377,7 @@ class DefinitionTest extends TestCase
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $field = $inputObjectType->getField('f');
-        $this->assertEquals(stringType(), $field->getType());
+        $this->assertEquals(stringType(), $field->getNullableType());
     }
 
     // accepts an Input Object type with a field function
@@ -1394,7 +1394,7 @@ class DefinitionTest extends TestCase
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $field = $inputObjectType->getField('f');
-        $this->assertEquals(stringType(), $field->getType());
+        $this->assertEquals(stringType(), $field->getNullableType());
     }
 
     // rejects an Input Object type with incorrect fields

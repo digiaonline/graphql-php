@@ -132,7 +132,7 @@ class ValueConverter
 
         foreach ($fields as $field) {
             $fieldName  = $field->getName();
-            $fieldValue = self::convert($value[$fieldName], $field->getType());
+            $fieldValue = self::convert($value[$fieldName], $field->getNullableType());
 
             if (null !== $fieldValue) {
                 $nodes[] = new ObjectFieldNode(new NameNode($fieldName, null), $fieldValue, null);

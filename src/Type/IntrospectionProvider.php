@@ -8,7 +8,7 @@ use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
-use Digia\GraphQL\Type\Definition\ArgumentsAwareInterface;
+use GraphQL\Contracts\TypeSystem\Common\ArgumentsAwareInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;

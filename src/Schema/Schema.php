@@ -13,6 +13,7 @@ use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\ExtensionASTNodesTrait;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
+use GraphQL\Contracts\TypeSystem\Common\TypeAwareInterface;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
@@ -357,19 +358,19 @@ class Schema extends Definition implements DefinitionInterface
                 foreach ($type->getFields() as $field) {
                     if ($field->hasArguments()) {
                         $fieldArgTypes = \array_map(function (Argument $argument) {
-                            return $argument->getType();
+                            return $argument->getNullableType();
                         }, $field->getArguments());
 
                         $reducedMap = \array_reduce($fieldArgTypes, [$this, 'typeMapReducer'], $reducedMap);
                     }
 
-                    $reducedMap = $this->typeMapReducer($reducedMap, $field->getType());
+                    $reducedMap = $this->typeMapReducer($reducedMap, $field->getNullableType());
                 }
             }
 
             if ($type instanceof InputObjectType) {
                 foreach ($type->getFields() as $field) {
-                    $reducedMap = $this->typeMapReducer($reducedMap, $field->getType());
+                    $reducedMap = $this->typeMapReducer($reducedMap, $field->getNullableType());
                 }
             }
 
@@ -392,7 +393,7 @@ class Schema extends Definition implements DefinitionInterface
         }
 
         return \array_reduce($directive->getArguments(), function ($map, Argument $argument) {
-            return $this->typeMapReducer($map, $argument->getType());
+            return $this->typeMapReducer($map, $argument->getNullableType());
         }, $map);
     }
 

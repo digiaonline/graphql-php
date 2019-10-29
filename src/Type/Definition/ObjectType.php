@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
 use GraphQL\Contracts\TypeSystem\Type\CompositeTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
@@ -57,7 +58,6 @@ class ObjectType extends Definition implements
     CompositeTypeInterface,
     OutputTypeInterface,
     ASTNodeAwareInterface,
-    DescriptionAwareInterface,
     FieldsAwareInterface
 {
     use NameTrait;

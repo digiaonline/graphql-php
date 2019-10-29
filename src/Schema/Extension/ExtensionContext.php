@@ -375,7 +375,7 @@ class ExtensionContext implements ExtensionContextInterface
             $newFieldMap[$fieldName] = [
                 'description'       => $field->getDescription(),
                 'deprecationReason' => $field->getDeprecationReason(),
-                'type'              => $this->extendFieldType($field->getType()),
+                'type'              => $this->extendFieldType($field->getNullableType()),
                 'args'              => $field->getRawArguments(),
                 'astNode'           => $field->getAstNode(),
                 'resolve'           => $field->getResolveCallback(),

@@ -40,7 +40,7 @@ class ProvidedRequiredArgumentsRule extends AbstractRule
 
         foreach ($fieldDefinition->getArguments() as $argumentDefinition) {
             $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;
-            $argumentType = $argumentDefinition->getType();
+            $argumentType = $argumentDefinition->getNullableType();
             $defaultValue = $argumentDefinition->getDefaultValue();
 
             if (
@@ -82,7 +82,7 @@ class ProvidedRequiredArgumentsRule extends AbstractRule
 
         foreach ($directiveDefinition->getArguments() as $argumentDefinition) {
             $argumentNode = $argumentNodeMap[$argumentDefinition->getName()] ?? null;
-            $argumentType = $argumentDefinition->getType();
+            $argumentType = $argumentDefinition->getNullableType();
 
             if (null === $argumentNode && $argumentType instanceof NonNullType) {
                 $this->context->reportError(

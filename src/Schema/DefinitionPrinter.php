@@ -5,8 +5,8 @@ namespace Digia\GraphQL\Schema;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\PrintException;
 use Digia\GraphQL\Type\Definition\Argument;
-use Digia\GraphQL\Type\Definition\DeprecationAwareInterface;
-use Digia\GraphQL\Type\Definition\DescriptionAwareInterface;
+use GraphQL\Contracts\TypeSystem\Common\DeprecationAwareInterface;
+use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
@@ -434,7 +434,7 @@ class DefinitionPrinter implements DefinitionPrinterInterface
             $description  = $this->printDescription($field, '  ', $firstInBlock);
             $name         = $field->getName();
             $arguments    = $this->printArguments($field->getArguments());
-            $type         = (string)$field->getType();
+            $type         = (string)$field->getNullableType();
             $deprecated   = $this->printDeprecated($field);
             $firstInBlock = false;
 

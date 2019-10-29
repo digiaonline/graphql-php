@@ -73,7 +73,7 @@ class TypeInfoVisitor implements VisitorInterface
             if (null !== $parentType) {
                 $fieldDefinition = $this->typeInfo->resolveFieldDefinition($schema, $parentType, $node);
                 if (null !== $fieldDefinition) {
-                    $fieldType = $fieldDefinition->getType();
+                    $fieldType = $fieldDefinition->getNullableType();
                 }
             }
             $this->typeInfo->pushFieldDefinition($fieldDefinition);
@@ -114,7 +114,7 @@ class TypeInfoVisitor implements VisitorInterface
                     }
                 );
                 if (null !== $argumentDefinition) {
-                    $argumentType = $argumentDefinition->getType();
+                    $argumentType = $argumentDefinition->getNullableType();
                 }
             }
             $this->typeInfo->setArgument($argumentDefinition);
@@ -136,7 +136,7 @@ class TypeInfoVisitor implements VisitorInterface
                 $fields     = $objectType->getFields();
                 $inputField = $fields[$node->getNameValue()] ?? null;
                 if (null !== $inputField) {
-                    $inputFieldType = $inputField->getType();
+                    $inputFieldType = $inputField->getNullableType();
                 }
             }
             $this->typeInfo->pushDefaultValue(null !== $inputField ? $inputField->getDefaultValue() : null);

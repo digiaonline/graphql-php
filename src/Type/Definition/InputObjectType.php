@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
 use GraphQL\Contracts\TypeSystem\Type\InputTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use function Digia\GraphQL\Type\isAssocArray;
@@ -35,7 +36,6 @@ use function Digia\GraphQL\Type\resolveThunk;
 class InputObjectType extends Definition implements
     NamedTypeInterface,
     InputTypeInterface,
-    DescriptionAwareInterface,
     ASTNodeAwareInterface
 {
     use NameTrait;

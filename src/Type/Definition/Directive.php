@@ -7,11 +7,9 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\DirectiveDefinitionNode;
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\DirectiveInterface;
 
-class Directive extends Definition implements
-    ASTNodeAwareInterface,
-    ArgumentsAwareInterface,
-    DescriptionAwareInterface
+class Directive extends Definition implements DirectiveInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -52,10 +50,26 @@ class Directive extends Definition implements
     }
 
     /**
-     * @return string[]
+     * {@inheritDoc}
      */
     public function getLocations(): array
     {
         return $this->locations;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function hasLocation(string $name): bool
+    {
+        return isset($this->locations[$name]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isRepeatable(): bool
+    {
+        throw new \LogicException(__METHOD__ . ' not supported yet');
     }
 }

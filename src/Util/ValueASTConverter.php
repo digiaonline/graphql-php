@@ -198,13 +198,13 @@ class ValueASTConverter
             if (null === $fieldNode || self::isMissingVariable($fieldNode->getValue(), $variables)) {
                 if (null !== $field->getDefaultValue()) {
                     $values[$name] = $field->getDefaultValue();
-                } elseif ($field->getType() instanceof NonNullType) {
+                } elseif ($field->getNullableType() instanceof NonNullType) {
                     throw new ConversionException('Cannot convert input object value for missing non-null field.');
                 }
                 continue;
             }
 
-            $fieldValue = self::convert($fieldNode->getValue(), $field->getType(), $variables);
+            $fieldValue = self::convert($fieldNode->getValue(), $field->getNullableType(), $variables);
 
             $values[$name] = $fieldValue;
         }

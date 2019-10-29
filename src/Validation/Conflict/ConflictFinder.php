@@ -572,8 +572,8 @@ class ConflictFinder
         }
 
         // The return type for each field.
-        $typeA = null !== $definitionA ? $definitionA->getType() : null;
-        $typeB = null !== $definitionB ? $definitionB->getType() : null;
+        $typeA = null !== $definitionA ? $definitionA->getNullableType() : null;
+        $typeB = null !== $definitionB ? $definitionB->getNullableType() : null;
 
         if (null !== $typeA && null !== $typeB && TypeHelper::compareTypes($typeA, $typeB)) {
             return new Conflict(

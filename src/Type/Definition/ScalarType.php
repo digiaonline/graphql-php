@@ -18,8 +18,7 @@ class ScalarType extends Definition implements
     InputTypeInterface,
     OutputTypeInterface,
     SerializableTypeInterface,
-    ASTNodeAwareInterface,
-    DescriptionAwareInterface
+    ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

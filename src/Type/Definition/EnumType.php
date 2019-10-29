@@ -9,6 +9,7 @@ use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
 use GraphQL\Contracts\TypeSystem\Type\InputTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\LeafTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
@@ -44,7 +45,6 @@ class EnumType extends Definition implements
     LeafTypeInterface,
     OutputTypeInterface,
     SerializableTypeInterface,
-    DescriptionAwareInterface,
     ASTNodeAwareInterface
 {
     use NameTrait;

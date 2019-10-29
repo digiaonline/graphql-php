@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
 use GraphQL\Contracts\TypeSystem\Type\CompositeTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
@@ -39,8 +40,7 @@ class UnionType extends Definition implements
     AbstractTypeInterface,
     CompositeTypeInterface,
     OutputTypeInterface,
-    ASTNodeAwareInterface,
-    DescriptionAwareInterface
+    ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

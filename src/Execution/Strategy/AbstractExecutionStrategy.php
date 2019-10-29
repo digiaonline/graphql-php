@@ -204,7 +204,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
         );
 
         $result = $this->completeValueCatchingError(
-            $field->getType(),
+            $field->getNullableType(),
             $fieldNodes,
             $info,
             $path,
@@ -818,7 +818,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
         return new ResolveInfo(
             $fieldNode->getNameValue(),
             $fieldNodes,
-            $field->getType(),
+            $field->getNullableType(),
             $parentType,
             $path,
             $context->getSchema(),

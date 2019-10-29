@@ -68,7 +68,7 @@ class ValuesResolver
 
         foreach ($argumentDefinitions as $argumentDefinition) {
             $argumentName  = $argumentDefinition->getName();
-            $argumentType  = $argumentDefinition->getType();
+            $argumentType  = $argumentDefinition->getNullableType();
             $argumentNode  = $argumentNodeMap[$argumentName] ?? null;
             $defaultValue  = $argumentDefinition->getDefaultValue();
             $argumentValue = null !== $argumentNode ? $argumentNode->getValue() : null;
@@ -466,7 +466,7 @@ class ValuesResolver
 
         // Ensure every defined field is valid.
         foreach ($fields as $field) {
-            $fieldType = $field->getType();
+            $fieldType = $field->getNullableType();
 
             if (!isset($value[$field->getName()])) {
                 if (!empty($field->getDefaultValue())) {
