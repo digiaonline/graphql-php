@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Validation\Conflict;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Field;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 
 class FieldContext
 {

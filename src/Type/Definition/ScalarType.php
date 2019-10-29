@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 
 class ScalarType extends Definition implements
     NamedTypeInterface,

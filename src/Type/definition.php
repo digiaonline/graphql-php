@@ -14,7 +14,7 @@ use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;

@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newInputField;
 use function Digia\GraphQL\Type\resolveThunk;

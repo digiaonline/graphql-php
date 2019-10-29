@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Schema\Validation\Rule;
 
 use Digia\GraphQL\Schema\Validation\SchemaValidationException;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 
 class RootTypesRule extends AbstractRule

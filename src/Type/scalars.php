@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Type;
 
 use Digia\GraphQL\GraphQL;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use function Digia\GraphQL\Util\arraySome;
 

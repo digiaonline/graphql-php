@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\resolveThunk;
 

@@ -11,7 +11,7 @@ use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Type\Definition\InterfaceType;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\TypeHelper;

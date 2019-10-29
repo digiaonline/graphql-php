@@ -15,7 +15,7 @@ use Digia\GraphQL\Type\Definition\InputField;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InputValueInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;

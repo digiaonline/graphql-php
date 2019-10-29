@@ -5,7 +5,7 @@ namespace Digia\GraphQL\Type;
 use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use function Digia\GraphQL\Util\arraySome;
 
