@@ -6,13 +6,9 @@ use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\EnumValueDefinitionNode;
 use Digia\GraphQL\Schema\Definition;
-use GraphQL\Contracts\TypeSystem\Common\DeprecationAwareInterface;
-use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
+use GraphQL\Contracts\TypeSystem\EnumValueInterface;
 
-class EnumValue extends Definition implements
-    ASTNodeAwareInterface,
-    DescriptionAwareInterface,
-    DeprecationAwareInterface
+class EnumValue extends Definition implements EnumValueInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
