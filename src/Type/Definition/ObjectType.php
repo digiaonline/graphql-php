@@ -8,10 +8,8 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Schema\Definition;
-use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
-use GraphQL\Contracts\TypeSystem\Type\CompositeTypeInterface;
-use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
-use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\InterfaceTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\ObjectTypeInterface;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\resolveThunk;
 
@@ -53,12 +51,7 @@ use function Digia\GraphQL\Type\resolveThunk;
  *       }
  *     ]);
  */
-class ObjectType extends Definition implements
-    NamedTypeInterface,
-    CompositeTypeInterface,
-    OutputTypeInterface,
-    ASTNodeAwareInterface,
-    FieldsAwareInterface
+class ObjectType extends Definition implements ObjectTypeInterface, FieldsAwareInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -136,6 +129,26 @@ class ObjectType extends Definition implements
     public function hasInterfaces(): bool
     {
         return !empty($this->getInterfaces());
+    }
+
+    /**
+     * @param string $name
+     * @return InterfaceTypeInterface|null
+     * @throws InvariantException
+     */
+    public function getInterface(string $name): ?InterfaceTypeInterface
+    {
+        return $this->getInterfaces()[$name] ?? null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     * @throws InvariantException
+     */
+    public function hasInterface(string $name): bool
+    {
+        return $this->getInterface($name) !== null;
     }
 
     /**
