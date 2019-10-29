@@ -2,7 +2,11 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-class NonNullType implements TypeInterface, WrappingTypeInterface
+use Digia\GraphQL\Schema\Definition;
+
+class NonNullType extends Definition implements
+    TypeInterface,
+    WrappingTypeInterface
 {
     use OfTypeTrait;
 

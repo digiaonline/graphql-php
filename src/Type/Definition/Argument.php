@@ -5,8 +5,12 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
+use Digia\GraphQL\Schema\Definition;
 
-class Argument implements InputValueInterface, ASTNodeAwareInterface, DescriptionAwareInterface
+class Argument extends Definition implements
+    InputValueInterface,
+    ASTNodeAwareInterface,
+    DescriptionAwareInterface
 {
     use NameTrait;
     use TypeTrait;

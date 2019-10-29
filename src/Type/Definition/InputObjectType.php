@@ -6,6 +6,7 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
+use Digia\GraphQL\Schema\Definition;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newInputField;
 use function Digia\GraphQL\Type\resolveThunk;
@@ -29,7 +30,10 @@ use function Digia\GraphQL\Type\resolveThunk;
  *       ]
  *     ]);
  */
-class InputObjectType implements NamedTypeInterface, InputTypeInterface, DescriptionAwareInterface,
+class InputObjectType extends Definition implements
+    NamedTypeInterface,
+    InputTypeInterface,
+    DescriptionAwareInterface,
     ASTNodeAwareInterface
 {
     use NameTrait;

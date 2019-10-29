@@ -2,7 +2,11 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-class ListType implements TypeInterface, WrappingTypeInterface
+use Digia\GraphQL\Schema\Definition;
+
+class ListType extends Definition implements
+    TypeInterface,
+    WrappingTypeInterface
 {
     use OfTypeTrait;
 

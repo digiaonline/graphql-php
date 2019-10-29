@@ -5,8 +5,13 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputValueDefinitionNode;
+use Digia\GraphQL\Schema\Definition;
 
-class InputField implements InputValueInterface, FieldInterface, ASTNodeAwareInterface, DescriptionAwareInterface
+class InputField extends Definition implements
+    InputValueInterface,
+    FieldInterface,
+    ASTNodeAwareInterface,
+    DescriptionAwareInterface
 {
     use NameTrait;
     use TypeTrait;

@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\Argument;
+use Digia\GraphQL\Schema\Definition;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\ExtensionASTNodesTrait;
 use Digia\GraphQL\Type\Definition\InputObjectType;
@@ -17,6 +18,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use GraphQL\Contracts\TypeSystem\DefinitionInterface;
 use function Digia\GraphQL\Type\__Schema;
 use function Digia\GraphQL\Util\find;
 
@@ -45,7 +47,7 @@ use function Digia\GraphQL\Util\find;
  *       'directives' => \array_merge(specifiedDirectives(), [$myCustomDirective]),
  *     ])
  */
-class Schema implements DefinitionInterface
+class Schema extends Definition implements DefinitionInterface
 {
     use ExtensionASTNodesTrait;
     use ASTNodeTrait;
@@ -392,5 +394,13 @@ class Schema implements DefinitionInterface
         return \array_reduce($directive->getArguments(), function ($map, Argument $argument) {
             return $this->typeMapReducer($map, $argument->getType());
         }, $map);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return 'schema';
     }
 }

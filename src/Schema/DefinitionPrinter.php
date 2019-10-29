@@ -20,6 +20,7 @@ use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Util\ValueConverter;
+use GraphQL\Contracts\TypeSystem\DefinitionInterface;
 use function Digia\GraphQL\Language\printBlockString;
 use function Digia\GraphQL\printNode;
 use function Digia\GraphQL\Type\isIntrospectionType;

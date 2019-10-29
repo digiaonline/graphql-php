@@ -2,7 +2,7 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Schema\DefinitionInterface;
+use GraphQL\Contracts\TypeSystem\DefinitionInterface;
 
 /**
  * Tagging interface for GraphQL types.

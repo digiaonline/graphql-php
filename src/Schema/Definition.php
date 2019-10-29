@@ -1,6 +1,6 @@
 <?php
 
-namespace Digia\GraphQL\Type\Definition;
+namespace Digia\GraphQL\Schema;
 
 use GraphQL\Contracts\TypeSystem\DefinitionInterface;
 

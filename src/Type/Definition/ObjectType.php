@@ -5,9 +5,9 @@ namespace Digia\GraphQL\Type\Definition;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
-use Digia\GraphQL\Language\Node\NameAwareInterface;
 use Digia\GraphQL\Language\Node\ObjectTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
+use Digia\GraphQL\Schema\Definition;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\resolveThunk;
 
@@ -49,8 +49,13 @@ use function Digia\GraphQL\Type\resolveThunk;
  *       }
  *     ]);
  */
-class ObjectType implements NamedTypeInterface, CompositeTypeInterface, OutputTypeInterface,
-    ASTNodeAwareInterface, DescriptionAwareInterface, FieldsAwareInterface
+class ObjectType extends Definition implements
+    NamedTypeInterface,
+    CompositeTypeInterface,
+    OutputTypeInterface,
+    ASTNodeAwareInterface,
+    DescriptionAwareInterface,
+    FieldsAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

@@ -6,6 +6,7 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
+use Digia\GraphQL\Schema\Definition;
 use function Digia\GraphQL\Type\resolveThunk;
 
 /**
@@ -30,8 +31,12 @@ use function Digia\GraphQL\Type\resolveThunk;
  *       }
  *     ]);
  */
-class UnionType implements AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface,
-    ASTNodeAwareInterface, DescriptionAwareInterface
+class UnionType extends Definition implements
+    AbstractTypeInterface,
+    CompositeTypeInterface,
+    OutputTypeInterface,
+    ASTNodeAwareInterface,
+    DescriptionAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
