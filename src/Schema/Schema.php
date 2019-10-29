@@ -184,7 +184,7 @@ class Schema extends Definition implements SchemaInterface
     /**
      * @return array
      */
-    public function getTypeMap(): array
+    public function getTypeMap(): iterable
     {
         return $this->typeMap;
     }
