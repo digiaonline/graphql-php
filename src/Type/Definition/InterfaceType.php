@@ -7,9 +7,7 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Schema\Definition;
-use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
-use GraphQL\Contracts\TypeSystem\Type\CompositeTypeInterface;
-use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\InterfaceTypeInterface;
 
 /**
  * Interface Type Definition
@@ -28,9 +26,8 @@ use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
  *     ]);
  */
 class InterfaceType extends Definition implements
+    InterfaceTypeInterface,
     AbstractTypeInterface,
-    CompositeTypeInterface,
-    OutputTypeInterface,
     FieldsAwareInterface,
     ASTNodeAwareInterface
 {
