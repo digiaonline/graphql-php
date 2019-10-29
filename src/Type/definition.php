@@ -21,7 +21,7 @@ use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\WrappingTypeInterface;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 

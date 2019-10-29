@@ -17,7 +17,7 @@ use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\WrappingTypeInterface;
 use GraphQL\Contracts\TypeSystem\DefinitionInterface;
 use function Digia\GraphQL\Type\__Schema;
 use function Digia\GraphQL\Util\find;

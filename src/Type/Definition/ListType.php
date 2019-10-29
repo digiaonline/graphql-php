@@ -4,6 +4,7 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Schema\Definition;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\WrappingTypeInterface;
 
 class ListType extends Definition implements
     TypeInterface,

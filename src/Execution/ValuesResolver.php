@@ -23,7 +23,7 @@ use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
-use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\WrappingTypeInterface;
 use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\ValueASTConverter;
