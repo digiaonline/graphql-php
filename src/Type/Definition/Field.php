@@ -10,7 +10,6 @@ use Digia\GraphQL\Schema\Definition;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 class Field extends Definition implements
-    FieldInterface,
     ASTNodeAwareInterface,
     ArgumentsAwareInterface,
     DescriptionAwareInterface,

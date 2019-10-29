@@ -10,7 +10,6 @@ use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 class InputField extends Definition implements
     InputValueInterface,
-    FieldInterface,
     ASTNodeAwareInterface,
     DescriptionAwareInterface
 {
