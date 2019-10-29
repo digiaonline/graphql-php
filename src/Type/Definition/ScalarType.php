@@ -7,18 +7,9 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
 use Digia\GraphQL\Schema\Definition;
-use GraphQL\Contracts\TypeSystem\Type\InputTypeInterface;
-use GraphQL\Contracts\TypeSystem\Type\LeafTypeInterface;
-use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
-use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\ScalarTypeInterface;
 
-class ScalarType extends Definition implements
-    NamedTypeInterface,
-    LeafTypeInterface,
-    InputTypeInterface,
-    OutputTypeInterface,
-    SerializableTypeInterface,
-    ASTNodeAwareInterface
+class ScalarType extends Definition implements ScalarTypeInterface, SerializableTypeInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
