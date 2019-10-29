@@ -17,7 +17,7 @@ use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Field;
-use Digia\GraphQL\Type\Definition\LeafTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
