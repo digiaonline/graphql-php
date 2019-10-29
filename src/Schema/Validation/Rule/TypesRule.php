@@ -131,11 +131,7 @@ class TypesRule extends AbstractRule
                 return; // continue loop
             }
 
-            try {
-                $fieldType = $field->getNullableType();
-            } catch (\TypeError $e) {
-                $fieldType = null;
-            }
+            $fieldType = $field->getNullableType();
 
             // Ensure the type is an output type
             if (!isOutputType($fieldType)) {
@@ -179,14 +175,8 @@ class TypesRule extends AbstractRule
 
                 $argumentNames[$argumentName] = true;
 
-                try {
-                    $argumentType = $argument->getNullableType();
-                } catch (\TypeError $e) {
-                    $argumentType = null;
-                }
-
                 // Ensure the type is an input type
-                if (!isInputType($argumentType)) {
+                if (!isInputType($argument->getNullableType())) {
                     $this->context->reportError(
                         new SchemaValidationException(
                             \sprintf(
