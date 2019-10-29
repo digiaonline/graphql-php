@@ -198,13 +198,15 @@ class Schema extends Definition implements SchemaInterface
     }
 
     /**
-     * @param AbstractTypeContract $abstractType
+     * @param AbstractTypeContract|AbstractTypeInterface $abstractType
      * @param ObjectTypeInterface $possibleType
      * @return bool
      * @throws InvariantException
      */
     public function isPossibleType(AbstractTypeContract $abstractType, ObjectTypeInterface $possibleType): bool
     {
+        assert($abstractType instanceof NamedTypeInterface);
+
         $abstractTypeName = $abstractType->getName();
         $possibleTypeName = $possibleType->getName();
 
