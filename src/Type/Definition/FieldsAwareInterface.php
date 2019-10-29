@@ -4,14 +4,11 @@ namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
+use GraphQL\Contracts\TypeSystem\Common\NameAwareInterface;
+use GraphQL\Contracts\TypeSystem\Common\FieldsAwareInterface as FieldsAwareContract;
 
-interface FieldsAwareInterface
+interface FieldsAwareInterface extends NameAwareInterface, FieldsAwareContract
 {
-    /**
-     * @return string
-     */
-    public function getName(): string;
-
     /**
      * @return NodeInterface|null
      */
@@ -21,15 +18,4 @@ interface FieldsAwareInterface
      * @return ObjectTypeExtensionNode[]
      */
     public function getExtensionAstNodes(): array;
-
-    /**
-     * @param string $fieldName
-     * @return Field|null
-     */
-    public function getField(string $fieldName): ?Field;
-
-    /**
-     * @return Field[]
-     */
-    public function getFields(): array;
 }

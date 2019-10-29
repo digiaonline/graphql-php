@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Error\InvariantException;
+use GraphQL\Contracts\TypeSystem\FieldInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newField;
 use function Digia\GraphQL\Type\resolveThunk;
@@ -26,25 +27,30 @@ trait FieldsTrait
     protected $fieldMap;
 
     /**
-     * @return string
+     * @param string $fieldName
+     * @return Field|FieldInterface|null
+     * @throws InvariantException
      */
-    abstract public function getName(): string;
+    public function getField(string $fieldName): ?FieldInterface
+    {
+        return $this->getFields()[$fieldName] ?? null;
+    }
 
     /**
      * @param string $fieldName
-     * @return Field|null
+     * @return bool
      * @throws InvariantException
      */
-    public function getField(string $fieldName): ?Field
+    public function hasField(string $fieldName): bool
     {
-        return $this->getFields()[$fieldName] ?? null;
+        return $this->getField($fieldName) !== null;
     }
 
     /**
      * @return Field[]
      * @throws InvariantException
      */
-    public function getFields(): array
+    public function getFields(): iterable
     {
         // Fields are built lazily to avoid concurrency issues.
         if (!isset($this->fieldMap)) {
