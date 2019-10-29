@@ -10,6 +10,7 @@ use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Schema\Definition;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newEnumValue;
 use function Digia\GraphQL\Util\toString;

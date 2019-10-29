@@ -13,7 +13,7 @@ use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
 use function Digia\GraphQL\Type\TypeMetaFieldDefinition;

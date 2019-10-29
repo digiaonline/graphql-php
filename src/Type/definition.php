@@ -17,7 +17,7 @@ use Digia\GraphQL\Type\Definition\ListType;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;

@@ -11,7 +11,7 @@ use Digia\GraphQL\Type\Definition\FieldsAwareInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Util\suggestionList;
