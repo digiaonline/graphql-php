@@ -18,6 +18,7 @@ use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
+use GraphQL\Contracts\TypeSystem\Type\ObjectTypeInterface;
 
 class FieldCollector
 {
@@ -48,10 +49,10 @@ class FieldCollector
     }
 
     /**
-     * @param ObjectType       $runtimeType
-     * @param SelectionSetNode $selectionSet
-     * @param array            $fields
-     * @param array            $visitedFragmentNames
+     * @param ObjectTypeInterface   $runtimeType
+     * @param SelectionSetNode      $selectionSet
+     * @param array                 $fields
+     * @param array                 $visitedFragmentNames
      * @return array
      * @throws InvalidTypeException
      * @throws ExecutionException
@@ -59,7 +60,7 @@ class FieldCollector
      * @throws ConversionException
      */
     public function collectFields(
-        ObjectType $runtimeType,
+        ObjectTypeInterface $runtimeType,
         SelectionSetNode $selectionSet,
         array &$fields,
         array &$visitedFragmentNames
@@ -117,7 +118,6 @@ class FieldCollector
      * @param NodeInterface $node
      * @return bool
      * @throws ExecutionException
-     * @throws InvalidTypeException
      * @throws InvariantException
      */
     protected function shouldIncludeNode(NodeInterface $node): bool
@@ -141,12 +141,12 @@ class FieldCollector
 
     /**
      * @param FragmentDefinitionNode|InlineFragmentNode $fragment
-     * @param ObjectType                                $type
+     * @param ObjectTypeInterface                       $type
      * @return bool
      * @throws InvariantException
      * @throws ConversionException
      */
-    protected function doesFragmentConditionMatch($fragment, ObjectType $type): bool
+    protected function doesFragmentConditionMatch($fragment, ObjectTypeInterface $type): bool
     {
         $typeConditionNode = $fragment->getTypeCondition();
 

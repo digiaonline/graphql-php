@@ -47,7 +47,7 @@ trait ArgumentsTrait
     /**
      * @return Argument[]
      */
-    public function getArguments(): iterable
+    public function getArguments(): array
     {
         return $this->arguments;
     }

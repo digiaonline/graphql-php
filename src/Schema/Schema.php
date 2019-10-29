@@ -71,12 +71,12 @@ class Schema extends Definition implements SchemaInterface
     protected $subscriptionType;
 
     /**
-     * @var TypeInterface[]
+     * @var array|TypeInterface[]
      */
     protected $types = [];
 
     /**
-     * @var DirectiveInterface[]
+     * @var array|DirectiveInterface[]
      */
     protected $directives = [];
 
@@ -86,17 +86,17 @@ class Schema extends Definition implements SchemaInterface
     protected $assumeValid = false;
 
     /**
-     * @var NamedTypeInterface[]
+     * @var array|NamedTypeInterface[]
      */
     protected $typeMap = [];
 
     /**
-     * @var NamedTypeInterface[]
+     * @var array|ObjectTypeInterface[][]
      */
     protected $implementations = [];
 
     /**
-     * @var NamedTypeInterface[]
+     * @var array|NamedTypeInterface[]
      */
     protected $possibleTypesMap = [];
 
@@ -224,7 +224,7 @@ class Schema extends Definition implements SchemaInterface
 
             $this->possibleTypesMap[$abstractTypeName] = \array_reduce(
                 $possibleTypes,
-                static function (array $map, NamedTypeInterface $type): array {
+                static function (array $map, NamedTypeInterface $type) {
                     $map[$type->getName()] = true;
 
                     return $map;
@@ -238,7 +238,7 @@ class Schema extends Definition implements SchemaInterface
 
     /**
      * @param AbstractTypeContract $abstractType
-     * @return NamedTypeInterface[]
+     * @return array|ObjectTypeInterface[]
      * @throws InvariantException
      */
     public function getPossibleTypes(AbstractTypeContract $abstractType): array

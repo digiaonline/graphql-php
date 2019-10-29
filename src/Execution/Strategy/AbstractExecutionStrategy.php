@@ -23,6 +23,7 @@ use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\ObjectTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Util\ConversionException;
 use React\Promise\PromiseInterface;
@@ -135,14 +136,15 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
      * @param Schema                  $schema
      * @param OperationDefinitionNode $operation
      *
-     * @return ObjectType|null
+     * @return ObjectTypeInterface|null
      * @throws ExecutionException
      */
-    protected function getOperationType(Schema $schema, OperationDefinitionNode $operation): ?ObjectType
+    protected function getOperationType(Schema $schema, OperationDefinitionNode $operation): ?ObjectTypeInterface
     {
         switch ($operation->getOperation()) {
             case 'query':
                 return $schema->getQueryType();
+
             case 'mutation':
                 $mutationType = $schema->getMutationType();
 
@@ -151,6 +153,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
                 }
 
                 return $mutationType;
+
             case 'subscription':
                 $subscriptionType = $schema->getSubscriptionType();
 
@@ -159,6 +162,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
                 }
 
                 return $subscriptionType;
+
             default:
                 throw new ExecutionException('Can only execute queries, mutations and subscriptions.', [$operation]);
         }

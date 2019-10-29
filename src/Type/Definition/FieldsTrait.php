@@ -53,7 +53,7 @@ trait FieldsTrait
      * @return Field[]
      * @throws InvariantException
      */
-    public function getFields(): iterable
+    public function getFields(): array
     {
         // Fields are built lazily to avoid concurrency issues.
         if (!isset($this->fieldMap)) {
