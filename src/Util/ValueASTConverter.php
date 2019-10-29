@@ -17,7 +17,7 @@ use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 class ValueASTConverter
 {

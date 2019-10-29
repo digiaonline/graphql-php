@@ -15,7 +15,7 @@ use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
 use GraphQL\Contracts\TypeSystem\DefinitionInterface;

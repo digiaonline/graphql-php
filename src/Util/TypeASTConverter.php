@@ -9,7 +9,7 @@ use Digia\GraphQL\Language\Node\NamedTypeNode;
 use Digia\GraphQL\Language\Node\NonNullTypeNode;
 use Digia\GraphQL\Language\Node\TypeNodeInterface;
 use Digia\GraphQL\Schema\Schema;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use function Digia\GraphQL\Type\newList;
 use function Digia\GraphQL\Type\newNonNull;
 

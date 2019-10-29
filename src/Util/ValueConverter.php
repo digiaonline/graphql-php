@@ -24,7 +24,7 @@ use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use function Digia\GraphQL\Type\idType;
 
 class ValueConverter

@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use GraphQL\Contracts\TypeSystem\DefinitionInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 interface InputValueInterface extends DefinitionInterface
 {

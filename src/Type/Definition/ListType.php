@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 class ListType extends Definition implements
     TypeInterface,

@@ -7,7 +7,7 @@ use Digia\GraphQL\Language\Node\FragmentSpreadNode;
 use Digia\GraphQL\Language\Node\InlineFragmentNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\TypeHelper;

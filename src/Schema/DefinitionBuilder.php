@@ -32,7 +32,7 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use Digia\GraphQL\Util\ValueASTConverter;
 use function Digia\GraphQL\Type\introspectionTypes;

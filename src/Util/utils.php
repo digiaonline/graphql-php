@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Util;
 
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\NodeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\printNode;
 

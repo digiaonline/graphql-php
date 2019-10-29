@@ -9,7 +9,7 @@ use Digia\GraphQL\Language\Node\TypeSystemDefinitionNodeInterface;
 use Digia\GraphQL\Schema\DefinitionBuilderInterface;
 use Digia\GraphQL\Schema\Resolver\ResolverRegistryInterface;
 use Digia\GraphQL\Type\Definition\Directive;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use function Digia\GraphQL\Util\arraySome;
 
 class BuildingContext implements BuildingContextInterface

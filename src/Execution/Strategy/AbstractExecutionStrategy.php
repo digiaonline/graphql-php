@@ -23,7 +23,7 @@ use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Util\ConversionException;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;

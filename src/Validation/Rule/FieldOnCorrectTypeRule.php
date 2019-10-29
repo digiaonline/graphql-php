@@ -12,7 +12,7 @@ use Digia\GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\OutputTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Util\suggestionList;
 use function Digia\GraphQL\Validation\undefinedFieldMessage;

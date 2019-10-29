@@ -8,6 +8,7 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Definition;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use function Digia\GraphQL\Type\resolveThunk;
 
 /**
