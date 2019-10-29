@@ -86,7 +86,7 @@ class Schema extends Definition implements SchemaInterface
     protected $assumeValid = false;
 
     /**
-     * @var TypeInterface[]
+     * @var NamedTypeInterface[]
      */
     protected $typeMap = [];
 
@@ -237,11 +237,13 @@ class Schema extends Definition implements SchemaInterface
 
     /**
      * @param AbstractTypeContract $abstractType
-     * @return NamedTypeInterface[]|null
+     * @return NamedTypeInterface[]
      * @throws InvariantException
      */
     public function getPossibleTypes(AbstractTypeContract $abstractType): iterable
     {
+        assert($abstractType instanceof NamedTypeInterface);
+
         if ($abstractType instanceof UnionType) {
             return $abstractType->getTypes();
         }
@@ -251,7 +253,7 @@ class Schema extends Definition implements SchemaInterface
 
     /**
      * @param string $name
-     * @return TypeInterface|null
+     * @return NamedTypeInterface|null
      */
     public function getType(string $name): ?NamedTypeInterface
     {

@@ -11,12 +11,13 @@ use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputField;
 use Digia\GraphQL\Type\Definition\InputObjectType;
-use GraphQL\Contracts\TypeSystem\Constraint;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
+use GraphQL\Contracts\TypeSystem\Type\InputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use GraphQL\Contracts\TypeSystem\Type\WrappingTypeInterface;
@@ -57,7 +58,7 @@ function isAssocArray($value): bool
 function assertType($type)
 {
     invariant(
-        Constraint::isType($type),
+        $type instanceof TypeInterface,
         \sprintf('Expected %s to be a GraphQL type.', toString($type))
     );
 }
@@ -66,32 +67,32 @@ function assertType($type)
  * Whether a type is an input type cannot be determined with `instanceof`
  * because lists and non-nulls can also be output types if the wrapped type is an output type.
  *
- * @param TypeInterface|null $type
+ * @param TypeInterface|WrappingTypeInterface|null $type
  * @return bool
  */
 function isInputType(?TypeInterface $type): bool
 {
-    if ($type !== null && Constraint::isWrappingType($type)) {
+    if ($type instanceof WrappingTypeInterface) {
         return isInputType($type->getOfType());
     }
 
-    return Constraint::isInputType($type);
+    return $type instanceof InputTypeInterface;
 }
 
 /**
  * Whether a type is an output type cannot be determined with `instanceof`
  * because lists and non-nulls can also be output types if the wrapped type is an output type.
  *
- * @param TypeInterface|null $type
+ * @param TypeInterface|WrappingTypeInterface|null $type
  * @return bool
  */
 function isOutputType(?TypeInterface $type): bool
 {
-    if ($type !== null && Constraint::isWrappingType($type)) {
+    if ($type instanceof WrappingTypeInterface) {
         return isOutputType($type->getOfType());
     }
 
-    return Constraint::isOutputType($type);
+    return $type instanceof OutputTypeInterface;
 }
 
 /**
@@ -113,18 +114,11 @@ function getNullableType(?TypeInterface $type): ?TypeInterface
  */
 function getNamedType(?TypeInterface $type): ?TypeInterface
 {
-    if (!$type) {
-        return null;
+    while ($type instanceof WrappingTypeInterface) {
+        $type = $type->getOfType();
     }
 
-    /** @var WrappingTypeInterface $unwrappedType */
-    $unwrappedType = $type;
-
-    while (Constraint::isWrappingType($unwrappedType)) {
-        $unwrappedType = $unwrappedType->getOfType();
-    }
-
-    return $unwrappedType;
+    return $type;
 }
 
 /**

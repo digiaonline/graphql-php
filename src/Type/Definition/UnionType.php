@@ -81,7 +81,7 @@ class UnionType extends Definition implements UnionTypeInterface, AbstractTypeIn
     }
 
     /**
-     * @return NamedTypeInterface[]
+     * @return ObjectTypeInterface[]
      * @throws InvariantException
      */
     public function getTypes(): array

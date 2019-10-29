@@ -133,7 +133,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                             ],
                             'args'        => [
                                 'type'    => newNonNull(newList(newNonNull(__InputValue()))),
-                                'resolve' => function (Directive $directive): array {
+                                'resolve' => static function (Directive $directive): iterable {
                                     return $directive->getArguments() ?: [];
                                 },
                             ],

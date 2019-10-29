@@ -17,6 +17,7 @@ use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Validation\SchemaValidationException;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\EnumType;
+use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\FieldsAwareInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
@@ -113,6 +114,7 @@ class TypesRule extends AbstractRule
             );
         }
 
+        /** @var Field $field */
         foreach ($fields as $fieldName => $field) {
             // Ensure they are named correctly.
             $this->validateName($field);
