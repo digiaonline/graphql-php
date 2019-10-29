@@ -17,7 +17,7 @@ use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Language\Node\SelectionSetNode;
 use Digia\GraphQL\Language\Node\VariableDefinitionNode;
 use Digia\GraphQL\Type\Definition\Argument;
-use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\ListType;

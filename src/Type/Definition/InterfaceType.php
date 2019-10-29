@@ -7,6 +7,7 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InterfaceTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Type\CompositeTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
 
 /**

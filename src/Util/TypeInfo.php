@@ -6,7 +6,7 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\Argument;
-use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\CompositeTypeInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
