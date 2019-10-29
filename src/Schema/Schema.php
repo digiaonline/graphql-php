@@ -7,21 +7,23 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
+use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
-use Digia\GraphQL\Schema\Definition;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\ExtensionASTNodesTrait;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
-use GraphQL\Contracts\TypeSystem\Common\TypeAwareInterface;
+use GraphQL\Contracts\TypeSystem\DirectiveInterface;
+use GraphQL\Contracts\TypeSystem\SchemaInterface;
 use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
+use GraphQL\Contracts\TypeSystem\Type\ObjectTypeInterface;
 use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use GraphQL\Contracts\TypeSystem\Type\WrappingTypeInterface;
-use GraphQL\Contracts\TypeSystem\DefinitionInterface;
 use function Digia\GraphQL\Type\__Schema;
 use function Digia\GraphQL\Util\find;
+use GraphQL\Contracts\TypeSystem\Type\AbstractTypeInterface as AbstractTypeContract;
 
 /**
  * Schema Definition
@@ -48,7 +50,7 @@ use function Digia\GraphQL\Util\find;
  *       'directives' => \array_merge(specifiedDirectives(), [$myCustomDirective]),
  *     ])
  */
-class Schema extends Definition implements DefinitionInterface
+class Schema extends Definition implements SchemaInterface
 {
     use ExtensionASTNodesTrait;
     use ASTNodeTrait;
@@ -139,7 +141,7 @@ class Schema extends Definition implements DefinitionInterface
     /**
      * @return ObjectType|null
      */
-    public function getQueryType(): ?ObjectType
+    public function getQueryType(): ?ObjectTypeInterface
     {
         return $this->queryType;
     }
@@ -147,7 +149,7 @@ class Schema extends Definition implements DefinitionInterface
     /**
      * @return ObjectType|null
      */
-    public function getMutationType(): ?ObjectType
+    public function getMutationType(): ?ObjectTypeInterface
     {
         return $this->mutationType;
     }
@@ -155,7 +157,7 @@ class Schema extends Definition implements DefinitionInterface
     /**
      * @return ObjectType|null
      */
-    public function getSubscriptionType(): ?ObjectType
+    public function getSubscriptionType(): ?ObjectTypeInterface
     {
         return $this->subscriptionType;
     }
@@ -164,9 +166,9 @@ class Schema extends Definition implements DefinitionInterface
      * @param string $name
      * @return Directive|null
      */
-    public function getDirective(string $name): ?Directive
+    public function getDirective(string $name): ?DirectiveInterface
     {
-        return find($this->directives, function (Directive $directive) use ($name) {
+        return find($this->directives, static function (Directive $directive) use ($name) {
             return $directive->getName() === $name;
         });
     }
@@ -196,12 +198,12 @@ class Schema extends Definition implements DefinitionInterface
     }
 
     /**
-     * @param NamedTypeInterface $abstractType
-     * @param NamedTypeInterface $possibleType
+     * @param AbstractTypeContract $abstractType
+     * @param ObjectTypeInterface $possibleType
      * @return bool
      * @throws InvariantException
      */
-    public function isPossibleType(NamedTypeInterface $abstractType, NamedTypeInterface $possibleType): bool
+    public function isPossibleType(AbstractTypeContract $abstractType, ObjectTypeInterface $possibleType): bool
     {
         $abstractTypeName = $abstractType->getName();
         $possibleTypeName = $possibleType->getName();
@@ -209,7 +211,7 @@ class Schema extends Definition implements DefinitionInterface
         if (!isset($this->possibleTypesMap[$abstractTypeName])) {
             $possibleTypes = $this->getPossibleTypes($abstractType);
 
-            if (!\is_array($possibleTypes)) {
+            if ($possibleTypes === []) {
                 throw new InvariantException(\sprintf(
                     'Could not find possible implementing types for %s ' .
                     'in schema. Check that schema.types is defined and is an array of ' .
@@ -232,24 +234,24 @@ class Schema extends Definition implements DefinitionInterface
     }
 
     /**
-     * @param NamedTypeInterface $abstractType
+     * @param AbstractTypeContract $abstractType
      * @return NamedTypeInterface[]|null
      * @throws InvariantException
      */
-    public function getPossibleTypes(NamedTypeInterface $abstractType): ?array
+    public function getPossibleTypes(AbstractTypeContract $abstractType): iterable
     {
         if ($abstractType instanceof UnionType) {
             return $abstractType->getTypes();
         }
 
-        return $this->implementations[$abstractType->getName()] ?? null;
+        return $this->implementations[$abstractType->getName()] ?? [];
     }
 
     /**
      * @param string $name
      * @return TypeInterface|null
      */
-    public function getType(string $name): ?TypeInterface
+    public function getType(string $name): ?NamedTypeInterface
     {
         return $this->typeMap[$name] ?? null;
     }
