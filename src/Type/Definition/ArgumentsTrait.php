@@ -94,6 +94,6 @@ trait ArgumentsTrait
      */
     public function hasArgument(string $name): bool
     {
-        return isset($this->arguments[$name]);
+        return isset($this->arguments[$name]) || \array_key_exists($name, $this->arguments);
     }
 }
