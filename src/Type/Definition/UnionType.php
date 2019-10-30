@@ -6,6 +6,11 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
+use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\ObjectTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\UnionTypeInterface;
 use function Digia\GraphQL\Type\resolveThunk;
 
 /**
@@ -30,8 +35,7 @@ use function Digia\GraphQL\Type\resolveThunk;
  *       }
  *     ]);
  */
-class UnionType implements AbstractTypeInterface, CompositeTypeInterface, OutputTypeInterface,
-    ASTNodeAwareInterface, DescriptionAwareInterface
+class UnionType extends Definition implements UnionTypeInterface, AbstractTypeInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -77,7 +81,7 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
     }
 
     /**
-     * @return NamedTypeInterface[]
+     * @return ObjectTypeInterface[]
      * @throws InvariantException
      */
     public function getTypes(): array
@@ -88,6 +92,26 @@ class UnionType implements AbstractTypeInterface, CompositeTypeInterface, Output
         }
 
         return $this->typeMap;
+    }
+
+    /**
+     * @param string $name
+     * @return ObjectTypeInterface|null
+     * @throws InvariantException
+     */
+    public function getType(string $name): ?ObjectTypeInterface
+    {
+        return $this->getTypes()[$name] ?? null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     * @throws InvariantException
+     */
+    public function hasType(string $name): bool
+    {
+        return $this->getType($name) !== null;
     }
 
     /**

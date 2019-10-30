@@ -22,8 +22,8 @@ use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
-use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\WrappingTypeInterface;
 use Digia\GraphQL\Util\ConversionException;
 use Digia\GraphQL\Util\TypeASTConverter;
 use Digia\GraphQL\Util\ValueASTConverter;
@@ -68,7 +68,7 @@ class ValuesResolver
 
         foreach ($argumentDefinitions as $argumentDefinition) {
             $argumentName  = $argumentDefinition->getName();
-            $argumentType  = $argumentDefinition->getType();
+            $argumentType  = $argumentDefinition->getNullableType();
             $argumentNode  = $argumentNodeMap[$argumentName] ?? null;
             $defaultValue  = $argumentDefinition->getDefaultValue();
             $argumentValue = null !== $argumentNode ? $argumentNode->getValue() : null;
@@ -466,7 +466,7 @@ class ValuesResolver
 
         // Ensure every defined field is valid.
         foreach ($fields as $field) {
-            $fieldType = $field->getType();
+            $fieldType = $field->getNullableType();
 
             if (!isset($value[$field->getName()])) {
                 if (!empty($field->getDefaultValue())) {

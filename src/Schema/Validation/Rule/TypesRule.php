@@ -17,10 +17,11 @@ use Digia\GraphQL\Language\Node\UnionTypeDefinitionNode;
 use Digia\GraphQL\Schema\Validation\SchemaValidationException;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\EnumType;
+use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\FieldsAwareInterface;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\UnionType;
@@ -113,6 +114,7 @@ class TypesRule extends AbstractRule
             );
         }
 
+        /** @var Field $field */
         foreach ($fields as $fieldName => $field) {
             // Ensure they are named correctly.
             $this->validateName($field);
@@ -131,7 +133,7 @@ class TypesRule extends AbstractRule
                 return; // continue loop
             }
 
-            $fieldType = $field->getType();
+            $fieldType = $field->getNullableType();
 
             // Ensure the type is an output type
             if (!isOutputType($fieldType)) {
@@ -176,7 +178,7 @@ class TypesRule extends AbstractRule
                 $argumentNames[$argumentName] = true;
 
                 // Ensure the type is an input type
-                if (!isInputType($argument->getType())) {
+                if (!isInputType($argument->getNullableType())) {
                     $this->context->reportError(
                         new SchemaValidationException(
                             \sprintf(
@@ -184,7 +186,7 @@ class TypesRule extends AbstractRule
                                 $type->getName(),
                                 $fieldName,
                                 $argumentName,
-                                toString($argument->getType())
+                                toString($argument->getNullableType())
                             ),
                             $this->getAllFieldArgumentNodes($type, $fieldName, $argumentName)
                         )
@@ -274,17 +276,17 @@ class TypesRule extends AbstractRule
             // Assert interface field type is satisfied by object field type, by being
             // a valid subtype. (covariant)
             if (!TypeHelper::isTypeSubtypeOf(
-                $this->context->getSchema(), $objectField->getType(), $interfaceField->getType())) {
+                $this->context->getSchema(), $objectField->getNullableType(), $interfaceField->getNullableType())) {
                 $this->context->reportError(
                     new SchemaValidationException(
                         \sprintf(
                             'Interface field %s.%s expects type %s but %s.%s is type %s.',
                             $interfaceType->getName(),
                             $fieldName,
-                            toString($interfaceField->getType()),
+                            toString($interfaceField->getNullableType()),
                             $objectType->getName(),
                             $fieldName,
-                            toString($objectField->getType())
+                            toString($objectField->getNullableType())
                         ),
                         [
                             $this->getFieldTypeNode($interfaceType, $fieldName),
@@ -326,7 +328,7 @@ class TypesRule extends AbstractRule
                 // Assert interface field arg type matches object field arg type.
                 // (invariant)
                 // TODO: change to contravariant?
-                if (!TypeHelper::isEqualType($interfaceArgument->getType(), $objectArgument->getType())) {
+                if (!TypeHelper::isEqualType($interfaceArgument->getNullableType(), $objectArgument->getType())) {
                     $this->context->reportError(
                         new SchemaValidationException(
                             \sprintf(
@@ -334,7 +336,7 @@ class TypesRule extends AbstractRule
                                 $interfaceType->getName(),
                                 $fieldName,
                                 $argumentName,
-                                toString($interfaceArgument->getType()),
+                                toString($interfaceArgument->getNullableType()),
                                 $objectType->getName(),
                                 $fieldName,
                                 $argumentName,
@@ -361,7 +363,7 @@ class TypesRule extends AbstractRule
                         }
                     );
 
-                    if (null === $interfaceArgument && $objectArgument->getType() instanceof NonNullType) {
+                    if (null === $interfaceArgument && $objectArgument->getNullableType() instanceof NonNullType) {
                         $this->context->reportError(
                             new SchemaValidationException(
                                 \sprintf(
@@ -370,7 +372,7 @@ class TypesRule extends AbstractRule
                                     $objectType->getName(),
                                     $fieldName,
                                     $argumentName,
-                                    toString($objectArgument->getType()),
+                                    toString($objectArgument->getNullableType()),
                                     $interfaceType->getName(),
                                     $fieldName
                                 ),
@@ -516,14 +518,14 @@ class TypesRule extends AbstractRule
             // TODO: Ensure they are unique per field.
 
             // Ensure the type is an input type
-            if (!isInputType($field->getType())) {
+            if (!isInputType($field->getNullableType())) {
                 $this->context->reportError(
                     new SchemaValidationException(
                         \sprintf(
                             'The type of %s.%s must be Input Type but got: %s.',
                             $inputObjectType->getName(),
                             $fieldName,
-                            toString($field->getType())
+                            toString($field->getNullableType())
                         ),
                         [$field->getAstNode()]
                     )

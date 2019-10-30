@@ -5,12 +5,12 @@ namespace Digia\GraphQL\Util;
 use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
-use Digia\GraphQL\Type\Definition\LeafTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 class TypeHelper
 {

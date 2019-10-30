@@ -6,6 +6,9 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InputObjectTypeDefinitionNode;
+use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\InputFieldInterface;
+use GraphQL\Contracts\TypeSystem\Type\InputObjectTypeInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newInputField;
 use function Digia\GraphQL\Type\resolveThunk;
@@ -29,8 +32,7 @@ use function Digia\GraphQL\Type\resolveThunk;
  *       ]
  *     ]);
  */
-class InputObjectType implements NamedTypeInterface, InputTypeInterface, DescriptionAwareInterface,
-    ASTNodeAwareInterface
+class InputObjectType extends Definition implements InputObjectTypeInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -73,12 +75,22 @@ class InputObjectType implements NamedTypeInterface, InputTypeInterface, Descrip
 
     /**
      * @param string $fieldName
-     * @return InputField|null
+     * @return InputField|InputFieldInterface|null
      * @throws InvariantException
      */
-    public function getField(string $fieldName): ?InputField
+    public function getField(string $fieldName): ?InputFieldInterface
     {
         return $this->getFields()[$fieldName] ?? null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     * @throws InvariantException
+     */
+    public function hasField(string $name): bool
+    {
+        return $this->getField($name) !== null;
     }
 
     /**

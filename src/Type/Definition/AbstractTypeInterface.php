@@ -2,7 +2,9 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-interface AbstractTypeInterface extends NamedTypeInterface
+use GraphQL\Contracts\TypeSystem\Type\AbstractTypeInterface as AbstractTypeContract;
+
+interface AbstractTypeInterface extends AbstractTypeContract
 {
     /**
      * @param array ...$args

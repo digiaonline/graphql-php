@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Schema\Building;
 
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
 use Digia\GraphQL\Type\Definition\Directive;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 interface BuildingContextInterface
 {

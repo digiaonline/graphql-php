@@ -2,6 +2,11 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
+use GraphQL\Contracts\TypeSystem\Common\DescriptionAwareInterface;
+
+/**
+ * @mixin DescriptionAwareInterface
+ */
 trait DescriptionTrait
 {
     /**

@@ -24,7 +24,7 @@ use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use function Digia\GraphQL\Type\idType;
 
 class ValueConverter
@@ -132,7 +132,7 @@ class ValueConverter
 
         foreach ($fields as $field) {
             $fieldName  = $field->getName();
-            $fieldValue = self::convert($value[$fieldName], $field->getType());
+            $fieldValue = self::convert($value[$fieldName], $field->getNullableType());
 
             if (null !== $fieldValue) {
                 $nodes[] = new ObjectFieldNode(new NameNode($fieldName, null), $fieldValue, null);

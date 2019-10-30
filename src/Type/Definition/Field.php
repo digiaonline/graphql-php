@@ -6,9 +6,11 @@ use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\FieldDefinitionNode;
+use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\FieldInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
-class Field implements FieldInterface, ASTNodeAwareInterface, ArgumentsAwareInterface, DescriptionAwareInterface,
-    DeprecationAwareInterface
+class Field extends Definition implements FieldInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;

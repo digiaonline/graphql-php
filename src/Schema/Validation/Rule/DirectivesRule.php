@@ -66,14 +66,14 @@ class DirectivesRule extends AbstractRule
                 $argumentNames[$argumentName] = true;
 
                 // Ensure the type is an input type.
-                if (!isInputType($argument->getType())) {
+                if (!isInputType($argument->getNullableType())) {
                     $this->context->reportError(
                         new SchemaValidationException(
                             \sprintf(
                                 'The type of @%s(%s:) must be Input Type but got: %s.',
                                 $directive->getName(),
                                 $argumentName,
-                                (string)$argument->getType()
+                                (string)$argument->getNullableType()
                             ),
                             $this->getAllDirectiveArgumentNodes($directive, $argumentName)
                         )

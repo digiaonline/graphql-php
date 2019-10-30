@@ -443,11 +443,11 @@ class ExtensionTest extends TestCase
         $this->assertCount(2, $arguments);
 
         $this->assertEquals('enable', $argument0->getName());
-        $this->assertInstanceOf(NonNullType::class, $argument0->getType());
-        $this->assertInstanceOf(ScalarType::class, $argument0->getType()->getOfType());
+        $this->assertInstanceOf(NonNullType::class, $argument0->getNullableType());
+        $this->assertInstanceOf(ScalarType::class, $argument0->getNullableType()->getOfType());
 
         $this->assertEquals('tag', $argument1->getName());
-        $this->assertInstanceOf(ScalarType::class, $argument1->getType());
+        $this->assertInstanceOf(ScalarType::class, $argument1->getNullableType());
     }
 
     // does not allow replacing a default directive

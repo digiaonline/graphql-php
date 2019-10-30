@@ -18,7 +18,7 @@ use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\ListType;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ScalarType;
 use Digia\GraphQL\Validation\ValidationException;
@@ -120,7 +120,7 @@ class ValuesOfCorrectTypeRule extends AbstractRule
         });
 
         foreach ($inputFields as $fieldName => $field) {
-            $fieldType = $field->getType();
+            $fieldType = $field->getNullableType();
             $fieldNode = $fieldNodeMap[$fieldName] ?? null;
             $fieldDefaultValue = $field->getDefaultValue();
 

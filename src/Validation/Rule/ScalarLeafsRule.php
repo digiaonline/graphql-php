@@ -4,7 +4,7 @@ namespace Digia\GraphQL\Validation\Rule;
 
 use Digia\GraphQL\Language\Node\FieldNode;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
-use Digia\GraphQL\Type\Definition\LeafTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\LeafTypeInterface;
 use Digia\GraphQL\Validation\ValidationException;
 use function Digia\GraphQL\Type\getNamedType;
 use function Digia\GraphQL\Validation\noSubselectionAllowedMessage;

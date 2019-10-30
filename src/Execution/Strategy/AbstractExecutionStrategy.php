@@ -17,13 +17,14 @@ use Digia\GraphQL\Language\Node\OperationDefinitionNode;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Field;
-use Digia\GraphQL\Type\Definition\LeafTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\LeafTypeInterface;
 use Digia\GraphQL\Type\Definition\ListType;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\SerializableTypeInterface;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\ObjectTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Util\ConversionException;
 use React\Promise\PromiseInterface;
 use function Digia\GraphQL\Type\SchemaMetaFieldDefinition;
@@ -135,14 +136,15 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
      * @param Schema                  $schema
      * @param OperationDefinitionNode $operation
      *
-     * @return ObjectType|null
+     * @return ObjectTypeInterface|null
      * @throws ExecutionException
      */
-    protected function getOperationType(Schema $schema, OperationDefinitionNode $operation): ?ObjectType
+    protected function getOperationType(Schema $schema, OperationDefinitionNode $operation): ?ObjectTypeInterface
     {
         switch ($operation->getOperation()) {
             case 'query':
                 return $schema->getQueryType();
+
             case 'mutation':
                 $mutationType = $schema->getMutationType();
 
@@ -151,6 +153,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
                 }
 
                 return $mutationType;
+
             case 'subscription':
                 $subscriptionType = $schema->getSubscriptionType();
 
@@ -159,6 +162,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
                 }
 
                 return $subscriptionType;
+
             default:
                 throw new ExecutionException('Can only execute queries, mutations and subscriptions.', [$operation]);
         }
@@ -204,7 +208,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
         );
 
         $result = $this->completeValueCatchingError(
-            $field->getType(),
+            $field->getNullableType(),
             $fieldNodes,
             $info,
             $path,
@@ -818,7 +822,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
         return new ResolveInfo(
             $fieldNode->getNameValue(),
             $fieldNodes,
-            $field->getType(),
+            $field->getNullableType(),
             $parentType,
             $path,
             $context->getSchema(),

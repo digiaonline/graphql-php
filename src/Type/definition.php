@@ -11,17 +11,16 @@ use Digia\GraphQL\Type\Definition\EnumValue;
 use Digia\GraphQL\Type\Definition\Field;
 use Digia\GraphQL\Type\Definition\InputField;
 use Digia\GraphQL\Type\Definition\InputObjectType;
-use Digia\GraphQL\Type\Definition\InputTypeInterface;
 use Digia\GraphQL\Type\Definition\InterfaceType;
 use Digia\GraphQL\Type\Definition\ListType;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\OutputTypeInterface;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\InputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\OutputTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\WrappingTypeInterface;
 use function Digia\GraphQL\Util\invariant;
 use function Digia\GraphQL\Util\toString;
 
@@ -43,9 +42,11 @@ function isAssocArray($value): bool
     if (!\is_array($value)) {
         return false;
     }
+
     if (empty($value)) {
         return true;
     }
+
     $keys = \array_keys($value);
     return $keys !== \array_keys($keys);
 }
@@ -66,28 +67,32 @@ function assertType($type)
  * Whether a type is an input type cannot be determined with `instanceof`
  * because lists and non-nulls can also be output types if the wrapped type is an output type.
  *
- * @param TypeInterface|null $type
+ * @param TypeInterface|WrappingTypeInterface|null $type
  * @return bool
  */
 function isInputType(?TypeInterface $type): bool
 {
-    return null !== $type &&
-        ($type instanceof InputTypeInterface ||
-            ($type instanceof WrappingTypeInterface && isInputType($type->getOfType())));
+    if ($type instanceof WrappingTypeInterface) {
+        return isInputType($type->getOfType());
+    }
+
+    return $type instanceof InputTypeInterface;
 }
 
 /**
  * Whether a type is an output type cannot be determined with `instanceof`
  * because lists and non-nulls can also be output types if the wrapped type is an output type.
  *
- * @param TypeInterface|null $type
+ * @param TypeInterface|WrappingTypeInterface|null $type
  * @return bool
  */
 function isOutputType(?TypeInterface $type): bool
 {
-    return null !== $type &&
-        ($type instanceof OutputTypeInterface ||
-            ($type instanceof WrappingTypeInterface && isOutputType($type->getOfType())));
+    if ($type instanceof WrappingTypeInterface) {
+        return isOutputType($type->getOfType());
+    }
+
+    return $type instanceof OutputTypeInterface;
 }
 
 /**
@@ -109,17 +114,11 @@ function getNullableType(?TypeInterface $type): ?TypeInterface
  */
 function getNamedType(?TypeInterface $type): ?TypeInterface
 {
-    if (!$type) {
-        return null;
+    while ($type instanceof WrappingTypeInterface) {
+        $type = $type->getOfType();
     }
 
-    $unwrappedType = $type;
-
-    while ($unwrappedType instanceof WrappingTypeInterface) {
-        $unwrappedType = $unwrappedType->getOfType();
-    }
-
-    return $unwrappedType;
+    return $type;
 }
 
 /**

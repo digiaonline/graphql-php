@@ -16,7 +16,7 @@ use Digia\GraphQL\Language\Visitor\VisitorBreak;
 use Digia\GraphQL\Language\Visitor\VisitorInfo;
 use Digia\GraphQL\Language\Visitor\VisitorResult;
 use Digia\GraphQL\Test\TestCase;
-use Digia\GraphQL\Type\Definition\CompositeTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\CompositeTypeInterface;
 use Digia\GraphQL\Util\TypeInfo;
 use function Digia\GraphQL\parse;
 use function Digia\GraphQL\Test\Functional\Validation\testSchema;

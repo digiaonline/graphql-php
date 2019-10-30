@@ -2,6 +2,8 @@
 
 namespace Digia\GraphQL\Schema;
 
+use GraphQL\Contracts\TypeSystem\DefinitionInterface;
+
 interface DefinitionPrinterInterface
 {
     /**

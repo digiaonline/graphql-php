@@ -2,14 +2,14 @@
 
 namespace Digia\GraphQL\Type\Definition;
 
-use Digia\GraphQL\Error\InvariantException;
 use Digia\GraphQL\Language\Node\ASTNodeAwareInterface;
 use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\NodeInterface;
 use Digia\GraphQL\Language\Node\ScalarTypeDefinitionNode;
+use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\Type\ScalarTypeInterface;
 
-class ScalarType implements NamedTypeInterface, LeafTypeInterface, InputTypeInterface,
-    OutputTypeInterface, SerializableTypeInterface, ASTNodeAwareInterface, DescriptionAwareInterface
+class ScalarType extends Definition implements ScalarTypeInterface, SerializableTypeInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -39,7 +39,6 @@ class ScalarType implements NamedTypeInterface, LeafTypeInterface, InputTypeInte
      * @param callable|null                 $parseValueCallback
      * @param callable|null                 $parseLiteralCallback
      * @param ScalarTypeDefinitionNode|null $astNode
-     * @throws InvariantException
      */
     public function __construct(
         string $name,

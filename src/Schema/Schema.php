@@ -7,18 +7,23 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\InterfaceTypeExtensionNode;
 use Digia\GraphQL\Language\Node\ObjectTypeExtensionNode;
 use Digia\GraphQL\Language\Node\SchemaDefinitionNode;
+use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
 use Digia\GraphQL\Type\Definition\Argument;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\ExtensionASTNodesTrait;
 use Digia\GraphQL\Type\Definition\InputObjectType;
 use Digia\GraphQL\Type\Definition\InterfaceType;
-use Digia\GraphQL\Type\Definition\NamedTypeInterface;
+use GraphQL\Contracts\TypeSystem\DirectiveInterface;
+use GraphQL\Contracts\TypeSystem\SchemaInterface;
+use GraphQL\Contracts\TypeSystem\Type\NamedTypeInterface;
 use Digia\GraphQL\Type\Definition\ObjectType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\ObjectTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
-use Digia\GraphQL\Type\Definition\WrappingTypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\WrappingTypeInterface;
 use function Digia\GraphQL\Type\__Schema;
 use function Digia\GraphQL\Util\find;
+use GraphQL\Contracts\TypeSystem\Type\AbstractTypeInterface as AbstractTypeContract;
 
 /**
  * Schema Definition
@@ -45,33 +50,33 @@ use function Digia\GraphQL\Util\find;
  *       'directives' => \array_merge(specifiedDirectives(), [$myCustomDirective]),
  *     ])
  */
-class Schema implements DefinitionInterface
+class Schema extends Definition implements SchemaInterface
 {
     use ExtensionASTNodesTrait;
     use ASTNodeTrait;
 
     /**
-     * @var ObjectType|null
+     * @var ObjectTypeInterface|null
      */
     protected $queryType;
 
     /**
-     * @var ObjectType|null
+     * @var ObjectTypeInterface|null
      */
     protected $mutationType;
 
     /**
-     * @var ObjectType|null
+     * @var ObjectTypeInterface|null
      */
     protected $subscriptionType;
 
     /**
-     * @var TypeInterface[]
+     * @var array|TypeInterface[]
      */
     protected $types = [];
 
     /**
-     * @var array
+     * @var array|DirectiveInterface[]
      */
     protected $directives = [];
 
@@ -81,37 +86,37 @@ class Schema implements DefinitionInterface
     protected $assumeValid = false;
 
     /**
-     * @var TypeInterface[]
+     * @var array|NamedTypeInterface[]
      */
     protected $typeMap = [];
 
     /**
-     * @var array
+     * @var array|ObjectTypeInterface[][]
      */
     protected $implementations = [];
 
     /**
-     * @var NamedTypeInterface[]
+     * @var array|NamedTypeInterface[]
      */
     protected $possibleTypesMap = [];
 
     /**
      * Schema constructor.
      *
-     * @param ObjectType|null                                        $queryType
-     * @param ObjectType|null                                        $mutationType
-     * @param ObjectType|null                                        $subscriptionType
+     * @param ObjectTypeInterface|null                               $queryType
+     * @param ObjectTypeInterface|null                               $mutationType
+     * @param ObjectTypeInterface|null                               $subscriptionType
      * @param TypeInterface[]                                        $types
-     * @param Directive[]                                            $directives
+     * @param DirectiveInterface[]                                   $directives
      * @param bool                                                   $assumeValid
      * @param SchemaDefinitionNode|null                              $astNode
      * @param ObjectTypeExtensionNode[]|InterfaceTypeExtensionNode[] $extensionASTNodes
      * @throws InvariantException
      */
     public function __construct(
-        ?ObjectType $queryType,
-        ?ObjectType $mutationType,
-        ?ObjectType $subscriptionType,
+        ?ObjectTypeInterface $queryType,
+        ?ObjectTypeInterface $mutationType,
+        ?ObjectTypeInterface $subscriptionType,
         array $types,
         array $directives,
         bool $assumeValid,
@@ -134,42 +139,42 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @return ObjectType|null
+     * @return ObjectTypeInterface|null
      */
-    public function getQueryType(): ?ObjectType
+    public function getQueryType(): ?ObjectTypeInterface
     {
         return $this->queryType;
     }
 
     /**
-     * @return ObjectType|null
+     * @return ObjectTypeInterface|null
      */
-    public function getMutationType(): ?ObjectType
+    public function getMutationType(): ?ObjectTypeInterface
     {
         return $this->mutationType;
     }
 
     /**
-     * @return ObjectType|null
+     * @return ObjectTypeInterface|null
      */
-    public function getSubscriptionType(): ?ObjectType
+    public function getSubscriptionType(): ?ObjectTypeInterface
     {
         return $this->subscriptionType;
     }
 
     /**
      * @param string $name
-     * @return Directive|null
+     * @return DirectiveInterface|null
      */
-    public function getDirective(string $name): ?Directive
+    public function getDirective(string $name): ?DirectiveInterface
     {
-        return find($this->directives, function (Directive $directive) use ($name) {
+        return find($this->directives, static function (Directive $directive) use ($name) {
             return $directive->getName() === $name;
         });
     }
 
     /**
-     * @return array
+     * @return DirectiveInterface[]
      */
     public function getDirectives(): array
     {
@@ -177,7 +182,7 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @return array
+     * @return NamedTypeInterface[]
      */
     public function getTypeMap(): array
     {
@@ -193,20 +198,22 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @param NamedTypeInterface $abstractType
-     * @param NamedTypeInterface $possibleType
+     * @param AbstractTypeContract|AbstractTypeInterface $abstractType
+     * @param ObjectTypeInterface $possibleType
      * @return bool
      * @throws InvariantException
      */
-    public function isPossibleType(NamedTypeInterface $abstractType, NamedTypeInterface $possibleType): bool
+    public function isPossibleType(AbstractTypeContract $abstractType, ObjectTypeInterface $possibleType): bool
     {
+        assert($abstractType instanceof NamedTypeInterface);
+
         $abstractTypeName = $abstractType->getName();
         $possibleTypeName = $possibleType->getName();
 
         if (!isset($this->possibleTypesMap[$abstractTypeName])) {
             $possibleTypes = $this->getPossibleTypes($abstractType);
 
-            if (!\is_array($possibleTypes)) {
+            if ($possibleTypes === []) {
                 throw new InvariantException(\sprintf(
                     'Could not find possible implementing types for %s ' .
                     'in schema. Check that schema.types is defined and is an array of ' .
@@ -217,8 +224,9 @@ class Schema implements DefinitionInterface
 
             $this->possibleTypesMap[$abstractTypeName] = \array_reduce(
                 $possibleTypes,
-                function (array $map, NamedTypeInterface $type) {
+                static function (array $map, NamedTypeInterface $type) {
                     $map[$type->getName()] = true;
+
                     return $map;
                 },
                 []
@@ -229,30 +237,32 @@ class Schema implements DefinitionInterface
     }
 
     /**
-     * @param NamedTypeInterface $abstractType
-     * @return NamedTypeInterface[]|null
+     * @param AbstractTypeContract $abstractType
+     * @return array|ObjectTypeInterface[]
      * @throws InvariantException
      */
-    public function getPossibleTypes(NamedTypeInterface $abstractType): ?array
+    public function getPossibleTypes(AbstractTypeContract $abstractType): array
     {
+        assert($abstractType instanceof NamedTypeInterface);
+
         if ($abstractType instanceof UnionType) {
             return $abstractType->getTypes();
         }
 
-        return $this->implementations[$abstractType->getName()] ?? null;
+        return $this->implementations[$abstractType->getName()] ?? [];
     }
 
     /**
      * @param string $name
-     * @return TypeInterface|null
+     * @return NamedTypeInterface|null
      */
-    public function getType(string $name): ?TypeInterface
+    public function getType(string $name): ?NamedTypeInterface
     {
         return $this->typeMap[$name] ?? null;
     }
 
     /**
-     *
+     * @return void
      */
     protected function buildTypeMap(): void
     {
@@ -355,19 +365,19 @@ class Schema implements DefinitionInterface
                 foreach ($type->getFields() as $field) {
                     if ($field->hasArguments()) {
                         $fieldArgTypes = \array_map(function (Argument $argument) {
-                            return $argument->getType();
+                            return $argument->getNullableType();
                         }, $field->getArguments());
 
                         $reducedMap = \array_reduce($fieldArgTypes, [$this, 'typeMapReducer'], $reducedMap);
                     }
 
-                    $reducedMap = $this->typeMapReducer($reducedMap, $field->getType());
+                    $reducedMap = $this->typeMapReducer($reducedMap, $field->getNullableType());
                 }
             }
 
             if ($type instanceof InputObjectType) {
                 foreach ($type->getFields() as $field) {
-                    $reducedMap = $this->typeMapReducer($reducedMap, $field->getType());
+                    $reducedMap = $this->typeMapReducer($reducedMap, $field->getNullableType());
                 }
             }
 
@@ -381,7 +391,6 @@ class Schema implements DefinitionInterface
      * @param array     $map
      * @param Directive $directive
      * @return array
-     * @throws InvariantException
      */
     protected function typeMapDirectiveReducer(array $map, Directive $directive): array
     {
@@ -390,7 +399,15 @@ class Schema implements DefinitionInterface
         }
 
         return \array_reduce($directive->getArguments(), function ($map, Argument $argument) {
-            return $this->typeMapReducer($map, $argument->getType());
+            return $this->typeMapReducer($map, $argument->getNullableType());
         }, $map);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return 'schema';
     }
 }

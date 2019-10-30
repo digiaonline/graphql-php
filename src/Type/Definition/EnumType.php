@@ -8,6 +8,9 @@ use Digia\GraphQL\Language\Node\ASTNodeTrait;
 use Digia\GraphQL\Language\Node\EnumTypeDefinitionNode;
 use Digia\GraphQL\Language\Node\EnumValueNode;
 use Digia\GraphQL\Language\Node\NodeInterface;
+use Digia\GraphQL\Schema\Definition;
+use GraphQL\Contracts\TypeSystem\EnumValueInterface;
+use GraphQL\Contracts\TypeSystem\Type\EnumTypeInterface;
 use function Digia\GraphQL\Type\isAssocArray;
 use function Digia\GraphQL\Type\newEnumValue;
 use function Digia\GraphQL\Util\toString;
@@ -33,8 +36,7 @@ use function Digia\GraphQL\Util\toString;
  * Note: If a value is not provided in a definition, the name of the enum value
  * will be used as its internal value.
  */
-class EnumType implements NamedTypeInterface, InputTypeInterface, LeafTypeInterface,
-    OutputTypeInterface, SerializableTypeInterface, DescriptionAwareInterface, ASTNodeAwareInterface
+class EnumType extends Definition implements EnumTypeInterface, SerializableTypeInterface, ASTNodeAwareInterface
 {
     use NameTrait;
     use DescriptionTrait;
@@ -122,12 +124,22 @@ class EnumType implements NamedTypeInterface, InputTypeInterface, LeafTypeInterf
 
     /**
      * @param string $name
-     * @return EnumValue|null
+     * @return EnumValue|EnumValueInterface|null
      * @throws InvariantException
      */
-    public function getValue(string $name): ?EnumValue
+    public function getValue(string $name): ?EnumValueInterface
     {
         return $this->getValueByName($name);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     * @throws InvariantException
+     */
+    public function hasValue(string $name): bool
+    {
+        return $this->getValue($name) !== null;
     }
 
     /**

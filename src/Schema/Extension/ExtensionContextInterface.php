@@ -3,7 +3,7 @@
 namespace Digia\GraphQL\Schema\Extension;
 
 use Digia\GraphQL\Type\Definition\Directive;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 interface ExtensionContextInterface
 {

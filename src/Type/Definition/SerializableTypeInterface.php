@@ -3,6 +3,7 @@
 namespace Digia\GraphQL\Type\Definition;
 
 use Digia\GraphQL\Language\Node\NodeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 
 /**
  * Tagging interface for serializable types (Enum and Scalar).

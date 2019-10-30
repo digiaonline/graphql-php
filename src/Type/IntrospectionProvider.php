@@ -8,7 +8,7 @@ use Digia\GraphQL\GraphQL;
 use Digia\GraphQL\Language\DirectiveLocationEnum;
 use Digia\GraphQL\Schema\Schema;
 use Digia\GraphQL\Type\Definition\AbstractTypeInterface;
-use Digia\GraphQL\Type\Definition\ArgumentsAwareInterface;
+use GraphQL\Contracts\TypeSystem\Common\ArgumentsAwareInterface;
 use Digia\GraphQL\Type\Definition\Directive;
 use Digia\GraphQL\Type\Definition\EnumType;
 use Digia\GraphQL\Type\Definition\Field;
@@ -18,7 +18,7 @@ use Digia\GraphQL\Type\Definition\ListType;
 use Digia\GraphQL\Type\Definition\NonNullType;
 use Digia\GraphQL\Type\Definition\ObjectType;
 use Digia\GraphQL\Type\Definition\ScalarType;
-use Digia\GraphQL\Type\Definition\TypeInterface;
+use GraphQL\Contracts\TypeSystem\Type\TypeInterface;
 use Digia\GraphQL\Type\Definition\UnionType;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -133,7 +133,7 @@ class IntrospectionProvider extends AbstractServiceProvider
                             ],
                             'args'        => [
                                 'type'    => newNonNull(newList(newNonNull(__InputValue()))),
-                                'resolve' => function (Directive $directive): array {
+                                'resolve' => static function (Directive $directive): iterable {
                                     return $directive->getArguments() ?: [];
                                 },
                             ],
