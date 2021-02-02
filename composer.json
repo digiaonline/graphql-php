@@ -50,7 +50,7 @@
             "phpunit",
             "phpstan analyse -l 4 src/"
         ],
-        "travis": [
+        "ci": [
             "phpunit --coverage-clover build/logs/clover.xml",
             "phpstan analyse -l 4 src/"
         ]
