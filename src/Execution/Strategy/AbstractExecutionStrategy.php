@@ -442,7 +442,7 @@ abstract class AbstractExecutionStrategy implements ExecutionStrategyInterface
      * @param array       $path
      * @param mixed       $result
      *
-     * @return array|\React\Promise\Promise
+     * @return array|PromiseInterface
      * @throws \Throwable
      */
     protected function completeListValue(
