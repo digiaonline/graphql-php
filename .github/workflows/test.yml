@@ -1,6 +1,6 @@
 name: Test
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 env:
   FORCE_COLOR: 1
@@ -11,11 +11,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ["7.1", "7.2", "7.3"]
+        php-version: ["7.1", "7.2", "7.3", "7.4"]
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
@@ -29,7 +29,6 @@ jobs:
           composer install
 
       - name: Tests
-        shell: bash
         run: |
           composer ci
 
