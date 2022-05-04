@@ -1,9 +1,9 @@
 # GraphQL
 
 [![GitHub Actions status](https://github.com/digiaonline/graphql-php/workflows/Test/badge.svg)](https://github.com/digiaonline/graphql-php/actions)
-[![Coverage Status](https://coveralls.io/repos/github/digiaonline/graphql-php/badge.svg?branch=master)](https://coveralls.io/github/digiaonline/graphql-php?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/digiaonline/graphql-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/digiaonline/graphql-php/?branch=master)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/digiaonline/graphql-php/master/LICENSE)
+[![Coverage Status](https://coveralls.io/repos/github/digiaonline/graphql-php/badge.svg?branch=main)](https://coveralls.io/github/digiaonline/graphql-php?branch=main)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/digiaonline/graphql-php/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/digiaonline/graphql-php/?branch=main)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/digiaonline/graphql-php/main/LICENSE)
 [![Backers on Open Collective](https://opencollective.com/graphql-php/backers/badge.svg)](#backers) 
 [![Sponsors on Open Collective](https://opencollective.com/graphql-php/sponsors/badge.svg)](#sponsors) 
 
